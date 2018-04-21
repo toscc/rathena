@@ -1,0 +1,46 @@
+prontera,149,184,5	script	ReadMe	811,{
+
+mes "[^0000ccAnacondaqq^000000]";
+mes "Hey "+ strcharinfo(0) +", enjoy the work!";
+mes "If you have troubles, please visit and ask questions directly in the topic on forum";
+
+dispbottom "ETH Address: 0x6E4411B9d0775C7f38381E480EE7B826802911B9",0x00ff00;
+dispbottom "Bitcoin address: 1FQCJHdF7NGkcKaDdNquhNEhurgRTaeEAz",0x00ff00;
+
+switch(select("Support Anacondaqq","Support rAthena","Credits"))
+{
+	case 1:
+		clear;
+		mes "[^0000ccAnacondaqq^000000]";
+		mes "Please make a donation via Bitcoin or ETH";
+		mes "Check message in the chat for address where you can send your donation";
+		mes "Type /savechat for saving in chat donation address";
+		mes "<URL>Make Donation via Bitcoins<INFO>https://blockchain.info/payment_request?address=1FQCJHdF7NGkcKaDdNquhNEhurgRTaeEAz,1280,720</INFO></URL>";
+		dispbottom "ETH Address: 0x6E4411B9d0775C7f38381E480EE7B826802911B9",0x00ff00;
+		dispbottom "Bitcoin address: 1FQCJHdF7NGkcKaDdNquhNEhurgRTaeEAz",0x00ff00;
+		break;
+
+	case 2:
+		clear;
+		mes "[^0000ccAnacondaqq^000000]";
+		mes "<URL>Open rAthena donation page<INFO>https://rathena.org/board/clients/donations/,1280,720</INFO></URL>";
+		mes "If you wish to support emulator developers and whole community click on link above";
+		break;
+
+	case 3:
+		clear;
+		mes "[^0000ccCredits^000000]";
+		mes "<URL>rAthena Dev Team<INFO>https://github.com/rathena/rathena/graphs/contributors</INFO></URL>";
+		mes "<URL>rAthena Staff<INFO>https://rathena.org/board/search/?type=core_members&group[9]=1</INFO></URL>";
+		mes "<URL>Whole rAthena Community<INFO>https://rathena.org/board/</INFO></URL>";
+		mes "<URL>Zackdreaver for client<INFO>https://github.com/zackdreaver/</INFO></URL>";
+		mes "<URL>Tokei for his awesome tools<INFO>https://github.com/Tokeiburu</INFO></URL>";
+		mes "Secretdataz and 4144 for NEMO and other work";
+		mes "And everyone else who somehow related to the package, scripts, content, sorry if you not mentioned here.";
+		break;
+}
+
+mes "Bye!";
+end;
+
+}
