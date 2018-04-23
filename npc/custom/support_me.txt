@@ -6,6 +6,7 @@ mes "If you have troubles, please visit and ask questions directly in the topic 
 
 dispbottom "ETH Address: 0x6E4411B9d0775C7f38381E480EE7B826802911B9",0x00ff00;
 dispbottom "Bitcoin address: 1FQCJHdF7NGkcKaDdNquhNEhurgRTaeEAz",0x00ff00;
+dispbottom "Visit Patreon for support: https://www.patreon.com/anacondaq",0x00ff00;
 
 switch(select("Support Anacondaqq","Support rAthena","Credits"))
 {
@@ -15,9 +16,10 @@ switch(select("Support Anacondaqq","Support rAthena","Credits"))
 		mes "Please make a donation via Bitcoin or ETH";
 		mes "Check message in the chat for address where you can send your donation";
 		mes "Type /savechat for saving in chat donation address";
-		mes "<URL>Make Donation via Bitcoins<INFO>https://blockchain.info/payment_request?address=1FQCJHdF7NGkcKaDdNquhNEhurgRTaeEAz,1280,720</INFO></URL>";
+		mes "<URL>Make Donation via Patreon<INFO>https://www.patreon.com/anacondaq,1280,720</INFO></URL>";
 		dispbottom "ETH Address: 0x6E4411B9d0775C7f38381E480EE7B826802911B9",0x00ff00;
 		dispbottom "Bitcoin address: 1FQCJHdF7NGkcKaDdNquhNEhurgRTaeEAz",0x00ff00;
+		dispbottom "Visit Patreon for support: https://www.patreon.com/anacondaq",0x00ff00;
 		break;
 
 	case 2:
