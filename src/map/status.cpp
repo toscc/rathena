@@ -53,7 +53,7 @@ static struct {
 	struct refine_cost cost[REFINE_COST_MAX];
 } refine_info[REFINE_TYPE_MAX];
 
-static int atkmods[3][MAX_WEAPON_TYPE];	/// ATK weapon modification for size (size_fix.txt)
+static int atkmods[SZ_ALL][MAX_WEAPON_TYPE];	/// ATK weapon modification for size (size_fix.txt)
 
 static struct eri *sc_data_ers; /// For sc_data entries
 static struct status_data dummy_status;
@@ -187,7 +187,7 @@ static void set_sc(uint16 skill_id, sc_type sc, int icon, unsigned int flag)
 		ShowError("set_sc: Unsupported skill id %d (SC: %d. Icon: %d)\n", skill_id, sc, icon);
 		return;
 	}
-	if( sc < 0 || sc >= SC_MAX ) {
+	if( sc <= SC_NONE || sc >= SC_MAX ) {
 		ShowError("set_sc: Unsupported status change id %d (Skill: %d. Icon: %d)\n", sc, skill_id, icon);
 		return;
 	}
@@ -1438,7 +1438,6 @@ void initChangeTables(void)
 	StatusChangeStateTable[SC_CRYSTALIZE]			|= SCS_NOCAST;
 	StatusChangeStateTable[SC__IGNORANCE]			|= SCS_NOCAST;
 	StatusChangeStateTable[SC__MANHOLE]				|= SCS_NOCAST;
-	StatusChangeStateTable[SC__FEINTBOMB]			|= SCS_NOCAST;
 	StatusChangeStateTable[SC_DEEPSLEEP]			|= SCS_NOCAST;
 	StatusChangeStateTable[SC_SATURDAYNIGHTFEVER]	|= SCS_NOCAST;
 	StatusChangeStateTable[SC_CURSEDCIRCLE_TARGET]	|= SCS_NOCAST;
@@ -3466,6 +3465,7 @@ int status_calc_pc_(struct map_session_data* sd, enum e_status_calc_opt opt)
 		+ sizeof(sd->norecover_state_race)
 		+ sizeof(sd->hp_vanish_race)
 		+ sizeof(sd->sp_vanish_race)
+		+ sizeof(sd->skilldelay)
 	);
 
 	memset (&sd->bonus, 0, sizeof(sd->bonus));
@@ -3746,19 +3746,19 @@ int status_calc_pc_(struct map_session_data* sd, enum e_status_calc_opt opt)
 	sd->bonus.splash_range += sd->bonus.splash_add_range;
 
 	// Damage modifiers from weapon type
-	sd->right_weapon.atkmods[0] = atkmods[0][sd->weapontype1];
-	sd->right_weapon.atkmods[1] = atkmods[1][sd->weapontype1];
-	sd->right_weapon.atkmods[2] = atkmods[2][sd->weapontype1];
-	sd->left_weapon.atkmods[0] = atkmods[0][sd->weapontype2];
-	sd->left_weapon.atkmods[1] = atkmods[1][sd->weapontype2];
-	sd->left_weapon.atkmods[2] = atkmods[2][sd->weapontype2];
+	sd->right_weapon.atkmods[SZ_SMALL] = atkmods[SZ_SMALL][sd->weapontype1];
+	sd->right_weapon.atkmods[SZ_MEDIUM] = atkmods[SZ_MEDIUM][sd->weapontype1];
+	sd->right_weapon.atkmods[SZ_BIG] = atkmods[SZ_BIG][sd->weapontype1];
+	sd->left_weapon.atkmods[SZ_SMALL] = atkmods[SZ_SMALL][sd->weapontype2];
+	sd->left_weapon.atkmods[SZ_MEDIUM] = atkmods[SZ_MEDIUM][sd->weapontype2];
+	sd->left_weapon.atkmods[SZ_BIG] = atkmods[SZ_BIG][sd->weapontype2];
 
 	if((pc_isriding(sd) || pc_isridingdragon(sd)) &&
 		(sd->status.weapon==W_1HSPEAR || sd->status.weapon==W_2HSPEAR))
 	{	// When Riding with spear, damage modifier to mid-class becomes
 		// same as versus large size.
-		sd->right_weapon.atkmods[1] = sd->right_weapon.atkmods[2];
-		sd->left_weapon.atkmods[1] = sd->left_weapon.atkmods[2];
+		sd->right_weapon.atkmods[SZ_MEDIUM] = sd->right_weapon.atkmods[SZ_BIG];
+		sd->left_weapon.atkmods[SZ_MEDIUM] = sd->left_weapon.atkmods[SZ_BIG];
 	}
 
 // ----- STATS CALCULATION -----
@@ -6149,7 +6149,7 @@ static signed short status_calc_critical(struct block_list *bl, struct status_ch
 		critical += 3*sc->data[SC_SPEARQUICKEN]->val1*10;
 #endif
 	if (sc->data[SC__INVISIBILITY])
-		critical += critical * sc->data[SC__INVISIBILITY]->val3 / 100;
+		critical += sc->data[SC__INVISIBILITY]->val3 * 10;
 	if (sc->data[SC__UNLUCKY])
 		critical -= sc->data[SC__UNLUCKY]->val2;
 	if(sc->data[SC_BEYONDOFWARCRY])
@@ -14356,6 +14356,12 @@ static bool status_yaml_readdb_refine_sub(const YAML::Node &node, int refine_inf
 	int bonus_per_level = node["StatsPerLevel"].as<int>();
 	int random_bonus_start_level = node["RandomBonusStartLevel"].as<int>();
 	int random_bonus = node["RandomBonusValue"].as<int>();
+
+	if (file_name.find("import") != std::string::npos) { // Import file, reset refine bonus before calculation
+		for (int refine_level = 0; refine_level < MAX_REFINE; ++refine_level)
+			refine_info[refine_info_index].bonus[refine_level] = 0;
+	}
+
 	const YAML::Node &costs = node["Costs"];
 
 	for (const auto costit : costs) {
@@ -14432,7 +14438,7 @@ static void status_yaml_readdb_refine(const std::string &directory, const std::s
 	for (int i = 0; i < ARRAYLENGTH(labels); i++) {
 		const YAML::Node &node = config[labels[i]];
 
-		if (node.IsDefined() && status_yaml_readdb_refine_sub(node, i, file))
+		if (node.IsDefined() && status_yaml_readdb_refine_sub(node, i, current_file))
 			count++;
 	}
 	ShowStatus("Done reading '" CL_WHITE "%d" CL_RESET "' entries in '" CL_WHITE "%s" CL_RESET "'.\n", count, current_file.c_str());
@@ -14541,7 +14547,7 @@ int status_readdb(void)
 			}
 	}
 	// attr_fix.txt
-	for(i=0;i<4;i++)
+	for(i=0;i<MAX_ELE_LEVEL;i++)
 		for(j=0;j<ELE_ALL;j++)
 			for(k=0;k<ELE_ALL;k++)
 				attr_fix_table[i][j][k]=100;
