@@ -1,4 +1,4 @@
-// Copyright (c) Athena Dev Teams - Licensed under GNU GPL
+// Copyright (c) rAthena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
 //#define DEBUG_DISP
@@ -9,63 +9,57 @@
 
 #include "script.hpp"
 
-#include <math.h>
-#include <stdlib.h> // atoi, strtol, strtoll, exit
-#include <setjmp.h>
 #include <errno.h>
+#include <math.h>
+#include <setjmp.h>
+#include <stdlib.h> // atoi, strtol, strtoll, exit
 
 #ifdef PCRE_SUPPORT
 #include "../../3rdparty/pcre/include/pcre.h" // preg_match
 #endif
 
-#include "../common/cbasetypes.h"
-#include "../common/malloc.h"
-#include "../common/md5calc.h"
-#include "../common/nullpo.h"
-#include "../common/random.h"
-#include "../common/showmsg.h"
-#include "../common/socket.h"
-#include "../common/strlib.h"
-#include "../common/timer.h"
-#include "../common/utils.h"
-#include "../common/ers.h"  // ers_destroy
-#ifdef BETA_THREAD_TEST
-	#include "../common/atomic.h"
-	#include "../common/spinlock.h"
-	#include "../common/thread.h"
-	#include "../common/mutex.h"
-#endif
+#include "../common/cbasetypes.hpp"
+#include "../common/ers.hpp"  // ers_destroy
+#include "../common/malloc.hpp"
+#include "../common/md5calc.hpp"
+#include "../common/nullpo.hpp"
+#include "../common/random.hpp"
+#include "../common/showmsg.hpp"
+#include "../common/socket.hpp"
+#include "../common/strlib.hpp"
+#include "../common/timer.hpp"
+#include "../common/utils.hpp"
 
-#include "map.hpp"
-#include "path.hpp"
-#include "clan.hpp"
-#include "clif.hpp"
-#include "chrif.hpp"
-#include "date.hpp" // date type enum, date_get()
-#include "itemdb.hpp"
-#include "pc.hpp"
-#include "pc_groups.hpp"
-#include "storage.hpp"
-#include "pet.hpp"
-#include "mapreg.hpp"
-#include "homunculus.hpp"
-#include "instance.hpp"
-#include "mercenary.hpp"
-#include "intif.hpp"
-#include "chat.hpp"
-#include "battleground.hpp"
-#include "party.hpp"
-#include "mail.hpp"
-#include "quest.hpp"
-#include "elemental.hpp"
-#include "npc.hpp"
-#include "guild.hpp"
+#include "achievement.hpp"
 #include "atcommand.hpp"
 #include "battle.hpp"
-#include "log.hpp"
-#include "mob.hpp"
+#include "battleground.hpp"
 #include "channel.hpp"
-#include "achievement.hpp"
+#include "chat.hpp"
+#include "chrif.hpp"
+#include "clan.hpp"
+#include "clif.hpp"
+#include "date.hpp" // date type enum, date_get()
+#include "elemental.hpp"
+#include "guild.hpp"
+#include "homunculus.hpp"
+#include "instance.hpp"
+#include "intif.hpp"
+#include "itemdb.hpp"
+#include "log.hpp"
+#include "mail.hpp"
+#include "map.hpp"
+#include "mapreg.hpp"
+#include "mercenary.hpp"
+#include "mob.hpp"
+#include "npc.hpp"
+#include "party.hpp"
+#include "path.hpp"
+#include "pc.hpp"
+#include "pc_groups.hpp"
+#include "pet.hpp"
+#include "quest.hpp"
+#include "storage.hpp"
 
 struct eri *array_ers;
 DBMap *st_db;
@@ -378,30 +372,6 @@ typedef struct script_function {
 extern script_function buildin_func[];
 
 static struct linkdb_node *sleep_db; // int oid -> struct script_state *
-
-#ifdef BETA_THREAD_TEST
-/**
- * MySQL Query Slave
- **/
-static SPIN_LOCK queryThreadLock;
-static rAthread queryThread = NULL;
-static ramutex	queryThreadMutex = NULL;
-static racond	queryThreadCond = NULL;
-static volatile int32 queryThreadTerminate = 0;
-
-struct queryThreadEntry {
-	bool ok;
-	bool type; /* main db or log db? */
-	struct script_state *st;
-};
-
-/* Ladies and Gentleman the Manager! */
-struct {
-	struct queryThreadEntry **entry;/* array of structs */
-	int count;
-	int timer;/* used to receive processed entries */
-} queryThreadData;
-#endif
 
 /*==========================================
  * (Only those needed) local declaration prototype
@@ -4639,185 +4609,6 @@ void script_generic_ui_array_expand (unsigned int plus)
 	RECREATE(generic_ui_array, unsigned int, generic_ui_array_size);
 }
 
-int buildin_query_sql_sub(struct script_state *st, Sql *handle);
-
-#ifdef BETA_THREAD_TEST
-/* used to receive items the queryThread has already processed */
-int queryThread_timer(int tid, unsigned int tick, int id, intptr_t data) {
-	int i, cursor = 0;
-	bool allOk = true;
-
-	EnterSpinLock(&queryThreadLock);
-
-	for( i = 0; i < queryThreadData.count; i++ ) {
-		struct queryThreadEntry *entry = queryThreadData.entry[i];
-
-		if( !entry->ok ) {
-			allOk = false;
-			continue;
-		}
-
-		run_script_main(entry->st);
-
-		entry->st = NULL;/* empty entries */
-		aFree(entry);
-		queryThreadData.entry[i] = NULL;
-	}
-
-
-	if( allOk ) {
-		/* cancel the repeating timer -- it'll re-create itself when necessary, dont need to remain looping */
-		delete_timer(queryThreadData.timer, queryThread_timer);
-		queryThreadData.timer = INVALID_TIMER;
-	}
-
-	/* now lets clear the mess. */
-	for( i = 0; i < queryThreadData.count; i++ ) {
-		struct queryThreadEntry *entry = queryThreadData.entry[i];
-		if( entry == NULL )
-			continue;/* entry on hold */
-
-		/* move */
-		memmove(&queryThreadData.entry[cursor], &queryThreadData.entry[i], sizeof(struct queryThreadEntry*));
-
-		cursor++;
-	}
-
-	queryThreadData.count = cursor;
-
-	LeaveSpinLock(&queryThreadLock);
-
-	return 0;
-}
-
-void queryThread_add(struct script_state *st, bool type) {
-	int idx = 0;
-	struct queryThreadEntry* entry = NULL;
-
-	EnterSpinLock(&queryThreadLock);
-
-	if( queryThreadData.count++ != 0 )
-		RECREATE(queryThreadData.entry, struct queryThreadEntry* , queryThreadData.count);
-
-	idx = queryThreadData.count-1;
-
-	CREATE(queryThreadData.entry[idx],struct queryThreadEntry,1);
-
-	entry = queryThreadData.entry[idx];
-
-	entry->st = st;
-	entry->ok = false;
-	entry->type = type;
-	if( queryThreadData.timer == INVALID_TIMER ) { /* start the receiver timer */
-		queryThreadData.timer = add_timer_interval(gettick() + 100, queryThread_timer, 0, 0, 100);
-	}
-
-	LeaveSpinLock(&queryThreadLock);
-
-	/* unlock the queryThread */
-	racond_signal(queryThreadCond);
-}
-/* adds a new log to the queue */
-void queryThread_log(char * entry, int length) {
-	int idx = logThreadData.count;
-
-	EnterSpinLock(&queryThreadLock);
-
-	if( logThreadData.count++ != 0 )
-		RECREATE(logThreadData.entry, char* , logThreadData.count);
-
-	CREATE(logThreadData.entry[idx], char, length + 1 );
-	safestrncpy(logThreadData.entry[idx], entry, length + 1 );
-
-	LeaveSpinLock(&queryThreadLock);
-
-	/* unlock the queryThread */
-	racond_signal(queryThreadCond);
-}
-
-/* queryThread_main */
-static void *queryThread_main(void *x) {
-	Sql *queryThread_handle = Sql_Malloc();
-	int i;
-
-	if ( SQL_ERROR == Sql_Connect(queryThread_handle, map_server_id, map_server_pw, map_server_ip, map_server_port, map_server_db) ){
-		ShowError("Couldn't connect with uname='%s',passwd='%s',host='%s',port='%d',database='%s'\n",
-			map_server_id, map_server_pw, map_server_ip, map_server_port, map_server_db);
-		Sql_ShowDebug(queryThread_handle);
-		Sql_Free(queryThread_handle);
-		exit(EXIT_FAILURE);
-	}
-
-	if( strlen(default_codepage) > 0 )
-		if ( SQL_ERROR == Sql_SetEncoding(queryThread_handle, default_codepage) )
-			Sql_ShowDebug(queryThread_handle);
-
-	if( log_config.sql_logs ) {
-		logmysql_handle = Sql_Malloc();
-
-		if ( SQL_ERROR == Sql_Connect(logmysql_handle, log_db_id, log_db_pw, log_db_ip, log_db_port, log_db_db) ){
-			ShowError("Couldn't connect with uname='%s',passwd='%s',host='%s',port='%d',database='%s'\n",
-				log_db_id, log_db_pw, log_db_ip, log_db_port, log_db_db);
-			Sql_ShowDebug(logmysql_handle);
-			Sql_Free(logmysql_handle);
-			exit(EXIT_FAILURE);
-		}
-
-		if( strlen(default_codepage) > 0 )
-			if ( SQL_ERROR == Sql_SetEncoding(logmysql_handle, default_codepage) )
-				Sql_ShowDebug(logmysql_handle);
-	}
-
-	while( 1 ) {
-
-		if(queryThreadTerminate > 0)
-			break;
-
-		EnterSpinLock(&queryThreadLock);
-
-		/* mess with queryThreadData within the lock */
-		for( i = 0; i < queryThreadData.count; i++ ) {
-			struct queryThreadEntry *entry = queryThreadData.entry[i];
-
-			if( entry->ok )
-				continue;
-			else if ( !entry->st || !entry->st->stack ) {
-				entry->ok = true;/* dispose */
-				continue;
-			}
-
-			buildin_query_sql_sub(entry->st, entry->type ? logmysql_handle : queryThread_handle);
-
-			entry->ok = true;/* we're done with this */
-		}
-
-		/* also check for any logs in need to be sent */
-		if( log_config.sql_logs ) {
-			for( i = 0; i < logThreadData.count; i++ ) {
-				if( SQL_ERROR == Sql_Query(logmysql_handle, logThreadData.entry[i]) )
-					Sql_ShowDebug(logmysql_handle);
-				aFree(logThreadData.entry[i]);
-			}
-			logThreadData.count = 0;
-		}
-
-		LeaveSpinLock(&queryThreadLock);
-
-		ramutex_lock( queryThreadMutex );
-		racond_wait( queryThreadCond,	queryThreadMutex,  -1 );
-		ramutex_unlock( queryThreadMutex );
-
-	}
-
-	Sql_Free(queryThread_handle);
-
-	if( log_config.sql_logs ) {
-		Sql_Free(logmysql_handle);
-	}
-
-	return NULL;
-}
-#endif
 /*==========================================
  * Destructor
  *------------------------------------------*/
@@ -4911,30 +4702,6 @@ void do_final_script() {
 	ers_destroy(st_ers);
 	ers_destroy(stack_ers);
 	db_destroy(st_db);
-
-#ifdef BETA_THREAD_TEST
-	/* QueryThread */
-	InterlockedIncrement(&queryThreadTerminate);
-	racond_signal(queryThreadCond);
-	rathread_wait(queryThread, NULL);
-
-	// Destroy cond var and mutex.
-	racond_destroy( queryThreadCond );
-	ramutex_destroy( queryThreadMutex );
-
-	/* Clear missing vars */
-	for( i = 0; i < queryThreadData.count; i++ ) {
-		aFree(queryThreadData.entry[i]);
-	}
-
-	aFree(queryThreadData.entry);
-
-	for( i = 0; i < logThreadData.count; i++ ) {
-		aFree(logThreadData.entry[i]);
-	}
-
-	aFree(logThreadData.entry);
-#endif
 }
 /*==========================================
  * Initialization
@@ -4956,52 +4723,12 @@ void do_init_script(void) {
 	next_id = 0;
 
 	mapreg_init();
-#ifdef BETA_THREAD_TEST
-	CREATE(queryThreadData.entry, struct queryThreadEntry*, 1);
-	queryThreadData.count = 0;
-	CREATE(logThreadData.entry, char *, 1);
-	logThreadData.count = 0;
-	/* QueryThread Start */
-
-	InitializeSpinLock(&queryThreadLock);
-
-	queryThreadData.timer = INVALID_TIMER;
-	queryThreadTerminate = 0;
-	queryThreadMutex = ramutex_create();
-	queryThreadCond = racond_create();
-
-	queryThread = rathread_create(queryThread_main, NULL);
-
-	if(queryThread == NULL){
-		ShowFatalError("do_init_script: cannot spawn Query Thread.\n");
-		exit(EXIT_FAILURE);
-	}
-
-	add_timer_func_list(queryThread_timer, "queryThread_timer");
-#endif
 }
 
 void script_reload(void) {
 	int i;
 	DBIterator *iter;
 	struct script_state *st;
-
-#ifdef BETA_THREAD_TEST
-	/* we're reloading so any queries undergoing should be...exterminated. */
-	EnterSpinLock(&queryThreadLock);
-
-	for( i = 0; i < queryThreadData.count; i++ ) {
-		aFree(queryThreadData.entry[i]);
-	}
-	queryThreadData.count = 0;
-
-	if( queryThreadData.timer != INVALID_TIMER ) {
-		delete_timer(queryThreadData.timer, queryThread_timer);
-		queryThreadData.timer = INVALID_TIMER;
-	}
-
-	LeaveSpinLock(&queryThreadLock);
-#endif
 
 	userfunc_db->clear(userfunc_db, db_script_free_code_sub);
 	db_clear(scriptlabel_db);
@@ -6924,7 +6651,7 @@ BUILDIN_FUNC(viewpoint)
  * @param funcname Function name
  * @param x First position of random option id array from the script
  **/
-static int script_getitem_randomoption(struct script_state *st, struct item *it, const char *funcname, int x) {
+static int script_getitem_randomoption(struct script_state *st, struct map_session_data* sd, struct item *it, const char *funcname, int x) {
 	int i, opt_id_n;
 	struct script_data *opt_id = script_getdata(st,x);
 	struct script_data *opt_val = script_getdata(st,x+1);
@@ -6937,13 +6664,55 @@ static int script_getitem_randomoption(struct script_state *st, struct item *it,
 	int32 opt_param_id, opt_param_idx;
 	struct reg_db *opt_id_ref = NULL, *opt_val_ref = NULL, *opt_param_ref = NULL;
 
+	// Check if the variable requires a player
+	if( not_server_variable(opt_id_var[0]) && sd == nullptr ){
+		// If no player is attached
+		if( !script_rid2sd(sd) ){
+			ShowError( "buildin_%s: variable \"%s\" was not a server variable, but no player was attached.\n", funcname, opt_id_var );
+			return false;
+		}
+	}
+
+	if( !data_isreference(opt_id) || !script_array_src( st, sd, opt_id_var, reference_getref(opt_id) ) ){
+		ShowError( "buildin_%s: The option id parameter is not an array.\n", funcname );
+		return SCRIPT_CMD_FAILURE;
+	}
+
 	if (is_string_variable(opt_id_var)) {
 		ShowError("buildin_%s: The array %s is not numeric type.\n", funcname, opt_id_var);
 		return SCRIPT_CMD_FAILURE;
 	}
 
+	// Check if the variable requires a player
+	if( not_server_variable(opt_val_var[0]) && sd == nullptr ){
+		// If no player is attached
+		if( !script_rid2sd(sd) ){
+			ShowError( "buildin_%s: variable \"%s\" was not a server variable, but no player was attached.\n", funcname, opt_val_var );
+			return false;
+		}
+	}
+
+	if( !data_isreference(opt_val) || !script_array_src( st, sd, opt_val_var, reference_getref(opt_val) ) ){
+		ShowError( "buildin_%s: The option value parameter is not an array.\n", funcname );
+		return SCRIPT_CMD_FAILURE;
+	}
+
 	if (is_string_variable(opt_val_var)) {
 		ShowError("buildin_%s: The array %s is not numeric type.\n", funcname, opt_val_var);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	// Check if the variable requires a player
+	if( not_server_variable(opt_param_var[0]) && sd == nullptr ){
+		// If no player is attached
+		if( !script_rid2sd(sd) ){
+			ShowError( "buildin_%s: variable \"%s\" was not a server variable, but no player was attached.\n", funcname, opt_param_var );
+			return false;
+		}
+	}
+
+	if( !data_isreference(opt_param) || !script_array_src( st, sd, opt_param_var, reference_getref(opt_param) ) ){
+		ShowError( "buildin_%s: The option param parameter is not an array.\n", funcname );
 		return SCRIPT_CMD_FAILURE;
 	}
 
@@ -6953,7 +6722,7 @@ static int script_getitem_randomoption(struct script_state *st, struct item *it,
 	}
 
 	opt_id_ref = reference_getref(opt_id);
-	opt_id_n = script_array_highest_key(st, NULL, opt_id_var, opt_id_ref);
+	opt_id_n = script_array_highest_key(st, sd, opt_id_var, opt_id_ref);
 
 	if (opt_id_n < 1) {
 		ShowError("buildin_%s: No option id listed.\n", funcname);
@@ -7097,7 +6866,7 @@ BUILDIN_FUNC(countitem)
 		it.card[3] = script_getnum(st,9);
 
 		if (command[strlen(command)-1] == '3') {
-			int res = script_getitem_randomoption(st, &it, command, 10);
+			int res = script_getitem_randomoption(st, sd, &it, command, 10);
 			if (res != SCRIPT_CMD_SUCCESS)
 				return SCRIPT_CMD_FAILURE;
 			check_randomopt = true;
@@ -7519,7 +7288,7 @@ BUILDIN_FUNC(getitem2)
 		item_tmp.bound = bound;
 
 		if (offset != 0) {
-			int res = script_getitem_randomoption(st, &item_tmp, command, offset);
+			int res = script_getitem_randomoption(st, sd, &item_tmp, command, offset);
 			if (res == SCRIPT_CMD_FAILURE)
 				return SCRIPT_CMD_FAILURE;
 		}
@@ -7690,7 +7459,7 @@ BUILDIN_FUNC(rentitem2) {
 	it.expire_time = (unsigned int)(time(NULL) + seconds);
 
 	if (funcname[strlen(funcname)-1] == '3') {
-		int res = script_getitem_randomoption(st, &it, funcname, 11);
+		int res = script_getitem_randomoption(st, sd, &it, funcname, 11);
 		if (res != SCRIPT_CMD_SUCCESS)
 			return res;
 	}
@@ -7918,7 +7687,7 @@ BUILDIN_FUNC(makeitem2) {
 		item_tmp.card[3] = script_getnum(st,13);
 
 		if (funcname[strlen(funcname)-1] == '3') {
-			int res = script_getitem_randomoption(st, &item_tmp, funcname, 14);
+			int res = script_getitem_randomoption(st, nullptr, &item_tmp, funcname, 14);
 			if (res != SCRIPT_CMD_SUCCESS)
 				return res;
 		}
@@ -8330,7 +8099,7 @@ BUILDIN_FUNC(delitem2)
 	it.card[3]=(short)script_getnum(st,10);
 
 	if (command[strlen(command)-1] == '3') {
-		int res = script_getitem_randomoption(st, &it, command, 11);
+		int res = script_getitem_randomoption(st, sd, &it, command, 11);
 		if (res != SCRIPT_CMD_SUCCESS)
 			return SCRIPT_CMD_FAILURE;
 		flag |= 0x2;
@@ -12429,15 +12198,26 @@ BUILDIN_FUNC(addrid)
 BUILDIN_FUNC(attachrid)
 {
 	int rid = script_getnum(st,2);
+	bool force;
 
-	if (map_id2sd(rid) != NULL) {
+	if( script_hasdata(st,3) ){
+		force = script_getnum(st,3) != 0;
+	}else{
+		force = true;
+	}
+
+	struct map_session_data* sd = map_id2sd(rid);
+
+	if( sd != NULL && ( !sd->npc_id || force ) ){
 		script_detach_rid(st);
 
 		st->rid = rid;
 		script_attach_state(st);
-		script_pushint(st,1);
-	} else
-		script_pushint(st,0);
+		script_pushint(st,true);
+	}else{
+		script_pushint(st,false);
+	}
+
 	return SCRIPT_CMD_SUCCESS;
 }
 /*==========================================
@@ -15451,13 +15231,22 @@ BUILDIN_FUNC(mapid2name)
 BUILDIN_FUNC(logmes)
 {
 	const char *str;
-	TBL_PC* sd;
-
-	if( !script_rid2sd(sd) )
-		return SCRIPT_CMD_FAILURE;
+	struct map_session_data* sd = map_id2sd(st->rid);
 
 	str = script_getstr(st,2);
-	log_npc(sd,str);
+	if( sd ){
+		log_npc(sd,str);
+	}else{
+		struct npc_data* nd = map_id2nd(st->oid);
+
+		if( !nd ){
+			ShowError( "buildin_logmes: Invalid usage without player or npc.\n" );
+			return SCRIPT_CMD_FAILURE;
+		}
+
+		log_npc(nd,str);
+	}
+
 	return SCRIPT_CMD_SUCCESS;
 }
 
@@ -16928,18 +16717,7 @@ int buildin_query_sql_sub(struct script_state* st, Sql* handle)
 }
 
 BUILDIN_FUNC(query_sql) {
-#ifdef BETA_THREAD_TEST
-	if( st->state != RERUNLINE ) {
-		queryThread_add(st,false);
-
-		st->state = RERUNLINE;/* will continue when the query is finished running. */
-	} else
-		st->state = RUN;
-
-	return SCRIPT_CMD_SUCCESS;
-#else
 	return buildin_query_sql_sub(st, qsmysql_handle);
-#endif
 }
 
 BUILDIN_FUNC(query_logsql) {
@@ -16948,18 +16726,8 @@ BUILDIN_FUNC(query_logsql) {
 		script_pushint(st,-1);
 		return SCRIPT_CMD_FAILURE;
 	}
-#ifdef BETA_THREAD_TEST
-	if( st->state != RERUNLINE ) {
-		queryThread_add(st,true);
 
-		st->state = RERUNLINE;/* will continue when the query is finished running. */
-	} else
-		st->state = RUN;
-
-	return SCRIPT_CMD_SUCCESS;
-#else
 	return buildin_query_sql_sub(st, logmysql_handle);
-#endif
 }
 
 //Allows escaping of a given string.
@@ -24242,6 +24010,28 @@ BUILDIN_FUNC(mail){
 	return SCRIPT_CMD_SUCCESS;
 }
 
+BUILDIN_FUNC(open_roulette){
+#if PACKETVER < 20141022
+	ShowError( "buildin_open_roulette: This command requires PACKETVER 2014-10-22 or newer.\n" );
+	return SCRIPT_CMD_FAILURE;
+#else
+	struct map_session_data* sd;
+
+	if( !battle_config.feature_roulette ){
+		ShowError( "buildin_open_roulette: Roulette system is disabled.\n" );
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	if( !script_charid2sd( 2, sd ) ){
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	clif_roulette_open(sd);
+
+	return SCRIPT_CMD_SUCCESS;
+#endif
+}
+
 #include "../custom/script.inc"
 
 // declarations that were supposed to be exported from npc_chat.c
@@ -24489,7 +24279,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF2(disablewaitingroomevent,"disablearena",""),	// Added by RoVeRT
 	BUILDIN_DEF(getwaitingroomstate,"i?"),
 	BUILDIN_DEF(warpwaitingpc,"sii?"),
-	BUILDIN_DEF(attachrid,"i"),
+	BUILDIN_DEF(attachrid,"i?"),
 	BUILDIN_DEF(addrid,"i?????"),
 	BUILDIN_DEF(detachrid,""),
 	BUILDIN_DEF(isloggedin,"i?"),
@@ -24894,6 +24684,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF2(round, "floor", "i"),
 	BUILDIN_DEF(getequiptradability, "i?"),
 	BUILDIN_DEF(mail, "isss*"),
+	BUILDIN_DEF(open_roulette,"?"),
 #include "../custom/script_def.inc"
 
 	{NULL,NULL,NULL},

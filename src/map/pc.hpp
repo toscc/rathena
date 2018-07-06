@@ -1,24 +1,24 @@
-// Copyright (c) Athena Dev Teams - Licensed under GNU GPL
+// Copyright (c) rAthena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
-#pragma once
+
 #ifndef _PC_HPP_
 #define _PC_HPP_
 
 #include <vector>
 
-#include "../common/mmo.h" // JOB_*, MAX_FAME_LIST, struct fame_list, struct mmo_charstatus
-#include "../common/strlib.h"// StringBuf
+#include "../common/mmo.hpp" // JOB_*, MAX_FAME_LIST, struct fame_list, struct mmo_charstatus
+#include "../common/strlib.hpp"// StringBuf
 
-#include "map.hpp" // RC_ALL
-#include "itemdb.hpp" // MAX_ITEMGROUP
-#include "searchstore.hpp"  // struct s_search_store_info
-#include "vending.hpp" // struct s_vending
 #include "buyingstore.hpp" // struct s_buyingstore
-#include "unit.hpp" // unit_data
-#include "status.hpp" // unit_data
-#include "script.hpp" // struct script_reg, struct script_regstr
-#include "mob.hpp" //e_size
 #include "clif.hpp" //e_wip_block
+#include "itemdb.hpp" // MAX_ITEMGROUP
+#include "map.hpp" // RC_ALL
+#include "mob.hpp" //e_size
+#include "script.hpp" // struct script_reg, struct script_regstr
+#include "searchstore.hpp"  // struct s_search_store_info
+#include "status.hpp" // unit_data
+#include "unit.hpp" // unit_data
+#include "vending.hpp" // struct s_vending
 
 enum AtCommandType : uint8;
 //enum e_log_chat_type : uint8;
@@ -33,10 +33,19 @@ enum sc_type : int16;
 #define MAX_DEVOTION 5 /// Max Devotion slots
 #define MAX_SPIRITCHARM 10 /// Max spirit charms
 
+#define LANGTYPE_VAR "#langtype"
+#define CASHPOINT_VAR "#CASHPOINTS"
+#define KAFRAPOINT_VAR "#KAFRAPOINTS"
 #define BANK_VAULT_VAR "#BANKVAULT"
 #define ROULETTE_BRONZE_VAR "RouletteBronze"
 #define ROULETTE_SILVER_VAR "RouletteSilver"
 #define ROULETTE_GOLD_VAR "RouletteGold"
+#define COOKMASTERY_VAR "COOK_MASTERY"
+#define PCDIECOUNTER_VAR "PC_DIE_COUNTER"
+#define JOBCHANGE2ND_VAR "jobchange_level"
+#define JOBCHANGE3RD_VAR "jobchange_level_3rd"
+#define TKMISSIONID_VAR "TK_MISSION_ID"
+#define TKMISSIONCOUNT_VAR "TK_MISSION_COUNT"
 
 //Update this max as necessary. 55 is the value needed for Super Baby currently
 //Raised to 85 since Expanded Super Baby needs it.
@@ -680,10 +689,6 @@ struct map_session_data {
 	bool vars_ok;
 	bool vars_dirty;
 
-	// temporary debugging of bug #3504
-	const char* delunit_prevfile;
-	int delunit_prevline;
-
 	uint16 dmglog[DAMAGELOG_SIZE_PC]; ///target ids
 
 	int c_marker[MAX_SKILL_CRIMSON_MARKER]; /// Store target that marked by Crimson Marker [Cydh]
@@ -724,6 +729,7 @@ struct map_session_data {
 		int8 prizeIdx;
 		short prizeStage;
 		bool claimPrize;
+		unsigned int tick;
 	} roulette;
 
 	unsigned short instance_id;
@@ -948,7 +954,7 @@ short pc_maxaspd(struct map_session_data *sd);
 	  (class_) == JOB_REBELLION      || (class_) == JOB_SUMMONER         || \
 	  (class_) == JOB_BABY_SUMMONER 				     || \
 	( (class_) >= JOB_BABY_NINJA     && (class_) <= JOB_BABY_REBELLION ) || \
-	  (class_) == JOB_BABY_STAR_GLADIATOR2 \
+	( (class_) >= JOB_BABY_STAR_GLADIATOR2 && (class_) <= JOB_BABY_STAR_EMPEROR2 ) \
 )
 #define pcdb_checkid(class_) pcdb_checkid_sub((unsigned int)class_)
 
@@ -1276,7 +1282,7 @@ int pc_read_motd(void); // [Valaris]
 int pc_disguise(struct map_session_data *sd, int class_);
 bool pc_isautolooting(struct map_session_data *sd, unsigned short nameid);
 
-void pc_overheat(struct map_session_data *sd, int val);
+void pc_overheat(struct map_session_data *sd, int16 heat);
 
 int pc_banding(struct map_session_data *sd, uint16 skill_lv);
 

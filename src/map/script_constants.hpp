@@ -1,8 +1,8 @@
-// Copyright (c) Athena Dev Teams - Licensed under GNU GPL
+// Copyright (c) rAthena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
 #ifndef _SCRIPT_CONSTANTS_HPP_
-	#define _SCRIPT_CONSTANTS_HPP_
+#define _SCRIPT_CONSTANTS_HPP_
 
 	#define export_constant(a) script_set_constant(#a,a,false,false)
 	#define export_constant2(a,b) script_set_constant(a,b,false,false)
@@ -211,6 +211,13 @@
 
 	export_constant(JOB_BABY_STAR_GLADIATOR2);
 
+	export_constant(JOB_STAR_EMPEROR);
+	export_constant(JOB_SOUL_REAPER);
+	export_constant(JOB_BABY_STAR_EMPEROR);
+	export_constant(JOB_BABY_SOUL_REAPER);
+	export_constant(JOB_STAR_EMPEROR2);
+	export_constant(JOB_BABY_STAR_EMPEROR2);
+
 	/* EA jobs */
 	export_constant2("EAJL_2_1",JOBL_2_1);
 	export_constant2("EAJL_2_2",JOBL_2_2);
@@ -313,6 +320,7 @@
 	export_constant2("EAJ_ARCH_BISHOP",MAPID_ARCH_BISHOP);
 	export_constant2("EAJ_MECHANIC",MAPID_MECHANIC);
 	export_constant2("EAJ_GUILLOTINE_CROSS",MAPID_GUILLOTINE_CROSS);
+	export_constant2("EAJ_STAR_EMPEROR",MAPID_STAR_EMPEROR);
 
 	export_constant2("EAJ_ROYAL_GUARD",MAPID_ROYAL_GUARD);
 	export_constant2("EAJ_SORCERER",MAPID_SORCERER);
@@ -320,6 +328,7 @@
 	export_constant2("EAJ_SURA",MAPID_SURA);
 	export_constant2("EAJ_GENETIC",MAPID_GENETIC);
 	export_constant2("EAJ_SHADOW_CHASER",MAPID_SHADOW_CHASER);
+	export_constant2("EAJ_SOUL_REAPER",MAPID_SOUL_REAPER);
 
 	export_constant2("EAJ_RUNE_KNIGHT_T",MAPID_RUNE_KNIGHT_T);
 	export_constant2("EAJ_WARLOCK_T",MAPID_WARLOCK_T);
@@ -341,6 +350,7 @@
 	export_constant2("EAJ_BABY_BISHOP",MAPID_BABY_BISHOP);
 	export_constant2("EAJ_BABY_MECHANIC",MAPID_BABY_MECHANIC);
 	export_constant2("EAJ_BABY_CROSS",MAPID_BABY_CROSS);
+	export_constant2("EAJ_BABY_STAR_EMPEROR",MAPID_BABY_STAR_EMPEROR);
 
 	export_constant2("EAJ_BABY_GUARD",MAPID_BABY_GUARD);
 	export_constant2("EAJ_BABY_SORCERER",MAPID_BABY_SORCERER);
@@ -348,6 +358,7 @@
 	export_constant2("EAJ_BABY_SURA",MAPID_BABY_SURA);
 	export_constant2("EAJ_BABY_GENETIC",MAPID_BABY_GENETIC);
 	export_constant2("EAJ_BABY_CHASER",MAPID_BABY_CHASER);
+	export_constant2("EAJ_BABY_SOUL_REAPER",MAPID_BABY_SOUL_REAPER);
 
 	export_constant2("EAJ_SUPER_NOVICE",MAPID_SUPER_NOVICE);
 	export_constant2("EAJ_SUPER_BABY",MAPID_SUPER_BABY);
@@ -503,6 +514,10 @@
 	export_parameter(ROULETTE_BRONZE_VAR,SP_ROULETTE_BRONZE);
 	export_parameter(ROULETTE_SILVER_VAR,SP_ROULETTE_SILVER);
 	export_parameter(ROULETTE_GOLD_VAR,SP_ROULETTE_GOLD);
+	export_parameter(CASHPOINT_VAR, SP_CASHPOINTS);
+	export_parameter(KAFRAPOINT_VAR, SP_KAFRAPOINTS);
+	export_parameter(PCDIECOUNTER_VAR, SP_PCDIECOUNTER);
+	export_parameter(COOKMASTERY_VAR, SP_COOKMASTERY);
 
 	export_constant2("bMaxHP",SP_MAXHP);
 	export_constant2("bMaxSP",SP_MAXSP);
@@ -1438,7 +1453,7 @@
 	export_constant(SC_SHRIMP);
 	export_constant(SC_FRESHSHRIMP);
 	export_constant(SC_ACTIVE_MONSTER_TRANSFORM);
-	export_constant(SC_CLOUD_KILL);
+	export_deprecated_constant(SC_CLOUD_KILL);
 	export_constant(SC_LJOSALFAR);
 	export_constant(SC_MERMAID_LONGING);
 	export_constant(SC_HAT_EFFECT);
@@ -1485,6 +1500,13 @@
 	export_constant(SC_FALLEN_ANGEL);
 	export_constant(SC_CHEERUP);
 	export_constant(SC_DRESSUP);
+	export_constant(SC_GLASTHEIM_ATK);
+	export_constant(SC_GLASTHEIM_DEF);
+	export_constant(SC_GLASTHEIM_HEAL);
+	export_constant(SC_GLASTHEIM_HIDDEN);
+	export_constant(SC_GLASTHEIM_STATE);
+	export_constant(SC_GLASTHEIM_ITEMDEF);
+	export_constant(SC_GLASTHEIM_HPSP);
 #ifdef RENEWAL
 	export_constant(SC_EXTREMITYFIST2);
 #endif
@@ -3594,6 +3616,8 @@
 	export_constant(RC2_MANUK);
 	export_constant(RC2_SPLENDIDE);
 	export_constant(RC2_SCARABA);
+	export_constant(RC2_OGH_ATK_DEF);
+	export_constant(RC2_OGH_HIDDEN);
 	export_constant(RC2_MAX);
 
 	/* classes */
@@ -5981,6 +6005,13 @@
 	export_constant_npc(JT_4_F_SE_SUN);
 	export_constant_npc(JT_4_M_SE_MOON);
 	export_constant_npc(JT_4_M_SE_STAR);
+	export_constant_npc(JT_4_EP17_KAYA);
+	export_constant_npc(JT_4_EP17_AS);
+	export_constant_npc(JT_4_EP17_ELYUMINA);
+	export_constant_npc(JT_4_EP17_MORNING);
+	export_constant_npc(JT_4_EP17_MIGUEL);
+	export_constant_npc(JT_4_EP17_NIHIL_K);
+	export_constant_npc(JT_4_EP17_MIGUEL_D);
 	#undef export_constant_npc
 
 	/* special effects */
@@ -7165,6 +7196,11 @@
 	export_constant(HAT_EF_LEVEL160_WHITE);
 	export_constant(HAT_EF_FULL_BLOOMCHERRY_TREE);
 	export_constant(HAT_EF_C_BLESSINGS_OF_SOUL);
+	export_constant(HAT_EF_MANYSTARS);
+	export_constant(HAT_EF_SUBJECT_AURA_GOLD);
+	export_constant(HAT_EF_SUBJECT_AURA_WHITE);
+	export_constant(HAT_EF_SUBJECT_AURA_RED);
+	export_constant(HAT_EF_C_SHINING_ANGEL_WING);
 
 	/* pet catch */
 	export_constant(PET_CATCH_UNIVERSAL);
@@ -7198,6 +7234,14 @@
 	export_constant(MD_DETECTOR);
 	export_constant(MD_STATUS_IMMUNE);
 	export_constant(MD_SKILL_IMMUNE);
+
+	/* guild storage flags */
+	export_constant(GSTORAGE_OPEN);
+	export_constant(GSTORAGE_STORAGE_ALREADY_OPEN);
+	export_constant(GSTORAGE_ALREADY_OPEN);
+	export_constant(GSTORAGE_NO_GUILD);
+	export_constant(GSTORAGE_NO_STORAGE);
+	export_constant(GSTORAGE_NO_PERMISSION);
 
 	#undef export_constant
 	#undef export_constant2
