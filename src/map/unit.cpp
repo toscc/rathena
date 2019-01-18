@@ -3441,6 +3441,454 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 	return 0;
 }
 
+int foundtargetID;
+int targetdistance;
+int targetthis;
+struct block_list targetbl;
+struct mob_data * targetmd;
+
+// nearest monster or other object the player can walk to
+int targetnearestwarp(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd2;
+
+	struct npc_data *nd;
+	nd = (TBL_NPC*)bl;
+
+	if (nd->subtype != NPCTYPE_WARP)
+		return 0; //Not a warp
+//	ShowError("WarpDetected");
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+
+	int dist = distance_bl(&sd2->bl, bl);
+	if ((dist < targetdistance)) { 
+//		ShowError("WarpTargeted");
+		targetdistance = dist; foundtargetID = bl->id; targetbl = *bl;
+	};
+
+	return 0;
+}
+
+int targetnearest(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd2;
+
+	struct mob_data *md;
+
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+
+	int dist = distance_bl(&sd2->bl, bl);
+	if ((dist < targetdistance) && (path_search_long(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, CELL_CHKWALL))) { targetdistance = dist; foundtargetID = bl->id; targetbl = *bl; targetmd = md; };
+
+	return 0;
+}
+
+int targetthischar(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	struct map_session_data *sd2;
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+	if ((sd->status.char_id == targetthis) && (path_search_long(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, CELL_CHKWALL))) { targetbl = *bl; foundtargetID = bl->id; };
+
+	return 0;
+}
+
+int targetDetoxify(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (sd->sc.data[SC_POISON]) { targetbl = *bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
+int targetCure(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (sd->sc.data[SC_SILENCE]) { targetbl = *bl; foundtargetID = sd->bl.id; };
+	if (sd->sc.data[SC_CONFUSION]) { targetbl = *bl; foundtargetID = sd->bl.id; };
+	if (sd->sc.data[SC_BLIND]) { targetbl = *bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
+
+int targethealing(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd2;
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+	
+	if (sd2->bl.id == foundtargetID) return 0; // If can heal self, prioritize that
+
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (sd->battle_status.hp<sd->battle_status.max_hp*0.85) { targetbl = *bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
+int targetincagi(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (!sd->sc.data[SC_INCREASEAGI]) { targetbl = *bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
+int targetbless(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (!sd->sc.data[SC_BLESSING]) { targetbl = *bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
+int targetangelus(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (!sd->sc.data[SC_ANGELUS]) { targetbl = *bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
+int provokethis(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd2;
+
+	struct mob_data *md;
+
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+
+	// Can change target from skills?
+	if (!battle_config.mob_changetarget_byskill) return 0;
+	// Already provoked, has no target or targeting us, no need
+	if (md->state.provoke_flag == sd2->bl.id) return 0;
+	if (!md->target_id) return 0;
+	if (md->target_id == sd2->bl.id) return 0;
+
+	targetbl = *bl; foundtargetID = md->bl.id;  targetmd = md;
+	return 0;
+}
+
+void unit_skilluse_ifable(struct block_list *src, int target_id, uint16 skill_id, uint16 skill_lv)
+{
+	struct map_session_data *sd = (struct map_session_data*)src;
+	int inf = skill_get_inf(skill_id);
+	unsigned int tick = gettick();
+
+	if (skill_get_sp(skill_id, skill_lv)>sd->battle_status.sp) return;
+
+	if (battle_config.idletime_option&IDLE_USESKILLTOID)
+		sd->idletime = last_tick;
+	if ((pc_cant_act2(sd) || sd->chatID) && skill_id != RK_REFRESH && !(skill_id == SR_GENTLETOUCH_CURE &&
+		(sd->sc.opt1 == OPT1_STONE || sd->sc.opt1 == OPT1_FREEZE || sd->sc.opt1 == OPT1_STUN)) &&
+		sd->state.storage_flag && !(inf&INF_SELF_SKILL)) //SELF skills can be used with the storage open, issue: 8027
+		return;
+	if (pc_issit(sd))
+		return;
+
+	if (skill_isNotOk(skill_id, sd))
+		return;
+	if (sd->bl.id != target_id && inf&INF_SELF_SKILL)
+		target_id = sd->bl.id; // never trust the client
+
+	if (target_id < 0 && -target_id == sd->bl.id) // for disguises [Valaris]
+		target_id = sd->bl.id;
+
+	if (sd->ud.skilltimer != INVALID_TIMER) {
+		if (skill_id != SA_CASTCANCEL && skill_id != SO_SPELLFIST)
+			return;
+	}
+	else if (DIFF_TICK(tick, sd->ud.canact_tick) < 0) {
+		if (sd->skillitem != skill_id) {
+			clif_skill_fail(sd, skill_id, USESKILL_FAIL_SKILLINTERVAL, 0);
+			return;
+		}
+	}
+
+	if (sd->sc.option&OPTION_COSTUME)
+		return;
+
+	if (sd->sc.data[SC_BASILICA] && (skill_id != HP_BASILICA || sd->sc.data[SC_BASILICA]->val4 != sd->bl.id))
+		return; // On basilica only caster can use Basilica again to stop it.
+
+	if (sd->menuskill_id) {
+		if (sd->menuskill_id == SA_TAMINGMONSTER) {
+			clif_menuskill_clear(sd); //Cancel pet capture.
+		}
+		else if (sd->menuskill_id != SA_AUTOSPELL)
+			return; //Can't use skills while a menu is open.
+	}
+
+	if (sd->skillitem == skill_id) {
+		if (skill_lv != sd->skillitemlv)
+			skill_lv = sd->skillitemlv;
+		if (!(inf&INF_SELF_SKILL))
+			pc_delinvincibletimer(sd); // Target skills thru items cancel invincibility. [Inkfish]
+		unit_skilluse_id(&sd->bl, target_id, skill_id, skill_lv);
+		return;
+	}
+	sd->skillitem = sd->skillitemlv = 0;
+
+	if (SKILL_CHK_GUILD(skill_id)) {
+		if (sd->state.gmaster_flag)
+			skill_lv = guild_checkskill(sd->guild, skill_id);
+		else
+			skill_lv = 0;
+	}
+	else {
+		skill_lv = min(pc_checkskill(sd, skill_id), skill_lv); //never trust client
+	}
+
+	pc_delinvincibletimer(sd);
+
+
+	unit_skilluse_id(src, target_id, skill_id, skill_lv);
+	return;
+}
+
+
+// @autopilot timer
+int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
+{
+	struct block_list *bl;
+	struct unit_data *ud;
+
+	bl = map_id2bl(id);
+
+	if (!bl)
+		return 0;
+
+	ud = unit_bl2ud(bl);
+
+	if (!ud)
+		return 0;
+
+	struct map_session_data *sd = (struct map_session_data*)bl;
+
+	if (sd->state.autopilotmode == 0) {
+
+		return 0;
+	}
+
+	if (bl->type != BL_PC) // Players are handled by map_quit
+	{
+		ShowError("Nonplayer set to autopilot!");
+		return 0;
+	}
+
+	if (status_isdead(bl)) { return 0; }
+
+	//ShowError(sd->status.name);
+
+	// Use potions if low on health?
+		if (status_get_hp(bl) <  status_get_max_hp(bl) / 2) {
+		//ShowError("Need to heal");
+
+		unsigned short potions[] = { 
+			569,  // Novice Potion
+			11567, // Novice Potion
+			ITEMID_RED_POTION,
+			ITEMID_YELLOW_POTION,
+			ITEMID_WHITE_POTION,
+			ITEMID_APPLE,
+			ITEMID_CARROT,
+			513, // Banana
+			522, // Mastela Fruit			
+			529, // Candy
+			530, // Candy Cane
+			538, // Cookie
+			539 // Cake
+		};
+
+		int16 index = -1;
+		int i;
+
+		for (i = 0; i < ARRAYLENGTH(potions); i++) {
+			if ((index = pc_search_inventory(sd, potions[i])) >= 0) {
+				//ShowError("Found a potion to use");
+				if (pc_isUseitem(sd, index)) {
+					pc_useitem(sd, index);
+					break;
+				}
+			}
+		}
+
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	// Skills that can be used in any mode (usually support) and have highest priority
+	/////////////////////////////////////////////////////////////////////////////////////
+		/// Heal
+		if (pc_checkskill(sd, AL_HEAL)>0) {
+			foundtargetID = -1;
+			map_foreachinmap(targethealing, sd->bl.m, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, AL_HEAL, pc_checkskill(sd, AL_HEAL));
+			}
+		}
+		/// Cure
+		if (pc_checkskill(sd, AL_CURE)>0) {
+			foundtargetID = -1;
+			map_foreachinmap(targetCure, sd->bl.m, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, AL_CURE, pc_checkskill(sd, AL_CURE));
+			}
+		}
+		/// Detoxify
+		if (pc_checkskill(sd, TF_DETOXIFY)>0) {
+			foundtargetID = -1;
+			map_foreachinmap(targetDetoxify, sd->bl.m, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, TF_DETOXIFY, pc_checkskill(sd, TF_DETOXIFY));
+			}
+		}
+		/// Inc Agi
+		if (pc_checkskill(sd, AL_INCAGI)>0) {
+			foundtargetID = -1;
+			map_foreachinmap(targetincagi, sd->bl.m, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, AL_INCAGI, pc_checkskill(sd, AL_INCAGI));
+			}
+		}
+		/// Blessing
+		if (pc_checkskill(sd, AL_BLESSING)>0) {
+			foundtargetID = -1;
+			map_foreachinmap(targetbless, sd->bl.m, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, AL_BLESSING, pc_checkskill(sd, AL_BLESSING));
+			}
+		}
+		/// Angelus
+		if (pc_checkskill(sd, AL_ANGELUS)>0) {
+			foundtargetID = -1;
+			map_foreachinmap(targetangelus, sd->bl.m, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, AL_ANGELUS, pc_checkskill(sd, AL_ANGELUS));
+			}
+		}
+
+	// Tanking mode is set
+	if (sd->state.autopilotmode == 1) 	{
+		/////////////////////////////////////////////////////////////////////
+		// Skills that can be used while tanking only, for supporting others
+		/////////////////////////////////////////////////////////////////////
+		// Throw Stone
+		if (pc_checkskill(sd, TF_THROWSTONE) > 0) {
+			foundtargetID = -1; targetdistance = 999;
+			map_foreachinrange(provokethis, &sd->bl, 7, BL_MOB, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, TF_THROWSTONE, pc_checkskill(sd, TF_THROWSTONE));
+			}
+		}
+
+		// Find nearest enemy
+		foundtargetID = -1; targetdistance = 999;
+		map_foreachinrange(targetnearest, &sd->bl, AREA_SIZE, BL_MOB, sd);
+
+		// attack nearest thing if it exists
+		if (foundtargetID > -1) {
+			/////////////////////////////////////////////////////////////////////
+			// Skills that can be used while tanking only, on tanked enemy 
+			/////////////////////////////////////////////////////////////////////
+			// Steal skill
+			// Use in any mode above 50% SP only, and never use below 1/3 health, that's not the time for messing around.
+			if (pc_checkskill(sd, TF_STEAL)>0) {
+				if ((status_get_sp(bl) >= status_get_max_sp(bl) / 2) && (status_get_hp(bl) >  status_get_max_hp(bl) / 3)) {
+					ShowError(targetmd->name);
+					if (!(((targetmd->state.steal_flag == UCHAR_MAX) || (targetmd->sc.opt1 && targetmd->sc.opt1 != OPT1_BURNING))))
+					{
+						unit_skilluse_ifable(&sd->bl, foundtargetID, TF_STEAL, pc_checkskill(sd, TF_STEAL));
+					}
+				}
+			}
+			// Envenom skill
+			if (pc_checkskill(sd, TF_POISON)>0) {
+				// Not if already poisoned
+				if (!(targetmd->sc.data[SC_POISON]))
+				{ // Always use if critically wounded otherwise use on mobs that will take longer to kill only if sp is lower
+					if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp))
+						* pc_leftside_atk(sd))
+						|| (status_get_hp(bl) < status_get_max_hp(bl) / 3)){
+						if (!(targetmd->state.boss)) {
+							if (!(targetmd->status.def_ele==ELE_UNDEAD)) {
+								unit_skilluse_ifable(&sd->bl, foundtargetID, TF_POISON, pc_checkskill(sd, TF_POISON));
+							}
+						}
+					}
+				}
+			}
+		// Do normal attack if not using skill
+			clif_parse_ActionRequest_sub(sd, 7, foundtargetID, gettick());
+		}
+		else
+		{
+			///////////////////////////////////////////////////////////
+			// Skills to use while not in battle only
+			///////////////////////////////////////////////////////////
+			// Pick Stone
+			if (pc_checkskill(sd, TF_PICKSTONE) > 0) {
+				if (sd->inventory.u.items_inventory[pc_search_inventory(sd, 7049)].amount < 12) {
+					unit_skilluse_ifable(&sd->bl, foundtargetID, TF_PICKSTONE, pc_checkskill(sd, TF_PICKSTONE));
+				}
+			}
+
+
+			// seek next enemy if nothing else to do
+			foundtargetID = -1; targetdistance = 999;
+			map_foreachinmap(targetnearest, sd->bl.m, BL_MOB, sd);
+//			ShowError("No target found, moving?");
+			if (foundtargetID > -1) {
+//				ShowError("No target found, moving!");
+					unit_walktobl(&sd->bl, &targetbl, 2, 2);
+			}
+
+		}
+	}
+	// Not tanking mode, means support or skill attack - follow the party leader
+	else {
+		int party_id, type = 0, i = 0;
+		struct party_data *p;
+
+		party_id = sd->status.party_id;
+		p = party_search(party_id);
+
+		if (p) //Search leader
+			for (i = 0; i < MAX_PARTY && !p->party.member[i].leader; i++);
+
+		if (!p || i == MAX_PARTY) { //leader not found
+			ShowError("No party leader to follow!");
+		}
+		targetthis = p->party.member[i].char_id;
+		foundtargetID = -1;
+		map_foreachinmap(targetthischar, sd->bl.m, BL_PC, sd);
+
+		if (foundtargetID > -1) { unit_walktobl(&sd->bl, &targetbl, 2, 0); }
+		// Party leader left map?
+		else {
+			foundtargetID = -1; targetdistance = 999;
+			// target nearest NPC. Hopefully it's the warp the leader entered.
+			map_foreachinmap(targetnearestwarp, sd->bl.m, BL_NPC, sd);
+			if (foundtargetID > -1) {
+				unit_walktobl(&sd->bl, &targetbl, 2, 0);
+			}
+
+		}
+	}
+
+
+
+
+
+//	void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, int target_id, unsigned int tick)
+
+	return 0;
+}
+
 /**
  * Initialization function for unit on map start
  * called in map::do_init
@@ -3453,6 +3901,9 @@ void do_init_unit(void){
 	add_timer_func_list(unit_delay_walktobl_timer,"unit_delay_walktobl_timer");
 	add_timer_func_list(unit_teleport_timer,"unit_teleport_timer");
 	add_timer_func_list(unit_step_timer,"unit_step_timer");
+	
+	add_timer_func_list(unit_autopilot_timer, "unit_autopilot_timer");
+
 }
 
 /**

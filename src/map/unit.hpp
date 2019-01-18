@@ -149,6 +149,9 @@ int unit_skilluse_pos2( struct block_list *src, short skill_x, short skill_y, ui
 TIMER_FUNC(unit_step_timer);
 void unit_stop_stepaction(struct block_list *bl);
 
+// Time for @autopilot
+int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data);
+
 // Cancel unit cast
 int unit_skillcastcancel(struct block_list *bl, char type);
 
