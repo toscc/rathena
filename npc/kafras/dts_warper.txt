@@ -119,7 +119,7 @@ OnTimer60000:
 	}
 	else {
 		if ($DTS_Time == 1440) {
-			if (($DTS_JondaVotes >= 20) || ($DTS_KafraVotes >= 20)) {
+			if (($DTS_JondaVotes >= 3) || ($DTS_KafraVotes >= 3)) {
 				if ($DTS_JondaVotes > $DTS_KafraVotes) {
 					if ($DTS_JondaWins == 0) {
 						if ($DTS_KafraWins < 2) {

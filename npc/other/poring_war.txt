@@ -81,9 +81,18 @@ poring_w01,100,97,3	script	Poring Vending Machine#w	909,{
 		mes "You cannot use any zeny.";
 		mes "Item name - Price Poring Coin(P.Co)";
 		next;
-		switch(select("Marvelous Medal - 4 P.Co:Union of Tribe - 20 P.Co:Poring Box - 30 P.Co:Next")) {
+		switch(select("10 Marvelous Medal - 10 P.Co:Union of Tribe - 20 P.Co:Poring Box - 30 P.Co:Next")) {
 		case 1:
-			callsub S_PoringVending,7515,4;
+			callsub S_PoringVending,7515,1;
+			callsub S_PoringVending,7515,1;
+			callsub S_PoringVending,7515,1;
+			callsub S_PoringVending,7515,1;
+			callsub S_PoringVending,7515,1;
+			callsub S_PoringVending,7515,1;
+			callsub S_PoringVending,7515,1;
+			callsub S_PoringVending,7515,1;
+			callsub S_PoringVending,7515,1;
+			callsub S_PoringVending,7515,1;
 		case 2:
 			callsub S_PoringVending,658,20;
 		case 3:

@@ -136,7 +136,7 @@ geffen,120,62,0	script	Kafra Employee::kaf_geffen	115,{
 	mes "are always on your side.";
 	mes "So how can I help you?";
 	callfunc "F_Kafra",5,0,0,30,750;
-	savepoint "geffen",119,40,1,1;
+	savepoint "geffen",119,66,1,1;
 	callfunc "F_KafEnd",0,1,"in the city of Geffen";
 }
 
@@ -166,7 +166,7 @@ morocc,156,97,4	script	Kafra Employee::kaf_morocc	113,{
 	mes "you with convenient services.";
 	mes "How may I be of assistance?";
 	callfunc "F_Kafra",5,0,0,60,930;
-	savepoint "morocc",156,46,1,1;
+	savepoint "morocc",158,95,1,1;
 	callfunc "F_KafEnd",0,1,"in the city of Morroc";
 }
 
@@ -196,7 +196,7 @@ payon,181,104,4	script	Kafra Employee::kaf_payon	113,{
 	mes "you with convenient services.";
 	mes "How may I be of assistance?";
 	callfunc "F_Kafra",5,0,1,60,930;
-	savepoint "payon",160,58,1,1;
+	savepoint "payon",172,100,1,1;
 	callfunc "F_KafEnd",0,1,"in the city of Payon";
 }
 
@@ -210,7 +210,7 @@ payon,175,226,4	script	Kafra Employee::kaf_payon2	116,{
 	mes "always on your side.";
 	mes "How may I assist you?";
 	callfunc "F_Kafra",5,0,1,60,930;
-	savepoint "payon",257,242,1,1;
+	savepoint "payon",178,224,1,1;
 	callfunc "F_KafEnd",0,1,"in the city of Payon";
 }
 
@@ -223,7 +223,7 @@ pay_arche,55,123,0	script	Kafra Employee::kaf_payon3	4_F_KAFRA1,{
 	mes "The Kafra services";
 	mes "are always on your side.";
 	mes "How may I assist you?";
-	callfunc "F_Kafra",5,5,1,90,1200;
+	callfunc "F_Kafra",5,1,1,90,1200;
 	savepoint "pay_arche",49,144,1,1;
 	callfunc "F_KafEnd",0,1,"at the Payon Dungeon";
 }
@@ -297,6 +297,20 @@ prontera,146,89,6	script	Kafra Employee::kaf_prontera5	117,{
 	mes "How may I assist you?";
 	callfunc "F_Kafra",5,0,0,40,800;
 	savepoint "prontera",116,73,1,1;
+	callfunc "F_KafEnd",0,1,"in the city of Prontera";
+}
+
+prontera,160,189,6	script	Kafra Employee::kaf_prontera6	117,{
+	cutin "kafra_01",2;
+	callfunc "F_KafSet";
+	mes "[Kafra Employee]";
+	mes "Welcome to the";
+	mes "Kafra Corporation.";
+	mes "The Kafra services";
+	mes "are always on your side.";
+	mes "How may I assist you?";
+	callfunc "F_Kafra",5,0,0,40,800;
+	savepoint "prontera",156,178,1,1;
 	callfunc "F_KafEnd",0,1,"in the city of Prontera";
 }
 
@@ -655,8 +669,8 @@ moc_ruins,59,157,5	script	Kafra Employee::moc_ruins	114,{
 	mes "adventurers of Rune-Midgard";
 	mes "with its excellent service. So";
 	mes "what can I do for you today?";
-	callfunc "F_Kafra",5,2,1,90,1200;
-	savepoint "moc_ruins",41,141,1,1;
+	callfunc "F_Kafra",5,1,1,90,1200;
+	savepoint "moc_ruins",64,153,1,1;
 	callfunc "F_KafEnd",0,1,"at the Pyramids";
 }
 

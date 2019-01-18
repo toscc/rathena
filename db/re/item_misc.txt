@@ -316,6 +316,17 @@ IG_Jewel,731,4	// Crystal_Jewel_
 IG_Jewel,732,3	// Crystal_Jewel__
 IG_Jewel,733,27	// Crystal_Jewel___
 IG_Jewel,746,50	// Glass_Bead
+IG_Jewel,969,10	// Gold
+IG_Jewel,7289,1	// Lv4 weapon quest minerals
+IG_Jewel,7290,1	// Lv4 weapon quest minerals
+IG_Jewel,7291,1	// Lv4 weapon quest minerals
+IG_Jewel,7292,1	// Lv4 weapon quest minerals
+IG_Jewel,7293,1	// Lv4 weapon quest minerals
+IG_Jewel,7294,1	// Lv4 weapon quest minerals
+IG_Jewel,7295,1	// Lv4 weapon quest minerals
+IG_Jewel,7296,1	// Lv4 weapon quest minerals
+IG_Jewel,7297,1	// Lv4 weapon quest minerals
+
 // Egg Boy
 IG_EggBoy,514,300	// Grape
 IG_EggBoy,564,522	// Rice Ball

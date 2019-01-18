@@ -66,7 +66,7 @@ IG_VioletBox,612,14	// Mini Furnace
 IG_VioletBox,613,14	// Iron Hammer
 IG_VioletBox,614,14	// Golden Hammer
 IG_VioletBox,615,14	// Oridecon Hammer
-IG_VioletBox,616,1		// Old Card Album
+IG_VioletBox,616,20		// Old Card Album
 IG_VioletBox,617,103	// Old Purple Box
 IG_VioletBox,618,14	// Worn Out Scroll
 IG_VioletBox,619,14	// Unripe Apple
@@ -371,6 +371,8 @@ IG_VioletBox,1264,2		// Specialty Jur
 IG_VioletBox,1265,1		// Bloody Roar
 IG_VioletBox,1269,1		// Inverse Scale
 IG_VioletBox,1271,1		// Blood Tears
+IG_VioletBox,1292,1		// Upgrade Katar
+IG_VioletBox,1296,1		// Metal Katar
 IG_VioletBox,1302,7		// Axe
 IG_VioletBox,1304,7		// Orcish Axe
 IG_VioletBox,1307,1		// Windhawk
@@ -547,8 +549,8 @@ IG_VioletBox,2250,7		// Cute Ribbon
 IG_VioletBox,2251,7		// Monk Hat
 IG_VioletBox,2252,7		// Wizard Hat
 IG_VioletBox,2253,7		// Sunflower
-IG_VioletBox,2254,1		// Angel Wing
-IG_VioletBox,2255,1		// Evil Wing
+IG_VioletBox,2254,5		// Angel Wing
+IG_VioletBox,2255,5		// Evil Wing
 IG_VioletBox,2257,7		// Unicorn Horn
 IG_VioletBox,2258,1		// Spiky Band
 IG_VioletBox,2259,7		// Mini Propeller
