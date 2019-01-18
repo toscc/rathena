@@ -401,53 +401,53 @@
 4353	//Removal_Card
 4354	//Gemini_Card
 4355	//Gremlin_Card
-4356	//Beholder_Card
+4356  // Beholder_Card
 4357	//B_Seyren_Card
-4358	//Seyren_Card
+4358  // Seyren_Card
 4359	//B_Eremes_Card
 4360	//Eremes_Card
 4361	//B_Harword_Card
-4362	//Harword_Card
+4362  // Harword_Card
 4363	//B_Magaleta_Card
-4364	//Magaleta_Card
-4365	//B_Katrinn_Card
-4366	//Katrinn_Card
+4364  // Magaleta_Card
+4365  // B_Katrinn_Card
+4366  // Katrinn_Card
 4367  // B_Shecil_Card
-4368	//Shecil_Card
-4369	//Venatu_Card
-4370	//Dimik_Card
-4371	//Archdam_Card
-4372	//Bacsojin_Card
+4368  // Shecil_Card
+4369  // Venatu_Card
+4370  // Dimik_Card
+4371  // Archdam_Card
+4372  // Bacsojin_Card
 4373	//Chung_E_Card
-4374	//Apocalips_H_Card
+4374  // Apocalips_H_Card
 4375  // Orc_Baby_Card
-4376	//Lady_Tanee_Card
+4376  // Lady_Tanee_Card
 4377	//Green_Iguana_Card
 4378	//Acidus_Card
 4379	//Acidus__Card
-4380	//Ferus_Card
-4381	//Ferus__Card
-4382	//Novus__Card
+4380  // Ferus_Card
+4381  // Ferus__Card
+4382  // Novus__Card
 4383	//Novus_Card
-4384	//Hydro_Card
+4384  // Hydro_Card
 4385	//Dragon_Egg_Card
 4386  // Detale_Card
-4387	//Ancient_Mimic_Card
+4387  // Ancient_Mimic_Card
 4388	//Deathword_Card
 4389	//Plasma_Card
 4390	//Breeze_Card
 4391	//Retribution_Card
-4392	//Observation_Card
-4393	//Shelter_Card
-4394	//Solace_Card
+4392  // Observation_Card
+4393  // Shelter_Card
+4394  // Solace_Card
 4395	//Tha_Maero_Card
-4396	//Tha_Odium_Card
-4397	//Tha_Despero_Card
-4398	//Tha_Dolor_Card
+4396  // Tha_Odium_Card
+4397  // Tha_Despero_Card
+4398  // Tha_Dolor_Card
 4399	//Thanatos_Card
 4400	//Aliza_Card
 4401  // Alicel_Card
-4402	//Aliot_Card
+4402  // Aliot_Card
 4403	//Kiel_Card
 4404	//Skogul_Card
 4405  // Frus_Card
@@ -455,7 +455,7 @@
 4407	//Randgris_Card
 4408	//Gloom_Under_Night_Card
 4409  // Agav_Card
-4410	//Echio_Card
+4410  // Echio_Card
 4411	//Vanberk_Card
 4412	//Isilla_Card
 4413	//Hodremlin_Card
