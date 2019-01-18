@@ -21,7 +21,7 @@
 /// The official walkpath disables users from taking non-clear walk paths,
 /// e.g. if they want to get around an obstacle they have to walk around it,
 /// while with OFFICIAL_WALKPATH disabled if they click to walk around a obstacle the server will do it automatically
-#define OFFICIAL_WALKPATH
+//#define OFFICIAL_WALKPATH
 
 /// Uncomment to enable the Cell Stack Limit mod.
 /// It's only config is the battle_config custom_cell_stack_limit.
@@ -52,7 +52,7 @@
 #define HP_SP_TABLES
 
 /// Uncomment to enable VIP system.
-#define VIP_ENABLE
+//#define VIP_ENABLE
 
 /// Enable VIP script changes? (requires VIP_ENABLE)
 /// The primary effects of this are restrictions on non-VIP players, such as requiring
