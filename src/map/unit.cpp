@@ -3444,7 +3444,7 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 int foundtargetID;
 int targetdistance;
 int targetthis;
-struct block_list targetbl;
+struct block_list * targetbl;
 struct mob_data * targetmd;
 
 // nearest monster or other object the player can walk to
@@ -3463,7 +3463,7 @@ int targetnearestwarp(block_list * bl, va_list ap)
 	int dist = distance_bl(&sd2->bl, bl);
 	if ((dist < targetdistance)) { 
 //		ShowError("WarpTargeted");
-		targetdistance = dist; foundtargetID = bl->id; targetbl = *bl;
+		targetdistance = dist; foundtargetID = bl->id; targetbl = bl;
 	};
 
 	return 0;
@@ -3481,7 +3481,7 @@ int targetnearest(block_list * bl, va_list ap)
 	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
 
 	int dist = distance_bl(&sd2->bl, bl);
-	if ((dist < targetdistance) && (path_search_long(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, CELL_CHKWALL))) { targetdistance = dist; foundtargetID = bl->id; targetbl = *bl; targetmd = md; };
+	if ((dist < targetdistance) && (path_search_long(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, CELL_CHKWALL))) { targetdistance = dist; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
 
 	return 0;
 }
@@ -3491,7 +3491,7 @@ int targetthischar(block_list * bl, va_list ap)
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	struct map_session_data *sd2;
 	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
-	if ((sd->status.char_id == targetthis) && (path_search_long(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, CELL_CHKWALL))) { targetbl = *bl; foundtargetID = bl->id; };
+	if ((sd->status.char_id == targetthis) && (path_search_long(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, CELL_CHKWALL))) { targetbl = bl; foundtargetID = bl->id; };
 
 	return 0;
 }
@@ -3499,7 +3499,7 @@ int targetthischar(block_list * bl, va_list ap)
 int targetDetoxify(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
-	if (sd->sc.data[SC_POISON]) { targetbl = *bl; foundtargetID = sd->bl.id; };
+	if (sd->sc.data[SC_POISON]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
 }
@@ -3507,9 +3507,9 @@ int targetDetoxify(block_list * bl, va_list ap)
 int targetCure(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
-	if (sd->sc.data[SC_SILENCE]) { targetbl = *bl; foundtargetID = sd->bl.id; };
-	if (sd->sc.data[SC_CONFUSION]) { targetbl = *bl; foundtargetID = sd->bl.id; };
-	if (sd->sc.data[SC_BLIND]) { targetbl = *bl; foundtargetID = sd->bl.id; };
+	if (sd->sc.data[SC_SILENCE]) { targetbl = bl; foundtargetID = sd->bl.id; };
+	if (sd->sc.data[SC_CONFUSION]) { targetbl = bl; foundtargetID = sd->bl.id; };
+	if (sd->sc.data[SC_BLIND]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
 }
@@ -3523,15 +3523,42 @@ int targethealing(block_list * bl, va_list ap)
 	if (sd2->bl.id == foundtargetID) return 0; // If can heal self, prioritize that
 
 	struct map_session_data *sd = (struct map_session_data*)bl;
-	if (sd->battle_status.hp<sd->battle_status.max_hp*0.85) { targetbl = *bl; foundtargetID = sd->bl.id; };
+	// Always heal below 55% hp
+	if (sd->battle_status.hp<sd->battle_status.max_hp*0.55) { targetbl = bl; foundtargetID = sd->bl.id; };
+	// But heal above that if near max sp
+	if (sd2->battle_status.sp * 100 / sd2->battle_status.max_sp -12>100 * sd->battle_status.hp/sd->battle_status.max_hp)
 
-	return 0;
+	return 1;
 }
 
+int targetpneuma(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd2;
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+
+	struct mob_data *md;
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+
+	if (sd2->bl.id == foundtargetID) return 0; // If can pneuma self, prioritize that
+
+	// monster has to be ranged
+	if (md->status.rhw.range <= 3) return 0;
+	// monster has to target a player
+	struct block_list *tgtbl;
+	if (!md->target_id) { return 0; }
+	tgtbl = map_id2bl(md->target_id);
+	if (tgtbl->type != BL_PC) return 0;
+	//ShowError("Pneuma target found");
+	// monster has to be far enough???
+	foundtargetID = md -> target_id;
+	targetbl = tgtbl;
+	return 0;
+}
 int targetincagi(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
-	if (!sd->sc.data[SC_INCREASEAGI]) { targetbl = *bl; foundtargetID = sd->bl.id; };
+	if (!sd->sc.data[SC_INCREASEAGI]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
 }
@@ -3539,7 +3566,7 @@ int targetincagi(block_list * bl, va_list ap)
 int targetbless(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
-	if (!sd->sc.data[SC_BLESSING]) { targetbl = *bl; foundtargetID = sd->bl.id; };
+	if (!sd->sc.data[SC_BLESSING]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
 }
@@ -3547,7 +3574,7 @@ int targetbless(block_list * bl, va_list ap)
 int targetangelus(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
-	if (!sd->sc.data[SC_ANGELUS]) { targetbl = *bl; foundtargetID = sd->bl.id; };
+	if (!sd->sc.data[SC_ANGELUS]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
 }
@@ -3570,7 +3597,7 @@ int provokethis(block_list * bl, va_list ap)
 	if (!md->target_id) return 0;
 	if (md->target_id == sd2->bl.id) return 0;
 
-	targetbl = *bl; foundtargetID = md->bl.id;  targetmd = md;
+	targetbl = bl; foundtargetID = md->bl.id;  targetmd = md;
 	return 0;
 }
 
@@ -3651,6 +3678,73 @@ void unit_skilluse_ifable(struct block_list *src, int target_id, uint16 skill_id
 	return;
 }
 
+void unit_skilluse_ifablexy(struct block_list *src, int target_id, uint16 skill_id, uint16 skill_lv)
+{
+	unsigned int tick = gettick();
+	struct map_session_data *sd = (struct map_session_data*)src;
+
+	if (!(skill_get_inf(skill_id)&INF_GROUND_SKILL))
+		return; //Using a target skill on the ground? WRONG.
+
+#ifdef RENEWAL
+	if (pc_hasprogress(sd, WIP_DISABLE_SKILLITEM)) {
+		clif_msg(sd, WORK_IN_PROGRESS);
+		return;
+	}
+#endif
+
+	//Whether skill fails or not is irrelevant, the char ain't idle. [Skotlex]
+	if (battle_config.idletime_option&IDLE_USESKILLTOPOS)
+		sd->idletime = last_tick;
+
+	if (skill_isNotOk(skill_id, sd))
+		return;
+		if (pc_issit(sd)) {
+			clif_skill_fail(sd, skill_id, USESKILL_FAIL_LEVEL, 0);
+			return;
+		}
+
+	if (sd->ud.skilltimer != INVALID_TIMER)
+		return;
+
+	if (DIFF_TICK(tick, sd->ud.canact_tick) < 0) {
+		if (sd->skillitem != skill_id) {
+			clif_skill_fail(sd, skill_id, USESKILL_FAIL_SKILLINTERVAL, 0);
+			return;
+		}
+	}
+
+	if (sd->sc.option&OPTION_COSTUME)
+		return;
+
+	if (sd->sc.data[SC_BASILICA] && (skill_id != HP_BASILICA || sd->sc.data[SC_BASILICA]->val4 != sd->bl.id))
+		return; // On basilica only caster can use Basilica again to stop it.
+
+	if (sd->menuskill_id) {
+		if (sd->menuskill_id != SA_AUTOSPELL)
+			return; //Can't use skills while a menu is open.
+	}
+
+	pc_delinvincibletimer(sd);
+
+	struct block_list *tgtbl;
+	tgtbl = map_id2bl(target_id);
+	if (sd->skillitem == skill_id) {
+		if (skill_lv != sd->skillitemlv)
+			skill_lv = sd->skillitemlv;
+		unit_skilluse_pos(&sd->bl, tgtbl->x, tgtbl->y, skill_id, skill_lv);
+	}
+	else {
+		int lv;
+		sd->skillitem = sd->skillitemlv = 0;
+		if ((lv = pc_checkskill(sd, skill_id)) > 0) {
+			if (skill_lv > lv)
+				skill_lv = lv;
+			unit_skilluse_pos(&sd->bl, tgtbl->x, tgtbl->y, skill_id, skill_lv);
+		}
+	}
+
+}
 
 // @autopilot timer
 int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
@@ -3723,6 +3817,17 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 	/////////////////////////////////////////////////////////////////////////////////////
 	// Skills that can be used in any mode (usually support) and have highest priority
 	/////////////////////////////////////////////////////////////////////////////////////
+		/// Pneuma
+		if (pc_checkskill(sd, AL_PNEUMA)>0) {
+			foundtargetID = -1;
+			map_foreachinrange(targetpneuma, &sd->bl, 12, BL_MOB, sd);
+			if (foundtargetID > -1) {
+				// Not if pneuma already exists on target
+				struct status_change *sc;
+				sc = status_get_sc(bl);
+				if (!sc->data[SC_PNEUMA]) { unit_skilluse_ifablexy(&sd->bl, foundtargetID, AL_PNEUMA, pc_checkskill(sd, AL_PNEUMA)); }
+			}
+		}
 		/// Heal
 		if (pc_checkskill(sd, AL_HEAL)>0) {
 			foundtargetID = -1;
@@ -3844,7 +3949,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 //			ShowError("No target found, moving?");
 			if (foundtargetID > -1) {
 //				ShowError("No target found, moving!");
-					unit_walktobl(&sd->bl, &targetbl, 2, 2);
+					unit_walktobl(&sd->bl, targetbl, 2, 2);
 			}
 
 		}
@@ -3867,14 +3972,14 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		foundtargetID = -1;
 		map_foreachinmap(targetthischar, sd->bl.m, BL_PC, sd);
 
-		if (foundtargetID > -1) { unit_walktobl(&sd->bl, &targetbl, 2, 0); }
+		if (foundtargetID > -1) { unit_walktobl(&sd->bl, targetbl, 2, 0); }
 		// Party leader left map?
 		else {
 			foundtargetID = -1; targetdistance = 999;
 			// target nearest NPC. Hopefully it's the warp the leader entered.
 			map_foreachinmap(targetnearestwarp, sd->bl.m, BL_NPC, sd);
 			if (foundtargetID > -1) {
-				unit_walktobl(&sd->bl, &targetbl, 2, 0);
+				unit_walktobl(&sd->bl, targetbl, 2, 0);
 			}
 
 		}
