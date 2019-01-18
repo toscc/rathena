@@ -12824,8 +12824,8 @@ int status_change_timer(int tid, unsigned int tick, int id, intptr_t data)
 			status_calc_bl(bl, StatusChangeFlagTable[type]);
 			return 0;
 		}
-		if (sce->val4 >= 0 && !(sce->val3) && status->hp > status->max_hp / 4) {
-			status_percent_damage(NULL, bl, 1, 0, false);
+		if (sce->val4 >= 0 && !(sce->val3) && status->hp > status->max_hp / 10) {
+			status_percent_damage(NULL, bl, 8, 0, false);
 		}
 		break;
 
