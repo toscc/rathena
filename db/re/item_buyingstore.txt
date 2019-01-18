@@ -418,7 +418,7 @@
 4370  // Dimik_Card
 4371  // Archdam_Card
 4372  // Bacsojin_Card
-4373	//Chung_E_Card
+4373  // Chung_E_Card
 4374  // Apocalips_H_Card
 4375  // Orc_Baby_Card
 4376  // Lady_Tanee_Card
@@ -467,48 +467,48 @@
 4419	//Ktullanux_Card
 4420	//Muscipular_Card
 4421	//Drosera_Card
-4422	//Roween_Card
-4423	//Galion_Card
+4422  // Roween_Card
+4423  // Galion_Card
 4424	//Stapo_Card
-4425	//Atroce_Card
+4425  // Atroce_Card
 4426	//Byorgue_Card
 4427	//Sword_Guardian_Card
-4428	//Bow_Guardian_Card
-4429	//Salamander_Card
-4430	//Ifrit_Card
-4431	//Kasa_Card
-4432	//Magmaring_Card
+4428  // Bow_Guardian_Card
+4429  // Salamander_Card
+4430  // Ifrit_Card
+4431  // Kasa_Card
+4432  // Magmaring_Card
 4433	//Imp_Card
-4434	//Knocker_Card
+4434  // Knocker_Card
 4435	//Zombie_Slaughter_Card
 4436	//Ragged_Zombie_Card
 4437	//Hell_Poodle_Card
-4438	//Banshee_Card
+4438  // Banshee_Card
 4439	//Flame_Skull_Card
 4440  // Necromancer_Card
 4441	//Fallen_Bishop_Card
-4442	//Tatacho_Card
-4443	//Aqua_Elemental_Card
-4444	//Draco_Card
-4445	//Luciola_Vespa_Card
+4442  // Tatacho_Card
+4443  // Aqua_Elemental_Card
+4444  // Draco_Card
+4445  // Luciola_Vespa_Card
 4446	//Enhanced_Skeleton_Card
-4447	//Centipede_Card
-4448	//Cornus_Card
-4449	//Dark_Shadow_Card
-4450	//Banshee_Master_Card
+4447  // Centipede_Card
+4448  // Cornus_Card
+4449  // Dark_Shadow_Card
+4450  // Banshee_Master_Card
 4451	//Ant_Buyanne_Card
-4452	//Centipede_Larva_Card
+4452  // Centipede_Larva_Card
 4453	//Hilsrion_Card
 4454	//Light_Up_Card1
 4455	//Light_Up_Card2
 4456	//Nidhogg_Shadow_Card
-4457	//Nahtzigger_Card
+4457  // Nahtzigger_Card
 4458	//Duneirre_Card
 4459	//Lata_Card
-4460	//Ringco_Card
+4460  // Ringco_Card
 4461	//Pillar_Card
-4462	//Hardrock_Mammos_Card
-4463	//Tendrilrion_Card
+4462  // Hardrock_Mommos_Card
+4463  // Tendrilion_Card
 4464	//Aunoe_Card
 4465	//Panat_Card
 4466	//Beholder_Master_Card

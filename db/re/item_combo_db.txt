@@ -333,7 +333,7 @@
 4039:4210:4230:4257:4348,{ bonus bStr,6; bonus bAgi,4; bonus2 bSkillAtk,"RG_BACKSTAP",10; if(getskilllv("RG_STRIPARMOR")==5) bonus3 bAutoSpell,"RG_STRIPARMOR",5,50; if(BaseJob==Job_Rogue) { bonus bUseSPrate,-20; bonus3 bAutoSpell,"RG_INTIMIDATE",1,-20; } }
 4045:28910,{ bonus bLongAtkDef,-35; }
 4072:21013,{ bonus2 bSubSize,Size_All,15; }
-4074:4162,{ bonus bDef,40; bonus bMdef,15 }
+4074:4162,{ bonus bDef,40; bonus bMdef,15; }
 4090:4212:4328,{ bonus bAllStats,5; }
 4106:4248,{ bonus bPerfectHitAddRate,20; }
 4127:4166,{ bonus2 bAddEffWhenHit,Eff_Curse,1100; }
