@@ -122,6 +122,7 @@ IG_CardAlbum,4122,1		// Deviruchi Card
 IG_CardAlbum,4125,1		// Deviace Card
 IG_CardAlbum,4127,1		// Nightmare Card
 IG_CardAlbum,4129,1		// Bapho Jr. Card
+IG_CardAlbum,4130,1		// Scorpion King Card
 IG_CardAlbum,4133,1		// Raydric Card
 IG_CardAlbum,4136,1		// Khalitzburg Card
 IG_CardAlbum,4141,1		// Evil Druid Card

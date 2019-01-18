@@ -98,7 +98,7 @@
 4050  // Thief_Bug_Male_Card
 4051	//Yoyo_Card
 4052  // Elder_Wilow_Card
-4053	//Vitata_Card
+4053  // Vitata_Card
 4054	//Angeling_Card
 4055  // Marina_Card
 4056  // Dustiness_Card
@@ -170,123 +170,123 @@
 4122  // Deviruchi_Card
 4123	//Eddga_Card
 4124	//Medusa_Card
-4125	//Deviace_Card
+4125  // Deviace_Card
 4126  // Minorous_Card
-4127	//Nightmare_Card
+4127  // Nightmare_Card
 4128	//Golden_Bug_Card
 4129  // Baphomet__Card
-4130	//Scorpion_King_Card
+4130  // Scorpion_King_Card
 4131  // Moonlight_Flower_Card
-4132	//Mistress_Card
+4132  // Mistress_Card
 4133	//Daydric_Card
-4134	//Dracula_Card
+4134  // Dracula_Card
 4135	//Orc_Load_Card
 4136	//Khalitzburg_Card
-4137	//Drake_Card
+4137  // Drake_Card
 4138	//Anubis_Card
-4139	//Joker_Card
+4139  // Joker_Card
 4140	//Knight_Of_Abyss_Card
 4141  // Evil_Druid_Card
-4142	//Doppelganger_Card
-4143	//Orc_Hero_Card
+4142  // Doppelganger_Card
+4143  // Orc_Hero_Card
 4144	//Osiris_Card
 4145	//Berzebub_Card
-4146	//Maya_Card
+4146  // Maya_Card
 4147	//Baphomet_Card
-4148	//Pharaoh_Card
-4149	//Gargoyle_Card
+4148  // Pharaoh_Card
+4149  // Gargoyle_Card
 4150  // Goat_Card
-4151	//Gajomart_Card
+4151  // Gajomart_Card
 4152	//Galapago_Card
-4153	//Crab_Card
-4154	//Rice_Cake_Boy_Card
-4155	//Goblin_Leader_Card
-4156	//Steam_Goblin_Card
-4157	//Goblin_Archer_Card
-4158	//Flying_Deleter_Card
+4153  // Crab_Card
+4154  // Rice_Cake_Boy_Card
+4155  // Goblin_Leader_Card
+4156  // Steam_Goblin_Card
+4157  // Goblin_Archer_Card
+4158  // Flying_Deleter_Card
 4159  // Nine_Tail_Card
-4160	//Antique_Firelock_Card
+4160  // Antique_Firelock_Card
 4161	//Grand_Peco_Card
-4162	//Grizzly_Card
+4162  // Grizzly_Card
 4163	//Gryphon_Card
-4164	//Gullinbursti_Card
+4164  // Gullinbursti_Card
 4165	//Gig_Card
-4166	//Nightmare_Terror_Card
+4166  // Nightmare_Terror_Card
 4167	//Neraid_Card
 4168	//Dark_Lord_Card
-4169	//Dark_Illusion_Card
-4170	//Dark_Frame_Card
-4171	//Dark_Priest_Card
-4172	//The_Paper_Card
-4173	//Demon_Pungus_Card
+4169  // Dark_Illusion_Card
+4170  // Dark_Frame_Card
+4171  // Dark_Priest_Card
+4172  // The_Paper_Card
+4173  // Demon_Pungus_Card
 4174	//Deviling_Card
 4175	//Poison_Toad_Card
 4176	//Dullahan_Card
-4177	//Dryad_Card
-4178	//Dragon_Tail_Card
-4179	//Dragon_Fly_Card
+4177  // Dryad_Card
+4178  // Dragon_Tail_Card
+4179  // Dragon_Fly_Card
 4180  // Driller_Card
-4181	//Disguise_Card
+4181  // Disguise_Card
 4182	//Diabolic_Card
-4183	//Vagabond_Wolf_Card
+4183  // Vagabond_Wolf_Card
 4184	//Lava_Golem_Card
 4185  // Rideword_Card
-4186	//Raggler_Card
-4187	//Raydric_Archer_Card
-4188	//Leib_Olmai_Card
+4186  // Raggler_Card
+4187  // Raydric_Archer_Card
+4188  // Leib_Olmai_Card
 4189	//Wraith_Dead_Card
 4190	//Wraith_Card
-4191	//Loli_Ruri_Card
+4191  // Loli_Ruri_Card
 4192	//Rotar_Zairo_Card
 4193	//Lude_Card
-4194	//Rybio_Card
-4195	//Leaf_Cat_Card
+4194  // Rybio_Card
+4195  // Leaf_Cat_Card
 4196  // Marin_Card
-4197	//Mastering_Card
+4197  // Mastering_Card
 4198	//Maya_Puple_Card
-4199	//Merman_Card
+4199  // Merman_Card
 4200  // Megalith_Card
-4201	//Majoruros_Card
+4201  // Majoruros_Card
 4202	//Civil_Servant_Card
-4203	//Mutant_Dragon_Card
-4204	//Mini_Demon_Card
+4203  // Mutant_Dragon_Card
+4204  // Mini_Demon_Card
 4205	//Mimic_Card
 4206	//Mystcase_Card
 4207  // Mysteltainn_Card
-4208	//Miyabi_Ningyo_Card
-4209	//Violy_Card
-4210	//Wander_Man_Card
+4208  // Miyabi_Ningyo_Card
+4209  // Violy_Card
+4210  // Wander_Man_Card
 4211  // Vocal_Card
 4212	//Bon_Gun_Card
 4213	//Brilight_Card
 4214	//Bloody_Murderer_Card
-4215	//Blazzer_Card
-4216	//Sasquatch_Card
-4217	//Live_Peach_Tree_Card
-4218	//Succubus_Card
-4219	//Sageworm_Card
+4215  // Blazzer_Card
+4216  // Sasquatch_Card
+4217  // Live_Peach_Tree_Card
+4218  // Succubus_Card
+4219  // Sageworm_Card
 4220  // Solider_Card
-4221	//Skeleton_General_Card
-4222	//Skel_Prisoner_Card
+4221  // Skeleton_General_Card
+4222  // Skel_Prisoner_Card
 4223  // Stalactic_Golem_Card
 4224	//Stem_Worm_Card
 4225	//Stone_Shooter_Card
 4226  // Sting_Card
 4227	//Spring_Rabbit_Card
 4228	//Sleeper_Card
-4229	//C_Tower_Manager_Card
-4230	//Shinobi_Card
+4229  // C_Tower_Manager_Card
+4230  // Shinobi_Card
 4231	//Increase_Soil_Card
-4232	//Wild_Ginseng_Card
-4233	//Baby_Leopard_Card
-4234	//Anolian_Card
-4235	//Cookie_XMAS_Card
+4232  // Wild_Ginseng_Card
+4233  // Baby_Leopard_Card
+4234  // Anolian_Card
+4235  // Cookie_XMAS_Card
 4236	//Amon_Ra_Card
-4237	//Owl_Duke_Card
-4238	//Owl_Baron_Card
-4239	//Iron_Fist_Card
+4237  // Owl_Duke_Card
+4238  // Owl_Baron_Card
+4239  // Iron_Fist_Card
 4240  // Arclouse_Card
-4241	//Archangeling_Card
+4241  // Archangeling_Card
 4242	//Apocalips_Card
 4243	//Antonio_Card
 4244	//Alarm_Card
@@ -314,7 +314,7 @@
 4266  // Eclipse_Card
 4267	//Explosion_Card
 4268	//Injustice_Card
-4269	//Incubus_Card
+4269  // Incubus_Card
 4270	//Giant_Spider_Card
 4271	//Giant_Honet_Card
 4272	//Dancing_Dragon_Card
@@ -1056,8 +1056,8 @@
 12027	//Giggling_Box
 12028	//Box_Of_Thunder
 12029	//Gloomy_Box
-12030	//Box_Of_Grudge
-12031	//Sleepy_Box
+12030  // Box_Of_Grudge
+12031  // Sleepy_Box
 12032	//Box_Of_Storm
 12033	//Box_Of_Sunlight
 12034	//Painting_Box

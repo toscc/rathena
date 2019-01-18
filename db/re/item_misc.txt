@@ -98,26 +98,33 @@ IG_Ore,714,1	// Emperium
 // Food Types
 IG_Food,526,5	// Royal_Jelly
 IG_Food,12042,10	// Str_Dish02
+IG_Food,12044,5	// Str_Dish02
 IG_Food,12057,10	// Agi_Dish02
 IG_Food,12053,10	// Vit_Dish03
 IG_Food,12062,10	// Dex_Dish02
 IG_Food,12068,10	// Luk_Dish03
 IG_Food,12047,10	// Int_Dish02
+IG_Food,12087,5	
+IG_Food,12082,5	
+IG_Food,12077,5	
+IG_Food,12072,5	
+IG_Food,12092,5	
+IG_Food,12100,3	
 IG_Food,531,30	// Apple_Juice
 IG_Food,532,30	// Banana_Juice
 IG_Food,533,30	// Grape_Juice
 IG_Food,534,30	// Carrot_Juice
 IG_Food,538,30	// Well_Baked_Cookie
-IG_Food,536,50	// Ice_Cream
-IG_Food,544,50	// Fish_Slice
-IG_Food,548,50	// Cheese
-IG_Food,551,50	// Shusi
-IG_Food,553,50	// Bun
-IG_Food,554,50	// Mojji
-IG_Food,535,50	// Pumpkin
-IG_Food,516,100	// Sweet_Potato
-IG_Food,513,100	// Banana
-IG_Food,512,600	// Apple
+IG_Food,536,40	// Ice_Cream
+IG_Food,544,40	// Fish_Slice
+IG_Food,548,40	// Cheese
+IG_Food,551,40	// Shusi
+IG_Food,553,40	// Bun
+IG_Food,554,40	// Mojji
+IG_Food,535,40	// Pumpkin
+IG_Food,516,70	// Sweet_Potato
+IG_Food,513,70	// Banana
+IG_Food,512,100	// Apple
 // Recovery Types
 IG_Recovery,522,5	// Fruit_Of_Mastela
 IG_Recovery,521,5	// Leaflet_Of_Aloe

@@ -309,9 +309,9 @@
 2969:18821,{ bonus bMatkRate,getequiprefinerycnt(EQI_HEAD_TOP)/2; }
 2979:18852,{ bonus bMaxHPrate,15; bonus2 bSubEle,Ele_Fire,10; bonus bLongAtkRate,30; }
 2979:18853,{ bonus bMaxHPrate,15; bonus2 bSubEle,Ele_Fire,10; bonus bLongAtkRate,30; }
-2983:4218,{ bonus bVit,-3; bonus bHPrecovRate,-20; bonus bMaxHP,1000; }
-2983:4218:4269,{ bonus bVit,-3; bonus bHPrecovRate,-20; bonus bMaxHP,1000; bonus bInt,-3; bonus bSPrecovRate,-20; bonus bMaxSP,150; }
-2983:4269,{ bonus bInt,-3; bonus bSPrecovRate,-20; bonus bMaxSP,150; }
+2983:4218,{ bonus bVit,-3; bonus bHPrecovRate,-30; bonus bMaxHP,1000;bonus bMaxHPrate,10; }
+2983:4218:4269,{ bonus bHPrecovRate,40; bonus bSPrecovRate,30; bonus bVit,40; bonus bInt,5; }
+2983:4269,{ bonus bInt,-3; bonus bSPrecovRate,-30; bonus bMaxSP,250;bonus bMaxSPrate,10; }
 2984:4151:4164:4204:4221:4235:4239:4245:4249:4267:4275,{ bonus2 bExpAddRace,RC_All,2; }
 2986:2987:18872,{ bonus2 bAddMonsterDropItem,22559,50; }
 2986:18872,{ bonus bBaseAtk,BaseLevel/4; }
@@ -325,18 +325,18 @@
 4014:4306,{ bonus bFlee,18; }
 4015:5967,{ bonus2 bSubEle,Ele_All,10; }
 4021:4211,{ bonus bFlee,18; }
-4025:4222,{ bonus2 bAddEffWhenHit,Eff_Sleep,600; }
+4025:4222,{ bonus2 bAddEffWhenHit,Eff_Sleep,1600; }
 4028:4296,{ bonus bStr,3; }
 4029:4183,{ bonus bFlee,18; }
-4031:4161,{ bonus bDef,3; bonus bVit,3; }
+4031:4161,{ bonus bDef,12; bonus bVit,3; }
 4036:4186:4233:4281:4343,{ bonus bStr,4; bonus bMaxHPrate,7; bonus bMaxSPrate,7; bonus2 bSkillAtk,"MC_MAMMONITE",20; bonus bSPDrainValue,1; if(BaseJob==Job_Alchemist) { bonus3 bAutoSpell,"BS_ADRENALINE",1,10; bonus2 bAddMonsterDropItem,7139,3; bonus2 bAddMonsterDropItem,905,10; } }
 4039:4210:4230:4257:4348,{ bonus bStr,6; bonus bAgi,4; bonus2 bSkillAtk,"RG_BACKSTAP",10; if(getskilllv("RG_STRIPARMOR")==5) bonus3 bAutoSpell,"RG_STRIPARMOR",5,50; if(BaseJob==Job_Rogue) { bonus bUseSPrate,-20; bonus3 bAutoSpell,"RG_INTIMIDATE",1,-20; } }
 4045:28910,{ bonus bLongAtkDef,-35; }
 4072:21013,{ bonus2 bSubSize,Size_All,15; }
-4074:4162,{ bonus2 bAddEffWhenHit,Eff_Blind,600; }
+4074:4162,{ bonus bDef,40; bonus bMdef,15 }
 4090:4212:4328,{ bonus bAllStats,5; }
 4106:4248,{ bonus bPerfectHitAddRate,20; }
-4127:4166,{ bonus2 bAddEffWhenHit,Eff_Curse,600; }
+4127:4166,{ bonus2 bAddEffWhenHit,Eff_Curse,1100; }
 4139:18619,{ bonus3 bAutoSpell,"RG_SNATCHER",5,20; bonus bDex,2; bonus bAgi,1; bonus bInt,-1; }
 4152:5967,{ bonus2 bAddItemGroupHealRate,IG_Juice,1000; }
 4153:4247:4273,{ bonus3 bAddMonsterDropItem,544,RC_Fish,3000; bonus2 bAddEle,Ele_Water,30; }
@@ -352,13 +352,13 @@
 4185:4293:4312:4332,{ bonus bStr,3; bonus bMaxSP,80; bonus bBaseAtk,25; bonus3 bAutoSpell,"AL_CRUCIS",5,10; bonus2 bSkillAtk,"MO_EXTREMITYFIST",10; if(BaseJob==Job_Monk) { bonus bUseSPrate,-10; bonus bNoCastCancel; } }
 4186:4206:4233:4281:4321,{ bonus bLuk,10; bonus bSPDrainValue,2; bonus2 bSkillAtk,42,20; if(BaseClass==Job_Merchant) { bonus2 bAddMonsterDropItem,617,5; bonus bMagicDamageReturn,20; } }
 4191:4208:4258:4309:4325:4327,{ bonus bMaxHP,500; bonus bDef,5; bonus bMdef,5; bonus2 bSkillAtk,14,10; bonus2 bSkillAtk,19,10; bonus2 bSkillAtk,20,10; if(BaseClass==Job_Mage) { bonus bMatkRate,3; bonus bVariableCastrate,-15; } }
-4193:4294,{ bonus bMaxHP,300; bonus bMaxSP,60; }
+4193:4294,{ bonus bMaxHPrate,10;bonus bMaxSPrate,5; }
 4207:18865,{ bonus2 bAddSize,Size_All,5; bonus2 bMagicAddSize,Size_All,5; }
 4208:4258:4325:4327:4382,{ bonus bInt,3; bonus2 bSkillAtk,"WZ_HEAVENDRIVE",10; bonus2 bSkillAtk,"MG_THUNDERSTORM",10; if(BaseJob==Job_Sage) { bonus bMagicDamageReturn,20; bonus2 bAddMonsterDropItem,716,100; bonus2 bAddMonsterDropItem,715,100; bonus bVariableCastrate,-20; } }
-4218:4269,{ bonus bHPrecovRate,30; bonus bSPrecovRate,30; bonus bVit,4; bonus bInt,4; }
+4218:4269,{ bonus bHPrecovRate,40; bonus bSPrecovRate,30; bonus bVit,40; bonus bInt,5; }
 4220:4246:4311:4319:4331,{ bonus bStr,10; bonus bMaxHPrate,20; bonus bHPrecovRate,50; bonus3 bAutoSpell,"BS_WEAPONPERFECT",1,3; bonus2 bAddMonsterDropItem,501,500; if(BaseClass==Job_Swordman) bonus2 bAddItemGroupHealRate,IG_Potion,50; }
 4229:4244:4299:4313,{ bonus bDef,3; bonus bMdef,3; }
-4237:4238,{ bonus3 bAutoSpell,"MG_LIGHTNINGBOLT",5,20; }
+4237:4238,{ bonus3 bAutoSpell,"MG_LIGHTNINGBOLT",5,50; }
 4247:18554,{ bonus2 bAddEle,Ele_Water,10; }
 4250:18865,{ bonus2 bAddSize,Size_All,5; bonus2 bMagicAddSize,Size_All,5; }
 4254:18865,{ bonus2 bAddSize,Size_All,5; bonus2 bMagicAddSize,Size_All,5; }
