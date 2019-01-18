@@ -289,66 +289,66 @@
 4241  // Archangeling_Card
 4242	//Apocalips_Card
 4243	//Antonio_Card
-4244	//Alarm_Card
-4245	//Am_Mut_Card
-4246	//Assulter_Card
+4244  // Alarm_Card
+4245  // Am_Mut_Card
+4246  // Assulter_Card
 4247	//Aster_Card
 4248	//Ancient_Mummy_Card
-4249	//Ancient_Worm_Card
+4249  // Ancient_Worm_Card
 4250  // Executioner_Card
 4251	//Elder_Card
-4252	//Alligator_Card
+4252  // Alligator_Card
 4253	//Alice_Card
 4254  // Tirfing_Card
 4255  // Orc_Lady_Card
 4256	//Orc_Archer_Card
-4257	//Wild_Rose_Card
-4258	//Wicked_Nymph_Card
+4257  // Wild_Rose_Card
+4258  // Wicked_Nymph_Card
 4259  // Wooden_Golem_Card
 4260  // Wootan_Shooter_Card
 4261  // Wootan_Fighter_Card
-4262	//Evil_Cloud_Hermit_Card
-4263	//Incant_Samurai_Card
-4264	//Wind_Ghost_Card
+4262  // Evil_Cloud_Hermit_Card
+4263  // Incant_Samurai_Card
+4264  // Wind_Ghost_Card
 4265	//Li_Me_Mang_Ryang_Card
 4266  // Eclipse_Card
-4267	//Explosion_Card
+4267  // Explosion_Card
 4268	//Injustice_Card
 4269  // Incubus_Card
 4270	//Giant_Spider_Card
-4271	//Giant_Honet_Card
-4272	//Dancing_Dragon_Card
+4271  // Giant_Honet_Card
+4272  // Dancing_Dragon_Card
 4273	//Shellfish_Card
 4274	//Zombie_Master_Card
-4275	//Zombie_Prisoner_Card
-4276	//Lord_Of_Death_Card
-4277	//Zherlthsh_Card
+4275  // Zombie_Prisoner_Card
+4276  // Lord_Of_Death_Card
+4277  // Zherlthsh_Card
 4278  // Gibbet_Card
-4279	//Deleter_Card
-4280	//Geographer_Card
+4279  // Deleter_Card
+4280  // Geographer_Card
 4281	//Zipper_Bear_Card
-4282	//Tengu_Card
+4282  // Tengu_Card
 4283  // Greatest_General_Card
 4284	//Chepet_Card
 4285	//Choco_Card
 4286	//Karakasa_Card
 4287  // Kapha_Card
-4288	//Carat_Card
+4288  // Carat_Card
 4289	//Caterpillar_Card
 4290  // Cat_O_Nine_Tail_Card
 4291	//Kobold_Leader_Card
 4292	//Kobold_Archer_Card
-4293	//Cookie_Card
-4294	//Quve_Card
+4293  // Cookie_Card
+4294  // Quve_Card
 4295	//Kraben_Card
 4296  // Cramp_Card
 4297	//Cruiser_Card
 4298	//Cremy_Fear_Card
-4299	//Clock_Card
+4299  // Clock_Card
 4300	//Chimera_Card
-4301	//Killer_Mantis_Card
+4301  // Killer_Mantis_Card
 4302	//Tao_Gunka_Card
-4303	//Whisper_Boss_Card
+4303  // Whisper_Boss_Card
 4304  // Tamruan_Card
 4305	//Turtle_General_Card
 4306	//Toad_Card
