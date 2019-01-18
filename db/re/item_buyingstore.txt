@@ -351,53 +351,53 @@
 4303  // Whisper_Boss_Card
 4304  // Tamruan_Card
 4305	//Turtle_General_Card
-4306	//Toad_Card
+4306  // Toad_Card
 4307	//Kind_Of_Beetle_Card
 4308	//Tri_Joint_Card
 4309  // Parasite_Card
 4310	//Panzer_Goblin_Card
-4311	//Permeter_Card
-4312	//Fur_Seal_Card
-4313	//Punk_Card
+4311  // Permeter_Card
+4312  // Fur_Seal_Card
+4313  // Punk_Card
 4314	//Penomena_Card
 4315	//Pest_Card
 4316	//Fake_Angel_Card
-4317	//Mobster_Card
+4317  // Mobster_Card
 4318	//Knight_Windstorm_Card
-4319	//Freezer_Card
-4320	//Bloody_Knight_Card
+4319  // Freezer_Card
+4320  // Bloody_Knight_Card
 4321	//Hylozoist_Card
 4322  // High_Orc_Card
-4323	//Garm_Baby_Card
-4324	//Garm_Card
-4325	//Harpy_Card
+4323  // Garm_Baby_Card
+4324  // Garm_Card
+4325  // Harpy_Card
 4326	//See_Otter_Card
 4327  // Blood_Butterfly_Card
 4328  // Hyegun_Card
 4329	//Phendark_Card
-4330	//Dark_Snake_Lord_Card
+4330  // Dark_Snake_Lord_Card
 4331	//Heater_Card
-4332	//Waste_Stove_Card
+4332  // Waste_Stove_Card
 4333	//Venomous_Card
 4334	//Noxious_Card
-4335	//Pitman_Card
+4335  // Pitman_Card
 4336	//Ungoliant_Card
 4337  // Porcellio_Card
-4338	//Obsidian_Card
+4338  // Obsidian_Card
 4339  // Mineral_Card
 4340	//Teddy_Bear_Card
 4341	//Metaling_Card
-4342	//Rsx_0806_Card
-4343	//Mole_Card
+4342  // Rsx_0806_Card
+4343  // Mole_Card
 4344	//Anopheles_Card
-4345	//Hill_Wind_Card
-4346	//Ygnizem_Card
+4345  // Hill_Wind_Card
+4346  // Ygnizem_Card
 4347	//Armaia_Card
-4348	//Whikebain_Card
+4348  // Whikebain_Card
 4349	//Erend_Card
-4350	//Rawrel_Card
+4350  // Rawrel_Card
 4351	//Kavac_Card
-4352	//B_Ygnizem_Card
+4352  // B_Ygnizem_Card
 4353	//Removal_Card
 4354	//Gemini_Card
 4355	//Gremlin_Card

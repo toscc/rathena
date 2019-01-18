@@ -70,13 +70,13 @@ Armor:
       EnrichedChance: 100
       EventNormalChance: 70
       EventEnrichedChance: 100
-      Bonus: 200
+      Bonus: 300
     - Level: 8
       NormalChance: 50
       EnrichedChance: 100
       EventNormalChance: 50
       EventEnrichedChance: 100
-      Bonus: 200
+      Bonus: 300
     - Level: 9
       NormalChance: 50
       EnrichedChance: 100

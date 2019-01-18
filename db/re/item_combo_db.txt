@@ -365,7 +365,7 @@
 4268:4277,{ bonus bBaseAtk,20; bonus bLuk,3; }
 4273:18554,{ bonus2 bAddEle,Ele_Water,10; }
 4311:4319:4331:4371,{ bonus bInt,1; bonus bStr,1; bonus bDef,2; bonus bSPrecovRate,10; bonus2 bSkillAtk,"PA_SHIELDCHAIN",10; bonus2 bSkillAtk,"PA_SACRIFICE",10; bonus bVariableCastrate,-10; if(BaseJob==Job_Crusader) bonus bDefEle,Ele_Holy; }
-4323:4324,{ bonus3 bAutoSpell,"MG_FROSTDIVER",3,250; }
+4323:4324,{ bonus3 bAutoSpell,"WZ_FROSTNOVA",1,250; }
 4435:4436,{ bonus2 bSPGainRace,RC_DemiHuman,2; bonus2 bSPGainRace,RC_Player,2; }
 4335:19156,{ .@r = getequiprefinerycnt(EQI_HEAD_TOP); if (.@r < 4) { .@a = 4; } else { .@a = min(.@r,10); } bonus3 bAutoSpell,"WZ_EARTHSPIKE",.@a,(.@a*10); bonus3 bAutoSpell,"WZ_HEAVENDRIVE",.@a,(.@a*10); }
 4345:19156,{ .@r = getequiprefinerycnt(EQI_HEAD_TOP); if (.@r < 4) { .@a = 4; } else { .@a = min(.@r,10); } bonus3 bAutoSpell,"MG_LIGHTNINGBOLT",.@a,(.@a*10); bonus3 bAutoSpell,"MG_THUNDERSTORM",.@a,(.@a*10); }
