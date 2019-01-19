@@ -3489,7 +3489,7 @@ int targetnearest(block_list * bl, va_list ap)
 	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
 
 	int dist = distance_bl(&sd2->bl, bl);
-	if ((dist < targetdistance) && (path_search_long(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, CELL_CHKWALL))) { targetdistance = dist; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
+	if ((dist < targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKWALL))) { targetdistance = dist; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
 
 	return 0;
 }
@@ -3499,7 +3499,7 @@ int targetthischar(block_list * bl, va_list ap)
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	struct map_session_data *sd2;
 	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
-	if ((sd->status.char_id == targetthis) && (path_search_long(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, CELL_CHKWALL))) { targetbl = bl; foundtargetID = bl->id; };
+	if ((sd->status.char_id == targetthis) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKWALL))) { targetbl = bl; foundtargetID = bl->id; };
 
 	return 0;
 }
