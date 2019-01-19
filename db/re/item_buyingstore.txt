@@ -220,8 +220,8 @@
 4172  // The_Paper_Card
 4173  // Demon_Pungus_Card
 4174	//Deviling_Card
-4175	//Poison_Toad_Card
-4176	//Dullahan_Card
+4175  // Poison_Toad_Card
+4176  // Dullahan_Card
 4177  // Dryad_Card
 4178  // Dragon_Tail_Card
 4179  // Dragon_Fly_Card
@@ -292,7 +292,7 @@
 4244  // Alarm_Card
 4245  // Am_Mut_Card
 4246  // Assulter_Card
-4247	//Aster_Card
+4247  // Aster_Card
 4248	//Ancient_Mummy_Card
 4249  // Ancient_Worm_Card
 4250  // Executioner_Card
@@ -342,7 +342,7 @@
 4294  // Quve_Card
 4295	//Kraben_Card
 4296  // Cramp_Card
-4297	//Cruiser_Card
+4297  // Cruiser_Card
 4298  // Cremy_Fear_Card
 4299  // Clock_Card
 4300  // Chimera_Card

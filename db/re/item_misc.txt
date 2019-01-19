@@ -209,6 +209,25 @@ IG_Taming,10017,1	// Bark Shorts
 IG_Taming,10018,1	// Monkey Circlet
 IG_Taming,10019,1	// Red Scarf
 IG_Taming,10020,1	// Grave Keeper's Sword
+IG_Taming,12354,1	// Boy's Pure Heart
+IG_Taming,12355,1	// Boy's Pure Heart
+IG_Taming,12356,1	// Boy's Pure Heart
+IG_Taming,12357,1	// Boy's Pure Heart
+IG_Taming,12358,1	// Boy's Pure Heart
+IG_Taming,12359,1	// Boy's Pure Heart
+IG_Taming,12360,1	// Boy's Pure Heart
+IG_Taming,12361,1	// Boy's Pure Heart
+IG_Taming,12362,1	// Boy's Pure Heart
+IG_Taming,12363,1	// Boy's Pure Heart
+IG_Taming,12364,1	// Boy's Pure Heart
+IG_Taming,12365,1	// Boy's Pure Heart
+IG_Taming,12366,1	// Boy's Pure Heart
+IG_Taming,12367,1	// Boy's Pure Heart
+IG_Taming,12368,1	// Boy's Pure Heart
+IG_Taming,12369,1	// Boy's Pure Heart
+IG_Taming,12370,1	// Boy's Pure Heart
+IG_Taming,12371,1	// Boy's Pure Heart
+IG_Taming,12372,1	// Boy's Pure Heart
 IG_Taming,12373,1	// Boy's Pure Heart
 IG_Taming,12374,1	// Ice Fireworks
 IG_Taming,12395,1	// Tantan Noodle
