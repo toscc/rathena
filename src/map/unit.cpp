@@ -3881,7 +3881,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			foundtargetID = -1;
 			map_foreachinmap(targetangelus, sd->bl.m, BL_PC, sd);
 			if (foundtargetID > -1) {
-				unit_skilluse_ifable(&sd->bl, foundtargetID, AL_ANGELUS, pc_checkskill(sd, AL_ANGELUS));
+				unit_skilluse_ifable(&sd->bl, SELF, AL_ANGELUS, pc_checkskill(sd, AL_ANGELUS));
 			}
 		}
 
