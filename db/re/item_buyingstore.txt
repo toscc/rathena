@@ -689,7 +689,7 @@
 4655	//N_Minorous_Card
 4656	//N_Mummy_Card
 4657	//N_Ancient_Mummy_Card
-4658	//N_Verit_Card
+4658  // N_Verit_Card
 //--- 2015 / 7 / 9 - ����������
 11600	//Shining_Holy_Water
 22847	//Prontera_Medal

@@ -2750,7 +2750,7 @@
 4566,Gypsy_Card,Gypsy Trentini Card,6,20,,10,,,,,,,,16,,,,,{ skill "DC_FORTUNEKISS",10; bonus bFlee,(readparam(bVit)>=110)?40:20; },{},{}
 4567,Alphoccio_Card,Alphoccio Card,6,20,,10,,,,,,,,4,,,,,{ bonus bFlee,10; if(BaseJob==Job_Bard) { bonus bMaxHPrate,10; bonus bMaxSPrate,5;} },{},{}
 4568,Ceila_Card,Celia Card,6,20,,10,,,,,,,,4,,,,,{ bonus bFlee,10; skill "PF_SPIDERWEB",1; },{},{}
-4569,Chen_Card,Chen Card,6,20,,10,,,,,,,,4,,,,,{ bonus bFlee,10; skill "MO_CALLSPIRITS",2; bDef,10; },{},{}
+4569,Chen_Card,Chen Card,6,20,,10,,,,,,,,4,,,,,{ bonus bFlee,10; skill "MO_CALLSPIRITS",2; bonus bDef,10; },{},{}
 4570,Flamel_Card,Flamel Card,6,20,,10,,,,,,,,4,,,,,{ bonus bFlee,10; bonus2 bAddItemGroupHealRate,IG_Flamel_Card,200; },{},{}
 4571,Gertie_Card,Gertie Card,6,20,,10,,,,,,,,4,,,,,{ bonus bFlee,10; skill "RG_CLOSECONFINE",1; },{},{}
 4572,Randel_Card,Randel Card,6,20,,10,,,,,,,,4,,,,,{ bonus bFlee,10; skill "CR_AUTOGUARD",3; },{},{}
@@ -2792,7 +2792,7 @@
 4608,White_Knight_Card,White Knight Card,6,20,,10,,,,,,,,2,,,,,{ bonus bBaseAtk,15; bonus2 bAddSize,Size_Medium,15; bonus2 bAddSize,Size_Large,12; },{},{}
 4609,Khalitzburg_Knight_Card,Khalitzburg Knight Card,6,20,,10,,,,,,,,32,,,,,{ bonus bDef,20; bonus2 bSubSize,Size_Medium,20; bonus2 bSubSize,Size_Large,20; },{},{}
 4610,Sarah_Card,Sarah Card,6,10,,10,,,,,,,,16,,,,,{ bonus bAbsorbDmgMaxHP,100; },{},{}
-4625,Time_Holder_Card,Time Holder Card,6,10,,10,,,,,,,,2,,,,,{ bonus bMatkRate,20; if (Class == Job_High_Wizard || Class == Job_Baby_Warlock || Class == Job_Warlock || Class == Job_Warlock_T) bonus bFixedCastrate,-25; if (Class == Job_High_Wizard || Class == Job_Baby_Warlock || Class == Job_Warlock || Class == Job_Warlock_T) bonus bonus bVariableCastrate,-25; },{},{}
+4625,Time_Holder_Card,Time Holder Card,6,10,,10,,,,,,,,2,,,,,{ bonus bMatkRate,20; if (Class == Job_High_Wizard || Class == Job_Baby_Warlock || Class == Job_Warlock || Class == Job_Warlock_T) bonus bFixedCastrate,-25; if (Class == Job_High_Wizard || Class == Job_Baby_Warlock || Class == Job_Warlock || Class == Job_Warlock_T) bonus bVariableCastrate,-25; },{},{}
 4626,Big_Ben_Card,Big Ben Card,6,10,,10,,,,,,,,2,,,,,{ bonus bVariableCastrate,-5; },{},{}
 4627,Big_Bell_Card,Big Bell Card,6,10,,10,,,,,,,,2,,,,,{ bonus bFixedCastrate,-10; },{},{}
 4628,Neo_Punk_Card,Neo Punk Card,6,10,,10,,,,,0xFFFFFFFF,63,2,32,,,,,{ bonus2 bSubClass,Class_Boss,20; },{},{}
@@ -2825,8 +2825,8 @@
 4655,N_Minorous_Card,Nightmare Minorous Card,6,20,,10,,,,,,,,2,,,,,{ bonus2 bAddRace,RC_Brute,10; bonus2 bAddRace,RC_Undead,10; },{},{}
 4656,N_Mummy_Card,Nightmare Mummy Card,6,20,,10,,,,,,,,64,,,,,{ /* Unofficial chance */ bonus3 bAutoSpellWhenHit,"NPC_WIDESLEEP",2,10; },{},{}
 4657,N_Ancient_Mummy_Card,Nightmare Ancient Mummy Card,6,20,,10,,,,,,,,4,,,,,{ bonus2 bSubEle,Ele_Neutral,15; bonus2 bMagicAtkEle,Ele_Fire,getrefine()*3; },{},{}
-4658,N_Verit_Card,Nightmare Verit Card,6,20,,10,,,,,,,,64,,,,,{ bonus2 bMagicAddClass,Class_All,5; if(getrefine()>6) { bonus2 bMagicAddClass,Class_All,3; } if(getrefine()>8) { bonus2 bMagicAddClass,Class_All,2; } },{},{}
-4659,Eggring_Card,Eggring Card,6,20,,10,,,,,,,,16,,,,,{ bonus bLuk,2; bonus bMaxHP,50; },{},{}
+4658,N_Verit_Card,Nightmare Verit Card,6,20,,10,,,,,,,,64,,,,,{ bonus2 bMagicAddClass,Class_All,5; if(getrefine()>8) { bonus2 bMagicAddClass,Class_All,3; } if(getrefine()>11) { bonus2 bMagicAddClass,Class_All,2; } },{},{}
+4659,Eggring_Card,Eggring Card,6,20,,10,,,,,,,,16,,,,,{ bonus bLuk,2; bonus bHit,10; },{},{}
 4660,Scout_Basilisk_Card,Scout Basilisk Card,6,20,,10,,,,,,,,32,,,,,{ bonus2 bSubSize,Size_Small,5; bonus2 bSubSize,Size_Medium,5; },{},{}
 4661,Charge_Basilisk_Card,Charge Basilisk Card,6,20,,10,,,,,,,,32,,,,,{ bonus2 bSubSize,Size_Medium,20; bonus2 bSubSize,Size_Large,20; bonus2 bSubSize,Size_Small,-15; },{},{}
 4662,Big_Eggring_Card,Big Eggring Card,6,20,,10,,,,,,,,4,,,,,{ bonus bAtk,25-5*min(readParam(bStr)/10,5); bonus bMatk,25-5*min(readParam(bInt)/10,5); bonus bAspdRate,10-2*min(readParam(bAgi)/10,5); bonus bMaxHP,1000-200*min(readParam(bVit)/10,5); bonus bLongAtkRate,5-1*min(readParam(bDex)/10,5); bonus bCritAtkRate,10-2*min(readParam(bLuk)/10,5); },{},{}
@@ -2835,9 +2835,9 @@
 4665,Wild_Hornet_Card,Wild Hornet Card,6,20,,10,,,,,,,,2,,,,,{ bonus bAtk,5; },{},{}
 4666,Sweet_Roda_Frog_Card,Sweet Roda Frog Card,6,20,,10,,,,,,,,16,,,,,{ bonus bMaxSP,10; bonus bMaxHP,300; },{},{}
 4667,Hunter_Wolf_Card,Hunter Wolf Card,6,20,,10,,,,,,,,64,,,,,{ bonus bMaxSP,30; },{},{}
-4668,Trance_Spore_Card,Trance Spore Card,6,20,,10,,,,,,,,769,,,,,{ bonus bVit,1; bonus bInt,1; },{},{}
-4669,Jungle_Mandragora_Card,Jungle Mandragora Card,6,20,,10,,,,,,,,2,,,,,{ .@r = getrefine(); bonus2 bAddEle,Ele_Wind,((.@r>=9)?7:((.@r>=7)?5:3)); },{},{}
-4670,Fruit_Pom_Spider_Card,Fruit Pom Spider Card,6,20,,10,,,,,,,,2,,,,,{ .@r = getrefine(); bonus2 bAddEle,Ele_Fire,((.@r>=9)?7:((.@r>=7)?5:3)); },{},{}
+4668,Trance_Spore_Card,Trance Spore Card,6,20,,10,,,,,,,,769,,,,,{ bonus bVit,2; bonus bInt,1; },{},{}
+4669,Jungle_Mandragora_Card,Jungle Mandragora Card,6,20,,10,,,,,,,,2,,,,,{ bonus2 bAddEle,Ele_Wind,15; },{},{}
+4670,Fruit_Pom_Spider_Card,Fruit Pom Spider Card,6,20,,10,,,,,,,,2,,,,,{ bonus2 bAddEle,Ele_Fire,15; },{},{}
 4671,V_Celia_Card,Sorcerer Celia Card,6,20,,10,,,,,,,,4,,,,,{ if(eaclass()&EAJL_THIRD && BaseJob == Job_Sage){ bonus bMaxHPrate,10; bonus bMatkRate,10; } if(BaseLevel>174) bonus bAllStats,10; if(getrefine()>9) bonus bAllStats,10; },{},{}
 4672,V_Chen_Card,Sura Chen Card,6,20,,10,,,,,,,,4,,,,,{ if(eaclass()&EAJL_THIRD && BaseJob == Job_Monk){ bonus bMaxHPrate,10; bonus2 bAddClass,Class_All,10; } if(BaseLevel>174) bonus bAllStats,10; if(getrefine()>9) bonus bAllStats,10; },{},{}
 4673,V_Alphoccio_Card,Minstel Alphoccio Card,6,20,,10,,,,,,,,4,,,,,{ if(eaclass()&EAJL_THIRD && BaseJob == Job_Bard){ bonus bMaxHPrate,15; bonus bMaxSPrate,10; } if(BaseLevel>174) bonus bAllStats,10; if(getrefine()>9) bonus bAllStats,10; },{},{}
