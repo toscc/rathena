@@ -104,7 +104,7 @@
 4056  // Dustiness_Card
 4057  // Metaller_Card
 4058	//Thara_Frog_Card
-4059	//Soldier_Andre_Card
+4059  // Soldier_Andre_Card
 4060	//Goblin_Card
 4061  // Cornutus_Card
 4062	//Anacondaq_Card
@@ -501,7 +501,7 @@
 4453	//Hilsrion_Card
 4454	//Light_Up_Card1
 4455	//Light_Up_Card2
-4456	//Nidhogg_Shadow_Card
+4456  // Nidhogg_Shadow_Card
 4457  // Nahtzigger_Card
 4458	//Duneirre_Card
 4459	//Lata_Card
@@ -514,15 +514,15 @@
 4466	//Beholder_Master_Card
 4467	//Heavy_Metaling_Card
 4468	//Pinguicula_Dark_Card
-4469	//Naga_Card
-4470	//Nepenthes_Card
-4471	//Egg_Of_Draco_Card
-4472	//Bradium_Goram_Card
-4473	//Ancient_Tree_Card
-4474	//Jakudam_Card
-4475	//Cobalt_Mineral_Card
-4476	//Pinguicula_Card
-4477	//Hell_Apocalips_Card
+4469  // Naga_Card
+4470  // Nepenthes_Card
+4471  // Egg_Of_Draco_Card
+4472  // Bradium_Goram_Card
+4473  // Ancient_Tree_Card
+4474  // Jakudam_Card
+4475  // Cobalt_Mineral_Card
+4476  // Pinguicula_Card
+4477  // Hell_Apocalips_Card
 4478	//Light_Up_Card3
 4479	//Light_Up_Card4
 4480	//Sealed_Kiel_Card
@@ -550,36 +550,36 @@
 4502	//Sealed_B_Harword_Card
 4503	//Sealed_Apocalips_H_Card
 4504	//Sealed_Eddga_Card
-4505	//Scaraba_Card
+4505  // Scaraba_Card
 4506	//Dolomedes_Card
 4507	//Q_Scaraba_Card
-4508	//Gold_Scaraba_Card
-4509	//Gold_Q_Scaraba_Card
-4510	//Miming_Card
+4508  // Gold_Scaraba_Card
+4509  // Gold_Q_Scaraba_Card
+4510  // Miming_Card
 4511	//Little_Fatum_Card
-4512	//Parus_Card
-4513	//Angra_Mantis_Card
+4512  // Parus_Card
+4513  // Angra_Mantis_Card
 4514	//Pom_Spider_Card
 4515	//Alnoldi_Card
 4516	//Comodo_Card
-4517	//Cendrawasih_Card
+4517  // Cendrawasih_Card
 4518	//Banaspaty_Card
 4519	//Butoijo_Card
 4520	//Leak_Card
 4521	//Sedora_Card
 4522	//Sropho_Card
 4523	//Pot_Dofle_Card
-4524	//King_Dramoh_Card
-4525	//Kraken_Card
-4526	//Odd_Coelacanth_Card
+4524  // King_Dramoh_Card
+4525  // Kraken_Card
+4526  // Odd_Coelacanth_Card
 4527	//Black_Coelacanth_Card
-4528	//Mutant_Coelacanth_Card
-4529	//Cruel_Coelacanth_Card
+4528  // Mutant_Coelacanth_Card
+4529  // Cruel_Coelacanth_Card
 4530	//Siorava_Card
-4531	//Red_Eruma_Card
+4531  // Red_Eruma_Card
 4532	//Wild_Rider_Card
 4533	//Mini_Octopus_Card
-4534	//Giant_Octopus_Card
+4534  // Giant_Octopus_Card
 4535	//Sealed_Rand_Card
 4536	//Sealed_Atroce_Card
 4537	//Sealed_Phreeoni_Card
@@ -610,11 +610,11 @@
 4562	//Champion_Chen_Card
 4563	//Creator_Flamel_Card
 4564	//Stalker_Gertie_Card
-4565	//Paladin_Randel_Card
+4565  // Paladin_Card
 4566	//Gypsy_Trentini_Card
 4567	//Alphoccio_Card
-4568	//Celia_Card
-4569	//Chen_Card
+4568  // Ceila_Card
+4569  // Chen_Card
 4570	//Flamel_Card
 4571	//Gertie_Card
 4572	//Randel_Card
@@ -623,25 +623,25 @@
 4575	//Soheon_Card
 4576	//Gioia_Card
 4577	//Elvira_Card
-4578	//Pyuriel_Card
+4578  // Pyuriel_Card
 4579	//Lola_Card
 4580	//Kades_Card
 4581	//Rudo_Card
-4582	//Bungisngis_Card
+4582  // Bungisngis_Card
 4583	//Engkanto_Card
 4584	//Manananggal_Card
 4585	//Mangkukulam_Card
 4586	//Tikbalang_Card
 4587	//Tiyanak_Card
-4588	//Wakwak_Card
+4588  // Wakwak_Card
 4589	//Jejeling_Card
 4590	//Bangungot_Card
 4591	//Bakonawa_Card
 4592	//Buwaya_Card
 4593	//Menblatt_Card
 4594	//Petal_Card
-4595	//Cenere_Card
-4596	//AntiqueBook_Card
+4595  // Cenere_Card
+4596  // AntiqueBook_Card
 4597	//LichternB_Card
 4598	//LichternG_Card
 4599	//LichternR_Card
@@ -650,19 +650,19 @@
 4602	//Realized_Amdarais_Card
 4603	//Corruption_Root_Card
 4604	//Realized_Corruption_Root_Card
-4605	//UndeadKnightM_Card
+4605  // UndeadKnightM_Card
 4606	//UndeadKnightF_Card
-4607	//FaithfulManager_Card
-4608	//White_Knight_Card
-4609	//Khalitzburg_Knight_Card
+4607  // FaithfulManager_Card
+4608  // White_Knight_Card
+4609  // Khalitzburg_Knight_Card
 4610	//Sarah_Card
-4625	//Time_Holder_Card
-4626	//Big_Ben_Card
-4627	//Big_Bell_Card
-4628	//Neo_Punk_Card
-4629	//Arc_Elder_Card
-4630	//Nightmare_Timer_Keeper_Card
-4631	//Owl_Viscount_Card
+4625  // Time_Holder_Card
+4626  // Big_Ben_Card
+4627  // Big_Bell_Card
+4628  // Neo_Punk_Card
+4629  // Arc_Elder_Card
+4630  // Nightmare_Timer_Keeper_Card
+4631  // Owl_Viscount_Card
 4632	//Owl_Marquees_Card
 4633	//Enhanced_Archer_Skeleton_Card
 4634	//Enhanced_Soldier_Skeleton_Card
