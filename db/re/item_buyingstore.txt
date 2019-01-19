@@ -301,7 +301,7 @@
 4253	//Alice_Card
 4254  // Tirfing_Card
 4255  // Orc_Lady_Card
-4256	//Orc_Archer_Card
+4256  // Orc_Archer_Card
 4257  // Wild_Rose_Card
 4258  // Wicked_Nymph_Card
 4259  // Wooden_Golem_Card
@@ -310,7 +310,7 @@
 4262  // Evil_Cloud_Hermit_Card
 4263  // Incant_Samurai_Card
 4264  // Wind_Ghost_Card
-4265	//Li_Me_Mang_Ryang_Card
+4265  // Li_Me_Mang_Ryang_Card
 4266  // Eclipse_Card
 4267  // Explosion_Card
 4268	//Injustice_Card
@@ -318,7 +318,7 @@
 4270	//Giant_Spider_Card
 4271  // Giant_Honet_Card
 4272  // Dancing_Dragon_Card
-4273	//Shellfish_Card
+4273  // Shellfish_Card
 4274	//Zombie_Master_Card
 4275  // Zombie_Prisoner_Card
 4276  // Lord_Of_Death_Card
@@ -331,12 +331,12 @@
 4283  // Greatest_General_Card
 4284	//Chepet_Card
 4285	//Choco_Card
-4286	//Karakasa_Card
+4286  // Karakasa_Card
 4287  // Kapha_Card
 4288  // Carat_Card
 4289	//Caterpillar_Card
 4290  // Cat_O_Nine_Tail_Card
-4291	//Kobold_Leader_Card
+4291  // Kobold_Leader_Card
 4292	//Kobold_Archer_Card
 4293  // Cookie_Card
 4294  // Quve_Card
@@ -371,14 +371,14 @@
 4323  // Garm_Baby_Card
 4324  // Garm_Card
 4325  // Harpy_Card
-4326	//See_Otter_Card
+4326  // See_Otter_Card
 4327  // Blood_Butterfly_Card
 4328  // Hyegun_Card
 4329	//Phendark_Card
 4330  // Dark_Snake_Lord_Card
 4331	//Heater_Card
 4332  // Waste_Stove_Card
-4333	//Venomous_Card
+4333  // Venomous_Card
 4334	//Noxious_Card
 4335  // Pitman_Card
 4336  // Ungoliant_Card
@@ -389,7 +389,7 @@
 4341	//Metaling_Card
 4342  // Rsx_0806_Card
 4343  // Mole_Card
-4344	//Anopheles_Card
+4344  // Anopheles_Card
 4345  // Hill_Wind_Card
 4346  // Ygnizem_Card
 4347  // Armaia_Card
@@ -398,7 +398,7 @@
 4350  // Rawrel_Card
 4351	//Kavac_Card
 4352  // B_Ygnizem_Card
-4353	//Removal_Card
+4353  // Removal_Card
 4354	//Gemini_Card
 4355	//Gremlin_Card
 4356  // Beholder_Card
@@ -435,7 +435,7 @@
 4387  // Ancient_Mimic_Card
 4388  // Deathword_Card
 4389	//Plasma_Card
-4390	//Breeze_Card
+4390  // Breeze_Card
 4391  // Retribution_Card
 4392  // Observation_Card
 4393  // Shelter_Card
@@ -469,7 +469,7 @@
 4421	//Drosera_Card
 4422  // Roween_Card
 4423  // Galion_Card
-4424	//Stapo_Card
+4424  // Stapo_Card
 4425  // Atroce_Card
 4426	//Byorgue_Card
 4427	//Sword_Guardian_Card
@@ -482,7 +482,7 @@
 4434  // Knocker_Card
 4435	//Zombie_Slaughter_Card
 4436	//Ragged_Zombie_Card
-4437	//Hell_Poodle_Card
+4437  // Hell_Poodle_Card
 4438  // Banshee_Card
 4439	//Flame_Skull_Card
 4440  // Necromancer_Card
