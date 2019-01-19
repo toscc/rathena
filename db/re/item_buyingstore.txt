@@ -345,7 +345,7 @@
 4297	//Cruiser_Card
 4298  // Cremy_Fear_Card
 4299  // Clock_Card
-4300	//Chimera_Card
+4300  // Chimera_Card
 4301  // Killer_Mantis_Card
 4302	//Tao_Gunka_Card
 4303  // Whisper_Boss_Card
@@ -440,7 +440,7 @@
 4392  // Observation_Card
 4393  // Shelter_Card
 4394  // Solace_Card
-4395	//Tha_Maero_Card
+4395  // Tha_Maero_Card
 4396  // Tha_Odium_Card
 4397  // Tha_Despero_Card
 4398  // Tha_Dolor_Card

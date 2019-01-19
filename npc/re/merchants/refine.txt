@@ -49,8 +49,8 @@ function	script	refinenew	{
 	disable_items;
 	mes "["+ .@npc_name$ +"]";
 	mes "I am the best Armsmith ever!";
-	mes "I don't refine normal, boring items.";
-	mes "I only refine items that are Level 10 or higher.";
+	mes "I don't refine normal, boring items nor use boring ores.";
+	mes "I only refine items that are Level 10 or higher using Enriched ores.";
 	next;
 	mes "["+ .@npc_name$ +"]";
 	mes "Anyway, you may use my services if your item is Level 10 or higher.";
