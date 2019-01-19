@@ -361,6 +361,7 @@
 4237:4238,{ bonus3 bAutoSpell,"MG_LIGHTNINGBOLT",5,50; }
 4247:18554,{ bonus2 bAddEle,Ele_Water,10; }
 4250:18865,{ bonus2 bAddSize,Size_All,5; bonus2 bMagicAddSize,Size_All,5; }
+4253:4400,{ bonus bFixedCastrate,-15; }
 4254:18865,{ bonus2 bAddSize,Size_All,5; bonus2 bMagicAddSize,Size_All,5; }
 4268:4277,{ bonus bBaseAtk,20; bonus bLuk,3; }
 4273:18554,{ bonus2 bAddEle,Ele_Water,10; }
@@ -370,6 +371,7 @@
 4335:19156,{ .@r = getequiprefinerycnt(EQI_HEAD_TOP); if (.@r < 4) { .@a = 4; } else { .@a = min(.@r,10); } bonus3 bAutoSpell,"WZ_EARTHSPIKE",.@a,(.@a*10); bonus3 bAutoSpell,"WZ_HEAVENDRIVE",.@a,(.@a*10); }
 4345:19156,{ .@r = getequiprefinerycnt(EQI_HEAD_TOP); if (.@r < 4) { .@a = 4; } else { .@a = min(.@r,10); } bonus3 bAutoSpell,"MG_LIGHTNINGBOLT",.@a,(.@a*10); bonus3 bAutoSpell,"MG_THUNDERSTORM",.@a,(.@a*10); }
 4350:19156,{ .@r = getequiprefinerycnt(EQI_HEAD_TOP); if (.@r < 4) { .@a = 4; } else { .@a = min(.@r,10); } bonus3 bAutoSpell,"MG_COLDBOLT",.@a,(.@a*10); bonus3 bAutoSpell,"WZ_FROSTNOVA",.@a,(.@a*10); }
+4378:4379,{ bonus2 bAddMonsterDropItem,12080,50; }
 4380:19156,{ .@r = getequiprefinerycnt(EQI_HEAD_TOP); if (.@r < 4) { .@a = 4; } else { .@a = min(.@r,10); } bonus3 bAutoSpell,"MG_FIREBOLT",.@a,(.@a*10); bonus3 bAutoSpell,"MG_FIREBALL",.@a,(.@a*10); }
 4335:21012,{ bonus5 bAutoSpell,"WZ_EARTHSPIKE",5,10+(getequiprefinerycnt(EQI_HAND_R)*10),BF_NORMAL|BF_WEAPON,1; /* Confirm: Success rate */ }
 4345:21012,{ bonus5 bAutoSpell,"MG_LIGHTNINGBOLT",5,10+(getequiprefinerycnt(EQI_HAND_R)*10),BF_NORMAL|BF_WEAPON,1; /* Confirm: Success rate */ }

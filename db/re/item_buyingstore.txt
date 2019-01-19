@@ -190,7 +190,7 @@
 4142  // Doppelganger_Card
 4143  // Orc_Hero_Card
 4144	//Osiris_Card
-4145	//Berzebub_Card
+4145  // Berzebub_Card
 4146  // Maya_Card
 4147	//Baphomet_Card
 4148  // Pharaoh_Card
@@ -210,9 +210,9 @@
 4162  // Grizzly_Card
 4163	//Gryphon_Card
 4164  // Gullinbursti_Card
-4165	//Gig_Card
+4165  // Gig_Card
 4166  // Nightmare_Terror_Card
-4167	//Neraid_Card
+4167  // Neraid_Card
 4168	//Dark_Lord_Card
 4169  // Dark_Illusion_Card
 4170  // Dark_Frame_Card
@@ -227,15 +227,15 @@
 4179  // Dragon_Fly_Card
 4180  // Driller_Card
 4181  // Disguise_Card
-4182	//Diabolic_Card
+4182  // Diabolic_Card
 4183  // Vagabond_Wolf_Card
-4184	//Lava_Golem_Card
+4184  // Lava_Golem_Card
 4185  // Rideword_Card
 4186  // Raggler_Card
 4187  // Raydric_Archer_Card
 4188  // Leib_Olmai_Card
-4189	//Wraith_Dead_Card
-4190	//Wraith_Card
+4189  // Wraith_Dead_Card
+4190  // Wraith_Card
 4191  // Loli_Ruri_Card
 4192	//Rotar_Zairo_Card
 4193	//Lude_Card
@@ -259,7 +259,7 @@
 4211  // Vocal_Card
 4212	//Bon_Gun_Card
 4213	//Brilight_Card
-4214	//Bloody_Murderer_Card
+4214  // Bloody_Murderer_Card
 4215  // Blazzer_Card
 4216  // Sasquatch_Card
 4217  // Live_Peach_Tree_Card
@@ -272,11 +272,11 @@
 4224	//Stem_Worm_Card
 4225	//Stone_Shooter_Card
 4226  // Sting_Card
-4227	//Spring_Rabbit_Card
+4227  // Spring_Rabbit_Card
 4228	//Sleeper_Card
 4229  // C_Tower_Manager_Card
 4230  // Shinobi_Card
-4231	//Increase_Soil_Card
+4231  // Increase_Soil_Card
 4232  // Wild_Ginseng_Card
 4233  // Baby_Leopard_Card
 4234  // Anolian_Card
@@ -287,7 +287,7 @@
 4239  // Iron_Fist_Card
 4240  // Arclouse_Card
 4241  // Archangeling_Card
-4242	//Apocalips_Card
+4242  // Apocalips_Card
 4243	//Antonio_Card
 4244  // Alarm_Card
 4245  // Am_Mut_Card
@@ -296,7 +296,7 @@
 4248	//Ancient_Mummy_Card
 4249  // Ancient_Worm_Card
 4250  // Executioner_Card
-4251	//Elder_Card
+4251  // Elder_Card
 4252  // Alligator_Card
 4253	//Alice_Card
 4254  // Tirfing_Card
@@ -343,7 +343,7 @@
 4295	//Kraben_Card
 4296  // Cramp_Card
 4297	//Cruiser_Card
-4298	//Cremy_Fear_Card
+4298  // Cremy_Fear_Card
 4299  // Clock_Card
 4300	//Chimera_Card
 4301  // Killer_Mantis_Card
@@ -353,15 +353,15 @@
 4305	//Turtle_General_Card
 4306  // Toad_Card
 4307	//Kind_Of_Beetle_Card
-4308	//Tri_Joint_Card
+4308  // Tri_Joint_Card
 4309  // Parasite_Card
-4310	//Panzer_Goblin_Card
+4310  // Panzer_Goblin_Card
 4311  // Permeter_Card
 4312  // Fur_Seal_Card
 4313  // Punk_Card
 4314	//Penomena_Card
-4315	//Pest_Card
-4316	//Fake_Angel_Card
+4315  // Pest_Card
+4316  // Fake_Angel_Card
 4317  // Mobster_Card
 4318	//Knight_Windstorm_Card
 4319  // Freezer_Card
@@ -381,7 +381,7 @@
 4333	//Venomous_Card
 4334	//Noxious_Card
 4335  // Pitman_Card
-4336	//Ungoliant_Card
+4336  // Ungoliant_Card
 4337  // Porcellio_Card
 4338  // Obsidian_Card
 4339  // Mineral_Card
@@ -392,7 +392,7 @@
 4344	//Anopheles_Card
 4345  // Hill_Wind_Card
 4346  // Ygnizem_Card
-4347	//Armaia_Card
+4347  // Armaia_Card
 4348  // Whikebain_Card
 4349	//Erend_Card
 4350  // Rawrel_Card
@@ -405,7 +405,7 @@
 4357	//B_Seyren_Card
 4358  // Seyren_Card
 4359	//B_Eremes_Card
-4360	//Eremes_Card
+4360  // Eremes_Card
 4361	//B_Harword_Card
 4362  // Harword_Card
 4363	//B_Magaleta_Card
@@ -423,20 +423,20 @@
 4375  // Orc_Baby_Card
 4376  // Lady_Tanee_Card
 4377	//Green_Iguana_Card
-4378	//Acidus_Card
-4379	//Acidus__Card
+4378  // Acidus_Card
+4379  // Acidus__Card
 4380  // Ferus_Card
 4381  // Ferus__Card
 4382  // Novus__Card
 4383	//Novus_Card
 4384  // Hydro_Card
-4385	//Dragon_Egg_Card
+4385  // Dragon_Egg_Card
 4386  // Detale_Card
 4387  // Ancient_Mimic_Card
-4388	//Deathword_Card
+4388  // Deathword_Card
 4389	//Plasma_Card
 4390	//Breeze_Card
-4391	//Retribution_Card
+4391  // Retribution_Card
 4392  // Observation_Card
 4393  // Shelter_Card
 4394  // Solace_Card
@@ -445,13 +445,13 @@
 4397  // Tha_Despero_Card
 4398  // Tha_Dolor_Card
 4399	//Thanatos_Card
-4400	//Aliza_Card
+4400  // Aliza_Card
 4401  // Alicel_Card
 4402  // Aliot_Card
 4403	//Kiel_Card
 4404	//Skogul_Card
 4405  // Frus_Card
-4406	//Skeggiold_Card
+4406  // Skeggiold_Card
 4407	//Randgris_Card
 4408	//Gloom_Under_Night_Card
 4409  // Agav_Card
