@@ -4267,11 +4267,14 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			for (i = 0; i < MAX_PARTY && !p->party.member[i].leader; i++);
 
 		if (!p || i == MAX_PARTY) { //leader not found
-			ShowError("No party leader to follow!");
+			//ShowError("No party leader to follow!");
+			foundtargetID = -1;
 		}
-		targetthis = p->party.member[i].char_id;
-		foundtargetID = -1;
-		map_foreachinmap(targetthischar, sd->bl.m, BL_PC, sd);
+		else {
+			targetthis = p->party.member[i].char_id;
+			foundtargetID = -1;
+			map_foreachinmap(targetthischar, sd->bl.m, BL_PC, sd);
+		}
 
 		if (foundtargetID > -1) { unit_walktobl(&sd->bl, targetbl, 2, 0); }
 		// Party leader left map?
