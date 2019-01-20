@@ -1018,7 +1018,6 @@
 7506,499,100	// Black_Key_Card
 7508,507,100	// Elysia_Ring
 7509,475,100	// Fancy_Key_Card
-7515,499,100	// Marvelous_Medal
 7516,499,100	// Green_Key_Card
 7518,499,100	// Women's_Medal
 7527,506,100	// Life_Book
