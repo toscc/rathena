@@ -4293,6 +4293,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		if (foundtargetID > -1) {
 			// Save leader position, as targeting valiables will be overwritten
 			int foundtargetID2 = foundtargetID;
+			block_list * targetbl2 = targetbl;
 			// Unlike single target, here we calculate priority and select the best one
 			int spelltocast = -1;
 			int bestpriority = -1;
@@ -4301,7 +4302,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			if (canskill(sd)) if ((pc_checkskill(sd, MG_THUNDERSTORM) > 0) && (Dangerdistance > 900)) {
 				// modded : 5x5 but 7x7 at level 6 or higher.
 				int area = 2; if (pc_checkskill(sd, MG_THUNDERSTORM) > 5) area++;
-				priority = map_foreachinrange(AOEPriority, &sd->bl, area, BL_MOB, skill_get_ele(MG_THUNDERSTORM, pc_checkskill(sd, MG_THUNDERSTORM)));
+				priority = map_foreachinrange(AOEPriority, targetbl2, area, BL_MOB, skill_get_ele(MG_THUNDERSTORM, pc_checkskill(sd, MG_THUNDERSTORM)));
 				if ((priority > 6) && (priority>bestpriority)) {
 					spelltocast = MG_THUNDERSTORM; bestpriority = priority;
 				}
@@ -4309,7 +4310,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			// Fireball
 			if (canskill(sd)) if ((pc_checkskill(sd, MG_FIREBALL) > 0)) {
 				int area = 2; 
-				priority = map_foreachinrange(AOEPriority, &sd->bl, area, BL_MOB, skill_get_ele(MG_FIREBALL, pc_checkskill(sd, MG_FIREBALL)));
+				priority = map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(MG_FIREBALL, pc_checkskill(sd, MG_FIREBALL)));
 				if ((priority > 6) && (priority>bestpriority)) {
 					spelltocast = MG_FIREBALL; bestpriority = priority;
 				}
