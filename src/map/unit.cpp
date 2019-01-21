@@ -4149,6 +4149,8 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		if (canskill(sd)) if (pc_checkskill(sd, MG_FROSTDIVER)>0) {
 			if (Dangerdistance <= 4) {
 				if (waterallowed(dangermd)) {
+					if (!(dangermd->sc.data[SC_FREEZE]))
+						if (!(targetmd->state.boss))
 					unit_skilluse_ifable(&sd->bl, founddangerID, MG_FROSTDIVER, pc_checkskill(sd, MG_FROSTDIVER));
 				}
 			}
@@ -4198,19 +4200,25 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			if (canskill(sd)) if ((pc_checkskill(sd, MG_FIREBOLT) > 0) && (pc_checkskill(sd, MG_FIREBOLT) >= pc_checkskill(sd, MG_COLDBOLT))
 				&& (pc_checkskill(sd, MG_FIREBOLT) >= pc_checkskill(sd, MG_LIGHTNINGBOLT))) {
 				if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) {
-					unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_FIREBOLT, pc_checkskill(sd, MG_FIREBOLT));
+					if (fireallowed(targetmd)) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_FIREBOLT, pc_checkskill(sd, MG_FIREBOLT));
+					}
 				}
 			}
 			if (canskill(sd)) if ((pc_checkskill(sd, MG_COLDBOLT) > 0) && (pc_checkskill(sd, MG_COLDBOLT) >= pc_checkskill(sd, MG_FIREBOLT))
 				&& (pc_checkskill(sd, MG_COLDBOLT) >= pc_checkskill(sd, MG_LIGHTNINGBOLT))) {
 				if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) {
-					unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_COLDBOLT, pc_checkskill(sd, MG_COLDBOLT));
+					if (waterallowed(targetmd)) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_COLDBOLT, pc_checkskill(sd, MG_COLDBOLT));
+					}
 				}
 			}
 			if (canskill(sd)) if ((pc_checkskill(sd, MG_LIGHTNINGBOLT) > 0) && (pc_checkskill(sd, MG_LIGHTNINGBOLT) >= pc_checkskill(sd, MG_COLDBOLT))
 				&& (pc_checkskill(sd, MG_LIGHTNINGBOLT) >= pc_checkskill(sd, MG_FIREBOLT))) {
 				if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) {
-					unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_LIGHTNINGBOLT, pc_checkskill(sd, MG_LIGHTNINGBOLT));
+					if (windallowed(targetmd)) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_LIGHTNINGBOLT, pc_checkskill(sd, MG_LIGHTNINGBOLT));
+					}
 				}
 			}
 
@@ -4315,7 +4323,8 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 
 		if (foundtargetID > -1) { 
 		// walktobl seems to cause a problem of the spell target being replaced by the party leader somehow
-			unit_walktoxy(&sd->bl, targetbl->x, targetbl->y, 8);
+			if ((abs(sd->bl.x - targetbl->x)>2) || abs(sd->bl.y - targetbl->y)>2)
+			unit_walktoxy(&sd->bl, targetbl->x + rand() % 5 - 2, targetbl->y + rand() % 5 - 2, 8);
 		//	unit_walktobl(&sd->bl, targetbl, 2, 0); 
 		}
 		// Party leader left map?
