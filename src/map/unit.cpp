@@ -4314,6 +4314,9 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 					spelltocast = MG_FIREBALL; bestpriority = priority;
 				}
 			}
+			if (spelltocast > -1) {
+				unit_skilluse_ifablexy(&sd->bl, foundtargetID2, spelltocast, pc_checkskill(sd, spelltocast));
+			}
 		}
 
 		}
