@@ -3904,7 +3904,8 @@ static const char* npc_parse_mob(char* w1, char* w2, char* w3, char* w4, const c
 	memcpy(data, &mob, sizeof(struct spawn_data));
 
 	// spawn / cache the new mobs
-	if( battle_config.dynamic_mobs && map_addmobtolist(data->m, data) >= 0 )
+//	if (battle_config.dynamic_mobs && !mob.state.boss && map_addmobtolist(data->m, data) >= 0) 
+	if (battle_config.dynamic_mobs && map_addmobtolist(data->m, data) >= 0)
 	{
 		data->state.dynamic = true;
 		npc_cache_mob += data->num;
