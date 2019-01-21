@@ -4302,7 +4302,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			// Fireball
 			if (canskill(sd)) if ((pc_checkskill(sd, MG_FIREBALL) > 0)) {
 				int area = 2; 
-				priority = map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(MG_FIREBALL, pc_checkskill(sd, MG_FIREBALL)));
+				priority = map_foreachinrange(AOEPriority, targetbl2, area, BL_MOB, skill_get_ele(MG_FIREBALL, pc_checkskill(sd, MG_FIREBALL)));
 				if ((priority > 6) && (priority>bestpriority)) {
 					spelltocast = MG_FIREBALL; bestpriority = priority;
 				}
