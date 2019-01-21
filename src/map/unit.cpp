@@ -3464,7 +3464,7 @@ int targetthis;
 struct block_list * targetbl;
 struct mob_data * targetmd;
 int founddangerID;
-int dangerdistance;
+int dangerdistancebest;
 struct block_list * dangerbl;
 struct mob_data * dangermd;
 int dangercount;
@@ -3619,9 +3619,9 @@ int finddanger(block_list * bl, va_list ap)
 	if ((sc->data[SC_SAFETYWALL]) && (md->status.rhw.range <= 3)) return 0;
 
 	int dist = distance_bl(&sd2->bl, bl) - md->status.rhw.range;
-	if ((dist < dangerdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKWALL))
+	if ((dist < dangerdistancebest) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKWALL))
 		&&(md->target_id==sd2->bl.id)) { 
-		dangerdistance = dist; founddangerID = bl->id; dangerbl = &md->bl; dangermd = md; 
+		dangerdistancebest = dist; founddangerID = bl->id; dangerbl = &md->bl; dangermd = md; 
 		return 1;
 	};
 
@@ -3631,9 +3631,9 @@ int finddanger(block_list * bl, va_list ap)
 // Returns how many tiles the fewest an enemy targeting us has to walk to
 int inDanger(struct map_session_data * sd)
 {
-	founddangerID = -1; dangerdistance = 999;
-	dangercount=map_foreachinmap(finddanger, sd->bl.m, BL_MOB, sd);
-	return dangerdistance;
+	founddangerID = -1; dangerdistancebest = 999;
+	dangercount=map_foreachinrange(finddanger, &sd->bl, 20, BL_MOB, sd);
+	return dangerdistancebest;
 }
 
 int provokethis(block_list * bl, va_list ap)
@@ -3658,25 +3658,26 @@ int provokethis(block_list * bl, va_list ap)
 	return 0;
 }
 
-void unit_skilluse_ifable(struct block_list *src, int target_id, uint16 skill_id, uint16 skill_lv)
+int unit_skilluse_ifable(struct block_list *src, int target_id, uint16 skill_id, uint16 skill_lv)
 {
 	struct map_session_data *sd = (struct map_session_data*)src;
 	int inf = skill_get_inf(skill_id);
 	unsigned int tick = gettick();
 
-	if (skill_get_sp(skill_id, skill_lv)>sd->battle_status.sp) return;
+	if (skill_get_sp(skill_id, skill_lv)>sd->battle_status.sp) return 0;
 
 	if (battle_config.idletime_option&IDLE_USESKILLTOID)
 		sd->idletime = last_tick;
 	if ((pc_cant_act2(sd) || sd->chatID) && skill_id != RK_REFRESH && !(skill_id == SR_GENTLETOUCH_CURE &&
 		(sd->sc.opt1 == OPT1_STONE || sd->sc.opt1 == OPT1_FREEZE || sd->sc.opt1 == OPT1_STUN)) &&
 		sd->state.storage_flag && !(inf&INF_SELF_SKILL)) //SELF skills can be used with the storage open, issue: 8027
-		return;
+		return 0;
 	if (pc_issit(sd))
-		return;
+		return 0;
 
 	if (skill_isNotOk(skill_id, sd))
-		return;
+		return 0;
+
 	if (sd->bl.id != target_id && inf&INF_SELF_SKILL)
 		target_id = sd->bl.id; // never trust the client
 
@@ -3685,27 +3686,45 @@ void unit_skilluse_ifable(struct block_list *src, int target_id, uint16 skill_id
 
 	if (sd->ud.skilltimer != INVALID_TIMER) {
 		if (skill_id != SA_CASTCANCEL && skill_id != SO_SPELLFIST)
-			return;
+			return 0;
 	}
 	else if (DIFF_TICK(tick, sd->ud.canact_tick) < 0) {
 		if (sd->skillitem != skill_id) {
-			clif_skill_fail(sd, skill_id, USESKILL_FAIL_SKILLINTERVAL, 0);
-			return;
+			//clif_skill_fail(sd, skill_id, USESKILL_FAIL_SKILLINTERVAL, 0);
+			return 0;
 		}
 	}
 
-	if (sd->sc.option&OPTION_COSTUME)
+
+
+	/*struct unit_data *ud;
+	int combo = 0, range;
+	ud = unit_bl2ud(src);
+	block_list * target = map_id2bl(target_id);
+	if (src->id != target_id) {
+		range = skill_get_range2(src, skill_id, skill_lv, true);
+		if (!battle_check_range(src, target, range))
+			return;
+	}*/
+/*	block_list * target = map_id2bl(target_id);
+	if (target->type == BL_PC) 
+	{
+		ShowError("Player is being targeted!");
 		return;
+	}*/
+
+	if (sd->sc.option&OPTION_COSTUME)
+		return 0;
 
 	if (sd->sc.data[SC_BASILICA] && (skill_id != HP_BASILICA || sd->sc.data[SC_BASILICA]->val4 != sd->bl.id))
-		return; // On basilica only caster can use Basilica again to stop it.
+		return 0; // On basilica only caster can use Basilica again to stop it.
 
 	if (sd->menuskill_id) {
 		if (sd->menuskill_id == SA_TAMINGMONSTER) {
 			clif_menuskill_clear(sd); //Cancel pet capture.
 		}
 		else if (sd->menuskill_id != SA_AUTOSPELL)
-			return; //Can't use skills while a menu is open.
+			return 0; //Can't use skills while a menu is open.
 	}
 
 	if (sd->skillitem == skill_id) {
@@ -3714,7 +3733,7 @@ void unit_skilluse_ifable(struct block_list *src, int target_id, uint16 skill_id
 		if (!(inf&INF_SELF_SKILL))
 			pc_delinvincibletimer(sd); // Target skills thru items cancel invincibility. [Inkfish]
 		unit_skilluse_id(&sd->bl, target_id, skill_id, skill_lv);
-		return;
+		return 0;
 	}
 	sd->skillitem = sd->skillitemlv = 0;
 
@@ -3731,8 +3750,7 @@ void unit_skilluse_ifable(struct block_list *src, int target_id, uint16 skill_id
 	pc_delinvincibletimer(sd);
 
 
-	unit_skilluse_id(src, target_id, skill_id, skill_lv);
-	return;
+	return unit_skilluse_id(src, target_id, skill_id, skill_lv);
 }
 
 void unit_skilluse_ifablexy(struct block_list *src, int target_id, uint16 skill_id, uint16 skill_lv)
@@ -3757,7 +3775,7 @@ void unit_skilluse_ifablexy(struct block_list *src, int target_id, uint16 skill_
 	if (skill_isNotOk(skill_id, sd))
 		return;
 		if (pc_issit(sd)) {
-			clif_skill_fail(sd, skill_id, USESKILL_FAIL_LEVEL, 0);
+			//clif_skill_fail(sd, skill_id, USESKILL_FAIL_LEVEL, 0);
 			return;
 		}
 
@@ -3766,7 +3784,7 @@ void unit_skilluse_ifablexy(struct block_list *src, int target_id, uint16 skill_
 
 	if (DIFF_TICK(tick, sd->ud.canact_tick) < 0) {
 		if (sd->skillitem != skill_id) {
-			clif_skill_fail(sd, skill_id, USESKILL_FAIL_SKILLINTERVAL, 0);
+			//clif_skill_fail(sd, skill_id, USESKILL_FAIL_SKILLINTERVAL, 0);
 			return;
 		}
 	}
@@ -3964,7 +3982,7 @@ bool darkstrong(struct mob_data *md)
 
 
 void skillwhenidle(struct map_session_data *sd) {
-	// Pick Stone
+/*	// Pick Stone
 	if (pc_checkskill(sd, TF_PICKSTONE) > 0) {
 		if (sd->inventory.u.items_inventory[pc_search_inventory(sd, 7049)].amount < 12) {
 			unit_skilluse_ifable(&sd->bl, foundtargetID, TF_PICKSTONE, pc_checkskill(sd, TF_PICKSTONE));
@@ -3975,9 +3993,17 @@ void skillwhenidle(struct map_session_data *sd) {
 		if (sd->inventory.u.items_inventory[pc_search_inventory(sd, 523)].amount < 40) {
 			unit_skilluse_ifable(&sd->bl, foundtargetID, AL_HOLYWATER, pc_checkskill(sd, AL_HOLYWATER));
 		}
-	}
+	}*/
+	return;
 }
 
+// Reduce lag - do not try using skills if already decided to use one and started it
+// Checking this ahead of time instead of executing all the logic and targeting for all the skills only do fail them is better
+bool canskill(struct map_session_data *sd)
+{
+	return ((sd->ud.skilltimer == INVALID_TIMER) && (DIFF_TICK(gettick(), sd->ud.canact_tick) >= 0));
+
+};
 
 // @autopilot timer
 int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
@@ -4009,6 +4035,9 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 	}
 
 	if (status_isdead(bl)) { return 0; }
+	if pc_cant_act(sd) { return 0; }
+	if pc_issit(sd) { return 0; }
+	int Dangerdistance = inDanger(sd);
 
 	//ShowError(sd->status.name);
 
@@ -4051,7 +4080,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 	// Skills that aren't tanking mode exclusive (nonmelee skills generally)
 	/////////////////////////////////////////////////////////////////////////////////////
 		/// Pneuma
-		if (pc_checkskill(sd, AL_PNEUMA)>0) {
+		if (canskill(sd)) if  (pc_checkskill(sd, AL_PNEUMA)>0) {
 			foundtargetID = -1;
 			map_foreachinrange(targetpneuma, &sd->bl, 12, BL_MOB, sd);
 			if (foundtargetID > -1) {
@@ -4062,7 +4091,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			}
 		}
 		/// Heal
-		if (pc_checkskill(sd, AL_HEAL)>0) {
+		if (canskill(sd)) if (pc_checkskill(sd, AL_HEAL)>0) {
 			foundtargetID = -1;
 			map_foreachinmap(targethealing, sd->bl.m, BL_PC, sd);
 			if (foundtargetID > -1) {
@@ -4070,7 +4099,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			}
 		}
 		/// Cure
-		if (pc_checkskill(sd, AL_CURE)>0) {
+		if (canskill(sd)) if (pc_checkskill(sd, AL_CURE)>0) {
 			foundtargetID = -1;
 			map_foreachinmap(targetCure, sd->bl.m, BL_PC, sd);
 			if (foundtargetID > -1) {
@@ -4078,7 +4107,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			}
 		}
 		/// Detoxify
-		if (pc_checkskill(sd, TF_DETOXIFY)>0) {
+		if (canskill(sd)) if (pc_checkskill(sd, TF_DETOXIFY)>0) {
 			foundtargetID = -1;
 			map_foreachinmap(targetDetoxify, sd->bl.m, BL_PC, sd);
 			if (foundtargetID > -1) {
@@ -4086,7 +4115,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			}
 		}
 		/// Inc Agi
-		if (pc_checkskill(sd, AL_INCAGI)>0) {
+		if (canskill(sd)) if (pc_checkskill(sd, AL_INCAGI)>0) {
 			foundtargetID = -1;
 			map_foreachinmap(targetincagi, sd->bl.m, BL_PC, sd);
 			if (foundtargetID > -1) {
@@ -4094,7 +4123,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			}
 		}
 		/// Blessing
-		if (pc_checkskill(sd, AL_BLESSING)>0) {
+		if (canskill(sd)) if (pc_checkskill(sd, AL_BLESSING)>0) {
 			foundtargetID = -1;
 			map_foreachinmap(targetbless, sd->bl.m, BL_PC, sd);
 			if (foundtargetID > -1) {
@@ -4102,7 +4131,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			}
 		}
 		/// Angelus
-		if (pc_checkskill(sd, AL_ANGELUS)>0) {
+		if (canskill(sd)) if (pc_checkskill(sd, AL_ANGELUS)>0) {
 			foundtargetID = -1;
 			map_foreachinmap(targetangelus, sd->bl.m, BL_PC, sd);
 			if (foundtargetID > -1) {
@@ -4116,27 +4145,27 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		/// Fireball
 		// Reasonably fast to try and cast in an energency if no Naplam Beat available.
 		// Only if enemy is weak enough to actually die!
-		if (pc_checkskill(sd, MG_FIREBALL)>5) {
-			if ((inDanger(sd) <= 4) && (dangercount>=1) && (dangermd->status.hp<4000)) {
-				if (fireallowed) {
-					unit_skilluse_ifable(&sd->bl, founddangerID, MG_NAPALMBEAT, pc_checkskill(sd, MG_FIREBALL));
+		if (canskill(sd)) if (pc_checkskill(sd, MG_FIREBALL)>5) {
+			if ((Dangerdistance <= 4)) {
+				if ((fireallowed(dangermd)) && (dangercount >= 1) && (dangermd->status.hp<4000)) {
+					unit_skilluse_ifable(&sd->bl, founddangerID, MG_FIREBALL, pc_checkskill(sd, MG_FIREBALL));
 				}
 			}
 		}
 		/// Napalm Beat
 		// Note : This has been modded to be uninterruptable and faster to use, albeit low damage.
 		// It is the spell to use in emergencies only, when enemy is at most 2 steps from hitting us.
-		if ((pc_checkskill(sd, MG_NAPALMBEAT)>0) && (dangermd->status.hp<2000)) {
-			if (inDanger(sd) <= 2) {
-				if (ghostallowed) {
+		if (canskill(sd)) if ((pc_checkskill(sd, MG_NAPALMBEAT)>0) && (dangermd->status.hp<2000)) {
+			if (Dangerdistance <= 2) {
+				if (ghostallowed(dangermd)) {
 					unit_skilluse_ifable(&sd->bl, founddangerID, MG_NAPALMBEAT, pc_checkskill(sd, MG_NAPALMBEAT));
 				}
 			}
 		}
 		/// Frost Diver
-		if (pc_checkskill(sd, MG_FROSTDIVER)>0) {
-			if (inDanger(sd) <= 4) {
-				if (waterallowed) {
+		if (canskill(sd)) if (pc_checkskill(sd, MG_FROSTDIVER)>0) {
+			if (Dangerdistance <= 4) {
+				if (waterallowed(dangermd)) {
 					unit_skilluse_ifable(&sd->bl, founddangerID, MG_FROSTDIVER, pc_checkskill(sd, MG_FROSTDIVER));
 				}
 			}
@@ -4144,48 +4173,65 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		///////////////////////////////////////////////////////////////////////////////////////////////
 		/// Skills to prioritize based on elemental weakness
 		///////////////////////////////////////////////////////////////////////////////////////////////
+		// AOE skills go here, they should have higher priority than single target when able to hit multiple things
+		// ONly target around party leader who should be the tank if one exists. Using AOE with cast time on
+		// untanked monsters will just miss them.
+		
+		
+		// get target for single target spells only once - pick best skill to use on nearest enemy, not pick best enemy for best skill.
+		// probably could do better but targeting too many times causes lags as it includes finding paths.
+		foundtargetID = -1; targetdistance = 999;
+		map_foreachinrange(targetnearest, &sd->bl, 11, BL_MOB, sd);
+		int foundtargetID2 = foundtargetID;
 		// Fire Bolt on vulnerable enemy
-		if (pc_checkskill(sd, MG_FIREBOLT)>0) {
-				if ((firestrong(targetmd) && (sd->state.autopilotmode == 2)) && (inDanger(sd) > 900)) {
-					unit_skilluse_ifable(&sd->bl, foundtargetID, MG_FIREBOLT, pc_checkskill(sd, MG_FIREBOLT));
+		if (foundtargetID2 > -1) {
+			if (canskill(sd)) if (pc_checkskill(sd, MG_FIREBOLT) > 0) {
+				if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
+					if (firestrong(targetmd)) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_FIREBOLT, pc_checkskill(sd, MG_FIREBOLT));
+					}
 				}
-		}
-		// Cold Bolt on vulnerable enemy
-		if (pc_checkskill(sd, MG_COLDBOLT)>0) {
-			if ((waterstrong(targetmd) && (sd->state.autopilotmode == 2)) && (inDanger(sd) > 900)) {
-				unit_skilluse_ifable(&sd->bl, foundtargetID, MG_COLDBOLT, pc_checkskill(sd, MG_COLDBOLT));
 			}
-		}
-		// Lightning Bolt on vulnerable enemy
-		if (pc_checkskill(sd, MG_LIGHTNINGBOLT)>0) {
-			if ((windstrong(targetmd) && (sd->state.autopilotmode == 2)) && (inDanger(sd) > 900)) {
-				unit_skilluse_ifable(&sd->bl, foundtargetID, MG_LIGHTNINGBOLT, pc_checkskill(sd, MG_LIGHTNINGBOLT));
+			// Cold Bolt on vulnerable enemy
+			if (canskill(sd)) if (pc_checkskill(sd, MG_COLDBOLT) > 0) {
+				if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
+					if (waterstrong(targetmd)) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_COLDBOLT, pc_checkskill(sd, MG_COLDBOLT));
+					}
+				}
 			}
-		}
-		///////////////////////////////////////////////////////////////////////////////////////////////
-		/// Skills for general use
-		///////////////////////////////////////////////////////////////////////////////////////////////
-		// bolts, use highest level
-		if ((pc_checkskill(sd, MG_FIREBOLT)>0) && (pc_checkskill(sd, MG_FIREBOLT)>=pc_checkskill(sd, MG_COLDBOLT))
-			&& (pc_checkskill(sd, MG_FIREBOLT)>=pc_checkskill(sd, MG_LIGHTNINGBOLT))) {
-			if ((sd->state.autopilotmode == 2) && (inDanger(sd) > 900)) {
-				unit_skilluse_ifable(&sd->bl, foundtargetID, MG_FIREBOLT, pc_checkskill(sd, MG_FIREBOLT));
+			// Lightning Bolt on vulnerable enemy
+			if (canskill(sd)) if (pc_checkskill(sd, MG_LIGHTNINGBOLT) > 0) {
+				if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
+					if (windstrong(targetmd)) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_LIGHTNINGBOLT, pc_checkskill(sd, MG_LIGHTNINGBOLT));
+					}
+				}
 			}
-		}
-		if ((pc_checkskill(sd, MG_COLDBOLT)>0) && (pc_checkskill(sd, MG_COLDBOLT) >= pc_checkskill(sd, MG_FIREBOLT))
-			&& (pc_checkskill(sd, MG_COLDBOLT) >= pc_checkskill(sd, MG_LIGHTNINGBOLT))) {
-			if ((sd->state.autopilotmode == 2) && (inDanger(sd) > 900)) {
-				unit_skilluse_ifable(&sd->bl, foundtargetID, MG_COLDBOLT, pc_checkskill(sd, MG_COLDBOLT));
+			///////////////////////////////////////////////////////////////////////////////////////////////
+			/// Skills for general use
+			///////////////////////////////////////////////////////////////////////////////////////////////
+			// bolts, use highest level
+			if (canskill(sd)) if ((pc_checkskill(sd, MG_FIREBOLT) > 0) && (pc_checkskill(sd, MG_FIREBOLT) >= pc_checkskill(sd, MG_COLDBOLT))
+				&& (pc_checkskill(sd, MG_FIREBOLT) >= pc_checkskill(sd, MG_LIGHTNINGBOLT))) {
+				if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) {
+					unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_FIREBOLT, pc_checkskill(sd, MG_FIREBOLT));
+				}
 			}
-		}
-		if ((pc_checkskill(sd, MG_LIGHTNINGBOLT)>0) && (pc_checkskill(sd, MG_LIGHTNINGBOLT) >= pc_checkskill(sd, MG_COLDBOLT))
-			&& (pc_checkskill(sd, MG_LIGHTNINGBOLT) >= pc_checkskill(sd, MG_FIREBOLT))) {
-			if ((sd->state.autopilotmode == 2) && (inDanger(sd) > 900)) {
-				unit_skilluse_ifable(&sd->bl, foundtargetID, MG_LIGHTNINGBOLT, pc_checkskill(sd, MG_LIGHTNINGBOLT));
+			if (canskill(sd)) if ((pc_checkskill(sd, MG_COLDBOLT) > 0) && (pc_checkskill(sd, MG_COLDBOLT) >= pc_checkskill(sd, MG_FIREBOLT))
+				&& (pc_checkskill(sd, MG_COLDBOLT) >= pc_checkskill(sd, MG_LIGHTNINGBOLT))) {
+				if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) {
+					unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_COLDBOLT, pc_checkskill(sd, MG_COLDBOLT));
+				}
 			}
-		}
+			if (canskill(sd)) if ((pc_checkskill(sd, MG_LIGHTNINGBOLT) > 0) && (pc_checkskill(sd, MG_LIGHTNINGBOLT) >= pc_checkskill(sd, MG_COLDBOLT))
+				&& (pc_checkskill(sd, MG_LIGHTNINGBOLT) >= pc_checkskill(sd, MG_FIREBOLT))) {
+				if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) {
+					unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_LIGHTNINGBOLT, pc_checkskill(sd, MG_LIGHTNINGBOLT));
+				}
+			}
 
-
+		}
 
 	// Tanking mode is set
 	if (sd->state.autopilotmode == 1) 	{
@@ -4214,7 +4260,6 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			// Use in any mode above 50% SP only, and never use below 1/3 health, that's not the time for messing around.
 			if (pc_checkskill(sd, TF_STEAL)>0) {
 				if ((status_get_sp(bl) >= status_get_max_sp(bl) / 2) && (status_get_hp(bl) >  status_get_max_hp(bl) / 3)) {
-					ShowError(targetmd->name);
 					if (!(((targetmd->state.steal_flag == UCHAR_MAX) || (targetmd->sc.opt1 && targetmd->sc.opt1 != OPT1_BURNING))))
 					{
 						unit_skilluse_ifable(&sd->bl, foundtargetID, TF_STEAL, pc_checkskill(sd, TF_STEAL));
@@ -4240,8 +4285,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		// Do normal attack if not using skill
 			clif_parse_ActionRequest_sub(sd, 7, foundtargetID, gettick());
 		}
-		else
-		{
+		else if (canskill(sd)) {
 			///////////////////////////////////////////////////////////
 			// Skills to use while not in battle only
 			///////////////////////////////////////////////////////////
@@ -4261,10 +4305,11 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		}
 	}
 	// Not tanking mode so follow the party leader
-	else {
-		// Skills to use when not in battle go here 
+	// Can't move while already using a skill
+	else if (canskill(sd)) { 
+	// Skills to use when not in battle go here 
 		skillwhenidle(sd);
-		// Follow the leader
+					// Follow the leader
 
 		int party_id, type = 0, i = 0;
 		struct party_data *p;
@@ -4285,7 +4330,11 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			map_foreachinmap(targetthischar, sd->bl.m, BL_PC, sd);
 		}
 
-		if (foundtargetID > -1) { unit_walktobl(&sd->bl, targetbl, 2, 0); }
+		if (foundtargetID > -1) { 
+		// walktobl seems to cause a problem of the spell target being replaced by the party leader somehow
+			unit_walktoxy(&sd->bl, targetbl->x, targetbl->y, 8);
+		//	unit_walktobl(&sd->bl, targetbl, 2, 0); 
+		}
 		// Party leader left map?
 		else {
 			foundtargetID = -1; targetdistance = 999;
@@ -4297,12 +4346,6 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 
 		}
 	}
-
-
-
-
-
-//	void clif_parse_ActionRequest_sub(struct map_session_data *sd, int action_type, int target_id, unsigned int tick)
 
 	return 0;
 }
