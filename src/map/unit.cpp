@@ -3741,6 +3741,7 @@ int unit_skilluse_ifable(struct block_list *src, int target_id, uint16 skill_id,
 	pc_delinvincibletimer(sd);
 
 
+	unit_stop_walking(src, 1); // Important! If trying to skill while walking and out of range, skill gets queued 
 	return unit_skilluse_id(src, target_id, skill_id, skill_lv);
 }
 
@@ -3793,6 +3794,7 @@ void unit_skilluse_ifablexy(struct block_list *src, int target_id, uint16 skill_
 
 	pc_delinvincibletimer(sd);
 
+	unit_stop_walking(src, 1); // Important! If trying to skill while walking and out of range, skill gets queued 
 	struct block_list *tgtbl;
 	tgtbl = map_id2bl(target_id);
 	if (sd->skillitem == skill_id) {
@@ -3807,6 +3809,75 @@ void unit_skilluse_ifablexy(struct block_list *src, int target_id, uint16 skill_
 			if (skill_lv > lv)
 				skill_lv = lv;
 			unit_skilluse_pos(&sd->bl, tgtbl->x, tgtbl->y, skill_id, skill_lv);
+		}
+	}
+
+}
+
+void unit_skilluse_ifablebetween(struct block_list *src, int target_id, uint16 skill_id, uint16 skill_lv)
+{
+	unsigned int tick = gettick();
+	struct map_session_data *sd = (struct map_session_data*)src;
+
+	if (!(skill_get_inf(skill_id)&INF_GROUND_SKILL))
+		return; //Using a target skill on the ground? WRONG.
+
+#ifdef RENEWAL
+	if (pc_hasprogress(sd, WIP_DISABLE_SKILLITEM)) {
+		clif_msg(sd, WORK_IN_PROGRESS);
+		return;
+	}
+#endif
+
+	//Whether skill fails or not is irrelevant, the char ain't idle. [Skotlex]
+	if (battle_config.idletime_option&IDLE_USESKILLTOPOS)
+		sd->idletime = last_tick;
+
+	if (skill_isNotOk(skill_id, sd))
+		return;
+	if (pc_issit(sd)) {
+		//clif_skill_fail(sd, skill_id, USESKILL_FAIL_LEVEL, 0);
+		return;
+	}
+
+	if (sd->ud.skilltimer != INVALID_TIMER)
+		return;
+
+	if (DIFF_TICK(tick, sd->ud.canact_tick) < 0) {
+		if (sd->skillitem != skill_id) {
+			//clif_skill_fail(sd, skill_id, USESKILL_FAIL_SKILLINTERVAL, 0);
+			return;
+		}
+	}
+
+	if (sd->sc.option&OPTION_COSTUME)
+		return;
+
+	if (sd->sc.data[SC_BASILICA] && (skill_id != HP_BASILICA || sd->sc.data[SC_BASILICA]->val4 != sd->bl.id))
+		return; // On basilica only caster can use Basilica again to stop it.
+
+	if (sd->menuskill_id) {
+		if (sd->menuskill_id != SA_AUTOSPELL)
+			return; //Can't use skills while a menu is open.
+	}
+
+	pc_delinvincibletimer(sd);
+
+	unit_stop_walking(src, 1); // Important! If trying to skill while walking and out of range, skill gets queued 
+	struct block_list *tgtbl;
+	tgtbl = map_id2bl(target_id);
+	if (sd->skillitem == skill_id) {
+		if (skill_lv != sd->skillitemlv)
+			skill_lv = sd->skillitemlv;
+		unit_skilluse_pos(&sd->bl, src->x+tgtbl->x/2, src->y+tgtbl->y/2, skill_id, skill_lv);
+	}
+	else {
+		int lv;
+		sd->skillitem = sd->skillitemlv = 0;
+		if ((lv = pc_checkskill(sd, skill_id)) > 0) {
+			if (skill_lv > lv)
+				skill_lv = lv;
+			unit_skilluse_pos(&sd->bl, src->x + tgtbl->x / 2, src->y + tgtbl->y / 2, skill_id, skill_lv);
 		}
 	}
 
@@ -3973,18 +4044,24 @@ bool darkstrong(struct mob_data *md)
 
 
 void skillwhenidle(struct map_session_data *sd) {
-/*	// Pick Stone
+	// Pick Stone
 	if (pc_checkskill(sd, TF_PICKSTONE) > 0) {
 		if (sd->inventory.u.items_inventory[pc_search_inventory(sd, 7049)].amount < 12) {
-			unit_skilluse_ifable(&sd->bl, foundtargetID, TF_PICKSTONE, pc_checkskill(sd, TF_PICKSTONE));
+			unit_skilluse_ifable(&sd->bl, SELF, TF_PICKSTONE, pc_checkskill(sd, TF_PICKSTONE));
 		}
 	}
 	// Aqua Benedicta
 	if (pc_checkskill(sd, AL_HOLYWATER) > 0) {
 		if (sd->inventory.u.items_inventory[pc_search_inventory(sd, 523)].amount < 40) {
-			unit_skilluse_ifable(&sd->bl, foundtargetID, AL_HOLYWATER, pc_checkskill(sd, AL_HOLYWATER));
+			unit_skilluse_ifable(&sd->bl, SELF, AL_HOLYWATER, pc_checkskill(sd, AL_HOLYWATER));
 		}
-	}*/
+	}
+	// Energy Coat
+	if (pc_checkskill(sd, MG_ENERGYCOAT) > 0) {
+		if (!(sd->sc.data[SC_ENERGYCOAT])) {
+			unit_skilluse_ifable(&sd->bl, SELF, MG_ENERGYCOAT, pc_checkskill(sd, MG_ENERGYCOAT));
+		}
+	}
 	return;
 }
 
@@ -4133,19 +4210,19 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		///////////////////////////////////////////////////////////////////////////////////////////////
 		/// Emergency spells to use when in danger of being attacked (mostly useful for mage classes)
 		///////////////////////////////////////////////////////////////////////////////////////////////
-		/// Fireball
-		// Reasonably fast to try and cast in an energency if no Naplam Beat available.
-		// Only if enemy is weak enough to actually die!
-		if (canskill(sd)) if (pc_checkskill(sd, MG_FIREBALL)>5) {
-			if ((Dangerdistance <= 4)) {
-				if ((fireallowed(dangermd)) && (dangercount >= 1) && (dangermd->status.hp<4000)) {
-					unit_skilluse_ifable(&sd->bl, founddangerID, MG_FIREBALL, pc_checkskill(sd, MG_FIREBALL));
+		// Fire Wall
+		// Only if there still is enough distance to matter and enemy is not ranged
+		if (canskill(sd)) if ((pc_checkskill(sd, MG_FIREWALL)>0) && (dangermd->status.hp<2000)) {
+			if (Dangerdistance >= 5) {
+				if (fireallowed(dangermd) && (dangermd->status.rhw.range <= 3)) {
+					if (!(targetmd->state.boss))
+						unit_skilluse_ifablebetween(&sd->bl, foundtargetID, MG_FIREWALL, pc_checkskill(sd, MG_FIREWALL));
 				}
 			}
 		}
 		/// Napalm Beat
-		// Note : This has been modded to be uninterruptable and faster to use, albeit low damage.
-		// It is the spell to use in emergencies only, when enemy is at most 2 steps from hitting us.
+		// Note : This has been modded to be uninterruptable and faster to use. Unmodded the AI probably shouldn't ever cast it, it's that bad.
+		// It is the spell to use in the worst emergencies only, when enemy is at most 2 steps from hitting us.
 		if (canskill(sd)) if ((pc_checkskill(sd, MG_NAPALMBEAT)>0) && (dangermd->status.hp<2000)) {
 			if (Dangerdistance <= 2) {
 				if (ghostallowed(dangermd)) {
@@ -4153,7 +4230,28 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 				}
 			}
 		}
+		// Soul Strike
+		// Note : This has been modded to be uninterruptable, but due to low cast time same logic should be fine anyway
+		// Don't bother with this at low levels.
+		if (canskill(sd)) if (pc_checkskill(sd, MG_SOULSTRIKE)>5) {
+			if ((Dangerdistance <= 4)) {
+				if ((ghostallowed(dangermd)) && (dangercount == 1) && (dangermd->status.hp<5000)) {
+					unit_skilluse_ifable(&sd->bl, founddangerID, MG_SOULSTRIKE, pc_checkskill(sd, MG_SOULSTRIKE));
+				}
+			}
+		}
+		/// Fireball
+		// Reasonably fast to try and cast in an emergency
+		// Perfect for multiple enemies due to decent AOE
+		if (canskill(sd)) if (pc_checkskill(sd, MG_FIREBALL)>5) {
+			if ((Dangerdistance <= 4)) {
+				if ((fireallowed(dangermd)) && (dangercount > 1) && (dangermd->status.hp<4000)) {
+					unit_skilluse_ifable(&sd->bl, founddangerID, MG_FIREBALL, pc_checkskill(sd, MG_FIREBALL));
+				}
+			}
+		}
 		/// Frost Diver
+		// Our best spell to use when under attack, if none of the other special conditions apply
 		if (canskill(sd)) if (pc_checkskill(sd, MG_FROSTDIVER)>0) {
 			if (Dangerdistance <= 4) {
 				if (waterallowed(dangermd)) {
@@ -4201,6 +4299,14 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 					}
 				}
 			}
+			// Soul Strike on vulnerable enemy
+			if (canskill(sd)) if (pc_checkskill(sd, MG_SOULSTRIKE) > 0) {
+				if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
+					if (ghoststrong(targetmd)) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_SOULSTRIKE, pc_checkskill(sd, MG_SOULSTRIKE));
+					}
+				}
+			}
 			///////////////////////////////////////////////////////////////////////////////////////////////
 			/// Skills for general use
 			///////////////////////////////////////////////////////////////////////////////////////////////
@@ -4229,6 +4335,23 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 					}
 				}
 			}
+			// Soul Strike
+			if (canskill(sd)) if ((pc_checkskill(sd, MG_SOULSTRIKE) > 0)) {
+				if ((sd->state.autopilotmode == 2)) {
+					if (ghostallowed(targetmd)) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_SOULSTRIKE, pc_checkskill(sd, MG_SOULSTRIKE));
+					}
+				}
+			}
+			// Holy Light
+			if (canskill(sd)) if ((pc_checkskill(sd, AL_HOLYLIGHT) > 0)) {
+				if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) {
+					if (holyallowed(targetmd)) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, AL_HOLYLIGHT, pc_checkskill(sd, AL_HOLYLIGHT));
+					}
+				}
+			}
+			
 
 		}
 
