@@ -3491,6 +3491,156 @@ int targetnearest(block_list * bl, va_list ap)
 	return 0;
 }
 
+// Elemental property decisions for picking an attack spell. 50% or below = not allowed, 125% or more = good
+bool elemstrong(struct mob_data *md, int ele)
+{
+	if (ele == ELE_GHOST) {
+		if ((md->status.def_ele == ELE_UNDEAD) && (md->status.ele_lv >= 2)) return 1;
+		if (md->status.def_ele == ELE_GHOST) return 1;
+		return 0;
+	}
+	if (ele == ELE_FIRE) {
+		if (md->status.def_ele == ELE_UNDEAD) return 1;
+		if (md->status.def_ele == ELE_EARTH) return 1;
+		return 0;
+	}
+	if (ele == ELE_WATER) {
+		if ((md->status.def_ele == ELE_UNDEAD) && (md->status.ele_lv >= 3)) return 1;
+		if (md->status.def_ele == ELE_FIRE) return 1;
+		return 0;
+	}
+
+	if (ele == ELE_WIND) {
+		if (md->status.def_ele == ELE_WATER) return 1;
+		return 0;
+	}
+	if (ele == ELE_EARTH) {
+		if (md->status.def_ele == ELE_WIND) return 1;
+		return 0;
+	}
+	if (ele == ELE_HOLY) {
+		if ((md->status.def_ele == ELE_POISON) && (md->status.ele_lv >= 3)) return 1;
+		if (md->status.def_ele == ELE_DARK) return 1;
+		if (md->status.def_ele == ELE_UNDEAD) return 1;
+		return 0;
+	}
+	if (ele == ELE_DARK) {
+		if (md->status.def_ele == ELE_HOLY) return 1;
+		return 0;
+	}
+	if (ele == ELE_POISON) {
+		if ((md->status.def_ele == ELE_UNDEAD) && (md->status.ele_lv >= 2)) return 1;
+		if (md->status.def_ele == ELE_GHOST) return 1;
+		return 0;
+	}
+	if (ele == ELE_UNDEAD) {
+		if ((md->status.def_ele == ELE_HOLY) && (md->status.ele_lv >= 2)) return 1;
+		return 0;
+	}
+	if (ele == ELE_NEUTRAL) {
+		return 0;
+	}
+}
+
+
+bool elemallowed(struct mob_data *md, int ele)
+{
+	if (ele == ELE_GHOST) {
+		if ((md->status.def_ele == ELE_NEUTRAL) && (md->status.ele_lv >= 2)) return 0;
+		if ((md->status.def_ele == ELE_FIRE) && (md->status.ele_lv >= 3)) return 0;
+		if ((md->status.def_ele == ELE_WATER) && (md->status.ele_lv >= 3)) return 0;
+		if ((md->status.def_ele == ELE_WIND) && (md->status.ele_lv >= 3)) return 0;
+		if ((md->status.def_ele == ELE_EARTH) && (md->status.ele_lv >= 3)) return 0;
+		if ((md->status.def_ele == ELE_POISON) && (md->status.ele_lv >= 3)) return 0;
+		if ((md->status.def_ele == ELE_HOLY) && (md->status.ele_lv >= 2)) return 0;
+		if ((md->status.def_ele == ELE_DARK) && (md->status.ele_lv >= 2)) return 0;
+		return 1;
+
+	}
+	if (ele == ELE_FIRE) {
+		if ((md->status.def_ele == ELE_FIRE)) return 0;
+		if ((md->status.def_ele == ELE_HOLY) && (md->status.ele_lv >= 2)) return 0;
+		if ((md->status.def_ele == ELE_DARK) && (md->status.ele_lv >= 3)) return 0;
+		return 1;
+	}
+	if (ele == ELE_WATER) {
+		if ((md->status.def_ele == ELE_WATER)) return 0;
+		if ((md->status.def_ele == ELE_HOLY) && (md->status.ele_lv >= 2)) return 0;
+		if ((md->status.def_ele == ELE_DARK) && (md->status.ele_lv >= 3)) return 0;
+		return 1;
+	}
+	if (ele == ELE_WIND) {
+		if ((md->status.def_ele == ELE_WIND)) return 0;
+		if ((md->status.def_ele == ELE_HOLY) && (md->status.ele_lv >= 2)) return 0;
+		if ((md->status.def_ele == ELE_DARK) && (md->status.ele_lv >= 3)) return 0;
+		return 1;
+
+	}
+	if (ele == ELE_EARTH) {
+		if ((md->status.def_ele == ELE_EARTH)) return 0;
+		if ((md->status.def_ele == ELE_HOLY) && (md->status.ele_lv >= 2)) return 0;
+		if ((md->status.def_ele == ELE_DARK) && (md->status.ele_lv >= 3)) return 0;
+		if ((md->status.def_ele == ELE_UNDEAD) && (md->status.ele_lv >= 4)) return 0;
+		return 1;
+
+	}
+	if (ele == ELE_HOLY) {
+		if ((md->status.def_ele == ELE_HOLY)) return 0;
+		return 1;
+
+	}
+	if (ele == ELE_DARK) {
+		if ((md->status.def_ele == ELE_POISON)) return 0;
+		if ((md->status.def_ele == ELE_DARK)) return 0;
+		if ((md->status.def_ele == ELE_UNDEAD)) return 0;
+		return 1;
+
+	}
+	if (ele == ELE_POISON) {
+		if ((md->status.def_ele == ELE_WATER) && (md->status.ele_lv >= 3)) return 0;
+		if ((md->status.def_ele == ELE_GHOST) && (md->status.ele_lv >= 3)) return 0;
+		if ((md->status.def_ele == ELE_POISON)) return 0;
+		if ((md->status.def_ele == ELE_UNDEAD)) return 0;
+		if ((md->status.def_ele == ELE_HOLY) && (md->status.ele_lv >= 2)) return 0;
+		if ((md->status.def_ele == ELE_DARK)) return 0;
+		return 1;
+
+	}
+	if (ele == ELE_UNDEAD) {
+		if ((md->status.def_ele == ELE_WATER) && (md->status.ele_lv >= 3)) return 0;
+		if ((md->status.def_ele == ELE_FIRE) && (md->status.ele_lv >= 3)) return 0;
+		if ((md->status.def_ele == ELE_WIND) && (md->status.ele_lv >= 3)) return 0;
+		if ((md->status.def_ele == ELE_EARTH) && (md->status.ele_lv >= 3)) return 0;
+		if ((md->status.def_ele == ELE_POISON) && (md->status.ele_lv >= 2)) return 0;
+		if ((md->status.def_ele == ELE_UNDEAD)) return 0;
+		if ((md->status.def_ele == ELE_DARK)) return 0;
+		return 1;
+
+	}
+	if (ele == ELE_NEUTRAL) {
+		if ((md->status.def_ele == ELE_GHOST) && (md->status.ele_lv >= 2)) return 1;
+		return 1;
+
+	}
+
+
+}
+
+
+int AOEPriority(block_list * bl, va_list ap)
+{
+	struct mob_data *md;
+
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+
+	int elem = va_arg(ap, int); // the player autopiloting
+
+	if (!elemallowed(md, elem)) return 0; // This target won't be hurt by this element enough to care
+	if (elemstrong(md, elem)) return 3; // This target is weak to it so it's worth 50% more
+	return 2; // Default
+}
+
 int targetthischar(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
@@ -3875,165 +4025,6 @@ void unit_skilluse_ifablebetween(struct block_list *src, int target_id, uint16 s
 
 }
 
-// Elemental property decisions for picking an attack spell. 50% or below = not allowed, 125% or more = good
-bool ghostallowed(struct mob_data *md)
-{
-	if ((md->status.def_ele == ELE_NEUTRAL) && (md->status.ele_lv>=2)) return 0;
-	if ((md->status.def_ele == ELE_FIRE) && (md->status.ele_lv >= 3)) return 0;
-	if ((md->status.def_ele == ELE_WATER) && (md->status.ele_lv >= 3)) return 0;
-	if ((md->status.def_ele == ELE_WIND) && (md->status.ele_lv >= 3)) return 0;
-	if ((md->status.def_ele == ELE_EARTH) && (md->status.ele_lv >= 3)) return 0;
-	if ((md->status.def_ele == ELE_POISON) && (md->status.ele_lv >= 3)) return 0;
-	if ((md->status.def_ele == ELE_HOLY) && (md->status.ele_lv >= 2)) return 0;
-	if ((md->status.def_ele == ELE_DARK) && (md->status.ele_lv >= 2)) return 0;
-		return 1;
-
-}
-
-bool ghoststrong(struct mob_data *md)
-{
-	if ((md->status.def_ele == ELE_UNDEAD) && (md->status.ele_lv >= 2)) return 1;
-	if (md->status.def_ele == ELE_GHOST) return 1;
-	return 0;
-}
-
-bool fireallowed(struct mob_data *md)
-{
-	if ((md->status.def_ele == ELE_FIRE)) return 0;
-	if ((md->status.def_ele == ELE_HOLY) && (md->status.ele_lv >= 2)) return 0;
-	if ((md->status.def_ele == ELE_DARK) && (md->status.ele_lv >= 3)) return 0;
-	return 1;
-}
-
-bool firestrong(struct mob_data *md)
-{
-	if (md->status.def_ele == ELE_UNDEAD) return 1;
-	if (md->status.def_ele == ELE_EARTH) return 1;
-	return 0;
-}
-
-bool waterallowed(struct mob_data *md)
-{
-	if ((md->status.def_ele == ELE_WATER)) return 0;
-	if ((md->status.def_ele == ELE_HOLY) && (md->status.ele_lv >= 2)) return 0;
-	if ((md->status.def_ele == ELE_DARK) && (md->status.ele_lv >= 3)) return 0;
-	return 1;
-
-}
-
-bool waterstrong(struct mob_data *md)
-{
-	if ((md->status.def_ele == ELE_UNDEAD) && (md->status.ele_lv >= 3)) return 1;
-	if (md->status.def_ele == ELE_FIRE) return 1;
-	return 0;
-}
-
-bool windallowed(struct mob_data *md)
-{
-	if ((md->status.def_ele == ELE_WIND)) return 0;
-	if ((md->status.def_ele == ELE_HOLY) && (md->status.ele_lv >= 2)) return 0;
-	if ((md->status.def_ele == ELE_DARK) && (md->status.ele_lv >= 3)) return 0;
-	return 1;
-
-}
-
-bool windstrong(struct mob_data *md)
-{
-	if (md->status.def_ele == ELE_WATER) return 1;
-	return 0;
-}
-
-bool earthallowed(struct mob_data *md)
-{
-	if ((md->status.def_ele == ELE_EARTH)) return 0;
-	if ((md->status.def_ele == ELE_HOLY) && (md->status.ele_lv >= 2)) return 0;
-	if ((md->status.def_ele == ELE_DARK) && (md->status.ele_lv >= 3)) return 0;
-	if ((md->status.def_ele == ELE_UNDEAD) && (md->status.ele_lv >= 4)) return 0;
-	return 1;
-
-}
-
-bool earthstrong(struct mob_data *md)
-{
-	if (md->status.def_ele == ELE_WIND) return 1;
-	return 0;
-}
-
-bool poisonallowed(struct mob_data *md)
-{
-	if ((md->status.def_ele == ELE_WATER) && (md->status.ele_lv >= 3)) return 0;
-	if ((md->status.def_ele == ELE_GHOST) && (md->status.ele_lv >= 3)) return 0;
-	if ((md->status.def_ele == ELE_POISON)) return 0;
-	if ((md->status.def_ele == ELE_UNDEAD)) return 0;
-	if ((md->status.def_ele == ELE_HOLY) && (md->status.ele_lv >= 2)) return 0;
-	if ((md->status.def_ele == ELE_DARK)) return 0;
-	return 1;
-
-}
-
-bool poisonstrong(struct mob_data *md)
-{
-	if ((md->status.def_ele == ELE_UNDEAD) && (md->status.ele_lv >= 2)) return 1;
-	if (md->status.def_ele == ELE_GHOST) return 1;
-	return 0;
-}
-
-bool undeadallowed(struct mob_data *md)
-{
-	if ((md->status.def_ele == ELE_WATER) && (md->status.ele_lv >= 3)) return 0;
-	if ((md->status.def_ele == ELE_FIRE) && (md->status.ele_lv >= 3)) return 0;
-	if ((md->status.def_ele == ELE_WIND) && (md->status.ele_lv >= 3)) return 0;
-	if ((md->status.def_ele == ELE_EARTH) && (md->status.ele_lv >= 3)) return 0;
-	if ((md->status.def_ele == ELE_POISON) && (md->status.ele_lv >= 2)) return 0;
-	if ((md->status.def_ele == ELE_UNDEAD)) return 0;
-	if ((md->status.def_ele == ELE_DARK)) return 0;
-	return 1;
-
-}
-
-bool undeadstrong(struct mob_data *md)
-{
-	if ((md->status.def_ele == ELE_HOLY) && (md->status.ele_lv >= 2)) return 1;
-	return 0;
-}
-
-bool holyallowed(struct mob_data *md)
-{
-	if ((md->status.def_ele == ELE_HOLY)) return 0;
-	return 1;
-
-}
-
-bool holystrong(struct mob_data *md)
-{
-	if ((md->status.def_ele == ELE_POISON) && (md->status.ele_lv >= 3)) return 1;
-	if (md->status.def_ele == ELE_DARK) return 1;
-	if (md->status.def_ele == ELE_UNDEAD) return 1;
-	return 0;
-}
-
-bool darkallowed(struct mob_data *md)
-{
-	if ((md->status.def_ele == ELE_POISON)) return 0;
-	if ((md->status.def_ele == ELE_DARK)) return 0;
-	if ((md->status.def_ele == ELE_UNDEAD)) return 0;
-	return 1;
-
-}
-
-bool neutralallowed(struct mob_data *md)
-{
-	if ((md->status.def_ele == ELE_GHOST) && (md->status.ele_lv >= 2)) return 1;
-	return 1;
-
-}
-
-bool darkstrong(struct mob_data *md)
-{
-	if (md->status.def_ele == ELE_HOLY) return 1;
-	return 0;
-}
-
 
 void skillwhenidle(struct map_session_data *sd) {
 	// Pick Stone
@@ -4204,11 +4195,20 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		///////////////////////////////////////////////////////////////////////////////////////////////
 		// Fire Wall
 		// Only if there still is enough distance to matter and enemy is not ranged
+		// No more than 1 at the same position, max of 3 total
 		if (canskill(sd)) if ((pc_checkskill(sd, MG_FIREWALL)>0) && (dangermd->status.hp<2000)) {
 			if (Dangerdistance >= 5) {
-				if (fireallowed(dangermd) && (dangermd->status.rhw.range <= 3)) {
-					if (!(targetmd->state.boss))
-						unit_skilluse_ifablebetween(&sd->bl, foundtargetID, MG_FIREWALL, pc_checkskill(sd, MG_FIREWALL));
+				if (elemallowed(dangermd, skill_get_ele(MG_FIREWALL, pc_checkskill(sd, MG_FIREWALL))) && (dangermd->status.rhw.range <= 3)) {
+					if (!(targetmd->state.boss)) {
+						int i,j = 0;
+						for (i = 0; i < MAX_SKILLUNITGROUP && ud->skillunit[i]; i++) {
+							if (ud->skillunit[i]->skill_id == ud->skill_id) {
+								j++;
+								if (((ud->skillunit[i]->unit->bl.x == targetbl->x) || (ud->skillunit[i]->unit->bl.y == targetbl->y))) j = 999;
+							}
+						}
+						if (j<3) unit_skilluse_ifablebetween(&sd->bl, foundtargetID, MG_FIREWALL, pc_checkskill(sd, MG_FIREWALL));
+					}
 				}
 			}
 		}
@@ -4217,7 +4217,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		// It is the spell to use in the worst emergencies only, when enemy is at most 2 steps from hitting us.
 		if (canskill(sd)) if ((pc_checkskill(sd, MG_NAPALMBEAT)>0) && (dangermd->status.hp<2000)) {
 			if (Dangerdistance <= 2) {
-				if (ghostallowed(dangermd)) {
+				if (elemallowed(dangermd, skill_get_ele(MG_NAPALMBEAT, pc_checkskill(sd, MG_NAPALMBEAT)))) {
 					unit_skilluse_ifable(&sd->bl, founddangerID, MG_NAPALMBEAT, pc_checkskill(sd, MG_NAPALMBEAT));
 				}
 			}
@@ -4227,7 +4227,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		// Don't bother with this at low levels.
 		if (canskill(sd)) if (pc_checkskill(sd, MG_SOULSTRIKE)>5) {
 			if ((Dangerdistance <= 4)) {
-				if ((ghostallowed(dangermd)) && (dangercount == 1) && (dangermd->status.hp<5000)) {
+				if ((elemallowed(dangermd, skill_get_ele(MG_SOULSTRIKE, pc_checkskill(sd, MG_SOULSTRIKE)))) && (dangercount == 1) && (dangermd->status.hp<5000)) {
 					unit_skilluse_ifable(&sd->bl, founddangerID, MG_SOULSTRIKE, pc_checkskill(sd, MG_SOULSTRIKE));
 				}
 			}
@@ -4237,7 +4237,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		// Perfect for multiple enemies due to decent AOE
 		if (canskill(sd)) if (pc_checkskill(sd, MG_FIREBALL)>5) {
 			if ((Dangerdistance <= 4)) {
-				if ((fireallowed(dangermd)) && (dangercount > 1) && (dangermd->status.hp<4000)) {
+				if ((elemallowed(dangermd, skill_get_ele(MG_FIREBALL, pc_checkskill(sd, MG_FIREBALL)))) && (dangercount > 1) && (dangermd->status.hp<4000)) {
 					unit_skilluse_ifable(&sd->bl, founddangerID, MG_FIREBALL, pc_checkskill(sd, MG_FIREBALL));
 				}
 			}
@@ -4246,10 +4246,12 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		// Our best spell to use when under attack, if none of the other special conditions apply
 		if (canskill(sd)) if (pc_checkskill(sd, MG_FROSTDIVER)>0) {
 			if (Dangerdistance <= 4) {
-				if (waterallowed(dangermd)) {
+				if (elemallowed(dangermd, skill_get_ele(MG_FROSTDIVER, pc_checkskill(sd, MG_FROSTDIVER)))) {
 					if (!(dangermd->sc.data[SC_FREEZE]))
-						if (!(targetmd->state.boss))
-					unit_skilluse_ifable(&sd->bl, founddangerID, MG_FROSTDIVER, pc_checkskill(sd, MG_FROSTDIVER));
+						if (!(targetmd->status.def_ele == ELE_UNDEAD)) {
+							if (!(targetmd->state.boss))
+								unit_skilluse_ifable(&sd->bl, founddangerID, MG_FROSTDIVER, pc_checkskill(sd, MG_FROSTDIVER));
+						}
 				}
 			}
 		}
@@ -4257,9 +4259,43 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		/// Skills to prioritize based on elemental weakness
 		///////////////////////////////////////////////////////////////////////////////////////////////
 		// AOE skills go here, they should have higher priority than single target when able to hit multiple things
-		// ONly target around party leader who should be the tank if one exists. Using AOE with cast time on
+		// Only target around party leader who should be the tank if one exists. Using AOE with cast time on
 		// untanked monsters will just miss them.
-		
+		if (sd->state.autopilotmode == 2) {
+		// GET LEADER
+		int party_id, type = 0, i = 0;
+		struct party_data *p;
+
+		party_id = sd->status.party_id;
+		p = party_search(party_id);
+
+		if (p) //Search leader
+			for (i = 0; i < MAX_PARTY && !p->party.member[i].leader; i++);
+
+		if (!p || i == MAX_PARTY) { //leader not found
+			//ShowError("No party leader to follow!");
+			foundtargetID = -1;
+		}
+		else {
+			targetthis = p->party.member[i].char_id;
+			foundtargetID = -1;
+			map_foreachinmap(targetthischar, sd->bl.m, BL_PC, sd);
+		}
+		// No party leader, no AOE skills of this type
+		if (foundtargetID > -1) {
+			// Save leader position, as targeting valiables will be overwritten
+			int foundtargetID2 = foundtargetID;
+			// Thunderstorm
+			if (canskill(sd)) if ((pc_checkskill(sd, MG_THUNDERSTORM) > 0) && (Dangerdistance > 900)) {
+				// modded : 5x5 but 7x7 at level 6 or higher.
+				int area = 2; if (pc_checkskill(sd, MG_THUNDERSTORM) > 5) area++;
+				if (map_foreachinrange(AOEPriority, &sd->bl, area, BL_MOB, skill_get_ele(MG_THUNDERSTORM, pc_checkskill(sd, MG_THUNDERSTORM))) > 6) {
+					unit_skilluse_ifablexy(&sd->bl, foundtargetID2, MG_THUNDERSTORM, pc_checkskill(sd, MG_THUNDERSTORM));
+				}
+			}
+		}
+
+		}
 		
 		// get target for single target spells only once - pick best skill to use on nearest enemy, not pick best enemy for best skill.
 		// probably could do better but targeting too many times causes lags as it includes finding paths.
@@ -4270,7 +4306,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		if (foundtargetID2 > -1) {
 			if (canskill(sd)) if (pc_checkskill(sd, MG_FIREBOLT) > 0) {
 				if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
-					if (firestrong(targetmd)) {
+					if (elemstrong(targetmd, skill_get_ele(MG_FIREBOLT, pc_checkskill(sd, MG_FIREBOLT)))) {
 						unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_FIREBOLT, pc_checkskill(sd, MG_FIREBOLT));
 					}
 				}
@@ -4278,7 +4314,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			// Cold Bolt on vulnerable enemy
 			if (canskill(sd)) if (pc_checkskill(sd, MG_COLDBOLT) > 0) {
 				if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
-					if (waterstrong(targetmd)) {
+					if (elemstrong(targetmd, skill_get_ele(MG_COLDBOLT, pc_checkskill(sd, MG_COLDBOLT)))) {
 						unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_COLDBOLT, pc_checkskill(sd, MG_COLDBOLT));
 					}
 				}
@@ -4286,7 +4322,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			// Lightning Bolt on vulnerable enemy
 			if (canskill(sd)) if (pc_checkskill(sd, MG_LIGHTNINGBOLT) > 0) {
 				if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
-					if (windstrong(targetmd)) {
+					if (elemstrong(targetmd, skill_get_ele(MG_LIGHTNINGBOLT, pc_checkskill(sd, MG_LIGHTNINGBOLT)))) {
 						unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_LIGHTNINGBOLT, pc_checkskill(sd, MG_LIGHTNINGBOLT));
 					}
 				}
@@ -4294,7 +4330,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			// Soul Strike on vulnerable enemy
 			if (canskill(sd)) if (pc_checkskill(sd, MG_SOULSTRIKE) > 0) {
 				if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
-					if (ghoststrong(targetmd)) {
+					if (elemstrong(targetmd, skill_get_ele(MG_SOULSTRIKE, pc_checkskill(sd, MG_SOULSTRIKE)))) {
 						unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_SOULSTRIKE, pc_checkskill(sd, MG_SOULSTRIKE));
 					}
 				}
@@ -4306,7 +4342,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			if (canskill(sd)) if ((pc_checkskill(sd, MG_FIREBOLT) > 0) && (pc_checkskill(sd, MG_FIREBOLT) >= pc_checkskill(sd, MG_COLDBOLT))
 				&& (pc_checkskill(sd, MG_FIREBOLT) >= pc_checkskill(sd, MG_LIGHTNINGBOLT))) {
 				if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) {
-					if (fireallowed(targetmd)) {
+					if (elemallowed(targetmd, skill_get_ele(MG_FIREBOLT, pc_checkskill(sd, MG_FIREBOLT)))) {
 						unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_FIREBOLT, pc_checkskill(sd, MG_FIREBOLT));
 					}
 				}
@@ -4314,7 +4350,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			if (canskill(sd)) if ((pc_checkskill(sd, MG_COLDBOLT) > 0) && (pc_checkskill(sd, MG_COLDBOLT) >= pc_checkskill(sd, MG_FIREBOLT))
 				&& (pc_checkskill(sd, MG_COLDBOLT) >= pc_checkskill(sd, MG_LIGHTNINGBOLT))) {
 				if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) {
-					if (waterallowed(targetmd)) {
+					if (elemallowed(targetmd, skill_get_ele(MG_COLDBOLT, pc_checkskill(sd, MG_COLDBOLT)))) {
 						unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_COLDBOLT, pc_checkskill(sd, MG_COLDBOLT));
 					}
 				}
@@ -4322,7 +4358,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			if (canskill(sd)) if ((pc_checkskill(sd, MG_LIGHTNINGBOLT) > 0) && (pc_checkskill(sd, MG_LIGHTNINGBOLT) >= pc_checkskill(sd, MG_COLDBOLT))
 				&& (pc_checkskill(sd, MG_LIGHTNINGBOLT) >= pc_checkskill(sd, MG_FIREBOLT))) {
 				if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) {
-					if (windallowed(targetmd)) {
+					if (elemallowed(targetmd, skill_get_ele(MG_LIGHTNINGBOLT, pc_checkskill(sd, MG_LIGHTNINGBOLT)))) {
 						unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_LIGHTNINGBOLT, pc_checkskill(sd, MG_LIGHTNINGBOLT));
 					}
 				}
@@ -4330,7 +4366,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			// Soul Strike
 			if (canskill(sd)) if ((pc_checkskill(sd, MG_SOULSTRIKE) > 0)) {
 				if ((sd->state.autopilotmode == 2)) {
-					if (ghostallowed(targetmd)) {
+					if (elemallowed(targetmd, skill_get_ele(MG_SOULSTRIKE, pc_checkskill(sd, MG_SOULSTRIKE)))) {
 						unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_SOULSTRIKE, pc_checkskill(sd, MG_SOULSTRIKE));
 					}
 				}
@@ -4338,7 +4374,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			// Holy Light
 			if (canskill(sd)) if ((pc_checkskill(sd, AL_HOLYLIGHT) > 0)) {
 				if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) {
-					if (holyallowed(targetmd)) {
+					if (elemallowed(targetmd, skill_get_ele(AL_HOLYLIGHT, pc_checkskill(sd, AL_HOLYLIGHT)))) {
 						unit_skilluse_ifable(&sd->bl, foundtargetID2, AL_HOLYLIGHT, pc_checkskill(sd, AL_HOLYLIGHT));
 					}
 				}
@@ -4423,8 +4459,8 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 	else if (canskill(sd)) { 
 	// Skills to use when not in battle go here 
 		skillwhenidle(sd);
-					// Follow the leader
-
+		
+		// Follow the leader
 		int party_id, type = 0, i = 0;
 		struct party_data *p;
 
