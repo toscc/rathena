@@ -142,6 +142,10 @@ int unit_skilluse_id(struct block_list *src, int target_id, uint16 skill_id, uin
 int unit_skilluse_pos(struct block_list *src, short skill_x, short skill_y, uint16 skill_id, uint16 skill_lv);
 int unit_skilluse_id2(struct block_list *src, int target_id, uint16 skill_id, uint16 skill_lv, int casttime, int castcancel);
 int unit_skilluse_pos2( struct block_list *src, short skill_x, short skill_y, uint16 skill_id, uint16 skill_lv, int casttime, int castcancel);
+int unit_skilluse_id(struct block_list *src, int target_id, uint16 skill_id, uint16 skill_lv, bool walkqueue);
+int unit_skilluse_pos(struct block_list *src, short skill_x, short skill_y, uint16 skill_id, uint16 skill_lv, bool walkqueue);
+int unit_skilluse_id2(struct block_list *src, int target_id, uint16 skill_id, uint16 skill_lv, int casttime, int castcancel, bool walkqueue);
+int unit_skilluse_pos2(struct block_list *src, short skill_x, short skill_y, uint16 skill_id, uint16 skill_lv, int casttime, int castcancel, bool walkqueue);
 
 // Step timer used for delayed attack and skill use
 int unit_step_timer(int tid, unsigned int tick, int id, intptr_t data);
