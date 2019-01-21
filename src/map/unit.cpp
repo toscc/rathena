@@ -4529,7 +4529,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			// target nearest NPC. Hopefully it's the warp the leader entered.
 			map_foreachinmap(targetnearestwarp, sd->bl.m, BL_NPC, sd);
 			if (foundtargetID > -1) {
-				unit_walktobl(&sd->bl, targetbl, 2, 0);
+				unit_walktoxy(&sd->bl, targetbl->x, targetbl->y, 8);
 			}
 
 		}
