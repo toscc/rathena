@@ -1330,13 +1330,21 @@ int unit_stop_walking(struct block_list *bl,int type)
  * @param skill_lv: Skill Level
  * @return unit_skilluse_id2()
  */
+int unit_skilluse_id(struct block_list *src, int target_id, uint16 skill_id, uint16 skill_lv, bool walkqueue)
+{
+	return unit_skilluse_id2(
+		src, target_id, skill_id, skill_lv,
+		skill_castfix(src, skill_id, skill_lv),
+		skill_get_castcancel(skill_id),  walkqueue
+	);
+}
 int unit_skilluse_id(struct block_list *src, int target_id, uint16 skill_id, uint16 skill_lv)
 {
 	return unit_skilluse_id2(
 		src, target_id, skill_id, skill_lv,
 		skill_castfix(src, skill_id, skill_lv),
-		skill_get_castcancel(skill_id)
-	);
+		skill_get_castcancel(skill_id), true
+		);
 }
 
 /**
@@ -1511,6 +1519,10 @@ int unit_set_walkdelay(struct block_list *bl, unsigned int tick, int delay, int 
  * @return Success(1); Fail(0);
  */
 int unit_skilluse_id2(struct block_list *src, int target_id, uint16 skill_id, uint16 skill_lv, int casttime, int castcancel)
+{
+	return unit_skilluse_id2(src, target_id, skill_id, skill_lv, casttime, castcancel, true);
+}
+int unit_skilluse_id2(struct block_list *src, int target_id, uint16 skill_id, uint16 skill_lv, int casttime, int castcancel, bool walkqueue)
 {
 	struct unit_data *ud;
 	struct status_data *tstatus;
@@ -1735,7 +1747,7 @@ int unit_skilluse_id2(struct block_list *src, int target_id, uint16 skill_id, ui
 	if(ud->stepaction || ud->steptimer != INVALID_TIMER)
 		unit_stop_stepaction(src);
 	// Remember the skill request from the client while walking to the next cell
-	if(src->type == BL_PC && ud->walktimer != INVALID_TIMER && !battle_check_range(src, target, range-1)) {
+	if(walkqueue && src->type == BL_PC && ud->walktimer != INVALID_TIMER && !battle_check_range(src, target, range-1)) {
 		ud->stepaction = true;
 		ud->target_to = target_id;
 		ud->stepskill_id = skill_id;
@@ -1950,13 +1962,21 @@ int unit_skilluse_id2(struct block_list *src, int target_id, uint16 skill_id, ui
  * @param skill_lv: Skill Level
  * @return unit_skilluse_pos2()
  */
+int unit_skilluse_pos(struct block_list *src, short skill_x, short skill_y, uint16 skill_id, uint16 skill_lv, bool walkqueue)
+{
+	return unit_skilluse_pos2(
+		src, skill_x, skill_y, skill_id, skill_lv,
+		skill_castfix(src, skill_id, skill_lv),
+		skill_get_castcancel(skill_id), walkqueue
+	);
+}
 int unit_skilluse_pos(struct block_list *src, short skill_x, short skill_y, uint16 skill_id, uint16 skill_lv)
 {
 	return unit_skilluse_pos2(
 		src, skill_x, skill_y, skill_id, skill_lv,
 		skill_castfix(src, skill_id, skill_lv),
-		skill_get_castcancel(skill_id)
-	);
+		skill_get_castcancel(skill_id), true
+		);
 }
 
 /**
@@ -1970,7 +1990,11 @@ int unit_skilluse_pos(struct block_list *src, short skill_x, short skill_y, uint
  * @param castcancel: Whether or not the skill can be cancelled by interuption (hit)
  * @return Success(1); Fail(0);
  */
-int unit_skilluse_pos2( struct block_list *src, short skill_x, short skill_y, uint16 skill_id, uint16 skill_lv, int casttime, int castcancel)
+int unit_skilluse_pos2(struct block_list *src, short skill_x, short skill_y, uint16 skill_id, uint16 skill_lv, int casttime, int castcancel)
+{
+	return unit_skilluse_pos2(src,skill_x, skill_y, skill_id, skill_lv, casttime, castcancel, true);
+}
+	int unit_skilluse_pos2(struct block_list *src, short skill_x, short skill_y, uint16 skill_id, uint16 skill_lv, int casttime, int castcancel, bool walkqueue)
 {
 	struct map_session_data *sd = NULL;
 	struct unit_data        *ud = NULL;
@@ -2040,7 +2064,7 @@ int unit_skilluse_pos2( struct block_list *src, short skill_x, short skill_y, ui
 	if(ud->stepaction || ud->steptimer != INVALID_TIMER)
 		unit_stop_stepaction(src);
 	// Remember the skill request from the client while walking to the next cell
-	if(src->type == BL_PC && ud->walktimer != INVALID_TIMER && !battle_check_range(src, &bl, range-1)) {
+	if(walkqueue && src->type == BL_PC && ud->walktimer != INVALID_TIMER && !battle_check_range(src, &bl, range-1)) {
 		struct map_data *md = &map[src->m];
 		// Convert coordinates to target_to so we can use it as target later
 		ud->stepaction = true;
@@ -3642,7 +3666,7 @@ int AOEPriority(block_list * bl, va_list ap)
 	nullpo_ret(bl);
 	nullpo_ret(md = (struct mob_data *)bl);
 
-	int elem = va_arg(ap, int); // the player autopiloting
+	uint16 elem = va_arg(ap, int); // the player autopiloting
 
 	if (!elemallowed(md, elem)) return 0; // This target won't be hurt by this element enough to care
 	if (elemstrong(md, elem)) return 3; // This target is weak to it so it's worth 50% more
@@ -3836,24 +3860,6 @@ int unit_skilluse_ifable(struct block_list *src, int target_id, uint16 skill_id,
 		}
 	}
 
-
-
-	/*struct unit_data *ud;
-	int combo = 0, range;
-	ud = unit_bl2ud(src);
-	block_list * target = map_id2bl(target_id);
-	if (src->id != target_id) {
-		range = skill_get_range2(src, skill_id, skill_lv, true);
-		if (!battle_check_range(src, target, range))
-			return;
-	}*/
-/*	block_list * target = map_id2bl(target_id);
-	if (target->type == BL_PC) 
-	{
-		ShowError("Player is being targeted!");
-		return;
-	}*/
-
 	if (sd->sc.option&OPTION_COSTUME)
 		return 0;
 
@@ -3891,8 +3897,8 @@ int unit_skilluse_ifable(struct block_list *src, int target_id, uint16 skill_id,
 	pc_delinvincibletimer(sd);
 
 
-	unit_stop_walking(src, 1); // Important! If trying to skill while walking and out of range, skill gets queued 
-	return unit_skilluse_id(src, target_id, skill_id, skill_lv);
+//	unit_stop_walking(src, 1); // Important! If trying to skill while walking and out of range, skill gets queued 
+	return unit_skilluse_id(src, target_id, skill_id, skill_lv, false);
 }
 
 void unit_skilluse_ifablexy(struct block_list *src, int target_id, uint16 skill_id, uint16 skill_lv)
@@ -3944,13 +3950,13 @@ void unit_skilluse_ifablexy(struct block_list *src, int target_id, uint16 skill_
 
 	pc_delinvincibletimer(sd);
 
-	unit_stop_walking(src, 1); // Important! If trying to skill while walking and out of range, skill gets queued 
+//	unit_stop_walking(src, 1); // Important! If trying to skill while walking and out of range, skill gets queued 
 	struct block_list *tgtbl;
 	tgtbl = map_id2bl(target_id);
 	if (sd->skillitem == skill_id) {
 		if (skill_lv != sd->skillitemlv)
 			skill_lv = sd->skillitemlv;
-		unit_skilluse_pos(&sd->bl, tgtbl->x, tgtbl->y, skill_id, skill_lv);
+		unit_skilluse_pos(&sd->bl, tgtbl->x, tgtbl->y, skill_id, skill_lv, false);
 	}
 	else {
 		int lv;
@@ -3958,7 +3964,7 @@ void unit_skilluse_ifablexy(struct block_list *src, int target_id, uint16 skill_
 		if ((lv = pc_checkskill(sd, skill_id)) > 0) {
 			if (skill_lv > lv)
 				skill_lv = lv;
-			unit_skilluse_pos(&sd->bl, tgtbl->x, tgtbl->y, skill_id, skill_lv);
+			unit_skilluse_pos(&sd->bl, tgtbl->x, tgtbl->y, skill_id, skill_lv, false);
 		}
 	}
 
@@ -4013,13 +4019,13 @@ void unit_skilluse_ifablebetween(struct block_list *src, int target_id, uint16 s
 
 	pc_delinvincibletimer(sd);
 
-	unit_stop_walking(src, 1); // Important! If trying to skill while walking and out of range, skill gets queued 
+	//unit_stop_walking(src, 1); // Important! If trying to skill while walking and out of range, skill gets queued 
 	struct block_list *tgtbl;
 	tgtbl = map_id2bl(target_id);
 	if (sd->skillitem == skill_id) {
 		if (skill_lv != sd->skillitemlv)
 			skill_lv = sd->skillitemlv;
-		unit_skilluse_pos(&sd->bl, src->x+tgtbl->x/2, src->y+tgtbl->y/2, skill_id, skill_lv);
+		unit_skilluse_pos(&sd->bl, src->x+tgtbl->x/2, src->y+tgtbl->y/2, skill_id, skill_lv, false);
 	}
 	else {
 		int lv;
@@ -4027,7 +4033,7 @@ void unit_skilluse_ifablebetween(struct block_list *src, int target_id, uint16 s
 		if ((lv = pc_checkskill(sd, skill_id)) > 0) {
 			if (skill_lv > lv)
 				skill_lv = lv;
-			unit_skilluse_pos(&sd->bl, src->x + tgtbl->x / 2, src->y + tgtbl->y / 2, skill_id, skill_lv);
+			unit_skilluse_pos(&sd->bl, src->x + tgtbl->x / 2, src->y + tgtbl->y / 2, skill_id, skill_lv, false);
 		}
 	}
 
@@ -4298,24 +4304,30 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			int spelltocast = -1;
 			int bestpriority = -1;
 			int priority;
+			int IDtarget = -1;
 			// Thunderstorm
 			if (canskill(sd)) if ((pc_checkskill(sd, MG_THUNDERSTORM) > 0) && (Dangerdistance > 900)) {
 				// modded : 5x5 but 7x7 at level 6 or higher.
 				int area = 2; if (pc_checkskill(sd, MG_THUNDERSTORM) > 5) area++;
 				priority = map_foreachinrange(AOEPriority, targetbl2, area, BL_MOB, skill_get_ele(MG_THUNDERSTORM, pc_checkskill(sd, MG_THUNDERSTORM)));
-				if ((priority > 6) && (priority>bestpriority)) {
+				if ((priority >= 6) && (priority>bestpriority)) {
 					spelltocast = MG_THUNDERSTORM; bestpriority = priority;
 				}
 			}
 			// Fireball
+			// This is special - it targets a monster despite having AOE, not a ground skill
 			if (canskill(sd)) if ((pc_checkskill(sd, MG_FIREBALL) > 0)) {
-				int area = 2; 
-				priority = map_foreachinrange(AOEPriority, targetbl2, area, BL_MOB, skill_get_ele(MG_FIREBALL, pc_checkskill(sd, MG_FIREBALL)));
-				if ((priority > 6) && (priority>bestpriority)) {
-					spelltocast = MG_FIREBALL; bestpriority = priority;
+				foundtargetID = -1; targetdistance = 999;
+				map_foreachinrange(targetnearest, targetbl2, AREA_SIZE, BL_MOB, sd);
+				int area = 2;
+				priority = map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(MG_FIREBALL, pc_checkskill(sd, MG_FIREBALL)));
+				if ((priority >= 6) && (priority>bestpriority)) {
+					spelltocast = MG_FIREBALL; bestpriority = priority; IDtarget = foundtargetID;
 				}
 			}
 			if (spelltocast > -1) {
+				if (spelltocast == MG_FIREBALL) unit_skilluse_ifable(&sd->bl, IDtarget, spelltocast, pc_checkskill(sd, spelltocast));
+				else
 				unit_skilluse_ifablexy(&sd->bl, foundtargetID2, spelltocast, pc_checkskill(sd, spelltocast));
 			}
 		}
