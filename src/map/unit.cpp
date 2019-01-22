@@ -3532,6 +3532,23 @@ int targetnearest(block_list * bl, va_list ap)
 	return 0;
 }
 
+int signumcount(block_list * bl, va_list ap)
+{
+
+	struct mob_data *md;
+
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+
+	if (md->sc.data[SC_SIGNUMCRUCIS]) return 0;
+
+	if ((battle_check_undead(md->status.race, md->status.def_ele) || md->status.race == RC_DEMON))
+	{
+		if (md->state.boss) return 3; else return 1;
+	}
+	return 0;
+}
+
 // Elemental property decisions for picking an attack spell. 50% or below = not allowed, 125% or more = good
 bool elemstrong(struct mob_data *md, int ele)
 {
@@ -3791,6 +3808,16 @@ int finddanger(block_list * bl, va_list ap)
 	sc = status_get_sc(bl);
 	if ((sc->data[SC_PNEUMA]) && (md->status.rhw.range > 3)) return 0;
 	if ((sc->data[SC_SAFETYWALL]) && (md->status.rhw.range <= 3)) return 0;
+	// Are we protected by Firewall between?
+	if (md->status.rhw.range <= 3) {
+		struct unit_data *ud2;
+		ud2 = unit_bl2ud(&sd2->bl);
+	int i;
+	for (i = 0; i < MAX_SKILLUNITGROUP && ud2->skillunit[i]; i++) {
+		if (ud2->skillunit[i]->skill_id == MG_FIREWALL)
+			if (((abs(ud2->skillunit[i]->unit->bl.x - ((sd2->bl.x + bl->x) / 2)) < 3) && (abs(ud2->skillunit[i]->unit->bl.y - ((sd2->bl.y + bl->y) / 2)) < 3))) return 0;
+		}
+	}
 
 	int dist = distance_bl(&sd2->bl, bl) - md->status.rhw.range;
 	if ((dist < dangerdistancebest) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKWALL))
@@ -3822,13 +3849,18 @@ int provokethis(block_list * bl, va_list ap)
 	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
 
 	// Can change target from skills?
-	if (!battle_config.mob_changetarget_byskill) return 0;
+	//if (!battle_config.mob_changetarget_byskill) return 0;
 	// Already provoked, has no target or targeting us, no need
 	if (md->state.provoke_flag == sd2->bl.id) return 0;
 	if (!md->target_id) return 0;
 	if (md->target_id == sd2->bl.id) return 0;
+	if (md->status.def_ele == ELE_UNDEAD) return 0;
+	if (md->state.boss) return 0;
 
-	targetbl = bl; foundtargetID = md->bl.id;  targetmd = md;
+	// want nearest anyway
+	int dist = distance_bl(&sd2->bl, bl);
+	if ((dist < targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKWALL))) { targetdistance = dist; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
+
 	return 0;
 }
 
@@ -4048,6 +4080,14 @@ void unit_skilluse_ifablebetween(struct block_list *src, int target_id, uint16 s
 
 }
 
+bool isdisabled(mob_data* md)
+{
+	if ((md->sc.data[SC_FREEZE])) return true;
+	if ((md->sc.data[SC_STONE])) return true;
+	return false;
+}
+
+
 
 void skillwhenidle(struct map_session_data *sd) {
 	// Pick Stone
@@ -4058,7 +4098,7 @@ void skillwhenidle(struct map_session_data *sd) {
 	}
 	// Aqua Benedicta
 	if (pc_checkskill(sd, AL_HOLYWATER) > 0) {
-		if (sd->inventory.u.items_inventory[pc_search_inventory(sd, 523)].amount < 40) {
+		if ((sd->inventory.u.items_inventory[pc_search_inventory(sd, 523)].amount < 40) && (pc_search_inventory(sd, ITEMID_EMPTY_BOTTLE)>0)) {
 			unit_skilluse_ifable(&sd->bl, SELF, AL_HOLYWATER, pc_checkskill(sd, AL_HOLYWATER));
 		}
 	}
@@ -4173,10 +4213,10 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			foundtargetID = -1;
 			map_foreachinrange(targetpneuma, &sd->bl, 12, BL_MOB, sd);
 			if (foundtargetID > -1) {
-				// Not if pneuma already exists on target
+				// Not if pneuma already exists on target and also not if safety wall exists, they are mutually exclusive
 				struct status_change *sc;
 				sc = status_get_sc(bl);
-				if (!sc->data[SC_PNEUMA]) { unit_skilluse_ifablexy(&sd->bl, foundtargetID, AL_PNEUMA, pc_checkskill(sd, AL_PNEUMA)); }
+				if (!(sc->data[SC_PNEUMA] || sc->data[SC_SAFETYWALL])) { unit_skilluse_ifablexy(&sd->bl, foundtargetID, AL_PNEUMA, pc_checkskill(sd, AL_PNEUMA)); }
 			}
 		}
 		/// Heal
@@ -4231,18 +4271,31 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		///////////////////////////////////////////////////////////////////////////////////////////////
 		/// Emergency spells to use when in danger of being attacked (mostly useful for mage classes)
 		///////////////////////////////////////////////////////////////////////////////////////////////
+		// Safety Wall
+		// At most 3 mobs, nearest must be close and melee.
+		// Must be very powerful and a real threat!
+		if ((Dangerdistance <= 3) && (dangercount<4)) {
+			if (canskill(sd)) if ((pc_checkskill(sd, MG_SAFETYWALL)>0) && (dangermd->status.rhw.range <= 3)
+				&& (dangermd->status.rhw.atk2>sd->battle_status.hp / 5) && (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE)>0)
+				&& (!sd->sc.data[SC_PNEUMA]) && (!sd->sc.data[SC_SAFETYWALL]))
+			// If we are in tanking mode, distance must be 1, we will otherwise move towards monster!
+			{ if ((sd->state.autopilotmode != 1) || (Dangerdistance <= 1))
+					 unit_skilluse_ifablexy(&sd->bl, sd->bl.id, MG_SAFETYWALL, pc_checkskill(sd, MG_SAFETYWALL));
+			}
+		}
 		// Fire Wall
 		// Only if there still is enough distance to matter and enemy is not ranged
 		// No more than 1 at the same position, max of 3 total
+		// never use in tanking mode, meaningless
 		if ((Dangerdistance >= 5) && (Dangerdistance <900)) {
 			if (canskill(sd)) if ((pc_checkskill(sd, MG_FIREWALL)>0) && (dangermd->status.hp<2000)) {
 				if (elemallowed(dangermd, skill_get_ele(MG_FIREWALL, pc_checkskill(sd, MG_FIREWALL))) && (dangermd->status.rhw.range <= 3)) {
-					if (!(dangermd->state.boss)) {
+					if (!(dangermd->state.boss)) if (sd->state.autopilotmode != 1) {
 						int i,j = 0;
 						for (i = 0; i < MAX_SKILLUNITGROUP && ud->skillunit[i]; i++) {
-							if (ud->skillunit[i]->skill_id == ud->skill_id) {
+							if (ud->skillunit[i]->skill_id == MG_FIREWALL) {
 								j++;
-								if (((ud->skillunit[i]->unit->bl.x == targetbl->x) || (ud->skillunit[i]->unit->bl.y == targetbl->y))) j = 999;
+								if (((abs(ud->skillunit[i]->unit->bl.x-((targetbl->x+bl->x)/2))<2) && (abs(ud->skillunit[i]->unit->bl.y - ((targetbl->y+bl->y)/2))<2))) j = 999;
 							}
 						}
 						if (j<3) unit_skilluse_ifablebetween(&sd->bl, founddangerID, MG_FIREWALL, pc_checkskill(sd, MG_FIREWALL));
@@ -4254,7 +4307,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		// Note : This has been modded to be uninterruptable and faster to use. Unmodded the AI probably shouldn't ever cast it, it's that bad.
 		// It is the spell to use in the worst emergencies only, when enemy is at most 2 steps from hitting us.
 		if (Dangerdistance <= 2) {
-			if (canskill(sd)) if ((pc_checkskill(sd, MG_NAPALMBEAT)>0) && (dangermd->status.hp<2000)) {
+			if (canskill(sd)) if ((pc_checkskill(sd, MG_NAPALMBEAT)>0) && (dangermd->status.hp<sd->battle_status.matk_max * 4)) {
 				if (elemallowed(dangermd, skill_get_ele(MG_NAPALMBEAT, pc_checkskill(sd, MG_NAPALMBEAT)))) {
 					unit_skilluse_ifable(&sd->bl, founddangerID, MG_NAPALMBEAT, pc_checkskill(sd, MG_NAPALMBEAT));
 				}
@@ -4262,10 +4315,10 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		}
 		// Soul Strike
 		// Note : This has been modded to be uninterruptable, but due to low cast time same logic should be fine anyway
-		// Don't bother with this at low levels.
+		// Don't bother with this at low levels. Don't use if unlikely to kill target.
 		if (canskill(sd)) if (pc_checkskill(sd, MG_SOULSTRIKE)>5) {
 			if ((Dangerdistance <= 4)) {
-				if ((elemallowed(dangermd, skill_get_ele(MG_SOULSTRIKE, pc_checkskill(sd, MG_SOULSTRIKE)))) && (dangercount == 1) && (dangermd->status.hp<5000)) {
+				if ((elemallowed(dangermd, skill_get_ele(MG_SOULSTRIKE, pc_checkskill(sd, MG_SOULSTRIKE)))) && (dangercount == 1) && (dangermd->status.hp<sd->battle_status.matk_max*4)) {
 					unit_skilluse_ifable(&sd->bl, founddangerID, MG_SOULSTRIKE, pc_checkskill(sd, MG_SOULSTRIKE));
 				}
 			}
@@ -4273,9 +4326,10 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		/// Fireball
 		// Reasonably fast to try and cast in an emergency
 		// Perfect for multiple enemies due to decent AOE
+		// Don't use if enemy still has a lot of hp
 		if (canskill(sd)) if (pc_checkskill(sd, MG_FIREBALL)>5) {
 			if ((Dangerdistance <= 4)) {
-				if ((elemallowed(dangermd, skill_get_ele(MG_FIREBALL, pc_checkskill(sd, MG_FIREBALL)))) && (dangercount > 1) && (dangermd->status.hp<4000)) {
+				if ((elemallowed(dangermd, skill_get_ele(MG_FIREBALL, pc_checkskill(sd, MG_FIREBALL)))) && (dangercount > 1) && (dangermd->status.hp<sd->battle_status.matk_max * 6)) {
 					unit_skilluse_ifable(&sd->bl, founddangerID, MG_FIREBALL, pc_checkskill(sd, MG_FIREBALL));
 				}
 			}
@@ -4285,12 +4339,47 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		if (canskill(sd)) if (pc_checkskill(sd, MG_FROSTDIVER)>0) {
 			if (Dangerdistance <= 4) {
 				if (elemallowed(dangermd, skill_get_ele(MG_FROSTDIVER, pc_checkskill(sd, MG_FROSTDIVER)))) {
-					if (!(dangermd->sc.data[SC_FREEZE]))
-						if (!(dangermd->status.def_ele == ELE_UNDEAD)) {
+					if (!isdisabled(dangermd))
+							if (!(dangermd->status.def_ele == ELE_UNDEAD)) {
 							if (!(dangermd->state.boss))
 								unit_skilluse_ifable(&sd->bl, founddangerID, MG_FROSTDIVER, pc_checkskill(sd, MG_FROSTDIVER));
 						}
 				}
+			}
+		}
+		/// Stone Curse
+		// we can use a gem to petrify it too if the moster is really that dangerous and not in range for safety wall
+		// Note : this skill was modded to have higher range and deal more percentage damage as well as cast faster. 
+		// Otherwise it might be best to avoid using it by the AI altogether, it's just too useless?
+		if (canskill(sd)) if (pc_checkskill(sd, MG_STONECURSE)>0) {
+			if (Dangerdistance <= 6) {
+				if ((dangermd->status.rhw.atk2>sd->battle_status.hp / 5) && (pc_search_inventory(sd, ITEMID_RED_GEMSTONE)>0))
+					if (elemallowed(dangermd, skill_get_ele(MG_STONECURSE, pc_checkskill(sd, MG_STONECURSE)))) {
+						if (!isdisabled(dangermd))
+							if (!(dangermd->status.def_ele == ELE_UNDEAD)) {
+								if (!(dangermd->state.boss))
+									unit_skilluse_ifable(&sd->bl, founddangerID, MG_STONECURSE, pc_checkskill(sd, MG_STONECURSE));
+							}
+					}
+			}
+		}
+		///////////////////////////////////////////////////////////////////////////////////////////////
+		// Skills to use before attacking
+		// Ruwach, Sight
+		if (canskill(sd)) if ((pc_checkskill(sd, AL_RUWACH) > 0) || (pc_checkskill(sd, MG_SIGHT) > 0)){
+			if (!((sd->sc.data[SC_RUWACH]) || (sd->sc.data[SC_SIGHT]))) {
+				foundtargetID = -1; targetdistance = 999;
+				map_foreachinrange(targetnearest, &sd->bl, 11, BL_MOB, sd);
+				if ((targetdistance <= 3) && (targetdistance > -1) && (targetmd->sc.data[SC_HIDING] || targetmd->sc.data[SC_CLOAKING])) {
+					if (pc_checkskill(sd, AL_RUWACH) > 0) unit_skilluse_ifable(&sd->bl, SELF, AL_RUWACH, pc_checkskill(sd, AL_RUWACH));
+					if (pc_checkskill(sd, MG_SIGHT) > 0) unit_skilluse_ifable(&sd->bl, SELF, MG_SIGHT, pc_checkskill(sd, MG_SIGHT));
+				}
+			}
+		}
+		// Signum Cruxis
+		if (canskill(sd)) if ((pc_checkskill(sd, AL_CRUCIS) > 0)){
+			if (map_foreachinrange(signumcount, &sd->bl, 15, BL_MOB, sd)>=3) {
+				unit_skilluse_ifable(&sd->bl, SELF, AL_CRUCIS, pc_checkskill(sd, AL_CRUCIS));
 			}
 		}
 		///////////////////////////////////////////////////////////////////////////////////////////////
@@ -4444,7 +4533,6 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			if ((sd->battle_status.rhw.range >= 6) && (sd->state.autopilotmode > 1))
 				clif_parse_ActionRequest_sub(sd, 7, foundtargetID2, gettick());
 
-
 		}
 
 	// Tanking mode is set
@@ -4455,7 +4543,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		// Provoke
 		if (pc_checkskill(sd, SM_PROVOKE) > 0) {
 			foundtargetID = -1; targetdistance = 999;
-			map_foreachinrange(provokethis, &sd->bl, 7, BL_MOB, sd);
+			map_foreachinrange(provokethis, &sd->bl, 9, BL_MOB, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, SM_PROVOKE, pc_checkskill(sd, SM_PROVOKE));
 			}
@@ -4463,7 +4551,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		// Throw Stone
 		if (pc_checkskill(sd, TF_THROWSTONE) > 0) {
 			foundtargetID = -1; targetdistance = 999;
-			map_foreachinrange(provokethis, &sd->bl, 7, BL_MOB, sd);
+			map_foreachinrange(provokethis, &sd->bl, 9, BL_MOB, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, TF_THROWSTONE, pc_checkskill(sd, TF_THROWSTONE));
 			}
@@ -4483,7 +4571,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			if (canskill(sd)) if ((pc_checkskill(sd, SM_MAGNUM) > 0)) {
 					// At least 3 enemies in range (or 2 if weak to element)
 					if (map_foreachinrange(AOEPriority, bl, 2, BL_MOB, skill_get_ele(SM_MAGNUM, pc_checkskill(sd, SM_MAGNUM))) >= 6)
-						unit_skilluse_ifablexy(&sd->bl, SELF, SM_MAGNUM, pc_checkskill(sd, SM_MAGNUM));
+						unit_skilluse_ifable(&sd->bl, SELF, SM_MAGNUM, pc_checkskill(sd, SM_MAGNUM));
 			}
 
 				// Steal skill
@@ -4501,7 +4589,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 				// Not if already poisoned
 				if (!(targetmd->sc.data[SC_POISON]))
 				{ // Always use if critically wounded otherwise use on mobs that will take longer to kill only if sp is lower
-					if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_leftside_atk(sd))
+					if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
 						|| (status_get_hp(bl) < status_get_max_hp(bl) / 3)){
 						if (!(targetmd->state.boss)) {
 							if (!(targetmd->status.def_ele==ELE_UNDEAD)) {
@@ -4514,7 +4602,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			// Bash skill
 			if (canskill(sd)) if (pc_checkskill(sd, SM_BASH)>0) {
 			// Always use if critically wounded otherwise use on mobs that will take longer to kill only if sp is lower
-					if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_leftside_atk(sd))
+					if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
 						|| (status_get_hp(bl) < status_get_max_hp(bl) / 3)){
 								unit_skilluse_ifable(&sd->bl, foundtargetID, SM_BASH, pc_checkskill(sd, SM_BASH));
 					}
@@ -4522,7 +4610,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			// Cart Revolution skill
 			if (canskill(sd)) if (pc_checkskill(sd, MC_CARTREVOLUTION)>0) {
 				// Always use if critically wounded or mobbed otherwise use on mobs that will take longer to kill only if sp is lower
-				if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_leftside_atk(sd))
+				if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
 					|| (status_get_hp(bl) < status_get_max_hp(bl) / 3) || (dangercount>3)) {
 					unit_skilluse_ifable(&sd->bl, foundtargetID, MC_CARTREVOLUTION, pc_checkskill(sd, MC_CARTREVOLUTION));
 				}
@@ -4603,6 +4691,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		}
 	}
 
+	clif_move(ud);
 	return 0;
 }
 
