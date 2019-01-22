@@ -4228,7 +4228,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		if (canskill(sd)) if ((pc_checkskill(sd, MG_FIREWALL)>0) && (dangermd->status.hp<2000)) {
 			if (Dangerdistance >= 5) {
 				if (elemallowed(dangermd, skill_get_ele(MG_FIREWALL, pc_checkskill(sd, MG_FIREWALL))) && (dangermd->status.rhw.range <= 3)) {
-					if (!(targetmd->state.boss)) {
+					if (!(dangermd->state.boss)) {
 						int i,j = 0;
 						for (i = 0; i < MAX_SKILLUNITGROUP && ud->skillunit[i]; i++) {
 							if (ud->skillunit[i]->skill_id == ud->skill_id) {
