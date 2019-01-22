@@ -5910,7 +5910,9 @@ static unsigned short status_calc_batk(struct block_list *bl, struct status_chan
 #endif
 	if(sc->data[SC_SKE])
 		batk += batk * 3;
-	if(sc->data[SC_BLOODLUST])
+	if (sc->data[SC_SIGNUMCRUCIS])
+		batk -= batk * sc->data[SC_SIGNUMCRUCIS]->val2 / 200;
+	if (sc->data[SC_BLOODLUST])
 		batk += batk * sc->data[SC_BLOODLUST]->val2/100;
 	if(sc->data[SC_JOINTBEAT] && sc->data[SC_JOINTBEAT]->val2&BREAK_WAIST)
 		batk -= batk * 25/100;
@@ -6434,7 +6436,7 @@ static defType status_calc_def(struct block_list *bl, struct status_change *sc, 
 		def >>=1;
 	if(sc->data[SC_SIGNUMCRUCIS])
 		def -= def * sc->data[SC_SIGNUMCRUCIS]->val2/100;
-	if(sc->data[SC_CONCENTRATION])
+	if (sc->data[SC_CONCENTRATION])
 		def -= def * sc->data[SC_CONCENTRATION]->val4/100;
 	if(sc->data[SC_SKE])
 		def >>=1;
