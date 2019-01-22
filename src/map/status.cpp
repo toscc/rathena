@@ -258,7 +258,7 @@ void initChangeTables(void)
 	add_sc( AL_PNEUMA		, SC_PNEUMA		);
 	set_sc( AL_INCAGI		, SC_INCREASEAGI	, EFST_INC_AGI, SCB_AGI|SCB_SPEED );
 	set_sc( AL_DECAGI		, SC_DECREASEAGI	, EFST_DEC_AGI, SCB_AGI|SCB_SPEED );
-	set_sc( AL_CRUCIS		, SC_SIGNUMCRUCIS	, EFST_CRUCIS, SCB_DEF );
+	set_sc(AL_CRUCIS, SC_SIGNUMCRUCIS, EFST_CRUCIS, SCB_DEF | SCB_WATK | SCB_BATK);
 	set_sc( AL_ANGELUS		, SC_ANGELUS		, EFST_ANGELUS		, SCB_DEF2 );
 	set_sc( AL_BLESSING		, SC_BLESSING		, EFST_BLESSING		, SCB_STR|SCB_INT|SCB_DEX );
 	set_sc( AC_CONCENTRATION	, SC_CONCENTRATE	, EFST_CONCENTRATION, SCB_AGI|SCB_DEX );
@@ -340,7 +340,7 @@ void initChangeTables(void)
 	add_sc( RG_RAID			, SC_RAID		);
 	add_sc( RG_BACKSTAP		, SC_STUN		);
 #endif
-	set_sc( RG_STRIPWEAPON		, SC_STRIPWEAPON	, EFST_NOEQUIPWEAPON, SCB_WATK );
+	set_sc(RG_STRIPWEAPON, SC_STRIPWEAPON, EFST_NOEQUIPWEAPON, SCB_WATK | SCB_BATK);
 	set_sc( RG_STRIPSHIELD		, SC_STRIPSHIELD	, EFST_NOEQUIPSHIELD, SCB_DEF );
 	set_sc( RG_STRIPARMOR		, SC_STRIPARMOR		, EFST_NOEQUIPARMOR, SCB_VIT );
 	set_sc( RG_STRIPHELM		, SC_STRIPHELM		, EFST_NOEQUIPHELM, SCB_INT );
@@ -4878,6 +4878,8 @@ void status_calc_bl_main(struct block_list *bl, /*enum scb_flag*/int flag)
 			status->watk2 = status_calc_watk(bl, sc, b_status->watk2);
 		}
 		else status->watk = status_calc_watk(bl, sc, b_status->watk);
+		status->rhw.atk = status_calc_watk(bl, sc, b_status->rhw.atk);
+		status->rhw.atk2 = status_calc_watk(bl, sc, b_status->rhw.atk2);
 #endif
 	}
 
@@ -5910,8 +5912,10 @@ static unsigned short status_calc_batk(struct block_list *bl, struct status_chan
 #endif
 	if(sc->data[SC_SKE])
 		batk += batk * 3;
+	if (sc->data[SC_STRIPWEAPON] && bl->type != BL_PC)
+		batk -= batk * sc->data[SC_STRIPWEAPON]->val2 / 100;
 	if (sc->data[SC_SIGNUMCRUCIS])
-		batk -= batk * sc->data[SC_SIGNUMCRUCIS]->val2 / 200;
+		batk -= batk * sc->data[SC_SIGNUMCRUCIS]->val2 / 250;
 	if (sc->data[SC_BLOODLUST])
 		batk += batk * sc->data[SC_BLOODLUST]->val2/100;
 	if(sc->data[SC_JOINTBEAT] && sc->data[SC_JOINTBEAT]->val2&BREAK_WAIST)
@@ -5994,7 +5998,9 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		watk -= watk * 25/100;
 	if(sc->data[SC_STRIPWEAPON] && bl->type != BL_PC)
 		watk -= watk * sc->data[SC_STRIPWEAPON]->val2/100;
-	if(sc->data[SC_FIGHTINGSPIRIT])
+	if (sc->data[SC_SIGNUMCRUCIS])
+		watk -= watk * sc->data[SC_SIGNUMCRUCIS]->val2/250;
+	if (sc->data[SC_FIGHTINGSPIRIT])
 		watk += sc->data[SC_FIGHTINGSPIRIT]->val1;
 	if(sc->data[SC_SHIELDSPELL_DEF] && sc->data[SC_SHIELDSPELL_DEF]->val1 == 3)
 		watk += sc->data[SC_SHIELDSPELL_DEF]->val2;
