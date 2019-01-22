@@ -4034,7 +4034,7 @@ void unit_skilluse_ifablebetween(struct block_list *src, int target_id, uint16 s
 	if (sd->skillitem == skill_id) {
 		if (skill_lv != sd->skillitemlv)
 			skill_lv = sd->skillitemlv;
-		unit_skilluse_pos(&sd->bl, src->x+tgtbl->x/2, src->y+tgtbl->y/2, skill_id, skill_lv, false);
+		unit_skilluse_pos(&sd->bl, (src->x+tgtbl->x)/2, (src->y+tgtbl->y)/2, skill_id, skill_lv, false);
 	}
 	else {
 		int lv;
@@ -4042,7 +4042,7 @@ void unit_skilluse_ifablebetween(struct block_list *src, int target_id, uint16 s
 		if ((lv = pc_checkskill(sd, skill_id)) > 0) {
 			if (skill_lv > lv)
 				skill_lv = lv;
-			unit_skilluse_pos(&sd->bl, src->x + tgtbl->x / 2, src->y + tgtbl->y / 2, skill_id, skill_lv, false);
+			unit_skilluse_pos(&sd->bl, (src->x + tgtbl->x) / 2, (src->y + tgtbl->y) / 2, skill_id, skill_lv, false);
 		}
 	}
 
@@ -4234,8 +4234,8 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		// Fire Wall
 		// Only if there still is enough distance to matter and enemy is not ranged
 		// No more than 1 at the same position, max of 3 total
-		if (canskill(sd)) if ((pc_checkskill(sd, MG_FIREWALL)>0) && (dangermd->status.hp<2000)) {
-			if (Dangerdistance >= 5) {
+		if ((Dangerdistance >= 5) && (Dangerdistance <900)) {
+			if (canskill(sd)) if ((pc_checkskill(sd, MG_FIREWALL)>0) && (dangermd->status.hp<2000)) {
 				if (elemallowed(dangermd, skill_get_ele(MG_FIREWALL, pc_checkskill(sd, MG_FIREWALL))) && (dangermd->status.rhw.range <= 3)) {
 					if (!(dangermd->state.boss)) {
 						int i,j = 0;
@@ -4245,7 +4245,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 								if (((ud->skillunit[i]->unit->bl.x == targetbl->x) || (ud->skillunit[i]->unit->bl.y == targetbl->y))) j = 999;
 							}
 						}
-						if (j<3) unit_skilluse_ifablebetween(&sd->bl, foundtargetID, MG_FIREWALL, pc_checkskill(sd, MG_FIREWALL));
+						if (j<3) unit_skilluse_ifablebetween(&sd->bl, founddangerID, MG_FIREWALL, pc_checkskill(sd, MG_FIREWALL));
 					}
 				}
 			}
@@ -4253,8 +4253,8 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		/// Napalm Beat
 		// Note : This has been modded to be uninterruptable and faster to use. Unmodded the AI probably shouldn't ever cast it, it's that bad.
 		// It is the spell to use in the worst emergencies only, when enemy is at most 2 steps from hitting us.
-		if (canskill(sd)) if ((pc_checkskill(sd, MG_NAPALMBEAT)>0) && (dangermd->status.hp<2000)) {
-			if (Dangerdistance <= 2) {
+		if (Dangerdistance <= 2) {
+			if (canskill(sd)) if ((pc_checkskill(sd, MG_NAPALMBEAT)>0) && (dangermd->status.hp<2000)) {
 				if (elemallowed(dangermd, skill_get_ele(MG_NAPALMBEAT, pc_checkskill(sd, MG_NAPALMBEAT)))) {
 					unit_skilluse_ifable(&sd->bl, founddangerID, MG_NAPALMBEAT, pc_checkskill(sd, MG_NAPALMBEAT));
 				}
@@ -4286,8 +4286,8 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			if (Dangerdistance <= 4) {
 				if (elemallowed(dangermd, skill_get_ele(MG_FROSTDIVER, pc_checkskill(sd, MG_FROSTDIVER)))) {
 					if (!(dangermd->sc.data[SC_FREEZE]))
-						if (!(targetmd->status.def_ele == ELE_UNDEAD)) {
-							if (!(targetmd->state.boss))
+						if (!(dangermd->status.def_ele == ELE_UNDEAD)) {
+							if (!(dangermd->state.boss))
 								unit_skilluse_ifable(&sd->bl, founddangerID, MG_FROSTDIVER, pc_checkskill(sd, MG_FROSTDIVER));
 						}
 				}
