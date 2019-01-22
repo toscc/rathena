@@ -4051,7 +4051,22 @@ void skillwhenidle(struct map_session_data *sd) {
 			unit_skilluse_ifable(&sd->bl, SELF, MG_ENERGYCOAT, pc_checkskill(sd, MG_ENERGYCOAT));
 		}
 	}
-	return;
+	// Attention Concentrate
+	if (pc_checkskill(sd, AC_CONCENTRATION) > 0) {
+		if (!(sd->sc.data[SC_CONCENTRATE])) {
+			unit_skilluse_ifable(&sd->bl, SELF, AC_CONCENTRATION, pc_checkskill(sd, AC_CONCENTRATION));
+		}
+	}
+	// Crazy Uproar
+	if (pc_checkskill(sd, MC_LOUD) > 0) {
+		if (!(sd->sc.data[SC_LOUD])) {
+			unit_skilluse_ifable(&sd->bl, SELF, MC_LOUD, pc_checkskill(sd, MC_LOUD));
+		}
+	}
+
+	
+	
+		return;
 }
 
 // Reduce lag - do not try using skills if already decided to use one and started it
@@ -4408,7 +4423,10 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 					}
 				}
 			}
-			
+			// Do normal attack if not using skill and being an archer
+			if ((sd->battle_status.rhw.range >= 6) && (sd->state.autopilotmode > 1))
+				clif_parse_ActionRequest_sub(sd, 7, foundtargetID2, gettick());
+
 
 		}
 
@@ -4417,6 +4435,14 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		/////////////////////////////////////////////////////////////////////
 		// Skills that can be used while tanking only, for supporting others
 		/////////////////////////////////////////////////////////////////////
+		// Provoke
+		if (pc_checkskill(sd, SM_PROVOKE) > 0) {
+			foundtargetID = -1; targetdistance = 999;
+			map_foreachinrange(provokethis, &sd->bl, 7, BL_MOB, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, SM_PROVOKE, pc_checkskill(sd, SM_PROVOKE));
+			}
+		}
 		// Throw Stone
 		if (pc_checkskill(sd, TF_THROWSTONE) > 0) {
 			foundtargetID = -1; targetdistance = 999;
@@ -4432,12 +4458,20 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 
 		// attack nearest thing if it exists
 		if (foundtargetID > -1) {
+
 			/////////////////////////////////////////////////////////////////////
 			// Skills that can be used while tanking only, on tanked enemy 
 			/////////////////////////////////////////////////////////////////////
-			// Steal skill
+			// Magnum Break
+			if (canskill(sd)) if ((pc_checkskill(sd, SM_MAGNUM) > 0)) {
+					// At least 3 enemies in range (or 2 if weak to element)
+					if (map_foreachinrange(AOEPriority, bl, 2, BL_MOB, skill_get_ele(SM_MAGNUM, pc_checkskill(sd, SM_MAGNUM))) >= 6)
+						unit_skilluse_ifablexy(&sd->bl, SELF, SM_MAGNUM, pc_checkskill(sd, SM_MAGNUM));
+			}
+
+				// Steal skill
 			// Use in any mode above 50% SP only, and never use below 1/3 health, that's not the time for messing around.
-			if (pc_checkskill(sd, TF_STEAL)>0) {
+			if (canskill(sd)) if (pc_checkskill(sd, TF_STEAL)>0) {
 				if ((status_get_sp(bl) >= status_get_max_sp(bl) / 2) && (status_get_hp(bl) >  status_get_max_hp(bl) / 3)) {
 					if (!(((targetmd->state.steal_flag == UCHAR_MAX) || (targetmd->sc.opt1 && targetmd->sc.opt1 != OPT1_BURNING))))
 					{
@@ -4446,12 +4480,11 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 				}
 			}
 			// Envenom skill
-			if (pc_checkskill(sd, TF_POISON)>0) {
+			if (canskill(sd)) if (pc_checkskill(sd, TF_POISON)>0) {
 				// Not if already poisoned
 				if (!(targetmd->sc.data[SC_POISON]))
 				{ // Always use if critically wounded otherwise use on mobs that will take longer to kill only if sp is lower
-					if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp))
-						* pc_leftside_atk(sd))
+					if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_leftside_atk(sd))
 						|| (status_get_hp(bl) < status_get_max_hp(bl) / 3)){
 						if (!(targetmd->state.boss)) {
 							if (!(targetmd->status.def_ele==ELE_UNDEAD)) {
@@ -4461,8 +4494,29 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 					}
 				}
 			}
-		// Do normal attack if not using skill
+			// Bash skill
+			if (canskill(sd)) if (pc_checkskill(sd, SM_BASH)>0) {
+			// Always use if critically wounded otherwise use on mobs that will take longer to kill only if sp is lower
+					if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_leftside_atk(sd))
+						|| (status_get_hp(bl) < status_get_max_hp(bl) / 3)){
+								unit_skilluse_ifable(&sd->bl, foundtargetID, SM_BASH, pc_checkskill(sd, SM_BASH));
+					}
+			}
+			// Cart Revolution skill
+			if (canskill(sd)) if (pc_checkskill(sd, MC_CARTREVOLUTION)>0) {
+				// Always use if critically wounded or mobbed otherwise use on mobs that will take longer to kill only if sp is lower
+				if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_leftside_atk(sd))
+					|| (status_get_hp(bl) < status_get_max_hp(bl) / 3) || (dangercount>3)) {
+					unit_skilluse_ifable(&sd->bl, foundtargetID, MC_CARTREVOLUTION, pc_checkskill(sd, MC_CARTREVOLUTION));
+				}
+			}
+
+
+			// Do normal attack if not using skill
+			if ((sd->battle_status.rhw.range <= 3) || (targetdistance<3))
 			clif_parse_ActionRequest_sub(sd, 7, foundtargetID, gettick());
+			// We are tanking as an archer? Move close before attacking...
+			else unit_walktoxy(&sd->bl, targetbl->x + rand() % 5 - 2, targetbl->y + rand() % 5 - 2, 8);
 		}
 		else if (canskill(sd)) {
 			///////////////////////////////////////////////////////////
@@ -4511,8 +4565,13 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 
 		if (foundtargetID > -1) { 
 		// walktobl seems to cause a problem of the spell target being replaced by the party leader somehow
-			if ((abs(sd->bl.x - targetbl->x)>2) || abs(sd->bl.y - targetbl->y)>2)
-			unit_walktoxy(&sd->bl, targetbl->x + rand() % 5 - 2, targetbl->y + rand() % 5 - 2, 8);
+			if ((abs(sd->bl.x - targetbl->x) > 2) || abs(sd->bl.y - targetbl->y) > 2)
+				unit_walktoxy(&sd->bl, targetbl->x + rand() % 5 - 2, targetbl->y + rand() % 5 - 2, 8);
+			else {
+				struct map_session_data *leadersd = (struct map_session_data*)targetbl;
+				if pc_issit(leadersd) { ; }
+
+			}
 		//	unit_walktobl(&sd->bl, targetbl, 2, 0); 
 		}
 		// Party leader left map?
