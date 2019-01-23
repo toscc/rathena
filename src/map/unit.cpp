@@ -3523,6 +3523,27 @@ int targetnearest(block_list * bl, va_list ap)
 	return 1;
 }
 
+int targetturnundead(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd2;
+
+	struct mob_data *md;
+
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+
+	// Affects undead only
+	if (md->status.def_ele != ELE_UNDEAD) return 0;
+
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+
+	// target the highest hp, not the nearest enemy
+	int dist = md->status.hp;
+	if ((dist > targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKWALL))) { targetdistance = dist; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
+
+	return 1;
+}
+
 int signumcount(block_list * bl, va_list ap)
 {
 
@@ -3676,6 +3697,38 @@ bool elemallowed(struct mob_data *md, int ele)
 }
 
 
+int endowneed(block_list * bl, va_list ap)
+{
+	struct mob_data *md;
+
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+
+	uint16 elem = va_arg(ap, int); // the element
+
+	if (elemstrong(md, elem)) return 10; // This target is weak to it, good 
+	if (!elemallowed(md, elem)) return -30; // And strong enemies cancel 3 weak ones
+	return -8; // These however aren't which is bad
+}
+
+int Magnuspriority(block_list * bl, va_list ap)
+{
+	struct mob_data *md;
+
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+
+	if (!((battle_check_undead(md->status.race, md->status.def_ele) || md->status.race == RC_DEMON))) return 0;
+
+	uint16 elem = va_arg(ap, int); // the element
+
+	if (!elemallowed(md, elem)) return 0; // This target won't be hurt by this element (holy demon omg?)
+	if (elemstrong(md, elem)) return 3; // This target is weak to it so it's worth 50% more
+	return 2; // Default
+}
+
+
+
 int AOEPriority(block_list * bl, va_list ap)
 {
 	struct mob_data *md;
@@ -3683,7 +3736,7 @@ int AOEPriority(block_list * bl, va_list ap)
 	nullpo_ret(bl);
 	nullpo_ret(md = (struct mob_data *)bl);
 
-	uint16 elem = va_arg(ap, int); // the player autopiloting
+	uint16 elem = va_arg(ap, int); // the element
 
 	if (!elemallowed(md, elem)) return 0; // This target won't be hurt by this element enough to care
 	if (elemstrong(md, elem)) return 3; // This target is weak to it so it's worth 50% more
@@ -3707,6 +3760,13 @@ int targetDetoxify(block_list * bl, va_list ap)
 
 	return 0;
 }
+int targetSlowPoison(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (!(sd->sc.data[SC_SLOWPOISON])) if (sd->sc.data[SC_POISON]) { targetbl = bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
 
 int targetCure(block_list * bl, va_list ap)
 {
@@ -3714,6 +3774,24 @@ int targetCure(block_list * bl, va_list ap)
 	if (sd->sc.data[SC_SILENCE]) { targetbl = bl; foundtargetID = sd->bl.id; };
 	if (sd->sc.data[SC_CONFUSION]) { targetbl = bl; foundtargetID = sd->bl.id; };
 	if (sd->sc.data[SC_BLIND]) { targetbl = bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
+int targetstatusrecovery(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (sd->sc.data[SC_FREEZE]) { targetbl = bl; foundtargetID = sd->bl.id; };
+	if (sd->sc.data[SC_STONE]) { targetbl = bl; foundtargetID = sd->bl.id; };
+	if (sd->sc.data[SC_STUN]) { targetbl = bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
+int targetlexdivina(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (sd->sc.data[SC_SILENCE]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
 }
@@ -3783,6 +3861,67 @@ int targetangelus(block_list * bl, va_list ap)
 	return 0;
 }
 
+int targetmagnificat(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (!sd->sc.data[SC_MAGNIFICAT]) { targetbl = bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
+int targetgloria(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (!sd->sc.data[SC_GLORIA]) { targetbl = bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
+int targetassumptio(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (!sd->sc.data[SC_ASSUMPTIO]) { targetbl = bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
+int targetkyrie(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if ((!sd->sc.data[SC_KYRIE]) && (!sd->sc.data[SC_ASSUMPTIO])) { targetbl = bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
+int targetendow(block_list * bl, va_list ap)
+{
+	// Not already endowed, and is a physical attack class (base atk high enough)
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if ((!sd->sc.data[SC_ASPERSIO]) && (!sd->sc.data[SC_FIREWEAPON])
+		&& (!sd->sc.data[SC_WATERWEAPON]) && (!sd->sc.data[SC_WINDWEAPON]) && (!sd->sc.data[SC_EARTHWEAPON])
+		&& ((sd->battle_status.batk>sd->status.base_level) || (sd->battle_status.batk>120))) {
+		targetbl = bl; foundtargetID = sd->bl.id;
+	};
+
+	return 0;
+}
+
+int targetresu(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) { targetbl = bl; foundtargetID = sd->bl.id; return 1; };
+
+	return 0;
+}
+
+int targetmanus(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if ((!sd->sc.data[SC_IMPOSITIO]) && ((sd->battle_status.batk>sd->status.base_level) || (sd->battle_status.batk>120))) { targetbl = bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
 int finddanger(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd2;
@@ -3823,6 +3962,9 @@ int finddanger(block_list * bl, va_list ap)
 // Returns how many tiles the fewest an enemy targeting us has to walk to
 int inDanger(struct map_session_data * sd)
 {
+	// Effectst that prevent damage mean we are not in danger.
+	if (sd->sc.data[SC_KYRIE]) return 999;
+
 	founddangerID = -1; dangerdistancebest = 999;
 	dangercount=map_foreachinrange(finddanger, &sd->bl, 20, BL_MOB, sd);
 	return dangerdistancebest;
@@ -4089,7 +4231,8 @@ void skillwhenidle(struct map_session_data *sd) {
 	}
 	// Aqua Benedicta
 	if (pc_checkskill(sd, AL_HOLYWATER) > 0) {
-		if ((sd->inventory.u.items_inventory[pc_search_inventory(sd, 523)].amount < 40) && (pc_search_inventory(sd, ITEMID_EMPTY_BOTTLE)>0)) {
+		if ((sd->inventory.u.items_inventory[pc_search_inventory(sd, 523)].amount < 40) && (pc_search_inventory(sd, ITEMID_EMPTY_BOTTLE)>0)
+			&& (skill_produce_mix(sd, AL_HOLYWATER, ITEMID_HOLY_WATER, 0, 0, 0, 1, -1))) {
 			unit_skilluse_ifable(&sd->bl, SELF, AL_HOLYWATER, pc_checkskill(sd, AL_HOLYWATER));
 		}
 	}
@@ -4210,18 +4353,49 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 				if (!(sc->data[SC_PNEUMA] || sc->data[SC_SAFETYWALL])) { unit_skilluse_ifablexy(&sd->bl, foundtargetID, AL_PNEUMA, pc_checkskill(sd, AL_PNEUMA)); }
 			}
 		}
+		/// Redemptio
+		if (canskill(sd)) if (pc_checkskill(sd, PR_REDEMPTIO)>0) {
+			foundtargetID = -1;
+			if (map_foreachinrange(targetresu, &sd->bl, 6, BL_PC, sd)>=4)	{
+				unit_skilluse_ifable(&sd->bl, foundtargetID, PR_REDEMPTIO, pc_checkskill(sd, PR_REDEMPTIO));
+			}
+		}
+		/// Resurrection
+		if (canskill(sd)) if ((pc_checkskill(sd, ALL_RESURRECTION)>0) && (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE)>0)) {
+			foundtargetID = -1;
+			map_foreachinrange(targetresu, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, ALL_RESURRECTION, pc_checkskill(sd, ALL_RESURRECTION));
+			}
+		}
 		/// Heal
 		if (canskill(sd)) if (pc_checkskill(sd, AL_HEAL)>0) {
 			foundtargetID = -1;
-			map_foreachinmap(targethealing, sd->bl.m, BL_PC, sd);
+			map_foreachinrange(targethealing, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, AL_HEAL, pc_checkskill(sd, AL_HEAL));
+			}
+		}
+		/// Status Recovery
+		if (canskill(sd)) if (pc_checkskill(sd, PR_STRECOVERY)>0) {
+			foundtargetID = -1;
+			map_foreachinrange(targetstatusrecovery, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, PR_STRECOVERY, pc_checkskill(sd, PR_STRECOVERY));
+			}
+		}
+		/// LEX DIVINA to remove silence
+		if (canskill(sd)) if (pc_checkskill(sd, PR_LEXDIVINA)>0) {
+			foundtargetID = -1;
+			map_foreachinrange(targetlexdivina, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, PR_LEXDIVINA, pc_checkskill(sd, PR_LEXDIVINA));
 			}
 		}
 		/// Cure
 		if (canskill(sd)) if (pc_checkskill(sd, AL_CURE)>0) {
 			foundtargetID = -1;
-			map_foreachinmap(targetCure, sd->bl.m, BL_PC, sd);
+			map_foreachinrange(targetCure, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, AL_CURE, pc_checkskill(sd, AL_CURE));
 			}
@@ -4229,15 +4403,31 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		/// Detoxify
 		if (canskill(sd)) if (pc_checkskill(sd, TF_DETOXIFY)>0) {
 			foundtargetID = -1;
-			map_foreachinmap(targetDetoxify, sd->bl.m, BL_PC, sd);
+			map_foreachinrange(targetDetoxify, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, TF_DETOXIFY, pc_checkskill(sd, TF_DETOXIFY));
+			}
+		}
+		/// Slow Poison
+		if (canskill(sd)) if (pc_checkskill(sd, PR_SLOWPOISON)>0) {
+			foundtargetID = -1;
+			map_foreachinrange(targetSlowPoison, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, PR_SLOWPOISON, pc_checkskill(sd, PR_SLOWPOISON));
+			}
+		}
+		/// MAGNIFICAT
+		if (canskill(sd)) if ((pc_checkskill(sd, PR_MAGNIFICAT)>0) && ((Dangerdistance >900) || (sd->special_state.no_castcancel))) {
+			foundtargetID = -1;
+			map_foreachinrange(targetmagnificat, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, SELF, PR_MAGNIFICAT, pc_checkskill(sd, PR_MAGNIFICAT));
 			}
 		}
 		/// Inc Agi
 		if (canskill(sd)) if (pc_checkskill(sd, AL_INCAGI)>0) {
 			foundtargetID = -1;
-			map_foreachinmap(targetincagi, sd->bl.m, BL_PC, sd);
+			map_foreachinrange(targetincagi, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, AL_INCAGI, pc_checkskill(sd, AL_INCAGI));
 			}
@@ -4245,17 +4435,60 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		/// Blessing
 		if (canskill(sd)) if (pc_checkskill(sd, AL_BLESSING)>0) {
 			foundtargetID = -1;
-			map_foreachinmap(targetbless, sd->bl.m, BL_PC, sd);
+			map_foreachinrange(targetbless, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, AL_BLESSING, pc_checkskill(sd, AL_BLESSING));
+			}
+		}
+		/// Aspersio
+		if (canskill(sd)) if (pc_checkskill(sd, PR_ASPERSIO)>0) if (pc_search_inventory(sd, ITEMID_HOLY_WATER)>0) {
+			foundtargetID = -1;
+			if (map_foreachinmap(endowneed, sd->bl.m, BL_MOB, ELE_HOLY) > 0){
+				foundtargetID = -1;
+				map_foreachinrange(targetendow, &sd->bl, 9, BL_PC, sd);
+				if (foundtargetID > -1) {
+					unit_skilluse_ifable(&sd->bl, foundtargetID, PR_ASPERSIO, pc_checkskill(sd, PR_ASPERSIO));
+				}
+			}
+		}
+		/// Assumptio
+		if (canskill(sd)) if ((pc_checkskill(sd, HP_ASSUMPTIO)>0) && ((Dangerdistance >900) || (sd->special_state.no_castcancel))) {
+			foundtargetID = -1;
+			map_foreachinrange(targetassumptio, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, HP_ASSUMPTIO, pc_checkskill(sd, HP_ASSUMPTIO));
+			}
+		}
+		/// Kyrie Elison
+		if (canskill(sd)) if ((pc_checkskill(sd, PR_KYRIE)>0) && ((Dangerdistance >900) || (sd->special_state.no_castcancel))) {
+			foundtargetID = -1;
+			map_foreachinrange(targetkyrie, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, PR_KYRIE, pc_checkskill(sd, PR_KYRIE));
 			}
 		}
 		/// Angelus
 		if (canskill(sd)) if (pc_checkskill(sd, AL_ANGELUS)>0) {
 			foundtargetID = -1;
-			map_foreachinmap(targetangelus, sd->bl.m, BL_PC, sd);
+			map_foreachinrange(targetangelus, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, AL_ANGELUS, pc_checkskill(sd, AL_ANGELUS));
+			}
+		}
+		/// GLORIA
+		if (canskill(sd)) if (pc_checkskill(sd, PR_GLORIA)>0) {
+			foundtargetID = -1;
+			map_foreachinrange(targetgloria, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, SELF, PR_GLORIA, pc_checkskill(sd, PR_GLORIA));
+			}
+		}
+		/// Impositio Manus
+		if (canskill(sd)) if (pc_checkskill(sd, PR_IMPOSITIO)>0) {
+			foundtargetID = -1;
+			map_foreachinrange(targetmanus, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, PR_IMPOSITIO, pc_checkskill(sd, PR_GLORIA));
 			}
 		}
 		// Arrow Shower
@@ -4317,64 +4550,67 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 				}
 			}
 		}
-		/// Napalm Beat
-		// Note : This has been modded to be uninterruptable and faster to use. Unmodded the AI probably shouldn't ever cast it, it's that bad.
-		// It is the spell to use in the worst emergencies only, when enemy is at most 2 steps from hitting us.
-		if (Dangerdistance <= 2) {
-			if (canskill(sd)) if ((pc_checkskill(sd, MG_NAPALMBEAT)>0) && (dangermd->status.hp<sd->battle_status.matk_max * 4)) {
-				if (elemallowed(dangermd, skill_get_ele(MG_NAPALMBEAT, pc_checkskill(sd, MG_NAPALMBEAT)))) {
-					unit_skilluse_ifable(&sd->bl, founddangerID, MG_NAPALMBEAT, pc_checkskill(sd, MG_NAPALMBEAT));
+		// Don't bother with these suboptimal spells if casting is uninterruptable (note, they can be still cast as a damage spell, but not as an emergency reaction when fast cast time is needed)
+		if (!(sd->special_state.no_castcancel)) {
+			/// Napalm Beat
+			// Note : This has been modded to be uninterruptable and faster to use. Unmodded the AI probably shouldn't ever cast it, it's that bad.
+			// It is the spell to use in the worst emergencies only, when enemy is at most 2 steps from hitting us.
+			if (Dangerdistance <= 2) {
+				if (canskill(sd)) if ((pc_checkskill(sd, MG_NAPALMBEAT)>0) && (dangermd->status.hp < sd->battle_status.matk_max * 4)) {
+					if (elemallowed(dangermd, skill_get_ele(MG_NAPALMBEAT, pc_checkskill(sd, MG_NAPALMBEAT)))) {
+						unit_skilluse_ifable(&sd->bl, founddangerID, MG_NAPALMBEAT, pc_checkskill(sd, MG_NAPALMBEAT));
+					}
 				}
 			}
-		}
-		// Soul Strike
-		// Note : This has been modded to be uninterruptable, but due to low cast time same logic should be fine anyway
-		// Don't bother with this at low levels. Don't use if unlikely to kill target.
-		if (canskill(sd)) if (pc_checkskill(sd, MG_SOULSTRIKE)>5) {
-			if ((Dangerdistance <= 4)) {
-				if ((elemallowed(dangermd, skill_get_ele(MG_SOULSTRIKE, pc_checkskill(sd, MG_SOULSTRIKE)))) && (dangercount == 1) && (dangermd->status.hp<sd->battle_status.matk_max*4)) {
-					unit_skilluse_ifable(&sd->bl, founddangerID, MG_SOULSTRIKE, pc_checkskill(sd, MG_SOULSTRIKE));
+			// Soul Strike
+			// Note : This has been modded to be uninterruptable, but due to low cast time same logic should be fine anyway
+			// Don't bother with this at low levels. Don't use if unlikely to kill target.
+			if (canskill(sd)) if (pc_checkskill(sd, MG_SOULSTRIKE) > 5) {
+				if ((Dangerdistance <= 4)) {
+					if ((elemallowed(dangermd, skill_get_ele(MG_SOULSTRIKE, pc_checkskill(sd, MG_SOULSTRIKE)))) && (dangercount == 1) && (dangermd->status.hp < sd->battle_status.matk_max * 4)) {
+						unit_skilluse_ifable(&sd->bl, founddangerID, MG_SOULSTRIKE, pc_checkskill(sd, MG_SOULSTRIKE));
+					}
 				}
 			}
-		}
-		/// Fireball
-		// Reasonably fast to try and cast in an emergency
-		// Perfect for multiple enemies due to decent AOE
-		// Don't use if enemy still has a lot of hp
-		if (canskill(sd)) if (pc_checkskill(sd, MG_FIREBALL)>5) {
-			if ((Dangerdistance <= 4)) {
-				if ((elemallowed(dangermd, skill_get_ele(MG_FIREBALL, pc_checkskill(sd, MG_FIREBALL)))) && (dangercount > 1) && (dangermd->status.hp<sd->battle_status.matk_max * 6)) {
-					unit_skilluse_ifable(&sd->bl, founddangerID, MG_FIREBALL, pc_checkskill(sd, MG_FIREBALL));
+			/// Fireball
+			// Reasonably fast to try and cast in an emergency
+			// Perfect for multiple enemies due to decent AOE
+			// Don't use if enemy still has a lot of hp
+			if (canskill(sd)) if (pc_checkskill(sd, MG_FIREBALL) > 5) {
+				if ((Dangerdistance <= 4)) {
+					if ((elemallowed(dangermd, skill_get_ele(MG_FIREBALL, pc_checkskill(sd, MG_FIREBALL)))) && (dangercount > 1) && (dangermd->status.hp < sd->battle_status.matk_max * 6)) {
+						unit_skilluse_ifable(&sd->bl, founddangerID, MG_FIREBALL, pc_checkskill(sd, MG_FIREBALL));
+					}
 				}
 			}
-		}
-		/// Frost Diver
-		// Our best spell to use when under attack, if none of the other special conditions apply
-		if (canskill(sd)) if (pc_checkskill(sd, MG_FROSTDIVER)>0) {
-			if (Dangerdistance <= 4) {
-				if (elemallowed(dangermd, skill_get_ele(MG_FROSTDIVER, pc_checkskill(sd, MG_FROSTDIVER)))) {
-					if (!isdisabled(dangermd))
-							if (!(dangermd->status.def_ele == ELE_UNDEAD)) {
-							if (!(dangermd->state.boss))
-								unit_skilluse_ifable(&sd->bl, founddangerID, MG_FROSTDIVER, pc_checkskill(sd, MG_FROSTDIVER));
-						}
-				}
-			}
-		}
-		/// Stone Curse
-		// we can use a gem to petrify it too if the moster is really that dangerous and not in range for safety wall
-		// Note : this skill was modded to have higher range and deal more percentage damage as well as cast faster. 
-		// Otherwise it might be best to avoid using it by the AI altogether, it's just too useless?
-		if (canskill(sd)) if (pc_checkskill(sd, MG_STONECURSE)>0) {
-			if (Dangerdistance <= 6) {
-				if ((dangermd->status.rhw.atk2>sd->battle_status.hp / 5) && (pc_search_inventory(sd, ITEMID_RED_GEMSTONE)>0))
-					if (elemallowed(dangermd, skill_get_ele(MG_STONECURSE, pc_checkskill(sd, MG_STONECURSE)))) {
+			/// Frost Diver
+			// Our best spell to use when under attack, if none of the other special conditions apply
+			if (canskill(sd)) if (pc_checkskill(sd, MG_FROSTDIVER) > 0) {
+				if (Dangerdistance <= 4) {
+					if (elemallowed(dangermd, skill_get_ele(MG_FROSTDIVER, pc_checkskill(sd, MG_FROSTDIVER)))) {
 						if (!isdisabled(dangermd))
 							if (!(dangermd->status.def_ele == ELE_UNDEAD)) {
 								if (!(dangermd->state.boss))
-									unit_skilluse_ifable(&sd->bl, founddangerID, MG_STONECURSE, pc_checkskill(sd, MG_STONECURSE));
+									unit_skilluse_ifable(&sd->bl, founddangerID, MG_FROSTDIVER, pc_checkskill(sd, MG_FROSTDIVER));
 							}
 					}
+				}
+			}
+			/// Stone Curse
+			// we can use a gem to petrify it too if the moster is really that dangerous and not in range for safety wall
+			// Note : this skill was modded to have higher range and deal more percentage damage as well as cast faster. 
+			// Otherwise it might be best to avoid using it by the AI altogether, it's just too useless?
+			if (canskill(sd)) if (pc_checkskill(sd, MG_STONECURSE) > 0) {
+				if (Dangerdistance <= 6) {
+					if ((dangermd->status.rhw.atk2 > sd->battle_status.hp / 5) && (pc_search_inventory(sd, ITEMID_RED_GEMSTONE) > 0))
+						if (elemallowed(dangermd, skill_get_ele(MG_STONECURSE, pc_checkskill(sd, MG_STONECURSE)))) {
+							if (!isdisabled(dangermd))
+								if (!(dangermd->status.def_ele == ELE_UNDEAD)) {
+									if (!(dangermd->state.boss))
+										unit_skilluse_ifable(&sd->bl, founddangerID, MG_STONECURSE, pc_checkskill(sd, MG_STONECURSE));
+								}
+						}
+				}
 			}
 		}
 		///////////////////////////////////////////////////////////////////////////////////////////////
@@ -4422,10 +4658,11 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			foundtargetID = -1;
 			map_foreachinmap(targetthischar, sd->bl.m, BL_PC, sd);
 		}
-		// No party leader, no AOE skills of this type
-		if (foundtargetID > -1) {
+		// No party leader, no AOE skills of this type. Also don't try to use if leader too far, must get closer first
+		if ((foundtargetID > -1) && (targetdistance<=9)) {
 			// Save leader position, as targeting valiables will be overwritten
 			int foundtargetID2 = foundtargetID;
+			int targetdistance2 = targetdistance;
 			block_list * targetbl2 = targetbl;
 			// Unlike single target, here we calculate priority and select the best one
 			int spelltocast = -1;
@@ -4452,15 +4689,32 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 					spelltocast = MG_FIREBALL; bestpriority = priority; IDtarget = foundtargetID;
 				}
 			}
+			// Magnus Exorcismus
+			if (canskill(sd)) if ((pc_checkskill(sd, PR_MAGNUS) > 0) && ((Dangerdistance >900) || (sd->special_state.no_castcancel)) && (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE)>0)) {
+				priority = map_foreachinrange(Magnuspriority, targetbl2, 3, BL_MOB, skill_get_ele(PR_MAGNUS, pc_checkskill(sd, PR_MAGNUS)));
+				if ((priority >= 6) && (priority>bestpriority)) {
+					spelltocast = PR_MAGNUS; bestpriority = priority;
+				}
+			}
+
+			// Cast the chosen spell
 			if (spelltocast > -1) {
 				if (spelltocast == MG_FIREBALL) unit_skilluse_ifable(&sd->bl, IDtarget, spelltocast, pc_checkskill(sd, spelltocast));
 				else
 				unit_skilluse_ifablexy(&sd->bl, foundtargetID2, spelltocast, pc_checkskill(sd, spelltocast));
 			}
 		}
-
 		}
-		
+
+		// Turn Undead, has special targeting restriction
+		if (canskill(sd)) if (pc_checkskill(sd, PR_TURNUNDEAD) > 0) if (sd->state.autopilotmode == 2) {
+			foundtargetID = -1; targetdistance = 999;
+			map_foreachinrange(targetturnundead, &sd->bl, 9, BL_MOB, sd);
+			if (foundtargetID > -1){
+				unit_skilluse_ifable(&sd->bl, foundtargetID, PR_TURNUNDEAD, pc_checkskill(sd, PR_TURNUNDEAD));
+			}
+		}
+
 		// get target for single target spells only once - pick best skill to use on nearest enemy, not pick best enemy for best skill.
 		// probably could do better but targeting too many times causes lags as it includes finding paths.
 		foundtargetID = -1; targetdistance = 999;
