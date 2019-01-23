@@ -3529,7 +3529,7 @@ int targetnearest(block_list * bl, va_list ap)
 	int dist = distance_bl(&sd2->bl, bl);
 	if ((dist < targetdistance) && (path_search_long(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, CELL_CHKWALL))) { targetdistance = dist; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
 
-	return 0;
+	return 1;
 }
 
 int signumcount(block_list * bl, va_list ap)
@@ -4267,6 +4267,29 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 				unit_skilluse_ifable(&sd->bl, foundtargetID, AL_ANGELUS, pc_checkskill(sd, AL_ANGELUS));
 			}
 		}
+		// Arrow Shower
+		if (canskill(sd)) if ((pc_checkskill(sd, AC_SHOWER) > 0)) {
+			foundtargetID = -1; targetdistance = 999;
+			map_foreachinrange(targetnearest, &sd->bl, AREA_SIZE, BL_MOB, sd);
+			if (foundtargetID>-1)
+			{	int foundtargetID2 = foundtargetID;
+			// Must hit at least 3 enemies!
+			foundtargetID = -1; targetdistance = 999;
+			if (map_foreachinrange(targetnearest, targetbl, 1, BL_MOB, sd)>=3)
+				unit_skilluse_ifable(&sd->bl, foundtargetID2, AC_SHOWER, pc_checkskill(sd, AC_SHOWER));
+			}
+		}
+		// Double Strafe
+		if (canskill(sd)) if ((pc_checkskill(sd, AC_DOUBLE) > 0)) {
+			foundtargetID = -1; targetdistance = 999;
+			map_foreachinrange(targetnearest, &sd->bl, AREA_SIZE, BL_MOB, sd);
+			if (foundtargetID>-1)
+			if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
+				|| (status_get_hp(bl) < status_get_max_hp(bl) / 3)) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, AC_DOUBLE, pc_checkskill(sd, AC_DOUBLE));
+			}
+		}
+
 
 		///////////////////////////////////////////////////////////////////////////////////////////////
 		/// Emergency spells to use when in danger of being attacked (mostly useful for mage classes)
@@ -4608,7 +4631,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 					}
 			}
 			// Cart Revolution skill
-			if (canskill(sd)) if (pc_checkskill(sd, MC_CARTREVOLUTION)>0) {
+			if (canskill(sd)) if (pc_checkskill(sd, MC_CARTREVOLUTION)>0) if (pc_iscarton(sd)) {
 				// Always use if critically wounded or mobbed otherwise use on mobs that will take longer to kill only if sp is lower
 				if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
 					|| (status_get_hp(bl) < status_get_max_hp(bl) / 3) || (dangercount>3)) {
