@@ -4339,6 +4339,41 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 
 	if (status_isdead(bl)) { return 0; }
 	if pc_cant_act(sd) { return 0; }
+
+	int party_id, type = 0, i = 0;
+	struct party_data *p;
+	block_list * leaderbl;
+	int leaderID, leaderdistance;
+	struct map_session_data *leadersd;
+
+	party_id = sd->status.party_id;
+	p = party_search(party_id);
+
+	if (p) //Search leader
+		for (i = 0; i < MAX_PARTY && !p->party.member[i].leader; i++);
+
+	if (!p || i == MAX_PARTY) { //leader not found
+		//ShowError("No party leader to follow!");
+		leaderID = -1;
+	}
+	else {
+		targetthis = p->party.member[i].char_id;
+		foundtargetID = -1;
+		map_foreachinmap(targetthischar, sd->bl.m, BL_PC, sd);
+		leaderID = foundtargetID;  leaderbl = targetbl;
+		leadersd = (struct map_session_data*)targetbl;
+		leaderdistance = targetdistance;
+	}
+
+	// Stand up if sitting and leader isn'tleader
+	if (leaderID>-1) if (!pc_issit(leadersd)) {
+		if (pc_issit(sd) && pc_setstand(sd, false)) {
+			skill_sit(sd, 0);
+			clif_standing(&sd->bl);
+		}
+
+	}
+	
 	if pc_issit(sd) { return 0; }
 	int Dangerdistance = inDanger(sd);
 
@@ -4691,31 +4726,13 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		// Only target around party leader who should be the tank if one exists. Using AOE with cast time on
 		// untanked monsters will just miss them.
 		if (sd->state.autopilotmode == 2) {
-		// GET LEADER
-		int party_id, type = 0, i = 0;
-		struct party_data *p;
-
-		party_id = sd->status.party_id;
-		p = party_search(party_id);
-
-		if (p) //Search leader
-			for (i = 0; i < MAX_PARTY && !p->party.member[i].leader; i++);
-
-		if (!p || i == MAX_PARTY) { //leader not found
-			//ShowError("No party leader to follow!");
-			foundtargetID = -1;
-		}
-		else {
-			targetthis = p->party.member[i].char_id;
-			foundtargetID = -1;
-			map_foreachinmap(targetthischar, sd->bl.m, BL_PC, sd);
-		}
 		// No party leader, no AOE skills of this type. Also don't try to use if leader too far, must get closer first
-		if ((foundtargetID > -1) && (targetdistance<=9)) {
-			// Save leader position, as targeting valiables will be overwritten
-			int foundtargetID2 = foundtargetID;
-			int targetdistance2 = targetdistance;
-			block_list * targetbl2 = targetbl;
+		if ((leaderID > -1) && (targetdistance<=9)) {
+			// obsolete now that leader has own variable
+
+			int foundtargetID2 = leaderID;
+			int targetdistance2 = leaderdistance;
+			block_list * targetbl2 = leaderbl;
 			// Unlike single target, here we calculate priority and select the best one
 			int spelltocast = -1;
 			int bestpriority = -1;
@@ -5063,32 +5080,18 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		if (canskill(sd)) skillwhenidle(sd);
 		
 		// Follow the leader
-		int party_id, type = 0, i = 0;
-		struct party_data *p;
-
-		party_id = sd->status.party_id;
-		p = party_search(party_id);
-
-		if (p) //Search leader
-			for (i = 0; i < MAX_PARTY && !p->party.member[i].leader; i++);
-
-		if (!p || i == MAX_PARTY) { //leader not found
-			//ShowError("No party leader to follow!");
-			foundtargetID = -1;
-		}
-		else {
-			targetthis = p->party.member[i].char_id;
-			foundtargetID = -1;
-			map_foreachinmap(targetthischar, sd->bl.m, BL_PC, sd);
-		}
-
-		if (foundtargetID > -1) { 
+		if (leaderID > -1) { 
 		// walktobl seems to cause a problem of the spell target being replaced by the party leader somehow
-			if ((abs(sd->bl.x - targetbl->x) > 2) || abs(sd->bl.y - targetbl->y) > 2)
-				unit_walktoxy(&sd->bl, targetbl->x + rand() % 5 - 2, targetbl->y + rand() % 5 - 2, 8);
+			if ((abs(sd->bl.x - leaderbl->x) > 2) || abs(sd->bl.y - leaderbl->y) > 2)
+				unit_walktoxy(&sd->bl, leaderbl->x + rand() % 5 - 2, leaderbl->y + rand() % 5 - 2, 8);
 			else {
-				struct map_session_data *leadersd = (struct map_session_data*)targetbl;
-				if pc_issit(leadersd) { ; }
+				if pc_issit(leadersd) {
+					if (!pc_issit(sd)) {
+						pc_setsit(sd);
+						skill_sit(sd, 1);
+						clif_sitting(&sd->bl);
+					}
+				}
 
 			}
 		//	unit_walktobl(&sd->bl, targetbl, 2, 0); 
