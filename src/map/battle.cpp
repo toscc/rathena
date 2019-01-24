@@ -6040,7 +6040,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						if(sd) {
 							int per = 0;
 							while ((++per) < skill_lv)
-								skillratio += per * 5; //100% 105% 115% 130% 150% 175% 205% 240% 280% 325%
+								skillratio += per * 11; //100% 105% 115% 130% 150% 175% 205% 240% 280% 325%
 						} else {
 							skillratio += 20 * skill_lv - 20; //Monsters use old formula
 						}

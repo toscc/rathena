@@ -1025,3 +1025,4 @@ IG_BlueBox,13205,1	// Poison Sphere
 IG_BlueBox,13206,1	// Blind Sphere
 IG_BlueBox,13207,1	// Freezing Sphere
 IG_BlueBox,13304,1	// Huuma Calm Mind
+IG_BlueBox,31800,1	// Costume Ticket

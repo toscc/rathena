@@ -11822,7 +11822,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, uint16 skill_id, ui
 
 	case WZ_METEOR:
 	case SU_CN_METEOR: {
-			int area = skill_get_splash(skill_id, skill_lv);
+		int area = 3; skill_get_splash(skill_id, skill_lv);
 			short tmpx = 0, tmpy = 0;
 			if (sd && skill_id == SU_CN_METEOR) {
 				short item_idx = pc_search_inventory(sd, ITEMID_CATNIP_FRUIT);
@@ -12725,6 +12725,7 @@ struct skill_unit_group *skill_unitsetting(struct block_list *src, uint16 skill_
 		limit = flag - (flag&1);
 		val1 = (flag&1);
 		flag = 0; // Flag should not influence anything else for these skills
+		range = 5;
 		break;
 	case WZ_FIREPILLAR:
 		if( map_getcell(src->m, x, y, CELL_CHKLANDPROTECTOR) )
