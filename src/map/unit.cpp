@@ -3738,10 +3738,42 @@ int AOEPriority(block_list * bl, va_list ap)
 
 	uint16 elem = va_arg(ap, int); // the element
 
+	if (md->state.boss) { if (elemstrong(md, elem)) return 50; else return 30; }; // Bosses, prioritize AOE and pick element based on boss alone, ignore slaves
 	if (!elemallowed(md, elem)) return 0; // This target won't be hurt by this element enough to care
 	if (elemstrong(md, elem)) return 3; // This target is weak to it so it's worth 50% more
 	return 2; // Default
 }
+
+int Quagmirepriority(block_list * bl, va_list ap)
+{
+	struct mob_data *md;
+
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+
+	uint16 elem = va_arg(ap, int); // the element
+
+	if (md->sc.data[SC_QUAGMIRE]) return 0;
+	if (md->state.boss) return 10;
+	return 2; // Default
+}
+
+int AOEPrioritySG(block_list * bl, va_list ap)
+{
+	struct mob_data *md;
+
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+
+	uint16 elem = va_arg(ap, int); // the element
+	
+	if (md->sc.data[SC_FREEZE]) return 0;
+	if (!elemallowed(md, elem)) return 0; // This target won't be hurt by this element enough to care
+	if (md->state.boss) { if (elemstrong(md, elem)) return 60; else return 40; }; // Prefer SG over other AOEs on boss if no element applies
+	if (elemstrong(md, elem)) return 3; // This target is weak to it so it's worth 50% more
+	return 2; // Default
+}
+
 
 int targetthischar(block_list * bl, va_list ap)
 {
@@ -4223,6 +4255,16 @@ bool isdisabled(mob_data* md)
 
 
 void skillwhenidle(struct map_session_data *sd) {
+	
+	
+	// Sightblaster
+	if (pc_checkskill(sd, WZ_SIGHTBLASTER) > 0) {
+		if (!(sd->sc.data[SC_SIGHTBLASTER])) {
+			unit_skilluse_ifable(&sd->bl, SELF, WZ_SIGHTBLASTER, pc_checkskill(sd, WZ_SIGHTBLASTER));
+		}
+	}
+
+
 	// Pick Stone
 	if (pc_checkskill(sd, TF_PICKSTONE) > 0) {
 		if (sd->inventory.u.items_inventory[pc_search_inventory(sd, 7049)].amount < 12) {
@@ -4255,7 +4297,13 @@ void skillwhenidle(struct map_session_data *sd) {
 		}
 	}
 
-	
+	// Amplify Magic Power
+	if (pc_checkskill(sd, HW_MAGICPOWER) > 0) {
+		if (!(sd->sc.data[SC_MAGICPOWER])) {
+			unit_skilluse_ifable(&sd->bl, SELF, HW_MAGICPOWER, pc_checkskill(sd, HW_MAGICPOWER));
+		}
+	}
+
 	
 		return;
 }
@@ -4550,6 +4598,18 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 				}
 			}
 		}
+		/// Frost Nova
+		if (canskill(sd)) if (pc_checkskill(sd, WZ_FROSTNOVA) > 0) {
+			if (Dangerdistance <= 2) {
+				if (elemallowed(dangermd, skill_get_ele(WZ_FROSTNOVA, pc_checkskill(sd, WZ_FROSTNOVA)))) {
+					if (!isdisabled(dangermd))
+						if (!(dangermd->status.def_ele == ELE_UNDEAD)) {
+							if (!(dangermd->state.boss))
+								unit_skilluse_ifable(&sd->bl, founddangerID, WZ_FROSTNOVA, pc_checkskill(sd, WZ_FROSTNOVA));
+						}
+				}
+			}
+		}
 		// Don't bother with these suboptimal spells if casting is uninterruptable (note, they can be still cast as a damage spell, but not as an emergency reaction when fast cast time is needed)
 		if (!(sd->special_state.no_castcancel)) {
 			/// Napalm Beat
@@ -4669,6 +4729,53 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			int bestpriority = -1;
 			int priority;
 			int IDtarget = -1;
+			/* better to avoid, hard to decide for the AI?
+			// Gravitational Field
+			// Always prioritize if MATK is low due to it being fixed damage. Otherwise don't bother, hitting elemental weaknesses should be better.
+			if (canskill(sd)) if ((pc_checkskill(sd, HW_GRAVITATION) > 0) && (Dangerdistance > 900) && (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE)>0) && (sd->battle_status.matk_min<=300)) {
+				int area = 2;
+				priority = 20 * map_foreachinrange(AOEPriority, targetbl2, area, BL_MOB, ELE_NONE);
+				if ((priority >= 120) && (priority>bestpriority)) {
+					spelltocast = HW_GRAVITATION; bestpriority = priority;
+				}
+			}*/
+			// Storm Gust
+			if (canskill(sd)) if ((pc_checkskill(sd, WZ_STORMGUST) > 0) && (Dangerdistance > 900)) {
+				int area = 5;
+				priority = 3*map_foreachinrange(AOEPrioritySG, targetbl2, area, BL_MOB, skill_get_ele(WZ_STORMGUST, pc_checkskill(sd, WZ_STORMGUST)));
+				if ((priority >= 18) && (priority>bestpriority)) {
+					spelltocast = WZ_STORMGUST; bestpriority = priority;
+				}
+			}
+			// Quagmire
+			if (canskill(sd)) if (pc_checkskill(sd, WZ_QUAGMIRE) > 0) {
+				struct map_session_data *sd2 = (struct map_session_data*)targetbl2;
+				// Only if flee based tank otherwise reduced hit doesn't matter on monster
+				// Only if not amplified yet, wastes amplify
+				if ((sd2->battle_status.flee - 1.75*sd2->status.base_level >= 100) && !(sd->sc.data[SC_MAGICPOWER])) {
+					int area = 2;
+					priority = map_foreachinrange(Quagmirepriority, targetbl2, area, BL_MOB, skill_get_ele(WZ_QUAGMIRE, pc_checkskill(sd, WZ_QUAGMIRE)));
+					if ((priority >= 6) && (priority > bestpriority)) {
+						spelltocast = WZ_QUAGMIRE; bestpriority = 500;  // do this first before the AOEs to help tank survive
+					}
+				}
+			}
+			// Lord of Vermillion
+			if (canskill(sd)) if ((pc_checkskill(sd, WZ_VERMILION) > 0) && (Dangerdistance > 900)) {
+				int area = 5;
+				priority = 3*map_foreachinrange(AOEPriority, targetbl2, area, BL_MOB, skill_get_ele(WZ_VERMILION, pc_checkskill(sd, WZ_VERMILION)));
+				if ((priority >= 18) && (priority>bestpriority)) {
+					spelltocast = WZ_VERMILION; bestpriority = priority;
+				}
+			}
+			// Meteor Storm
+			if (canskill(sd)) if ((pc_checkskill(sd, WZ_METEOR) > 0) && (Dangerdistance > 900)) {
+				int area = 3;
+				priority = 3*map_foreachinrange(AOEPriority, targetbl2, area, BL_MOB, skill_get_ele(WZ_METEOR, pc_checkskill(sd, WZ_METEOR)));
+				if ((priority >= 18) && (priority>bestpriority)) {
+					spelltocast = WZ_METEOR; bestpriority = priority;
+				}
+			}
 			// Thunderstorm
 			if (canskill(sd)) if ((pc_checkskill(sd, MG_THUNDERSTORM) > 0) && (Dangerdistance > 900)) {
 				// modded : 5x5 but 7x7 at level 6 or higher.
@@ -4691,9 +4798,17 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			}
 			// Magnus Exorcismus
 			if (canskill(sd)) if ((pc_checkskill(sd, PR_MAGNUS) > 0) && ((Dangerdistance >900) || (sd->special_state.no_castcancel)) && (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE)>0)) {
-				priority = map_foreachinrange(Magnuspriority, targetbl2, 3, BL_MOB, skill_get_ele(PR_MAGNUS, pc_checkskill(sd, PR_MAGNUS)));
-				if ((priority >= 6) && (priority>bestpriority)) {
+				priority = 3*map_foreachinrange(Magnuspriority, targetbl2, 3, BL_MOB, skill_get_ele(PR_MAGNUS, pc_checkskill(sd, PR_MAGNUS)));
+				if ((priority >= 18) && (priority>bestpriority)) {
 					spelltocast = PR_MAGNUS; bestpriority = priority;
+				}
+			}
+			// Heaven's Drive
+			if (canskill(sd)) if ((pc_checkskill(sd, WZ_HEAVENDRIVE) > 0) && (Dangerdistance > 900)) {
+				int area = 2;
+				priority = 1+2*map_foreachinrange(AOEPriority, targetbl2, area, BL_MOB, skill_get_ele(WZ_HEAVENDRIVE, pc_checkskill(sd, WZ_HEAVENDRIVE)));
+				if ((priority >= 13) && (priority>bestpriority)) {
+					spelltocast = WZ_HEAVENDRIVE; bestpriority = priority;
 				}
 			}
 
@@ -4718,10 +4833,34 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		// get target for single target spells only once - pick best skill to use on nearest enemy, not pick best enemy for best skill.
 		// probably could do better but targeting too many times causes lags as it includes finding paths.
 		foundtargetID = -1; targetdistance = 999;
-		map_foreachinrange(targetnearest, &sd->bl, 11, BL_MOB, sd);
+		map_foreachinrange(targetnearest, &sd->bl, 9, BL_MOB, sd);
 		int foundtargetID2 = foundtargetID;
-		// Fire Bolt on vulnerable enemy
 		if (foundtargetID2 > -1) {
+			// Jupitel Thunder on vulnerable enemy
+			if (canskill(sd)) if (pc_checkskill(sd, WZ_JUPITEL) > 0) {
+				if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
+					if (elemstrong(targetmd, skill_get_ele(WZ_JUPITEL, pc_checkskill(sd, WZ_JUPITEL)))) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, WZ_JUPITEL, pc_checkskill(sd, WZ_JUPITEL));
+					}
+				}
+			}
+			// Napalm Vulcan on vulnerable enemy
+			if (canskill(sd)) if (pc_checkskill(sd, HW_NAPALMVULCAN) > 0) {
+				if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
+					if (elemstrong(targetmd, skill_get_ele(HW_NAPALMVULCAN, pc_checkskill(sd, HW_NAPALMVULCAN)))) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, HW_NAPALMVULCAN, pc_checkskill(sd, HW_NAPALMVULCAN));
+					}
+				}
+			}
+			// Earth Spike on vulnerable enemy
+			if (canskill(sd)) if (pc_checkskill(sd, WZ_EARTHSPIKE) > 0) {
+				if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
+					if (elemstrong(targetmd, skill_get_ele(WZ_EARTHSPIKE, pc_checkskill(sd, WZ_EARTHSPIKE)))) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, WZ_EARTHSPIKE, pc_checkskill(sd, WZ_EARTHSPIKE));
+					}
+				}
+			}
+			// Fire Bolt on vulnerable enemy
 			if (canskill(sd)) if (pc_checkskill(sd, MG_FIREBOLT) > 0) {
 				if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
 					if (elemstrong(targetmd, skill_get_ele(MG_FIREBOLT, pc_checkskill(sd, MG_FIREBOLT)))) {
@@ -4756,6 +4895,22 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			///////////////////////////////////////////////////////////////////////////////////////////////
 			/// Skills for general use
 			///////////////////////////////////////////////////////////////////////////////////////////////
+			// Jupitel Thunder
+			if (canskill(sd)) if ((pc_checkskill(sd, WZ_JUPITEL) > 0)) {
+				if ((sd->state.autopilotmode == 2)) {
+					if (elemallowed(targetmd, skill_get_ele(WZ_JUPITEL, pc_checkskill(sd, WZ_JUPITEL)))) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, WZ_JUPITEL, pc_checkskill(sd, WZ_JUPITEL));
+					}
+				}
+			}
+			// Napalm Vulcan
+			if (canskill(sd)) if ((pc_checkskill(sd, HW_NAPALMVULCAN) > 0)) {
+				if ((sd->state.autopilotmode == 2)) {
+					if (elemallowed(targetmd, skill_get_ele(HW_NAPALMVULCAN, pc_checkskill(sd, HW_NAPALMVULCAN)))) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, HW_NAPALMVULCAN, pc_checkskill(sd, HW_NAPALMVULCAN));
+					}
+				}
+			}
 			// bolts, use highest level
 			if (canskill(sd)) if ((pc_checkskill(sd, MG_FIREBOLT) > 0) && (pc_checkskill(sd, MG_FIREBOLT) >= pc_checkskill(sd, MG_COLDBOLT))
 				&& (pc_checkskill(sd, MG_FIREBOLT) >= pc_checkskill(sd, MG_LIGHTNINGBOLT))) {
@@ -4891,13 +5046,12 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			// We are tanking as an archer? Move close before attacking...
 			else unit_walktoxy(&sd->bl, targetbl->x + rand() % 5 - 2, targetbl->y + rand() % 5 - 2, 8);
 		}
-		else if (canskill(sd)) {
+		else {
 			///////////////////////////////////////////////////////////
 			// Skills to use while not in battle only
 			///////////////////////////////////////////////////////////
-			// Pick Stone
-			skillwhenidle(sd);
-
+			// Skills used when idle, like pick stone or aqua benedicta
+			if (canskill(sd)) skillwhenidle(sd);
 
 			// seek next enemy if nothing else to do
 			foundtargetID = -1; targetdistance = 999;
@@ -4912,9 +5066,9 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 	}
 	// Not tanking mode so follow the party leader
 	// Can't move while already using a skill
-	else if (canskill(sd)) { 
-	// Skills to use when not in battle go here 
-		skillwhenidle(sd);
+	else { 
+		// Skills to use when doing nothing important
+		if (canskill(sd)) skillwhenidle(sd);
 		
 		// Follow the leader
 		int party_id, type = 0, i = 0;
@@ -4959,7 +5113,6 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 		}
 	}
 
-	clif_move(ud);
 	return 0;
 }
 
