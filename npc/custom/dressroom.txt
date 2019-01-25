@@ -1,0 +1,49 @@
+//============================================================ 
+//= Dressroom Add-on
+//===== By: ================================================== 
+//= Masao
+//===== Current Version: ===================================== 
+//= 1.0
+//===== Compatible With: ===================================== 
+//= rAthena SVN
+//===== Description: ========================================= 
+//= An add-on for the stylist NPC to use the Dressroom function.
+//===== Additional Comments: =================================
+//= 1.0 First Release
+//===== Contact Info: ========================================
+//= [Masao] 
+//============================================================
+function	script	F_DRESSROOM	{
+
+	if((Class >= 0 && Class <= 4052) || (Class >= 4190 && Class <=4244)){ // Job ID check so only 3rd Class chars can change costume.
+		mes "[Stylist]";
+		mes "I can't do anything for you, come back when you're stronger!";
+		close;
+	}
+	if (countitem(31800) < 1) { //Edit the amount of zeny it needs to change costume here. Default = 10k Zeny.
+		mes "[Stylist]";
+		mes "I'm sorry, you don't have the necessary ticket with you!";
+		close;
+	}
+
+	mes "[Stylist]";
+	mes "I can change your appearance to another class of your classline at a cost of ^FF0000Alternate Costume Ticket^000000z!";
+	mes "Which class do you want to change your appearance to?";
+	next;
+	if(select("Restore costume:New jRO costume") == 1) {
+		set newstyle,0;
+		setlook LOOK_BODY2,0;
+		delitem 31800,1;
+		close;
+	}
+	setlook LOOK_BODY2,1;
+	set newstyle,1;
+	delitem 31800,1;
+	close;
+
+OnPCLoginEvent:
+	if(newstyle == 1){
+		setlook LOOK_BODY2,1;
+	}
+	end;
+}

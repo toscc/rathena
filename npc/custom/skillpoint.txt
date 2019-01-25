@@ -1,0 +1,21 @@
+gef_tower,104,36,5 script Skill_Point_Remover#skremover 569,{
+mes "[Skill Point Remover]";
+mes	"Please make sure you used all the skill points you would like to use before using my services.";
+next;
+mes "[Skill Point Remover]";
+mes "Would you like to remove your extra skill points?";
+	
+	if (select("Yes:No") == 2) {
+		next;
+		mes "[Skill Point Remover]";
+		mes "Ok then, bye?";
+		close;
+	}
+next;
+mes "[Skill Point Remover]";
+mes "Done";
+set SkillPoint,0;
+close;
+}
+
+prontera,144,177,6    duplicate(Skill_Point_Remover)    Skill_Point_Remover#pront    857
