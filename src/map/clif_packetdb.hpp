@@ -1,8 +1,8 @@
 // Copyright (c) rAthena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
-#ifndef _CLIF_PACKETDB_HPP_
-#define _CLIF_PACKETDB_HPP_
+#ifndef CLIF_PACKETDB_HPP
+#define CLIF_PACKETDB_HPP
 
 	#define packet(cmd,length) packetdb_addpacket(cmd,length,NULL,0)
 	#define parseable_packet(cmd,length,func,...) packetdb_addpacket(cmd,length,func,__VA_ARGS__,0)
@@ -2143,6 +2143,7 @@
 	parseable_packet(0x096E,-1,clif_parse_merge_item_req,2,4); // CZ_REQ_MERGE_ITEM
 	ack_packet(ZC_ACK_MERGE_ITEM,0x096F,7,2,4,6,7); // ZC_ACK_MERGE_ITEM
 	parseable_packet(0x0974,2,clif_parse_merge_item_cancel,0); // CZ_CANCEL_MERGE_ITEM
+	packet(0x9CD,8); // ZC_MSG_COLOR
 #endif
 
 // 2013-08-21bRagexe
@@ -2185,6 +2186,11 @@
 	packet(0x09DC,-1); // ZC_NOTIFY_NEWENTRY10
 	packet(0x09DD,-1); // ZC_NOTIFY_STANDENTRY10
 	packet(0x09DF,7); // ZC_ACK_WHISPER02
+#endif
+
+// 2014-02-05bRagexeRE
+#if PACKETVER >= 20140205
+	packet(0x09DA,-1);
 #endif
 
 // 2014-10-16Ragexe
@@ -2311,6 +2317,12 @@
 	parseable_packet(0x0A6E,-1,clif_parse_Mail_send,2,4,28,52,60,62,64,68); // CZ_REQ_WRITE_MAIL2
 #endif
 
+// 2016-05-25aRagexeRE
+#if PACKETVER >= 20160525
+	parseable_packet(0x0A77,15,clif_parse_camerainfo,0);
+	packet(0x0A78, 15);
+#endif
+
 // 2016-06-01aRagexe
 #if PACKETVER >= 20160601
 	packet(0x0A7D,-1);
@@ -2326,16 +2338,20 @@
 	packet(0x0A37,59);
 #endif
 
-// 2016-09-28cRagexeRE
-#if PACKETVER >= 20160928
-	parseable_packet(0x0A97,8,clif_parse_dull,0);
-	parseable_packet(0x0A99,4,clif_parse_dull,0);
-	parseable_packet(0x0A9C,2,clif_parse_dull,0);
-#endif
-
 // 2016-10-26bRagexeRE
 #if PACKETVER >= 20161026
 	packet(0x0AA5,-1);
+#endif
+
+// 2017-02-08bRagexeRE
+#if PACKETVER >= 20170208
+	parseable_packet(0x0A97,8,clif_parse_equipswitch_add,2,4);
+	packet(0x0A98,12);
+	parseable_packet(0x0A99,8,clif_parse_equipswitch_remove,2,4,6);
+	packet(0x0A9A,10);
+	packet(0x0A9B,-1);
+	parseable_packet(0x0A9C,2,clif_parse_equipswitch_request,0);
+	packet(0x0A9D,4);
 #endif
 
 // 2017-03-15cRagexeRE
@@ -2353,14 +2369,22 @@
 #if PACKETVER >= 20170502
 	packet(0x0A43,85);
 	packet(0x0A44,-1);
+	packet(0x0AB2,7);
 	packet(0x0ABD,10);
-	parseable_packet(0x0ACE,4,clif_parse_dull,0);
+	packet(0x0A98,10);
+	parseable_packet(0x0A99,4,clif_parse_equipswitch_remove,2,4);
+	parseable_packet(0x0ACE,4,clif_parse_equipswitch_request_single,0);
 #endif
 
 // 2017-08-30bRagexeRE
 #if PACKETVER >= 20170830
 	packet(0x0ACB,12);
 	packet(0x0ACC,18);
+#endif
+
+// 2017-10-25eRagexeRE
+#if PACKETVER >= 20171025
+	packet(0x0ADE,6);
 #endif
 
 // 2018-01-03aRagexeRE or 2018-01-03bRagexeRE
@@ -2381,10 +2405,23 @@
 
 // 2018-03-07bRagexeRE
 #if PACKETVER >= 20180307
-	parseable_packet(0x0A68,3,clif_parse_dull,0);
+	parseable_packet(0x0A68,3,clif_parse_open_ui,2);
 	packet(0x0AE2,7);
-	parseable_packet(0x0AEF,2,clif_parse_dull,0);
+	parseable_packet(0x0AEF,2,clif_parse_attendance_request,0);
 	packet(0x0AF0,10);
 #endif
 
-#endif /* _CLIF_PACKETDB_HPP_ */
+// 2018-03-21aRagexeRE
+#if PACKETVER >= 20180321
+	parseable_packet(0x0A49,20,clif_parse_private_airship_request,0);
+	packet(0x0A4A,6);
+	packet(0x0A4B,22);
+	packet(0x0A4C,28);
+#endif
+
+// 2018-04-18bRagexeRE
+#if PACKETVER >= 20180418
+	packet(0x0ADD, 22);
+#endif
+
+#endif /* CLIF_PACKETDB_HPP */

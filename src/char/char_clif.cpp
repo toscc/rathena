@@ -372,10 +372,21 @@ void chclif_mmo_send082d(int fd, struct char_session_data* sd) {
 }
 
 void chclif_mmo_send099d(int fd, struct char_session_data *sd) {
+	uint8 count = 0;
+
 	WFIFOHEAD(fd,4 + (MAX_CHARS*MAX_CHAR_BUF));
 	WFIFOW(fd,0) = 0x99d;
-	WFIFOW(fd,2) = char_mmo_chars_fromsql(sd, WFIFOP(fd,4)) + 4;
+	WFIFOW(fd,2) = char_mmo_chars_fromsql(sd, WFIFOP(fd,4), &count) + 4;
 	WFIFOSET(fd,WFIFOW(fd,2));
+
+	// This is something special Gravity came up with.
+	// The client triggers some finalization code only if count is != 3.
+	if( count == 3 ){
+		WFIFOHEAD(fd,4);
+		WFIFOW(fd,0) = 0x99d;
+		WFIFOW(fd,2) = 4;
+		WFIFOSET(fd,4);
+	}
 }
 
 
@@ -676,7 +687,7 @@ int chclif_parse_maplogin(int fd){
 			map_server[i].ip = ntohl(RFIFOL(fd,54));
 			map_server[i].port = ntohs(RFIFOW(fd,58));
 			map_server[i].users = 0;
-			memset(map_server[i].map, 0, sizeof(map_server[i].map));
+			map_server[i].map = {};
 			session[fd]->func_parse = chmapif_parse;
 			session[fd]->flag.server = 1;
 			realloc_fifo(fd, FIFOSIZE_SERVERLINK, FIFOSIZE_SERVERLINK);
@@ -1101,8 +1112,7 @@ int chclif_parse_reqrename( int fd, struct char_session_data* sd ){
 }
 
 
-int charblock_timer(int tid, unsigned int tick, int id, intptr_t data)
-{
+TIMER_FUNC(charblock_timer){
 	struct char_session_data* sd=NULL;
 	int i=0;
 	ARR_FIND( 0, fd_max, i, session[i] && (sd = (struct char_session_data*)session[i]->session_data) && sd->account_id == id);
