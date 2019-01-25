@@ -323,7 +323,7 @@ prt_in,88,101,4	script	Chivalry Captain#knt	56,{
 		mes "Andrew, what do you think?";
 		next;
 		mes "[Sir Andrew]";
-		if (JobLevel == 50) {
+		if (JobLevel >= 50) {
 			mes "What can I say?";
 			mes "I approve!";
 			mes "Having lived as";
@@ -544,7 +544,7 @@ prt_in,75,107,4	script	Sir Andrew#knt	65,{
 			mes "I will be testing your sense of loyalty. Every Knight must possess this virtue. For this exam, you will be gathering prizes from";
 			mes "the battlefield.";
 			next;
-			if (JobLevel == 50) {
+			if (JobLevel >= 50) {
 				mes "[Sir Andrew]";
 				mes "Mmm...?";
 				mes "Hold on there.";

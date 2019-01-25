@@ -14,7 +14,7 @@
 //= 1.2 Added Dressroom function for 3rd class only. [Masao]
 //============================================================
 
-prontera,142,179,6	script	Stylist#custom_stylist	122,{
+prontera,169,179,6	script	Stylist#custom_stylist	122,{
 	setarray .@Styles[1],
 		getbattleflag("max_cloth_color"),
 		getbattleflag("max_hair_style"),

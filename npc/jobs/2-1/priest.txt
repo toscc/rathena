@@ -261,7 +261,7 @@ prt_church,16,41,4	script	High Bishop#prst	60,{
 				mes "[Bishop Paul]";
 				mes "Acolytes that have reached Job Level 50 will be exempt from the First Trial, the pilgrimage, as they have already demonstrated their enthusiasm and devotion.";
 				next;
-				if (JobLevel == 50) {
+				if (JobLevel >= 50) {
 					mes "[Bishop Paul]";
 					mes "I can see the great effort you have exerted to reach job level 50. You have been a loyal servant to God.";
 					next;

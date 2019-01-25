@@ -5548,17 +5548,14 @@ ACMD_FUNC(storeall)
 	nullpo_retr(-1, sd);
 
 	if (sd->state.storage_flag != 1)
-	{	//Open storage.
-		if( storage_storageopen(sd) == 1 ) {
-			clif_displaymessage(fd, msg_txt(sd,1161)); // You currently cannot open your storage.
+	{
+		clif_displaymessage(fd, "Your storage must be open!"); // You currently cannot open your storage.
 			return -1;
-		}
-	}
+	};
 
 	for (i = 0; i < MAX_INVENTORY; i++) {
 		if (sd->inventory.u.items_inventory[i].amount) {
-			if(sd->inventory.u.items_inventory[i].equip != 0)
-				pc_unequipitem(sd, i, 3);
+			if ((sd->inventory.u.items_inventory[i].equip == 0) && (sd->inventory.u.items_inventory[i].favorite == 0))
 			storage_storageadd(sd, &sd->storage, i, sd->inventory.u.items_inventory[i].amount);
 		}
 	}
@@ -5567,6 +5564,47 @@ ACMD_FUNC(storeall)
 	clif_displaymessage(fd, msg_txt(sd,1162)); // All items stored.
 	return 0;
 }
+
+
+/*==========================================
+ * @gstoreall by [Cydh]
+ * Put everything into guild storage
+ *------------------------------------------*/
+ACMD_FUNC(gstoreall)
+{
+	int i;
+	nullpo_retr(-1, sd);
+
+	if (!sd->status.guild_id) {
+		clif_displaymessage(fd, msg_txt(sd, 252));
+		return -1;
+
+	}
+
+//	if (sd->npc_id || sd->state.vending || sd->state.buyingstore || sd->state.trading)
+//		return -1;
+
+
+	if (sd->state.storage_flag != 2) {
+		sprintf(atcmd_output, "Your guild storage must be open!");
+		clif_displaymessage(fd, atcmd_output);
+		return -1;
+
+	}
+
+	for (i = 0; i < MAX_INVENTORY; i++) {
+		if (sd->inventory.u.items_inventory[i].amount) {
+			if ((sd->inventory.u.items_inventory[i].equip == 0) && (sd->inventory.u.items_inventory[i].favorite == 0)) 
+				storage_guild_storageadd(sd, i, sd->inventory.u.items_inventory[i].amount);
+		}
+	}
+
+		storage_guild_storageclose(sd);
+
+		clif_displaymessage(fd, "All your items have been sent to your guild storage");
+		return 0;
+}
+
 
 ACMD_FUNC(clearstorage)
 {

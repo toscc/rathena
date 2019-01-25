@@ -130,7 +130,7 @@ gef_tower,111,37,4	script	Wizard Guildsman	70,{
 				mes "Among one of these tests, we exempt those who are at job level 50.";
 				mes "It is enough to prove to us the effort it will take to become a Wizard if a mage has learned that much already.";
 				next;
-				if (JobLevel == 50) {
+				if (JobLevel >= 50) {
 					mes "[Catherine]";
 					mes "Hmm, come to think of it, you're at job level 50!?";
 					mes "You must have worked very hard. Your going to become a very powerful Wizard, I can feel it in you.";
