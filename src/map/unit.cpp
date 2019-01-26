@@ -4309,7 +4309,8 @@ bool canskill(struct map_session_data *sd)
 };
 
 // @autopilot timer
-int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
+TIMER_FUNC(unit_autopilot_timer)
+//int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 {
 	struct block_list *bl;
 	struct unit_data *ud;
@@ -4390,7 +4391,7 @@ int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
 			ITEMID_YELLOW_POTION,
 			ITEMID_WHITE_POTION,
 			ITEMID_APPLE,
-			ITEMID_CARROT,
+			515,
 			513, // Banana
 			522, // Mastela Fruit			
 			529, // Candy
