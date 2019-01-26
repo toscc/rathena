@@ -612,6 +612,24 @@ TIMER_FUNC(unit_delay_walktobl_timer){
 	return 1;
 }
 
+
+// do unit_walktoxy if and only if not already going towards that generic area, otherwise keep current movement order
+int newwalk(struct block_list *bl, short x, short y, unsigned char flag)
+{
+	struct unit_data* ud = NULL;
+	ud = unit_bl2ud(bl);
+
+	if (ud == NULL)
+		return 0;
+
+	// We aren't yet walking or are walking to somewhere at least 5 tiles away from the intended destination, start a new walk
+	if ((abs(x - ud->to_x) > 4) || (abs(y - ud->to_y) > 4) || (ud->walktimer == INVALID_TIMER)) {
+//		if (ud->walktimer != INVALID_TIMER) unit_stop_walking(bl, USW_FIXPOS);
+		unit_walktoxy(bl, x, y, flag);
+	}
+}
+
+
 /**
  * Begins the function of walking a unit to an x,y location
  * This is where the path searches and unit can_move checks are done
@@ -4359,11 +4377,11 @@ TIMER_FUNC(unit_autopilot_timer)
 	}
 	else {
 		targetthis = p->party.member[i].char_id;
-		foundtargetID = -1;
+		foundtargetID = -1; leaderdistance = 999;
 		map_foreachinmap(targetthischar, sd->bl.m, BL_PC, sd);
 		leaderID = foundtargetID;  leaderbl = targetbl;
 		leadersd = (struct map_session_data*)targetbl;
-		leaderdistance = targetdistance;
+		if (leaderID > -1) { leaderdistance = distance_bl(leaderbl, bl); }
 	}
 
 	// Stand up if sitting and leader isn'tleader
@@ -4570,7 +4588,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		// Arrow Shower
 		if (canskill(sd)) if ((pc_checkskill(sd, AC_SHOWER) > 0)) {
 			foundtargetID = -1; targetdistance = 999;
-			map_foreachinrange(targetnearest, &sd->bl, AREA_SIZE, BL_MOB, sd);
+			map_foreachinrange(targetnearest, &sd->bl, 14, BL_MOB, sd);
 			if (foundtargetID>-1)
 			{	int foundtargetID2 = foundtargetID;
 			// Must hit at least 3 enemies!
@@ -4582,7 +4600,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		// Double Strafe
 		if (canskill(sd)) if ((pc_checkskill(sd, AC_DOUBLE) > 0)) {
 			foundtargetID = -1; targetdistance = 999;
-			map_foreachinrange(targetnearest, &sd->bl, AREA_SIZE, BL_MOB, sd);
+			map_foreachinrange(targetnearest, &sd->bl, 14, BL_MOB, sd);
 			if (foundtargetID>-1)
 			if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
 				|| (status_get_hp(bl) < status_get_max_hp(bl) / 3)) {
@@ -4724,113 +4742,129 @@ TIMER_FUNC(unit_autopilot_timer)
 		/// Skills to prioritize based on elemental weakness
 		///////////////////////////////////////////////////////////////////////////////////////////////
 		// AOE skills go here, they should have higher priority than single target when able to hit multiple things
-		// Only target around party leader who should be the tank if one exists. Using AOE with cast time on
-		// untanked monsters will just miss them.
+		// Only target around tank or human players. Using AOE with cast time on
+		// untanked monsters will just miss them but we can rely on the human being smart enough to keep them in the AOE if they see it 
+		// being cast around them.
 		if (sd->state.autopilotmode == 2) {
-		// No party leader, no AOE skills of this type. Also don't try to use if leader too far, must get closer first
-		if ((leaderID > -1) && (targetdistance<=9)) {
-			// obsolete now that leader has own variable
 
-			int foundtargetID2 = leaderID;
-			int targetdistance2 = leaderdistance;
-			block_list * targetbl2 = leaderbl;
-			// Unlike single target, here we calculate priority and select the best one
-			int spelltocast = -1;
-			int bestpriority = -1;
-			int priority;
-			int IDtarget = -1;
-			/* better to avoid, hard to decide for the AI?
-			// Gravitational Field
-			// Always prioritize if MATK is low due to it being fixed damage. Otherwise don't bother, hitting elemental weaknesses should be better.
-			if (canskill(sd)) if ((pc_checkskill(sd, HW_GRAVITATION) > 0) && (Dangerdistance > 900) && (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE)>0) && (sd->battle_status.matk_min<=300)) {
-				int area = 2;
-				priority = 20 * map_foreachinrange(AOEPriority, targetbl2, area, BL_MOB, ELE_NONE);
-				if ((priority >= 120) && (priority>bestpriority)) {
-					spelltocast = HW_GRAVITATION; bestpriority = priority;
-				}
-			}*/
-			// Storm Gust
-			if (canskill(sd)) if ((pc_checkskill(sd, WZ_STORMGUST) > 0) && (Dangerdistance > 900)) {
-				int area = 5;
-				priority = 3*map_foreachinrange(AOEPrioritySG, targetbl2, area, BL_MOB, skill_get_ele(WZ_STORMGUST, pc_checkskill(sd, WZ_STORMGUST)));
-				if ((priority >= 18) && (priority>bestpriority)) {
-					spelltocast = WZ_STORMGUST; bestpriority = priority;
-				}
-			}
-			// Quagmire
-			if (canskill(sd)) if (pc_checkskill(sd, WZ_QUAGMIRE) > 0) {
-				struct map_session_data *sd2 = (struct map_session_data*)targetbl2;
-				// Only if flee based tank otherwise reduced hit doesn't matter on monster
-				// Only if not amplified yet, wastes amplify
-				if ((sd2->battle_status.flee - 1.75*sd2->status.base_level >= 100) && !(sd->sc.data[SC_MAGICPOWER])) {
-					int area = 2;
-					priority = map_foreachinrange(Quagmirepriority, targetbl2, area, BL_MOB, skill_get_ele(WZ_QUAGMIRE, pc_checkskill(sd, WZ_QUAGMIRE)));
-					if ((priority >= 6) && (priority > bestpriority)) {
-						spelltocast = WZ_QUAGMIRE; bestpriority = 500;  // do this first before the AOEs to help tank survive
+			int j;
+			if (p) //Search leader
+				for (j = 0; j < MAX_PARTY; j++) {
+
+					targetthis = p->party.member[j].char_id;
+					foundtargetID = -1; 
+					map_foreachinmap(targetthischar, sd->bl.m, BL_PC, sd);
+
+					// This party member is on the map?
+					if (foundtargetID > -1) {
+						int foundtargetID2 = foundtargetID;  
+						map_session_data *membersd = (struct map_session_data*)targetbl;
+						int targetdistance2 = distance_bl(targetbl, bl); 
+						block_list * targetbl2 = targetbl;
+
+						// Don't try to use if member too far, must get closer first
+						// member must be in tanking mode, or controlled by human player. Other characters are unlikely to keep monsters in the AOE while casting.
+						if ((membersd->state.autopilotmode<=1) && (targetdistance2 <= 9)) {
+							// obsolete now that leader has own variable
+
+							// Unlike single target, here we calculate priority and select the best one
+							int spelltocast = -1;
+							int bestpriority = -1;
+							int priority;
+							int IDtarget = -1;
+							/* better to avoid, hard to decide for the AI?
+							// Gravitational Field
+							// Always prioritize if MATK is low due to it being fixed damage. Otherwise don't bother, hitting elemental weaknesses should be better.
+							if (canskill(sd)) if ((pc_checkskill(sd, HW_GRAVITATION) > 0) && (Dangerdistance > 900) && (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE)>0) && (sd->battle_status.matk_min<=300)) {
+							int area = 2;
+							priority = 20 * map_foreachinrange(AOEPriority, targetbl2, area, BL_MOB, ELE_NONE);
+							if ((priority >= 120) && (priority>bestpriority)) {
+							spelltocast = HW_GRAVITATION; bestpriority = priority;
+							}
+							}*/
+							// Storm Gust
+							if (canskill(sd)) if ((pc_checkskill(sd, WZ_STORMGUST) > 0) && (Dangerdistance > 900)) {
+								int area = 5;
+								priority = 3 * map_foreachinrange(AOEPrioritySG, targetbl2, area, BL_MOB, skill_get_ele(WZ_STORMGUST, pc_checkskill(sd, WZ_STORMGUST)));
+								if ((priority >= 18) && (priority > bestpriority)) {
+									spelltocast = WZ_STORMGUST; bestpriority = priority;
+								}
+							}
+							// Quagmire
+							if (canskill(sd)) if (pc_checkskill(sd, WZ_QUAGMIRE) > 0) {
+								struct map_session_data *sd2 = (struct map_session_data*)targetbl2;
+								// Only if flee based tank otherwise reduced hit doesn't matter on monster
+								// Only if not amplified yet, wastes amplify
+								if ((sd2->battle_status.flee - 1.75*sd2->status.base_level >= 100) && !(sd->sc.data[SC_MAGICPOWER])) {
+									int area = 2;
+									priority = map_foreachinrange(Quagmirepriority, targetbl2, area, BL_MOB, skill_get_ele(WZ_QUAGMIRE, pc_checkskill(sd, WZ_QUAGMIRE)));
+									if ((priority >= 6) && (priority > bestpriority)) {
+										spelltocast = WZ_QUAGMIRE; bestpriority = 500;  // do this first before the AOEs to help tank survive
+									}
+								}
+							}
+							// Lord of Vermillion
+							if (canskill(sd)) if ((pc_checkskill(sd, WZ_VERMILION) > 0) && (Dangerdistance > 900)) {
+								int area = 5;
+								priority = 3 * map_foreachinrange(AOEPriority, targetbl2, area, BL_MOB, skill_get_ele(WZ_VERMILION, pc_checkskill(sd, WZ_VERMILION)));
+								if ((priority >= 18) && (priority > bestpriority)) {
+									spelltocast = WZ_VERMILION; bestpriority = priority;
+								}
+							}
+							// Meteor Storm
+							if (canskill(sd)) if ((pc_checkskill(sd, WZ_METEOR) > 0) && (Dangerdistance > 900)) {
+								int area = 3;
+								priority = 3 * map_foreachinrange(AOEPriority, targetbl2, area, BL_MOB, skill_get_ele(WZ_METEOR, pc_checkskill(sd, WZ_METEOR)));
+								if ((priority >= 18) && (priority > bestpriority)) {
+									spelltocast = WZ_METEOR; bestpriority = priority;
+								}
+							}
+							// Thunderstorm
+							if (canskill(sd)) if ((pc_checkskill(sd, MG_THUNDERSTORM) > 0) && (Dangerdistance > 900)) {
+								// modded : 5x5 but 7x7 at level 6 or higher.
+								int area = 2; if (pc_checkskill(sd, MG_THUNDERSTORM) > 5) area++;
+								priority = map_foreachinrange(AOEPriority, targetbl2, area, BL_MOB, skill_get_ele(MG_THUNDERSTORM, pc_checkskill(sd, MG_THUNDERSTORM)));
+								if ((priority >= 6) && (priority > bestpriority)) {
+									spelltocast = MG_THUNDERSTORM; bestpriority = priority;
+								}
+							}
+							// Fireball
+							// This is special - it targets a monster despite having AOE, not a ground skill
+							if (canskill(sd)) if ((pc_checkskill(sd, MG_FIREBALL) > 0)) {
+								foundtargetID = -1; targetdistance = 999;
+								map_foreachinrange(targetnearest, targetbl2, 9, BL_MOB, sd);
+								int area = 2;
+								priority = map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(MG_FIREBALL, pc_checkskill(sd, MG_FIREBALL)));
+								if ((priority >= 6) && (priority > bestpriority)) {
+									spelltocast = MG_FIREBALL; bestpriority = priority; IDtarget = foundtargetID;
+								}
+							}
+							// Magnus Exorcismus
+							if (canskill(sd)) if ((pc_checkskill(sd, PR_MAGNUS) > 0) && ((Dangerdistance > 900) || (sd->special_state.no_castcancel)) && (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE) > 0)) {
+								priority = 3 * map_foreachinrange(Magnuspriority, targetbl2, 3, BL_MOB, skill_get_ele(PR_MAGNUS, pc_checkskill(sd, PR_MAGNUS)));
+								if ((priority >= 18) && (priority > bestpriority)) {
+									spelltocast = PR_MAGNUS; bestpriority = priority;
+								}
+							}
+							// Heaven's Drive
+							if (canskill(sd)) if ((pc_checkskill(sd, WZ_HEAVENDRIVE) > 0) && (Dangerdistance > 900)) {
+								int area = 2;
+								priority = 1 + 2 * map_foreachinrange(AOEPriority, targetbl2, area, BL_MOB, skill_get_ele(WZ_HEAVENDRIVE, pc_checkskill(sd, WZ_HEAVENDRIVE)));
+								if ((priority >= 13) && (priority > bestpriority)) {
+									spelltocast = WZ_HEAVENDRIVE; bestpriority = priority;
+								}
+							}
+
+							// Cast the chosen spell
+							if (spelltocast > -1) {
+								if (spelltocast == MG_FIREBALL) unit_skilluse_ifable(&sd->bl, IDtarget, spelltocast, pc_checkskill(sd, spelltocast));
+								else
+									unit_skilluse_ifablexy(&sd->bl, foundtargetID2, spelltocast, pc_checkskill(sd, spelltocast));
+							}
+						}
 					}
 				}
-			}
-			// Lord of Vermillion
-			if (canskill(sd)) if ((pc_checkskill(sd, WZ_VERMILION) > 0) && (Dangerdistance > 900)) {
-				int area = 5;
-				priority = 3*map_foreachinrange(AOEPriority, targetbl2, area, BL_MOB, skill_get_ele(WZ_VERMILION, pc_checkskill(sd, WZ_VERMILION)));
-				if ((priority >= 18) && (priority>bestpriority)) {
-					spelltocast = WZ_VERMILION; bestpriority = priority;
-				}
-			}
-			// Meteor Storm
-			if (canskill(sd)) if ((pc_checkskill(sd, WZ_METEOR) > 0) && (Dangerdistance > 900)) {
-				int area = 3;
-				priority = 3*map_foreachinrange(AOEPriority, targetbl2, area, BL_MOB, skill_get_ele(WZ_METEOR, pc_checkskill(sd, WZ_METEOR)));
-				if ((priority >= 18) && (priority>bestpriority)) {
-					spelltocast = WZ_METEOR; bestpriority = priority;
-				}
-			}
-			// Thunderstorm
-			if (canskill(sd)) if ((pc_checkskill(sd, MG_THUNDERSTORM) > 0) && (Dangerdistance > 900)) {
-				// modded : 5x5 but 7x7 at level 6 or higher.
-				int area = 2; if (pc_checkskill(sd, MG_THUNDERSTORM) > 5) area++;
-				priority = map_foreachinrange(AOEPriority, targetbl2, area, BL_MOB, skill_get_ele(MG_THUNDERSTORM, pc_checkskill(sd, MG_THUNDERSTORM)));
-				if ((priority >= 6) && (priority>bestpriority)) {
-					spelltocast = MG_THUNDERSTORM; bestpriority = priority;
-				}
-			}
-			// Fireball
-			// This is special - it targets a monster despite having AOE, not a ground skill
-			if (canskill(sd)) if ((pc_checkskill(sd, MG_FIREBALL) > 0)) {
-				foundtargetID = -1; targetdistance = 999;
-				map_foreachinrange(targetnearest, targetbl2, AREA_SIZE, BL_MOB, sd);
-				int area = 2;
-				priority = map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(MG_FIREBALL, pc_checkskill(sd, MG_FIREBALL)));
-				if ((priority >= 6) && (priority>bestpriority)) {
-					spelltocast = MG_FIREBALL; bestpriority = priority; IDtarget = foundtargetID;
-				}
-			}
-			// Magnus Exorcismus
-			if (canskill(sd)) if ((pc_checkskill(sd, PR_MAGNUS) > 0) && ((Dangerdistance >900) || (sd->special_state.no_castcancel)) && (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE)>0)) {
-				priority = 3*map_foreachinrange(Magnuspriority, targetbl2, 3, BL_MOB, skill_get_ele(PR_MAGNUS, pc_checkskill(sd, PR_MAGNUS)));
-				if ((priority >= 18) && (priority>bestpriority)) {
-					spelltocast = PR_MAGNUS; bestpriority = priority;
-				}
-			}
-			// Heaven's Drive
-			if (canskill(sd)) if ((pc_checkskill(sd, WZ_HEAVENDRIVE) > 0) && (Dangerdistance > 900)) {
-				int area = 2;
-				priority = 1+2*map_foreachinrange(AOEPriority, targetbl2, area, BL_MOB, skill_get_ele(WZ_HEAVENDRIVE, pc_checkskill(sd, WZ_HEAVENDRIVE)));
-				if ((priority >= 13) && (priority>bestpriority)) {
-					spelltocast = WZ_HEAVENDRIVE; bestpriority = priority;
-				}
-			}
-
-			// Cast the chosen spell
-			if (spelltocast > -1) {
-				if (spelltocast == MG_FIREBALL) unit_skilluse_ifable(&sd->bl, IDtarget, spelltocast, pc_checkskill(sd, spelltocast));
-				else
-				unit_skilluse_ifablexy(&sd->bl, foundtargetID2, spelltocast, pc_checkskill(sd, spelltocast));
-			}
 		}
-		}
-
 		// Turn Undead, has special targeting restriction
 		if (canskill(sd)) if (pc_checkskill(sd, PR_TURNUNDEAD) > 0) if (sd->state.autopilotmode == 2) {
 			foundtargetID = -1; targetdistance = 999;
@@ -4992,10 +5026,17 @@ TIMER_FUNC(unit_autopilot_timer)
 
 		// Find nearest enemy
 		foundtargetID = -1; targetdistance = 999;
-		map_foreachinrange(targetnearest, &sd->bl, AREA_SIZE, BL_MOB, sd);
+		// No leader then closest to ourselves we can see
+		if (leaderID == -1) {
+			map_foreachinrange(targetnearest, &sd->bl, 12, BL_MOB, sd);
+		}
+		// but if leader exists then closest to them to avoid going outside their range
+		else {
+			map_foreachinrange(targetnearest, leaderbl, 12, BL_MOB, sd);
+		}
 
-		// attack nearest thing if it exists
-		if (foundtargetID > -1) {
+		// attack nearest thing if it exists and we aren't losing the leader
+		if ((foundtargetID > -1) && (leaderdistance<=14)) {
 
 			/////////////////////////////////////////////////////////////////////
 			// Skills that can be used while tanking only, on tanked enemy 
@@ -5054,7 +5095,9 @@ TIMER_FUNC(unit_autopilot_timer)
 			if ((sd->battle_status.rhw.range <= 3) || (targetdistance<3))
 			clif_parse_ActionRequest_sub(sd, 7, foundtargetID, gettick());
 			// We are tanking as an archer? Move close before attacking...
-			else unit_walktoxy(&sd->bl, targetbl->x + rand() % 5 - 2, targetbl->y + rand() % 5 - 2, 8);
+			else {
+				newwalk(&sd->bl, targetbl->x + rand() % 5 - 2, targetbl->y + rand() % 5 - 2, 8);
+			}
 		}
 		else {
 			///////////////////////////////////////////////////////////
@@ -5063,15 +5106,45 @@ TIMER_FUNC(unit_autopilot_timer)
 			// Skills used when idle, like pick stone or aqua benedicta
 			if (canskill(sd)) skillwhenidle(sd);
 
-			// seek next enemy if nothing else to do
-			foundtargetID = -1; targetdistance = 999;
-			map_foreachinmap(targetnearest, sd->bl.m, BL_MOB, sd);
-//			ShowError("No target found, moving?");
-			if (foundtargetID > -1) {
-//				ShowError("No target found, moving!");
-					unit_walktobl(&sd->bl, targetbl, 2, 2);
+			// If leader is sitting, also sit down
+			if (pc_issit(leadersd) && (leaderdistance<=14)) {
+				if (!pc_issit(sd)) {
+					pc_setsit(sd);
+					skill_sit(sd, 1);
+					clif_sitting(&sd->bl);
+				}
+			} else
+			// If there is a leader and we aren't already attacking something in their area, follow them closely just like support
+			// Note : client.conf maxwalkpath needs to be very high (99 recommended) otherwise we fail to follow!
+//			if (leaderdistance > 6) {
+			if ((leaderID > -1) && (leaderID != sd->bl.id)) {
+					if ((abs(sd->bl.x - leaderbl->x) > 2) || abs(sd->bl.y - leaderbl->y) > 2) {
+						newwalk(&sd->bl, leaderbl->x + rand() % 5 - 2, leaderbl->y + rand() % 5 - 2, 8);
+					}
+				}
+				else if ((p) && (leaderID != sd->bl.id)) {
+					foundtargetID = -1; targetdistance = 999;
+					// leader wasn't on map, target nearest NPC. Hopefully it's the warp the leader entered.
+					// However don't if there was no party, means we are soloing!
+					map_foreachinmap(targetnearestwarp, sd->bl.m, BL_NPC, sd);
+					if (foundtargetID > -1) {
+						newwalk(&sd->bl, targetbl->x, targetbl->y, 8);
+					}
+				}
+	// }
+			if ((leaderID==sd->bl.id) || (!p)) {
+				// seek next enemy outside range if nothing else to do and we are the leader or party doesn't exist (solo)
+				// Note : client.conf maxwalkpath needs to be very high (99 recommended) otherwise we fail to move if enemy is too far!
+				// for same reason, disabling official walkpath and raising MAX_WALK_PATH in source is necessary
+				foundtargetID = -1; targetdistance = 999;
+				map_foreachinmap(targetnearest, sd->bl.m, BL_MOB, sd);
+				//			ShowError("No target found, moving?");
+				if (foundtargetID > -1) {
+					//				ShowError("No target found, moving!");
+										newwalk(&sd->bl, targetbl->x, targetbl->y, 8);
+						//bl(&sd->bl, targetbl, 2, 2);
+				}
 			}
-
 		}
 	}
 	// Not tanking mode so follow the party leader
@@ -5082,9 +5155,9 @@ TIMER_FUNC(unit_autopilot_timer)
 		
 		// Follow the leader
 		if (leaderID > -1) { 
-		// walktobl seems to cause a problem of the spell target being replaced by the party leader somehow
-			if ((abs(sd->bl.x - leaderbl->x) > 2) || abs(sd->bl.y - leaderbl->y) > 2)
-				unit_walktoxy(&sd->bl, leaderbl->x + rand() % 5 - 2, leaderbl->y + rand() % 5 - 2, 8);
+			if ((abs(sd->bl.x - leaderbl->x) > 2) || abs(sd->bl.y - leaderbl->y) > 2) {
+				newwalk(&sd->bl, leaderbl->x + rand() % 5 - 2, leaderbl->y + rand() % 5 - 2, 8);
+			}
 			else {
 				if pc_issit(leadersd) {
 					if (!pc_issit(sd)) {
@@ -5103,7 +5176,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			// target nearest NPC. Hopefully it's the warp the leader entered.
 			map_foreachinmap(targetnearestwarp, sd->bl.m, BL_NPC, sd);
 			if (foundtargetID > -1) {
-				unit_walktoxy(&sd->bl, targetbl->x, targetbl->y, 8);
+				newwalk(&sd->bl, targetbl->x, targetbl->y, 8);
 			}
 
 		}
