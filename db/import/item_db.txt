@@ -66,3 +66,4 @@
 //=============================================================
 //22508,Para_Team_Mark_,Eden Group Mark,11,0,,0,,,,0,0xFFFFFFFF,63,2,,,,,,{ unitskilluseid getcharid(3),"AL_TELEPORT",3; },{},{}
 31800,DRESSER_TICKET,Alternate Costume Ticket,3,200000,,10,,,,,,,,,,,,,{},{},{}
+31801,Linker_Disguise,Soul Linker Clothes,4,500000,,600,,40,,0,0x00810204,63,2,8192,,50,1,0,{ changebase 4049; },{},{ changebase Class; }

@@ -402,7 +402,7 @@
 4281	//Zipper_Bear_Card
 4282  // Tengu_Card
 4283  // Greatest_General_Card
-4284	//Chepet_Card
+4284  // Chepet_Card
 4285	//Choco_Card
 4286  // Karakasa_Card
 4287  // Kapha_Card
