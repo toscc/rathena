@@ -80,7 +80,7 @@
 1428,475,100	// Long_Horn_M
 1429,475,100	// Hunting_Spear_M
 1430,507,100	// Pike_C
-1434,499,100	// P_Spear1
+1434,499,100	// P_Sphere1
 1437,499,100	// TE_Woe_Pike
 1482,499,100	// BF_Lance1
 1486,499,100	// Krieger_Twohand_Spear1
@@ -107,7 +107,7 @@
 1578,507,100	// Book_Of_Prayer
 1579,475,100	// Death_Note_M
 1580,507,100	// Encyclopedia_C
-1583,499,100	// P_Book1
+1583,499,100	// P_Dic1
 1588,499,100	// Metal_Book
 1591,499,100	// TE_Woe_Book
 //1598,499,100	//
@@ -159,7 +159,7 @@
 1927,499,100	// Krieger_Instrument1
 1928,507,100	// Berserk_Guitar_I
 1929,507,100	// Guitar_C
-1931,499,100	// P_Guitar1
+1931,499,100	// P_String_Inst1
 1932,499,100	// TE_Woe_Guitar
 1938,467,100	// Infinity_Violin
 1975,475,100	// Queen_Is_Whip
@@ -247,7 +247,7 @@
 2551,475,100	// Rider_Insignia_M
 2552,475,100	// Mithril_Magic_Cape_M
 2559,467,100	// Time_Keepr_Manteau
-2560,499,100	// Para_Team_Manteau1
+2560,499,100	// Para_Team_Manteau
 2564,507,100	// Feral_Tail
 2566,507,100	// Half_Asprika
 2568,467,100	// Muffler_Of_Roki

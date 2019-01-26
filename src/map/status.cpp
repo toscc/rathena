@@ -2572,7 +2572,6 @@ unsigned short status_base_matk_min(struct block_list *bl, const struct status_d
 		case BL_MER:
 		case BL_ELEM:
 			return status->int_ + level + status->rhw.matk * 70 / 100;
->>>>>>> db3267a868c2855da68481c0807f14004c984da7
 		case BL_HOM:
 			return status_get_homint(bl) + level + (status_get_homint(bl) + status_get_homdex(bl)) / 5;
 		case BL_PC:
@@ -4963,8 +4962,8 @@ void status_calc_bl_main(struct block_list *bl, /*enum scb_flag*/int flag)
 			status->watk2 = status_calc_watk(bl, sc, b_status->watk2);
 		}
 		else status->watk = status_calc_watk(bl, sc, b_status->watk);
-		status->rhw.atk = status_calc_watk(bl, sc, b_status->rhw.atk);
-		status->rhw.atk2 = status_calc_watk(bl, sc, b_status->rhw.atk2);
+/*		status->rhw.atk = status_calc_watk(bl, sc, b_status->rhw.atk);
+		status->rhw.atk2 = status_calc_watk(bl, sc, b_status->rhw.atk2);*/
 #endif
 	}
 
