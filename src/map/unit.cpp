@@ -2355,7 +2355,7 @@ int unit_attack(struct block_list *src,int target_id,int continuous)
 		return 0; // Attacking will be handled by unit_walktoxy_timer in this case
 	}
 	
-	if(DIFF_TICK(ud->attackabletime, gettick()) > 0) // Do attack next time it is possible. [Skotlex]
+	if(DIFF_TICK(ud->attackabletime, gettick()) > 0) // nDo attack next time it is possible. [Skotlex]
 		ud->attacktimer=add_timer(ud->attackabletime,unit_attack_timer,src->id,0);
 	else // Attack NOW.
 		unit_attack_timer(INVALID_TIMER, gettick(), src->id, 0);
@@ -3550,6 +3550,43 @@ int targetnearest(block_list * bl, va_list ap)
 	return 1;
 }
 
+int targethighestlevel(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd2;
+
+	struct mob_data *md;
+
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+
+	int dist = distance_bl(&sd2->bl, bl);
+	if ((md->level > targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKWALL))) { targetdistance = md->level; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
+
+	return 1;
+}
+
+int asuratarget(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd2;
+
+	struct mob_data *md;
+
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+
+	if (md->status.def_ele == ELE_GHOST) return 0;  // Ghosts are immune
+	if (!(status_get_class_(bl) == CLASS_BOSS)) return 0; // Boss monsters only
+	if (md->status.hp < 600 * sd2->status.base_level) return 0; // Must be strong enough monster
+	if (targetdistance > md->status.hp) return 0; // target strongest first
+	if (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKWALL)) { targetdistance = md->status.hp; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
+
+	return 1;
+}
+
 int targetturnundead(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd2;
@@ -3583,7 +3620,7 @@ int signumcount(block_list * bl, va_list ap)
 
 	if ((battle_check_undead(md->status.race, md->status.def_ele) || md->status.race == RC_DEMON))
 	{
-		if (md->state.boss) return 3; else return 1;
+		if ((status_get_class_(bl) == CLASS_BOSS)) return 3; else return 1;
 	}
 	return 0;
 }
@@ -3765,7 +3802,7 @@ int AOEPriority(block_list * bl, va_list ap)
 
 	uint16 elem = va_arg(ap, int); // the element
 
-	if (md->state.boss) { if (elemstrong(md, elem)) return 50; else return 30; }; // Bosses, prioritize AOE and pick element based on boss alone, ignore slaves
+	if ((status_get_class_(bl) == CLASS_BOSS)) { if (elemstrong(md, elem)) return 50; else return 30; }; // Bosses, prioritize AOE and pick element based on boss alone, ignore slaves
 	if (!elemallowed(md, elem)) return 0; // This target won't be hurt by this element enough to care
 	if (elemstrong(md, elem)) return 3; // This target is weak to it so it's worth 50% more
 	return 2; // Default
@@ -3781,7 +3818,7 @@ int Quagmirepriority(block_list * bl, va_list ap)
 	uint16 elem = va_arg(ap, int); // the element
 
 	if (md->sc.data[SC_QUAGMIRE]) return 0;
-	if (md->state.boss) return 10;
+	if ((status_get_class_(bl) == CLASS_BOSS)) return 10;
 	return 2; // Default
 }
 
@@ -3796,7 +3833,7 @@ int AOEPrioritySG(block_list * bl, va_list ap)
 	
 	if (md->sc.data[SC_FREEZE]) return 0;
 	if (!elemallowed(md, elem)) return 0; // This target won't be hurt by this element enough to care
-	if (md->state.boss) { if (elemstrong(md, elem)) return 60; else return 40; }; // Prefer SG over other AOEs on boss if no element applies
+	if ((status_get_class_(bl) == CLASS_BOSS)) { if (elemstrong(md, elem)) return 60; else return 40; }; // Prefer SG over other AOEs on boss if no element applies
 	if (elemstrong(md, elem)) return 3; // This target is weak to it so it's worth 50% more
 	return 2; // Default
 }
@@ -4047,7 +4084,7 @@ int provokethis(block_list * bl, va_list ap)
 	if (!md->target_id) return 0;
 	if (md->target_id == sd2->bl.id) return 0;
 	if (md->status.def_ele == ELE_UNDEAD) return 0;
-	if (md->state.boss) return 0;
+	if ((status_get_class_(bl) == CLASS_BOSS)) return 0;
 
 	// want nearest anyway
 	int dist = distance_bl(&sd2->bl, bl);
@@ -4280,17 +4317,76 @@ bool isdisabled(mob_data* md)
 }
 
 
+void recoversp(map_session_data *sd, int goal)
+{
+	// SP Recovery disabled
+	if (sd->sc.data[SC_EXTREMITYFIST2]) return;
+	if (sd->sc.data[SC_NORECOVER_STATE]) return;
+
+	if (sd->battle_status.sp <  (goal*sd->battle_status.max_sp) / 100) {
+		//ShowError("Need to heal");
+
+		unsigned short spotions[] = {
+			578, // Strawberry
+			505, // Blue Potion
+			11502, // Light Blue Pot
+			608, // Ygg Seed
+			607 // Ygg Berry
+
+		};
+
+		int16 index = -1;
+		int i;
+
+		for (i = 0; i < ARRAYLENGTH(spotions); i++) {
+			if ((index = pc_search_inventory(sd, spotions[i])) >= 0) {
+				//ShowError("Found a potion to use");
+				if (pc_isUseitem(sd, index)) {
+					pc_useitem(sd, index);
+					break;
+				}
+			}
+		}
+
+	}
+
+}
+
 
 void skillwhenidle(struct map_session_data *sd) {
-	
-	
+
+	// Fury
+	// Use if tanking mode only, otherwise unlikely to be normal attacking so crit doesn't matter.
+	// For Asura preparation, use in the asura strike logic instead
+	if ((pc_checkskill(sd, MO_EXPLOSIONSPIRITS) > 0) ){
+		if (!(sd->sc.data[SC_EXPLOSIONSPIRITS]))
+		if ((sd->spiritball>=5) && (sd->state.autopilotmode==1)) {
+			unit_skilluse_ifable(&sd->bl, SELF, MO_EXPLOSIONSPIRITS, pc_checkskill(sd, MO_EXPLOSIONSPIRITS));
+		}
+	}
+
+	// Dangerous Soul Collect (Zen)
+	if (pc_checkskill(sd, CH_SOULCOLLECT) > 0) {
+		int radra = 0; if (sd->sc.data[SC_RAISINGDRAGON]) { radra = sd->sc.data[SC_RAISINGDRAGON]->val1; }
+		if (4 + radra>sd->spiritball) {
+			unit_skilluse_ifable(&sd->bl, SELF, CH_SOULCOLLECT, pc_checkskill(sd, CH_SOULCOLLECT));
+		}
+	}
+
+	// Summon Spirit Sphere
+	if (pc_checkskill(sd, MO_CALLSPIRITS) > 0) {
+		int radra = 0; if (sd->sc.data[SC_RAISINGDRAGON]) { radra = sd->sc.data[SC_RAISINGDRAGON]->val1; }
+		if (pc_checkskill(sd, MO_CALLSPIRITS) + radra>sd->spiritball) {
+			unit_skilluse_ifable(&sd->bl, SELF, MO_CALLSPIRITS, pc_checkskill(sd, MO_CALLSPIRITS));
+		}
+	}
+
 	// Sightblaster
 	if (pc_checkskill(sd, WZ_SIGHTBLASTER) > 0) {
 		if (!(sd->sc.data[SC_SIGHTBLASTER])) {
 			unit_skilluse_ifable(&sd->bl, SELF, WZ_SIGHTBLASTER, pc_checkskill(sd, WZ_SIGHTBLASTER));
 		}
 	}
-
 
 	// Pick Stone
 	if (pc_checkskill(sd, TF_PICKSTONE) > 0) {
@@ -4415,8 +4511,13 @@ TIMER_FUNC(unit_autopilot_timer)
 
 	//ShowError(sd->status.name);
 
+	recoversp(sd, sd->state.autospgoal);
+
 	// Use potions if low on health?
-		if (status_get_hp(bl) <  status_get_max_hp(bl) / 2) {
+		if ((status_get_hp(bl) <  status_get_max_hp(bl) / 2) &&
+			(!(sd->sc.data[SC_NORECOVER_STATE])) && (!(sd->sc.data[SC_BITESCAR]))
+			 )
+			{
 		//ShowError("Need to heal");
 
 		unsigned short potions[] = { 
@@ -4453,6 +4554,45 @@ TIMER_FUNC(unit_autopilot_timer)
 	/////////////////////////////////////////////////////////////////////////////////////
 	// Skills that aren't tanking mode exclusive (nonmelee skills generally)
 	/////////////////////////////////////////////////////////////////////////////////////
+		/// Asura Strike
+		if (canskill(sd)) if (pc_checkskill(sd, MO_EXTREMITYFIST)>0) {
+			foundtargetID = -1; targetdistance = 0;
+			map_foreachinrange(asuratarget, &sd->bl, 12, BL_MOB, sd);
+			if (foundtargetID > -1) {
+			// if target exists, check for Spheres, then Fury, then SP, then use
+				if (sd->spiritball<5) {
+					// Dangerous Soul Collect (Zen)
+					if (pc_checkskill(sd, CH_SOULCOLLECT) > 0) {
+						int radra = 0; if (sd->sc.data[SC_RAISINGDRAGON]) { radra = sd->sc.data[SC_RAISINGDRAGON]->val1; }
+						if (4 + radra>sd->spiritball) {
+							unit_skilluse_ifable(&sd->bl, SELF, CH_SOULCOLLECT, pc_checkskill(sd, CH_SOULCOLLECT));
+						}
+					}
+
+					// Summon Spirit Sphere
+					if (pc_checkskill(sd, MO_CALLSPIRITS) > 0) {
+						int radra = 0; if (sd->sc.data[SC_RAISINGDRAGON]) { radra = sd->sc.data[SC_RAISINGDRAGON]->val1; }
+						if (pc_checkskill(sd, MO_CALLSPIRITS) + radra>sd->spiritball) {
+							unit_skilluse_ifable(&sd->bl, SELF, MO_CALLSPIRITS, pc_checkskill(sd, MO_CALLSPIRITS));
+						}
+					}
+				}
+				else {
+					// Fury
+					if (((pc_checkskill(sd, MO_EXPLOSIONSPIRITS) > 0)) && (!(sd->sc.data[SC_EXPLOSIONSPIRITS]))) {
+						if ((sd->spiritball >= 5)) {
+							unit_skilluse_ifable(&sd->bl, SELF, MO_EXPLOSIONSPIRITS, pc_checkskill(sd, MO_EXPLOSIONSPIRITS));
+						}
+					}
+					else {
+						if (distance_bl(bl,targetbl)> 1) { unit_walktoxy(bl, targetbl->x, targetbl->y, 8); return 0; }
+						if (sd->battle_status.sp < 0.9*sd->battle_status.max_sp) { recoversp(sd, 100); return 0; }
+						unit_skilluse_ifable(&sd->bl, foundtargetID, MO_EXTREMITYFIST, pc_checkskill(sd, MO_EXTREMITYFIST));
+					}
+				}
+			}
+		}
+
 		/// Pneuma
 		if (canskill(sd)) if  (pc_checkskill(sd, AL_PNEUMA)>0) {
 			foundtargetID = -1;
@@ -4641,6 +4781,15 @@ TIMER_FUNC(unit_autopilot_timer)
 					 unit_skilluse_ifablexy(&sd->bl, sd->bl.id, MG_SAFETYWALL, pc_checkskill(sd, MG_SAFETYWALL));
 			}
 		}
+		// Steel Body
+		// Tanking mode only, against very powerful enemies
+		if ((Dangerdistance <= 10)) {
+			if (canskill(sd)) if ((pc_checkskill(sd, MO_STEELBODY)>0) && (dangermd->status.rhw.atk2>sd->battle_status.hp / 5) && (!sd->sc.data[SC_STEELBODY]))
+				if ((sd->spiritball >= 5) && (sd->state.autopilotmode == 1)) {
+					unit_skilluse_ifable(&sd->bl, SELF, MO_STEELBODY, pc_checkskill(sd, MO_STEELBODY));
+				}
+		}
+
 		// Fire Wall
 		// Only if there still is enough distance to matter and enemy is not ranged
 		// No more than 1 at the same position, max of 3 total
@@ -4648,7 +4797,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		if ((Dangerdistance >= 5) && (Dangerdistance <900)) {
 			if (canskill(sd)) if ((pc_checkskill(sd, MG_FIREWALL)>0) && (dangermd->status.hp<2000)) {
 				if (elemallowed(dangermd, skill_get_ele(MG_FIREWALL, pc_checkskill(sd, MG_FIREWALL))) && (dangermd->status.rhw.range <= 3)) {
-					if (!(dangermd->state.boss)) if (sd->state.autopilotmode != 1) {
+					if (!((status_get_class_(dangerbl) == CLASS_BOSS))) if (sd->state.autopilotmode != 1) {
 						int i,j = 0;
 						for (i = 0; i < MAX_SKILLUNITGROUP && ud->skillunit[i]; i++) {
 							if (ud->skillunit[i]->skill_id == MG_FIREWALL) {
@@ -4667,7 +4816,7 @@ TIMER_FUNC(unit_autopilot_timer)
 				if (elemallowed(dangermd, skill_get_ele(WZ_FROSTNOVA, pc_checkskill(sd, WZ_FROSTNOVA)))) {
 					if (!isdisabled(dangermd))
 						if (!(dangermd->status.def_ele == ELE_UNDEAD)) {
-							if (!(dangermd->state.boss))
+							if (!((status_get_class_(dangerbl) == CLASS_BOSS)))
 								unit_skilluse_ifable(&sd->bl, founddangerID, WZ_FROSTNOVA, pc_checkskill(sd, WZ_FROSTNOVA));
 						}
 				}
@@ -4713,7 +4862,7 @@ TIMER_FUNC(unit_autopilot_timer)
 					if (elemallowed(dangermd, skill_get_ele(MG_FROSTDIVER, pc_checkskill(sd, MG_FROSTDIVER)))) {
 						if (!isdisabled(dangermd))
 							if (!(dangermd->status.def_ele == ELE_UNDEAD)) {
-								if (!(dangermd->state.boss))
+								if (!((status_get_class_(dangerbl) == CLASS_BOSS)))
 									unit_skilluse_ifable(&sd->bl, founddangerID, MG_FROSTDIVER, pc_checkskill(sd, MG_FROSTDIVER));
 							}
 					}
@@ -4729,7 +4878,7 @@ TIMER_FUNC(unit_autopilot_timer)
 						if (elemallowed(dangermd, skill_get_ele(MG_STONECURSE, pc_checkskill(sd, MG_STONECURSE)))) {
 							if (!isdisabled(dangermd))
 								if (!(dangermd->status.def_ele == ELE_UNDEAD)) {
-									if (!(dangermd->state.boss))
+									if (!((status_get_class_(dangerbl) == CLASS_BOSS)))
 										unit_skilluse_ifable(&sd->bl, founddangerID, MG_STONECURSE, pc_checkskill(sd, MG_STONECURSE));
 								}
 						}
@@ -4882,6 +5031,17 @@ TIMER_FUNC(unit_autopilot_timer)
 					}
 				}
 		}
+		// Absorb Spirit Sphere to gain SP instead of attacking?
+		// Only if below 20% SP
+		if (canskill(sd)) if (pc_checkskill(sd, MO_ABSORBSPIRITS) > 0) if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) 
+			if (sd->battle_status.sp<0.2*sd->battle_status.max_sp) {
+				foundtargetID = -1; targetdistance = 0;
+				map_foreachinrange(targethighestlevel, &sd->bl, 9, BL_MOB, sd);
+				if ((foundtargetID > -1) && (targetdistance>=50)){
+					unit_skilluse_ifable(&sd->bl, foundtargetID, MO_ABSORBSPIRITS, pc_checkskill(sd, MO_ABSORBSPIRITS));
+				}
+
+		}
 		// Turn Undead, has special targeting restriction
 		if (canskill(sd)) if (pc_checkskill(sd, PR_TURNUNDEAD) > 0) if (sd->state.autopilotmode == 2) {
 			foundtargetID = -1; targetdistance = 999;
@@ -4956,9 +5116,17 @@ TIMER_FUNC(unit_autopilot_timer)
 			///////////////////////////////////////////////////////////////////////////////////////////////
 			/// Skills for general use
 			///////////////////////////////////////////////////////////////////////////////////////////////
+			// Finger Offensive
+			if (canskill(sd)) if ((pc_checkskill(sd, MO_FINGEROFFENSIVE) > 0)) if (sd->spiritball >= pc_checkskill(sd, MO_FINGEROFFENSIVE)) {
+				if ((sd->state.autopilotmode == 2)) {
+					if (elemallowed(targetmd, skill_get_ele(MO_FINGEROFFENSIVE, pc_checkskill(sd, MO_FINGEROFFENSIVE)))) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, MO_FINGEROFFENSIVE, pc_checkskill(sd, MO_FINGEROFFENSIVE));
+					}
+				}
+			}
 			// Jupitel Thunder
 			if (canskill(sd)) if ((pc_checkskill(sd, WZ_JUPITEL) > 0)) {
-				if ((sd->state.autopilotmode == 2)) {
+				if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) {
 					if (elemallowed(targetmd, skill_get_ele(WZ_JUPITEL, pc_checkskill(sd, WZ_JUPITEL)))) {
 						unit_skilluse_ifable(&sd->bl, foundtargetID2, WZ_JUPITEL, pc_checkskill(sd, WZ_JUPITEL));
 					}
@@ -5053,7 +5221,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 
 		// attack nearest thing if it exists and we aren't losing the leader
-		if ((foundtargetID > -1) && (leaderdistance<=14)) {
+		if ((foundtargetID > -1) && ((leaderdistance<=14) || (leaderID==-1))) {
 
 			/////////////////////////////////////////////////////////////////////
 			// Skills that can be used while tanking only, on tanked enemy 
@@ -5082,7 +5250,7 @@ TIMER_FUNC(unit_autopilot_timer)
 				{ // Always use if critically wounded otherwise use on mobs that will take longer to kill only if sp is lower
 					if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
 						|| (status_get_hp(bl) < status_get_max_hp(bl) / 3)){
-						if (!(targetmd->state.boss)) {
+						if (!((status_get_class_(targetbl) == CLASS_BOSS))) {
 							if (!(targetmd->status.def_ele==ELE_UNDEAD)) {
 								unit_skilluse_ifable(&sd->bl, foundtargetID, TF_POISON, pc_checkskill(sd, TF_POISON));
 							}
@@ -5090,6 +5258,42 @@ TIMER_FUNC(unit_autopilot_timer)
 					}
 				}
 			}
+
+			// Chain Combo skill
+			if (canskill(sd)) if (pc_checkskill(sd, MO_CHAINCOMBO) > 0) {
+				if (sd->sc.data[SC_COMBO] && (sd->sc.data[SC_COMBO]->val1 == MO_TRIPLEATTACK)) {
+					unit_skilluse_ifable(&sd->bl, SELF, MO_CHAINCOMBO, pc_checkskill(sd, MO_CHAINCOMBO));
+				}
+			}
+			// Combo Finish
+			if (canskill(sd)) if (pc_checkskill(sd, MO_COMBOFINISH) > 0) if (sd->spiritball>0) {
+				if (sd->sc.data[SC_COMBO] && (sd->sc.data[SC_COMBO]->val1 == MO_CHAINCOMBO)) {
+					unit_skilluse_ifable(&sd->bl, SELF, MO_COMBOFINISH, pc_checkskill(sd, MO_COMBOFINISH));
+				}
+			}
+			// Tiger Fist
+			if (canskill(sd)) if (pc_checkskill(sd, CH_TIGERFIST) > 0) if (sd->spiritball>0) {
+				if (sd->sc.data[SC_COMBO] && (sd->sc.data[SC_COMBO]->val1 == MO_COMBOFINISH)) {
+					unit_skilluse_ifable(&sd->bl, SELF, CH_TIGERFIST, pc_checkskill(sd, CH_TIGERFIST));
+				}
+			}
+			// Chain Crush
+			if (canskill(sd)) if (pc_checkskill(sd, CH_CHAINCRUSH) > 0) if (sd->spiritball>1) {
+				if (sd->sc.data[SC_COMBO] && ((sd->sc.data[SC_COMBO]->val1 == MO_COMBOFINISH) || (sd->sc.data[SC_COMBO]->val1 == CH_TIGERFIST))) {
+					unit_skilluse_ifable(&sd->bl, SELF, CH_CHAINCRUSH, pc_checkskill(sd, CH_CHAINCRUSH));
+				}
+			}
+
+			// Investigate skill
+			// Avoid if combo skill requiring sphere is available, combo is better.
+			if (canskill(sd)) if (pc_checkskill(sd, MO_INVESTIGATE)>0) if ((sd->spiritball>0) && (pc_checkskill(sd, MO_COMBOFINISH) < 3)) {
+				// Always use if critically wounded otherwise use on mobs that will take longer to kill only if sp is lower
+				if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
+					|| (status_get_hp(bl) < status_get_max_hp(bl) / 3)){
+					unit_skilluse_ifable(&sd->bl, foundtargetID, MO_INVESTIGATE, pc_checkskill(sd, MO_INVESTIGATE));
+				}
+			}
+			
 			// Bash skill
 			if (canskill(sd)) if (pc_checkskill(sd, SM_BASH)>0) {
 			// Always use if critically wounded otherwise use on mobs that will take longer to kill only if sp is lower
@@ -5124,13 +5328,14 @@ TIMER_FUNC(unit_autopilot_timer)
 			if (canskill(sd)) skillwhenidle(sd);
 
 			// If leader is sitting, also sit down
-			if (pc_issit(leadersd) && (leaderdistance<=14)) {
+			if (leaderID>-1) if (pc_issit(leadersd) && (leaderdistance<=14)) {
 				if (!pc_issit(sd)) {
 					pc_setsit(sd);
 					skill_sit(sd, 1);
 					clif_sitting(&sd->bl);
+					return 0;
 				}
-			} else
+			} 
 			// If there is a leader and we aren't already attacking something in their area, follow them closely just like support
 			// Note : client.conf maxwalkpath needs to be very high (99 recommended) otherwise we fail to follow!
 //			if (leaderdistance > 6) {
@@ -5181,6 +5386,7 @@ TIMER_FUNC(unit_autopilot_timer)
 						pc_setsit(sd);
 						skill_sit(sd, 1);
 						clif_sitting(&sd->bl);
+						return 0;
 					}
 				}
 
@@ -5188,7 +5394,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		//	unit_walktobl(&sd->bl, targetbl, 2, 0); 
 		}
 		// Party leader left map?
-		else {
+		else if (p) {
 			foundtargetID = -1; targetdistance = 999;
 			// target nearest NPC. Hopefully it's the warp the leader entered.
 			map_foreachinmap(targetnearestwarp, sd->bl.m, BL_NPC, sd);
