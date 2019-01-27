@@ -66,4 +66,32 @@
 //=============================================================
 //22508,Para_Team_Mark_,Eden Group Mark,11,0,,0,,,,0,0xFFFFFFFF,63,2,,,,,,{ unitskilluseid getcharid(3),"AL_TELEPORT",3; },{},{}
 31800,DRESSER_TICKET,Alternate Costume Ticket,3,200000,,10,,,,,,,,,,,,,{},{},{}
-31801,Linker_Disguise,Soul Linker Clothes,4,500000,,600,,40,,0,0x00810204,63,2,8192,,50,1,0,{ changebase 4049; },{},{ changebase Class; }
+31801,Linker_Disguise,Soul Linker Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4049; },{},{ changebase Class; }
+31802,Acolyte_Disguise,Acolyte Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4; },{},{ changebase Class; }
+31803,Priest_Disguise,Priest Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 8; },{},{ changebase Class; }
+31804,Wizard_Disguise,Wizard Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 9; },{},{ changebase Class; }
+31805,Dancer_Disguise,Dancer Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 20; },{},{ changebase Class; }
+31806,Ninja_Disguise,Ninja Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 25; },{},{ changebase Class; }
+31807,HW_Disguise,High Wizard Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4010; },{},{ changebase Class; }
+31808,Professor_Disguise,Professor Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4017; },{},{ changebase Class; }
+31809,Alchemist_Disguise,Alchemist Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 18; },{},{ changebase Class; }
+31810,Creator_Disguise,Creator Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4019; },{},{ changebase Class; }
+31811,Gypsy_Disguise,Gypsy Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4021; },{},{ changebase Class; }
+31812,Archbishop_Disguise,Archbishop Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4063; },{},{ changebase Class; }
+31813,Sorcerer_Disguise,Sorcerer Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4067; },{},{ changebase Class; }
+31814,Wanderer_Disguise,Wanderer Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4069; },{},{ changebase Class; }
+31815,RG_Disguise,Royal Guard Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4073; },{},{ changebase Class; }
+31816,Oboro_Disguise,Oboro Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4212; },{},{ changebase Class; }
+31817,SE_Disguise,Star Emperor Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4239; },{},{ changebase Class; }
+31818,Reaper_Disguise,Soul Repear Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4240; },{},{ changebase Class; }
+31819,BLinker_Disguise,Baby Linker Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4227; },{},{ changebase Class; }
+31820,BabyOboro_Disguise,Baby Oboro Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4224; },{},{ changebase Class; }
+31821,BNinja_Disguise,Baby Ninja Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4222; },{},{ changebase Class; }
+31822,Champion_Disguise,Champion Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4016; },{},{ changebase Class; }
+31823,Balchemist_Disguise,Baby Alchemist Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4041; },{},{ changebase Class; }
+31824,BDancer_Disguise,Baby Dancer Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4043; },{},{ changebase Class; }
+31825,BReaper_Disguise,Baby Reaper Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4242; },{},{ changebase Class; }
+31826,BEmperor_Disguise,Baby Emperor Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4241; },{},{ changebase Class; }
+31827,BSorcerer_Disguise,Baby Sorcerer Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4103; },{},{ changebase Class; }
+31828,Mage_Disguise,Magician Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 2; },{},{ changebase Class; }
+31829,HP_Disguise,High Priest Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4009; },{},{ changebase Class; }
