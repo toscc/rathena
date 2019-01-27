@@ -11,3 +11,4 @@
 //ACMD_DEF(newcommand),
 
 ACMD_DEF(autopilot),
+ACMD_DEF(autopilotsp),

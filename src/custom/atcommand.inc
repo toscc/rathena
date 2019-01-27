@@ -32,3 +32,12 @@ if (!strcmp(message,"Support")) {sd->state.autopilotmode = 3; clif_displaymessag
 }
 return 0; 
 }
+
+ACMD_FUNC(autopilotsp)
+{
+if (!message || !*message) { clif_displaymessage(fd, "please specify amount : 0-100"); }
+else {
+sd->state.autospgoal = atoi(message);
+}
+return 0; 
+}
