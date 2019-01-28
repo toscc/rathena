@@ -816,8 +816,8 @@
 //===================================================================
 // 2-Handed Staffs
 //===================================================================
-1472,Staff_Of_Soul,Soul Staff,5,80000,,1400,25:200,,1,0,0x00810204,63,2,34,3,73,1,23,{ bonus bInt,5; bonus bAgi,5; },{},{}
-1473,Wizardy_Staff,Wizardry Staff,5,12000,,2400,120:200,,1,0,0x00810204,63,2,34,4,90,1,23,{ bonus bInt,6; bonus bDex,5; },{},{}
+1472,Staff_Of_Soul,Soul Staff,5,80000,,1400,25:250,,1,0,0x00810204,63,2,34,3,73,1,23,{ bonus bInt,5; bonus bAgi,5; },{},{}
+1473,Wizardy_Staff,Wizardry Staff,5,12000,,2400,120:250,,1,0,0x00810204,63,2,34,4,90,1,23,{ bonus bInt,6; bonus bDex,5; },{},{}
 //===================================================================
 // 2-Handed Spears
 //===================================================================
@@ -1192,16 +1192,16 @@
 1910,Harp_,Harp,5,62000,,900,114,,1,2,0x00080000,63,1,2,3,27,1,13,{ bonus bInt,2; },{},{}
 1911,Guh_Moon_Goh,Gumoongoh,5,54000,,1300,126,,1,1,0x00080000,63,1,2,3,27,1,13,{},{},{}
 1912,Guh_Moon_Goh_,Gumoongoh,5,54000,,1300,126,,1,2,0x00080000,63,1,2,3,27,1,13,{},{},{}
-1913,Electronic_Guitar,Electric Guitar,5,20,,1800,110,,1,0,0x00080000,63,1,2,4,70,1,13,{ skill "WZ_JUPITEL",1; bonus3 bAutoSpell,"WZ_JUPITEL",1,100; bonus bAtkEle,Ele_Wind; bonus bInt,2; bonus bAgi,1; },{},{}
-1914,Guitar_Of_Passion,Burning Passion Guitar,5,20,,900,110,,1,0,0x00080000,63,1,2,3,27,1,13,{ bonus bAtkEle,Ele_Fire; },{},{}
-1915,Guitar_Of_Blue_Solo,Loner's Guitar,5,20,,900,110,,1,0,0x00080000,63,1,2,3,27,1,13,{ bonus bAtkEle,Ele_Water; },{},{}
-1916,Guitar_Of_Vast_Land,Green Acre Guitar,5,20,,900,110,,1,0,0x00080000,63,1,2,3,27,1,13,{ bonus bAtkEle,Ele_Earth; },{},{}
-1917,Guitar_Of_Gentle_Breeze,Gentle Breeze Guitar,5,20,,900,110,,1,0,0x00080000,63,1,2,3,27,1,13,{ bonus bAtkEle,Ele_Wind; },{},{}
-1918,Oriental_Lute,Oriental Lute,5,20,,1200,150,,1,0,0x00080000,63,1,2,4,65,1,13,{ bonus2 bSkillAtk,"CG_ARROWVULCAN",10; bonus2 bSkillAtk,"BA_MUSICALSTRIKE",10; },{},{}
-1919,Base_Guitar,Bass Guitar,5,20,,1500,130,,1,1,0x00080000,18,1,2,3,70,1,13,{ bonus bSPGainValue,3; bonus4 bAutoSpellWhenHit,"WZ_HEAVENDRIVE",3,30,1; bonus3 bAutoSpell,"NPC_WIDECONFUSE",2,100; },{},{}
-1920,Berserk_Guitar,Berserk Guitar,5,20,,1800,10,,1,0,0x00080000,18,1,2,4,70,1,13,{ bonus bAspdRate,100; bonus bHPrecovRate,-100; bonus2 bHPLossRate,50,5000; bonus bDex,-readparam(bDex); },{},{}
-1921,Guh_Moon_Gom,Gun Moon Gom,5,20,,0,120,,1,0,0x00080000,63,1,2,1,0,0,13,{ bonus2 bAddClass,Class_All,50; },{},{}
-1922,Oriental_Lute_,Oriental Lute,5,20,,1200,150,,1,2,0x00080000,63,1,2,4,65,1,13,{ bonus2 bSkillAtk,"CG_ARROWVULCAN",10; bonus2 bSkillAtk,"BA_MUSICALSTRIKE",10; },{},{}
+1913,Electronic_Guitar,Electric Guitar,5,35000,,1800,110,,1,0,0x00080000,63,1,2,4,70,1,13,{ skill "WZ_JUPITEL",1; bonus3 bAutoSpell,"WZ_JUPITEL",1,100; bonus bAtkEle,Ele_Wind; bonus bInt,2; bonus bAgi,1; },{},{}
+1914,Guitar_Of_Passion,Burning Passion Guitar,5,35000,,900,110,,1,0,0x00080000,63,1,2,3,27,1,13,{ bonus bAtkEle,Ele_Fire; },{},{}
+1915,Guitar_Of_Blue_Solo,Loner's Guitar,5,35000,,900,110,,1,0,0x00080000,63,1,2,3,27,1,13,{ bonus bAtkEle,Ele_Water; },{},{}
+1916,Guitar_Of_Vast_Land,Green Acre Guitar,5,35000,,900,110,,1,0,0x00080000,63,1,2,3,27,1,13,{ bonus bAtkEle,Ele_Earth; },{},{}
+1917,Guitar_Of_Gentle_Breeze,Gentle Breeze Guitar,5,35000,,900,110,,1,0,0x00080000,63,1,2,3,27,1,13,{ bonus bAtkEle,Ele_Wind; },{},{}
+1918,Oriental_Lute,Oriental Lute,5,35000,,1200,150,,1,0,0x00080000,63,1,2,4,65,1,13,{ bonus2 bSkillAtk,"CG_ARROWVULCAN",10; bonus2 bSkillAtk,"BA_MUSICALSTRIKE",10; },{},{}
+1919,Base_Guitar,Bass Guitar,5,35000,,1500,130,,1,1,0x00080000,18,1,2,3,70,1,13,{ bonus bSPGainValue,3; bonus4 bAutoSpellWhenHit,"WZ_HEAVENDRIVE",3,30,1; bonus3 bAutoSpell,"NPC_WIDECONFUSE",2,100; },{},{}
+1920,Berserk_Guitar,Berserk Guitar,5,65000,,1800,10,,1,0,0x00080000,18,1,2,4,70,1,13,{ bonus bAspdRate,100; bonus bHPrecovRate,-100; bonus2 bHPLossRate,50,5000; bonus bDex,-readparam(bDex); },{},{}
+1921,Guh_Moon_Gom,Gun Moon Gom,5,35000,,0,120,,1,0,0x00080000,63,1,2,1,0,0,13,{ bonus2 bAddClass,Class_All,50; },{},{}
+1922,Oriental_Lute_,Oriental Lute,5,35000,,1200,150,,1,2,0x00080000,63,1,2,4,65,1,13,{ bonus2 bSkillAtk,"CG_ARROWVULCAN",10; bonus2 bSkillAtk,"BA_MUSICALSTRIKE",10; },{},{}
 1923,BF_Instrument1,Valorous Battlefield Guitar,5,20,,0,50,,1,0,0x00080000,63,1,2,3,80,1,13,{ bonus bDex,2; bonus2 bAddRace,RC_DemiHuman,95; bonus2 bAddRace,RC_Player,95; bonus2 bIgnoreDefRaceRate,RC_DemiHuman,20; bonus2 bIgnoreDefRaceRate,RC_Player,20; bonus bUnbreakableWeapon; },{},{}
 1924,BF_Instrument2,Brave Battlefield Guitar,5,20,,0,50,,1,0,0x00080000,63,1,2,3,80,1,13,{ bonus bDex,2; bonus2 bAddRace,RC_DemiHuman,95; bonus2 bAddRace,RC_Player,95; bonus2 bSkillAtk,"CG_ARROWVULCAN",20; bonus bUnbreakableWeapon; },{},{}
 1925,Cello,Cello,5,20,,700,110,,1,3,0x00080000,18,1,2,3,70,1,13,{ bonus bAgi,2; bonus bDex,3; bonus2 bAddSkillBlow,"BA_MUSICALSTRIKE",2; bonus2 bAddSkillBlow,"CG_ARROWVULCAN",3; },{},{}
@@ -1220,7 +1220,7 @@
 1938,Infinity_Violin,Infinity Violin,5,10,,500,150,,2,1,0x00080000,56,1,2,4,100,1,13,{},{},{}
 1939,Crimson_Violin,Crimson Violin,5,20,,800,80,,2,2,0x00080000,63,1,2,3,70,1,13,{ .@r = getrefine(); bonus bBaseAtk,((BaseLevel/10)*5)+(pow(.@r,2)/3); },{},{}
 1940,Trumpet_Shell,Trumpet Shell,5,0,,600,125,,1,1,0x00080000,56,1,2,4,130,1,13,{ .@r = getrefine(); bonus bDex,.@r; bonus bInt,.@r; .@per = ((.@r > 9) ? 40 : ((.@r > 7) ? 20 : ((.@r > 5) ? 10 : 0))); bonus2 bSkillAtk,"WM_REVERBERATION",.@per; bonus2 bVariableCastrate,"WM_REVERBERATION",-.@per; },{},{}
-1941,Unity_Violin,Unity Violin,5,20,,400,76,,2,1,0x00080000,63,1,2,3,1,1,13,{ bonus bBaseAtk,pow(getrefine(),2)*125/100; },{},{}
+1941,Unity_Violin,Unity Violin,5,20,,400,76,,2,1,0x00080000,63,1,2,3,1,1,13,{ bonus bBaseAtk,pow(getrefine(),2)*2/5; },{},{}
 1942,Requiem_Violin,Requiem Violin,5,20,,500,160:120,,1,,0x00080000,63,1,2,4,100,1,13,{ .@r = getrefine(); .@b = 40; bonus bUnbreakableWeapon; if(.@r>=5){ .@b += (.@r-5)*15+20; } if(.@r>=7) bonus2 bSkillAtk,"CG_ARROWVULCAN",200; bonus2 bAddRace2,RC2_BioLab,.@b; },{},{}
 1944,Hippie_Guitar,Hippie Guitar,5,0,,1000,140,,2,2,0x00080000,56,1,2,3,100,1,13,{ .@r = getrefine(); .@lvl = getskilllv("BA_MUSICALLESSON"); bonus bAspdRate,.@lvl; if (.@r>=7) bonus bBaseAtk,(5*.@lvl); if (.@r>=9) bonus bAspd,1; },{},{}
 //===================================================================
@@ -1238,30 +1238,30 @@
 1959,Tail_,Tail Whip,5,41000,,700,105,,2,2,0x00080000,63,0,2,3,30,1,14,{ bonus bLuk,3; },{},{}
 1960,Whip,Whip,5,38000,,700,120,,2,1,0x00080000,63,0,2,3,30,1,14,{},{},{}
 1961,Whip_,Whip,5,38000,,700,120,,2,2,0x00080000,63,0,2,3,30,1,14,{},{},{}
-1962,Lariat,Lariat Whip,5,20,,400,100,,2,0,0x00080000,63,0,2,4,44,1,14,{ bonus bDex,5; bonus bAgi,1; },{},{}
-1963,Rapture_Rose,Rapture Rose,5,20,,300,115,,2,0,0x00080000,63,0,2,4,44,1,14,{ bonus bAtkEle,Ele_Poison; bonus2 bAddEff,Eff_Poison,5000; },{},{}
+1962,Lariat,Lariat Whip,5,47000,,400,110,,2,1,0x00080000,63,0,2,4,44,1,14,{ bonus bDex,5; bonus bAgi,1; },{},{}
+1963,Rapture_Rose,Rapture Rose,5,77000,,300,115,,2,1,0x00080000,63,0,2,4,44,1,14,{ bonus bAtkEle,Ele_Poison; bonus2 bAddEff,Eff_Poison,5000; },{},{}
 1964,Chemeti,Chemeti Whip,5,20,,700,135,,2,0,0x00080000,63,0,2,4,44,1,14,{ bonus bCritical,5; bonus bFlee,10; bonus bFlee2,2; },{},{}
-1965,Whip_Of_Red_Flame,Red Flame Whip,5,20,,700,110,,2,0,0x00080000,63,0,2,3,30,1,14,{ bonus bAtkEle,Ele_Fire; },{},{}
-1966,Whip_Of_Ice_Piece,Icicle Whip,5,20,,700,110,,2,0,0x00080000,63,0,2,3,30,1,14,{ bonus bAtkEle,Ele_Water; },{},{}
-1967,Whip_Of_Earth,Gaia Whip,5,20,,700,110,,2,0,0x00080000,63,0,2,3,30,1,14,{ bonus bAtkEle,Ele_Earth; },{},{}
-1968,Jump_Rope,Skipping Rope,5,20,,400,120,,2,0,0x00080000,63,0,2,3,30,1,14,{ bonus bCritical,20; },{},{}
-1969,Bladed_Whip,Blade Whip,5,20,,1200,140,,2,0,0x00080000,63,0,2,4,30,1,14,{ bonus2 bAddEff,Eff_Bleeding,300; },{},{}
+1965,Whip_Of_Red_Flame,Red Flame Whip,5,35000,,700,110,,2,0,0x00080000,63,0,2,3,30,1,14,{ bonus bAtkEle,Ele_Fire; },{},{}
+1966,Whip_Of_Ice_Piece,Icicle Whip,5,35000,,700,110,,2,0,0x00080000,63,0,2,3,30,1,14,{ bonus bAtkEle,Ele_Water; },{},{}
+1967,Whip_Of_Earth,Gaia Whip,5,35000,,700,110,,2,0,0x00080000,63,0,2,3,30,1,14,{ bonus bAtkEle,Ele_Earth; },{},{}
+1968,Jump_Rope,Skipping Rope,5,35000,,400,120,,2,0,0x00080000,63,0,2,3,30,1,14,{ bonus bCritical,20; },{},{}
+1969,Bladed_Whip,Blade Whip,5,45000,,1200,140,,2,0,0x00080000,63,0,2,4,30,1,14,{ bonus2 bAddEff,Eff_Bleeding,300; },{},{}
 1970,Queen's_Whip,Queen's Whip,5,20,,1100,150,,2,0,0x00080000,63,0,2,4,65,1,14,{ bonus2 bSkillAtk,"CG_ARROWVULCAN",10; bonus2 bSkillAtk,"DC_THROWARROW",10; },{},{}
-1971,Electric_Wire,Electric Wire,5,20,,700,110,,2,0,0x00080000,63,0,2,3,30,1,14,{ bonus bAtkEle,Ele_Wind; },{},{}
-1972,Electric_Eel,Electric Eel,5,20,,2000,100,,2,2,0x00080000,18,0,2,4,70,1,14,{ bonus bAtkEle,Ele_Wind; bonus bInt,2; bonus bAgi,2; bonus3 bAutoSpell,"WZ_JUPITEL",3,20; .@r = getrefine(); if(.@r>0) bonus3 bAutoSpell,"CG_ARROWVULCAN",.@r,50; },{},{}
-1973,Sea_Witch_Foot,Sea Witch's Foot,5,20,,1500,110,,2,1,0x00080000,18,0,2,4,70,1,14,{ bonus bSPGainValue,5; bonus4 bAutoSpellWhenHit,"WZ_FROSTNOVA",3,50,1; bonus3 bAutoSpell,"NPC_WIDESILENCE",2,100; },{},{}
-1974,Carrot_Whip,Carrot Whip,5,20,,1300,185,,2,0,0x00080000,18,0,2,4,70,1,14,{ .@r = getrefine(); if(.@r>0) bonus3 bAutoSpell,"AL_INCAGI",min(.@r,10),10; },{},{}
+1971,Electric_Wire,Electric Wire,5,35000,,700,110,,2,0,0x00080000,63,0,2,3,30,1,14,{ bonus bAtkEle,Ele_Wind; },{},{}
+1972,Electric_Eel,Electric Eel,5,45000,,2000,100,,2,2,0x00080000,18,0,2,4,70,1,14,{ bonus bAtkEle,Ele_Wind; bonus bInt,2; bonus bAgi,2; bonus3 bAutoSpell,"WZ_JUPITEL",3,20; .@r = getrefine(); if(.@r>0) bonus3 bAutoSpell,"CG_ARROWVULCAN",.@r,50; },{},{}
+1973,Sea_Witch_Foot,Sea Witch's Foot,5,35000,,1500,110,,2,1,0x00080000,18,0,2,4,70,1,14,{ bonus bSPGainValue,5; bonus4 bAutoSpellWhenHit,"WZ_FROSTNOVA",3,50,1; bonus3 bAutoSpell,"NPC_WIDESILENCE",2,100; },{},{}
+1974,Carrot_Whip,Carrot Whip,5,35000,,1300,185,,2,0,0x00080000,18,0,2,4,70,1,14,{ .@r = getrefine(); if(.@r>0) bonus3 bAutoSpell,"AL_INCAGI",min(.@r,10),10; },{},{}
 1975,Queen_Is_Whip,Queen Is Whip,5,20,,0,120,,2,0,0x00080000,63,0,2,1,0,0,14,{ bonus2 bAddClass,Class_All,50; },{},{}
-1976,Queen's_Whip_,Queen's Whip,5,20,,1100,150,,2,2,0x00080000,63,0,2,4,65,1,14,{ bonus2 bSkillAtk,"CG_ARROWVULCAN",10; bonus2 bSkillAtk,"DC_THROWARROW",10; },{},{}
+1976,Queen's_Whip_,Queen's Whip,5,35000,,1100,150,,2,2,0x00080000,63,0,2,4,65,1,14,{ bonus2 bSkillAtk,"CG_ARROWVULCAN",10; bonus2 bSkillAtk,"DC_THROWARROW",10; },{},{}
 1977,BF_Whip1,Valorous Battle Lariat,5,20,,0,50,,2,0,0x00080000,63,0,2,3,80,1,14,{ bonus bDex,2; bonus2 bAddRace,RC_DemiHuman,95; bonus2 bAddRace,RC_Player,95; bonus2 bIgnoreDefRaceRate,RC_DemiHuman,20; bonus2 bIgnoreDefRaceRate,RC_Player,20; bonus bUnbreakableWeapon; },{},{}
 1978,BF_Whip2,Brave Battle Lariat,5,20,,0,50,,2,0,0x00080000,63,0,2,3,80,1,14,{ bonus bDex,2; bonus2 bAddRace,RC_DemiHuman,95; bonus2 bAddRace,RC_Player,95; bonus2 bSkillAtk,"CG_ARROWVULCAN",20; bonus bUnbreakableWeapon; },{},{}
-1979,Stem_Of_Nepenthes,Stem of Nepenthes,5,20,,1000,120,,2,2,0x00080000,18,0,2,4,60,1,14,{ bonus bInt,2; bonus3 bAddEffOnSkill,"DC_THROWARROW",Eff_Freeze,(getrefine()>=9?2000:1000); },{},{}
-1980,Whip_Of_Balance,Whip of Balance,5,20,,700,110,,2,3,0x00080000,18,0,2,3,70,1,14,{ bonus bAgi,2; bonus bDex,3; bonus2 bAddSkillBlow,"DC_THROWARROW",2; bonus2 bAddSkillBlow,"CG_ARROWVULCAN",3; },{},{}
+1979,Stem_Of_Nepenthes,Stem of Nepenthes,5,35000,,1000,120,,2,2,0x00080000,18,0,2,4,60,1,14,{ bonus bInt,2; bonus3 bAddEffOnSkill,"DC_THROWARROW",Eff_Freeze,(getrefine()>=9?2000:1000); },{},{}
+1980,Whip_Of_Balance,Whip of Balance,5,35000,,700,90,,2,3,0x00080000,18,0,2,3,70,1,14,{ bonus bAgi,2; bonus bDex,3; bonus2 bAddSkillBlow,"DC_THROWARROW",2; bonus2 bAddSkillBlow,"CG_ARROWVULCAN",3; },{},{}
 1981,Krieger_Whip1,Glorious Lariat,5,20,,0,50,,2,0,0x00080000,63,0,2,4,80,1,14,{ bonus2 bAddRace,RC_DemiHuman,95; bonus2 bAddRace,RC_Player,95; bonus2 bIgnoreDefRaceRate,RC_DemiHuman,20; bonus2 bIgnoreDefRaceRate,RC_Player,20; bonus bUnbreakableWeapon; .@r = getrefine(); if(.@r>5) { bonus2 bAddRace,RC_DemiHuman,pow(min(14,.@r)-4,2); bonus2 bAddRace,RC_Player,pow(min(14,.@r)-4,2); bonus2 bIgnoreDefRaceRate,RC_DemiHuman,5; bonus2 bIgnoreDefRaceRate,RC_Player,5; } if(.@r>8) bonus4 bAutoSpellOnSkill,"CG_ARROWVULCAN","CG_TAROTCARD",5,100; },{},{}
 1982,Phenomena_Whip,Phenomena Whip,5,20,,0,160,,2,0,0x00080000,63,0,2,4,0,0,14,{ bonus bDex,2; bonus2 bSkillAtk,"DC_THROWARROW",25; },{},{}
 1983,Rante_C,Rante Whip,5,0,,0,170,,2,0,0x00080000,63,0,2,3,1,0,14,{ bonus2 bAddSize,Size_All,40; },{},{}
-1984,Stem_Whip,Stem Whip,5,20,,800,170:50,,1,1,0x00080000,63,0,2,3,102,1,14,{ .@r = getrefine(); if(.@r>5) { bonus2 bSkillUseSP,"WA_SWING_DANCE",(.@r-5)*4; bonus2 bSkillUseSP,"WM_LULLABY_DEEPSLEEP",(.@r-5)*4; } bonus2 bSkillVariableCast,"WA_SWING_DANCE",-2000; bonus2 bSkillVariableCast,"WM_LULLABY_DEEPSLEEP",-2000; },{},{}
-1985,Rosebine,Rosebine,5,20,,1000,100:130,,1,0,0x00080000,63,0,2,4,110,1,14,{ bonus bInt,2; bonus bAgi,-2; bonus3 bAutoSpell,"WM_VOICEOFSIREN",1,20; },{},{}
+1984,Stem_Whip,Stem Whip,5,65000,,800,170:50,,1,1,0x00080000,63,0,2,3,102,1,14,{ .@r = getrefine(); if(.@r>5) { bonus2 bSkillUseSP,"WA_SWING_DANCE",(.@r-5)*4; bonus2 bSkillUseSP,"WM_LULLABY_DEEPSLEEP",(.@r-5)*4; } bonus2 bSkillVariableCast,"WA_SWING_DANCE",-2000; bonus2 bSkillVariableCast,"WM_LULLABY_DEEPSLEEP",-2000; },{},{}
+1985,Rosebine,Rosebine,5,45000,,1000,100:130,,1,0,0x00080000,63,0,2,4,110,1,14,{ bonus bInt,2; bonus bAgi,-2; bonus3 bAutoSpell,"WM_VOICEOFSIREN",1,20; },{},{}
 1986,P_Tail1,Eden Tail I,5,0,,0,95,,2,0,0x00080000,63,0,2,3,60,0,14,{},{},{}
 1987,TE_Woe_Rope,TE Woe Rope,5,0,,0,100,,2,0,0x00080000,63,0,2,3,40,1,14,{ bonus2 bAddRace,RC_Player,40; bonus2 bAddEff,Eff_Blind,3000; },{},{}
 1988,Thanos_Whip,Thanos Whip,5,10,,2200,200:130,,2,1,0x00080000,56,0,2,4,120,1,14,{ bonus bInt,6; bonus bVit,6; bonus bLuk,-6; bonus2 bHPDrainRate,50,5; bonus2 bSPDrainRate,10,5; bonus bLongAtkRate,20; bonus2 bHPLossRate,100,10000; },{},{ heal -1000,0; }
@@ -1272,15 +1272,15 @@
 1994,Infinity_Whip,Infinity Whip,5,10,,500,150,,2,1,0x00080000,56,0,2,4,100,1,14,{},{},{}
 1995,Crimson_Whip,Crimson Whip,5,20,,800,80,,2,2,0x00080000,63,0,2,3,70,1,14,{ .@r = getrefine(); bonus bBaseAtk,((BaseLevel/10)*5)+(pow(.@r,2)/3); },{},{}
 1996,Wire_of_Vicious_Mind,Wire of Vicious Mind,5,20,,1300,130:50,,2,1,0x00080000,63,,2,4,160,1,14,{ bonus bAtk,pow(getrefine(),2)/3; bonus bMatk,pow(getrefine(),2)/6; },{},{}
-1997,Unity_Whip,Unity Whip,5,20,,76,40,,2,1,0x00080000,63,0,2,3,1,1,14,{ bonus bBaseAtk,pow(getrefine(),2)*125/100; },{},{}
+1997,Unity_Whip,Unity Whip,5,20,,76,40,,2,1,0x00080000,63,0,2,3,1,1,14,{ bonus bBaseAtk,pow(getrefine(),2)*2/5; },{},{}
 //===================================================================
 // Additional 2-Handed Staffs
 //===================================================================
-2000,Destruction_Rod,Staff of Destruction,5,20,,2500,130:280,,1,1,0x00000200,18,2,34,4,80,1,23,{ .@r = getrefine; bonus bMatkRate,.@r/2; bonus bInt,3; bonus bAgi,10; bonus bUseSPrate,(.@r*2); bonus3 bAutoSpellWhenHit,"WZ_JUPITEL",5,(.@r*20); bonus2 bFixedCastrate,"HW_MAGICPOWER",-50; },{},{}
+2000,Destruction_Rod,Staff of Destruction,5,20,,2500,130:240,,1,1,0x00000200,18,2,34,4,80,1,23,{ .@r = getrefine; bonus bMatkRate,.@r/2; bonus bInt,3; bonus bAgi,10; bonus bUseSPrate,(.@r*2); bonus3 bAutoSpellWhenHit,"WZ_JUPITEL",5,(.@r*20); bonus2 bFixedCastrate,"HW_MAGICPOWER",-50; },{},{}
 2001,Divine_Cross,Divine Cross,5,20,,1500,120:210,,1,0,0x00008100,63,2,34,4,70,1,23,{ bonus bAtkEle,Ele_Holy; bonus bDex,4; bonus2 bSubRace,RC_Demon,15; bonus2 bSubRace,RC_Undead,15; },{},{}
 2002,Krieger_Twohand_Staff1,Glorious Destruction Staff,5,20,,0,70:210,,1,0,0x00018314,63,2,34,4,80,1,23,{ .@r = getrefine(); bonus bMatkRate,.@r; bonus2 bMagicAddRace,RC_DemiHuman,15; bonus2 bMagicAddRace,RC_Player,15; bonus2 bIgnoreMdefRaceRate,RC_DemiHuman,25; bonus2 bIgnoreMdefRaceRate,RC_Player,25; bonus bUnbreakableWeapon; if(.@r>5) { bonus2 bMagicAddRace,RC_DemiHuman,(min(14,.@r)-5)*2; bonus2 bMagicAddRace,RC_Player,(min(14,.@r)-5)*2; bonus2 bIgnoreMdefRaceRate,RC_DemiHuman,5+(min(14,.@r)-5)*2; bonus2 bIgnoreMdefRaceRate,RC_Player,5+(min(14,.@r)-5)*2; } if(.@r>8) { bonus5 bAutoSpellOnSkill,"WZ_STORMGUST","MG_SAFETYWALL",10,200,1; bonus5 bAutoSpellOnSkill,"WZ_METEOR","MG_SAFETYWALL",10,200,1; bonus5 bAutoSpellOnSkill,"WZ_VERMILION","MG_SAFETYWALL",10,200,1; } },{},{}
 2003,Destruction_Rod_M,Staff of Destruction,5,20,,2500,130:280,,1,1,0x00000200,18,2,34,4,80,1,23,{ .@r = getrefine(); bonus bMatkRate,.@r/2; bonus bInt,3; bonus bAgi,10; bonus bUseSPrate,(.@r*2); bonus3 bAutoSpellWhenHit,"WZ_JUPITEL",5,(.@r*20); bonus2 bVariableCastrate,"HW_MAGICPOWER",-50; },{},{}
-2004,Kronos,Kronos,5,20,,1000,30:240,,1,0,0x00010204,18,2,34,4,50,1,23,{ .@r = getrefine(); bonus bInt,3+(.@r/2); bonus bMaxHP,300+(50*.@r/2); autobonus "{ bonus bMatkRate,12; bonus buseSPRate,20; }",1,5000,BF_MAGIC,"{ specialeffect2 EF_ENHANCE; }"; },{},{}
+2004,Kronos,Kronos,5,20,,1000,30:200,,1,0,0x00010204,18,2,34,4,50,1,23,{ .@r = getrefine(); bonus bInt,3+(.@r/2); bonus bMaxHP,300+(50*.@r/2); autobonus "{ bonus bMatkRate,12; bonus buseSPRate,20; }",1,5000,BF_MAGIC,"{ specialeffect2 EF_ENHANCE; }"; },{},{}
 2005,Dea_Staff,Dea Staff,5,20,,1000,30:220,,1,1,0x00008110,18,2,34,3,50,1,23,{ bonus bAtkEle,Ele_Holy; bonus bMatkRate,getrefine()/2; bonus bInt,6; bonus bVit,2; autobonus3 "{ }",20,1000,"AL_HEAL","{ specialeffect2 EF_MAGICALATTHIT; heal 0,200; }"; },{},{}
 2006,G_Staff_Of_Light,Staff Of Light,5,20,,1900,80:150,,1,0,0x00810204,63,2,34,4,60,1,23,{ bonus bAtkEle,Ele_Holy; bonus bInt,6; },{},{}
 2007,Golden_Rod_Staff,Golden Rod Staff,5,20,,900,30:230,,1,2,0x00000200,63,2,34,4,100,1,23,{ bonus bAtkEle,Ele_Wind; bonus bInt,3; bonus2 bSkillAtk,"WZ_JUPITEL",12; },{},{}
@@ -1304,7 +1304,7 @@
 2025,Crimson_Two-Handed_Staff,Crimson Two-Handed Staff,5,20,,1000,100,,1,2,0x800200,63,2,34,3,70,1,23,{ .@r = getrefine(); bonus bInt,5; bonus bMatk,150+((BaseLevel/10)*5)+(pow(.@r,2)/3); },{},{}
 2026,Staff_of_Vicious_Mind,Staff of Vicious Mind,5,20,,1000,100:200,,1,1,0x00810204,63,2,34,4,160,1,23,{ bonus bMatk,pow(getrefine(),2)/3; bonus bInt,6; bonus bUnbreakableWeapon; },{},{}
 2027,Sunflower_Kid,Sunflower Kid,5,10,,1500,150:320,,,2,0x00000200,56,2,34,4,170,1,23,{ bonus bInt,5; .@r = getrefine(); bonus bMatkRate,(.@r/2); bonus bDelayrate,(.@r*-1); bonus bUnbreakableWeapon; },{},{}
-2030,Unity_Two-Handed_Staff,Unity Two-Handed Staff,5,20,,500,95:135,,1,1,0x800200,63,2,34,3,1,1,23,{ bonus bMatk,pow(getrefine(),2)*125/100; },{},{}
+2030,Unity_Two-Handed_Staff,Unity Two-Handed Staff,5,20,,500,95:135,,1,1,0x800200,63,2,34,3,1,1,23,{ bonus bMatk,pow(getrefine(),2)*2/5; },{},{}
 2032,Requiem_Wizardry_Staff,Requiem Wizardry Staff,5,20,,500,100:230,,1,,0xFFFFFFFF,63,2,2,4,100,1,10,{ .@r = getrefine(); .@b = 40; .@c = 5; if(.@r>=5){ .@b += (.@r-5)*15+20; .@c += .@r-5; } bonus2 bMagicAddRace2,RC2_BioLab,.@b; bonus2 bSubRace2,RC2_BioLab,.@c; bonus2 bIgnoreMdefRace2Rate,RC2_BioLab,(.@r-5)*10; },{},{}
 2039,Illusion_Wizardry_Staff,Illusion Wizardry Staff,5,0,,2400,150:250,,1,2,0x00810204,58,2,34,4,100,1,23,{ .@val = min(getrefine(),10)/2; bonus bInt,(6+.@val); bonus bDex,(2+.@val); },{},{}
 2051,Illusion_Survivor's_Staff,Illusion Survivor's Staff,5,0,,1200,100:240,,1,2,0x00818314,63,2,34,4,120,1,23,{ .@r = getrefine(); bonus bDex,2; bonus bInt,2; bonus bMaxHP,600; bonus bUnbreakableWeapon; bonus bMatkRate,(.@r/2); if (.@r >= 7) { bonus2 bMagicAddSize,Size_Small,15; bonus2 bMagicAddSize,Size_Medium,15; if (.@r >= 9) { bonus2 bSubSize,Size_Small,15; bonus2 bSubSize,Size_Medium,15; if (.@r >= 11) { bonus2 bSubDefEle,Ele_Water,15; bonus2 bSubDefEle,Ele_Wind,15; bonus2 bSubDefEle,Ele_Earth,15; bonus2 bSubDefEle,Ele_Fire,15; } } } },{},{}
