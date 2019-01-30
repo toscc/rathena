@@ -293,9 +293,6 @@
 2723,499,100	// Medal_Mage
 2724,499,100	// Medal_Archer
 2725,499,100	// Medal_Merchant
-2730,467,100	// Morroc_Seal
-2731,467,100	// Morroc_Charm_Stone
-2732,467,100	// Morroc_Ring
 2733,499,100	// Medal_Gunner
 2734,507,100	// Directive_A
 2735,507,100	// Directive_B

@@ -8628,8 +8628,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 			sp1 = sstatus->sp;
 			sp2 = tstatus->sp;
 #ifdef	RENEWAL
-			sp1 = sp1 / 2;
-			sp2 = sp2 / 2;
+			//sp1 = sp1 / 2;
+			//sp2 = sp2 / 2;
 			if (tsc && tsc->data[SC_EXTREMITYFIST2])
 				sp1 = tstatus->sp;
 #endif
