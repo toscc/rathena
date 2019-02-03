@@ -281,6 +281,7 @@ struct map_session_data {
 		unsigned int hpmeter_visible : 1;
 		unsigned int autopilotmode;
 		unsigned int autospgoal;
+		unsigned int autosong;
 		unsigned disable_atcommand_on_npc : 1; //Prevent to use atcommand while talking with NPC [Kichi]
 		uint8 isBoundTrading; // Player is currently add bound item to trade list [Cydh]
 		bool ignoretimeout; // Prevent the SECURE_NPCTIMEOUT function from closing current script.

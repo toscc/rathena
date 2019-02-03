@@ -1,5 +1,5 @@
 
-prontera,146,170,6		script	Skill Point Remover::skillremover	569,{
+prontera,146,170,6	script	Skill Point Remover::skillremover	569,{
 mes "[Skill Point Remover]";
 mes	"Please make sure you used all the skill points you would like to use before using my services.";
 next;
@@ -19,4 +19,5 @@ set SkillPoint,0;
 close;
 }
 
-gef_tower,104,36,5		duplicate(skillremover)		Skill Point Remover		569
+gef_tower,104,36,5	duplicate(skillremover)	Skill Point Remover	569
+in_moc_16,15,31,5	duplicate(skillremover)	Skill Point Remover	648

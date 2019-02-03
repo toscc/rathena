@@ -6963,13 +6963,13 @@ static short status_calc_aspd(struct block_list *bl, struct status_change *sc, b
 				bonus += sc->data[SC_ASSNCROS]->val2;
 			else {
 				switch(((TBL_PC*)bl)->status.weapon) {
-					case W_BOW:
+/*					case W_BOW:
 					case W_REVOLVER:
 					case W_RIFLE:
 					case W_GATLING:
 					case W_SHOTGUN:
 					case W_GRENADE:
-						break;
+						break; */
 					default:
 						bonus += sc->data[SC_ASSNCROS]->val2;
 						break;

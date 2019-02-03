@@ -12997,7 +12997,7 @@ struct skill_unit_group *skill_unitsetting(struct block_list *src, uint16 skill_
 		break;
 	case BD_DRUMBATTLEFIELD:
 	#ifdef RENEWAL
-		val1 = (skill_lv+5)*25;	//Atk increase
+		val1 = (skill_lv+5)*7;	//Atk increase
 		val2 = skill_lv*10;		//Def increase
 	#else
 		val1 = (skill_lv+1)*25;	//Atk increase
@@ -13005,7 +13005,7 @@ struct skill_unit_group *skill_unitsetting(struct block_list *src, uint16 skill_
 	#endif
 		break;
 	case BD_RINGNIBELUNGEN:
-		val1 = (skill_lv+2)*25;	//Atk increase
+		val1 = (skill_lv+2)*16;	//Atk increase
 		break;
 	case BD_RICHMANKIM:
 		val1 = 25 + 11*skill_lv; //Exp increase bonus.
