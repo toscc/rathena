@@ -41,7 +41,7 @@
 // 1 0 7
 // 2 . 6
 // 3 4 5
-// See also path.cpp walk_choices
+// See also path.c walk_choices
 const short dirx[DIR_MAX]={0,-1,-1,-1,0,1,1,1}; ///lookup to know where will move to x according dir
 const short diry[DIR_MAX]={1,1,0,-1,-1,-1,0,1}; ///lookup to know where will move to y according dir
 
@@ -624,7 +624,7 @@ int newwalk(struct block_list *bl, short x, short y, unsigned char flag)
 
 	// We aren't yet walking or are walking to somewhere at least 5 tiles away from the intended destination, start a new walk
 	if ((abs(x - ud->to_x) > 4) || (abs(y - ud->to_y) > 4) || (ud->walktimer == INVALID_TIMER)) {
-//		if (ud->walktimer != INVALID_TIMER) unit_stop_walking(bl, USW_FIXPOS);
+		unit_stop_walking(bl, USW_FIXPOS);
 		unit_walktoxy(bl, x, y, flag);
 	}
 }
@@ -1376,7 +1376,7 @@ int unit_is_walking(struct block_list *bl)
 
 /** 
  * Checks if a unit is able to move based on status changes
- * View the StatusChangeStateTable in status.cpp for a list of statuses
+ * View the StatusChangeStateTable in status.c for a list of statuses
  * Some statuses are still checked here due too specific variables
  * @author [Skotlex]
  * @param bl: Object to check
@@ -3502,6 +3502,7 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 
 int foundtargetID;
 int targetdistance;
+int targetdistanceb;
 int targetthis;
 struct block_list * targetbl;
 struct mob_data * targetmd;
@@ -3533,6 +3534,19 @@ int targetnearestwarp(block_list * bl, va_list ap)
 	return 0;
 }
 
+void resettargets()
+{
+	targetdistance = 999; targetdistanceb = 999; foundtargetID = -1;
+
+}
+
+void resettargets2()
+{
+	targetdistance = 0;  foundtargetID = -1;
+
+}
+
+
 int targetnearest(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd2;
@@ -3545,7 +3559,28 @@ int targetnearest(block_list * bl, va_list ap)
 	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
 
 	int dist = distance_bl(&sd2->bl, bl);
-	if ((dist < targetdistance) && (path_search_long(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, CELL_CHKWALL))) { targetdistance = dist; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
+	int dist2 = dist+12;
+	if ((status_get_class_(bl) == CLASS_BOSS)) dist2 = dist2 - 12; // Always hit the boss in a crowd or nearby enemies
+	if ((dist2 < targetdistanceb) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKWALL))) { targetdistance = dist; targetdistanceb = dist2; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
+
+	return 1;
+}
+
+int targetsoulexchange(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd2;
+	struct map_session_data *sd = (struct map_session_data*)bl;
+
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+
+	if (pc_isdead(sd)) return 0;
+	if (sd->sc.data[SC_EXTREMITYFIST2]) return 0;
+	if (sd->sc.data[SC_NORECOVER_STATE]) return 0;
+	// Must recover at least 20% SP
+	if (sd->battle_status.sp>0.8*sd->battle_status.max_sp) return 0;
+
+	int dist = min(sd2->battle_status.sp,sd->battle_status.max_sp) - sd->battle_status.sp;
+	if ((dist > targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKWALL))) { targetdistance = dist; foundtargetID = bl->id; targetbl = bl; };
 
 	return 1;
 }
@@ -3844,7 +3879,7 @@ int targetthischar(block_list * bl, va_list ap)
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	struct map_session_data *sd2;
 	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
-	if ((sd->status.char_id == targetthis) && (path_search_long(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, CELL_CHKWALL))) { targetbl = bl; foundtargetID = bl->id; };
+	if ((sd->status.char_id == targetthis) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKWALL))) { targetbl = bl; foundtargetID = bl->id; };
 
 	return 0;
 }
@@ -3852,6 +3887,7 @@ int targetthischar(block_list * bl, va_list ap)
 int targetDetoxify(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
 	if (sd->sc.data[SC_POISON]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
@@ -3859,6 +3895,7 @@ int targetDetoxify(block_list * bl, va_list ap)
 int targetSlowPoison(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
 	if (!(sd->sc.data[SC_SLOWPOISON])) if (sd->sc.data[SC_POISON]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
@@ -3867,6 +3904,7 @@ int targetSlowPoison(block_list * bl, va_list ap)
 int targetCure(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
 	if (sd->sc.data[SC_SILENCE]) { targetbl = bl; foundtargetID = sd->bl.id; };
 	if (sd->sc.data[SC_CONFUSION]) { targetbl = bl; foundtargetID = sd->bl.id; };
 	if (sd->sc.data[SC_BLIND]) { targetbl = bl; foundtargetID = sd->bl.id; };
@@ -3877,6 +3915,7 @@ int targetCure(block_list * bl, va_list ap)
 int targetstatusrecovery(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
 	if (sd->sc.data[SC_FREEZE]) { targetbl = bl; foundtargetID = sd->bl.id; };
 	if (sd->sc.data[SC_STONE]) { targetbl = bl; foundtargetID = sd->bl.id; };
 	if (sd->sc.data[SC_STUN]) { targetbl = bl; foundtargetID = sd->bl.id; };
@@ -3887,6 +3926,7 @@ int targetstatusrecovery(block_list * bl, va_list ap)
 int targetlexdivina(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
 	if (sd->sc.data[SC_SILENCE]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
@@ -3898,14 +3938,19 @@ int targethealing(block_list * bl, va_list ap)
 	struct map_session_data *sd2;
 	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
 	
-	if (sd2->bl.id == foundtargetID) return 0; // If can heal self, prioritize that
+//	if (sd2->bl.id == foundtargetID) return 0; // If can heal self, prioritize that
 
 	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
 	// Always heal below 55% hp
-	if (sd->battle_status.hp<sd->battle_status.max_hp*0.55) { targetbl = bl; foundtargetID = sd->bl.id; };
-	// But heal above that if near max sp
-	if (sd2->battle_status.sp * 100 / sd2->battle_status.max_sp -12>100 * sd->battle_status.hp/sd->battle_status.max_hp)
-
+	if ((sd->battle_status.hp<sd->battle_status.max_hp*0.55) || ((sd2->battle_status.sp * 100) / sd2->battle_status.max_sp>(100 * sd->battle_status.hp) / sd->battle_status.max_hp+12))
+	{
+		// prioritize lowest hp percentage player
+		if (targetdistance > 100 * sd->battle_status.hp / sd->battle_status.max_hp) {
+			targetdistance = 100 * sd->battle_status.hp / sd->battle_status.max_hp;
+			targetbl = bl; foundtargetID = sd->bl.id;
+		}
+	}
 	return 1;
 }
 
@@ -3913,6 +3958,7 @@ int targetpneuma(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd2;
 	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+	if (pc_isdead(sd2)) return 0;
 
 	struct mob_data *md;
 	nullpo_ret(bl);
@@ -3936,6 +3982,7 @@ int targetpneuma(block_list * bl, va_list ap)
 int targetincagi(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
 	if (!sd->sc.data[SC_INCREASEAGI]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
@@ -3944,7 +3991,9 @@ int targetincagi(block_list * bl, va_list ap)
 int targetbless(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
 	if (!sd->sc.data[SC_BLESSING]) { targetbl = bl; foundtargetID = sd->bl.id; };
+	if (sd->sc.data[SC_CURSE]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
 }
@@ -3952,6 +4001,7 @@ int targetbless(block_list * bl, va_list ap)
 int targetangelus(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
 	if (!sd->sc.data[SC_ANGELUS]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
@@ -3960,6 +4010,7 @@ int targetangelus(block_list * bl, va_list ap)
 int targetmagnificat(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
 	if (!sd->sc.data[SC_MAGNIFICAT]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
@@ -3968,6 +4019,7 @@ int targetmagnificat(block_list * bl, va_list ap)
 int targetgloria(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
 	if (!sd->sc.data[SC_GLORIA]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
@@ -3976,6 +4028,7 @@ int targetgloria(block_list * bl, va_list ap)
 int targetassumptio(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
 	if (!sd->sc.data[SC_ASSUMPTIO]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
@@ -3984,8 +4037,8 @@ int targetassumptio(block_list * bl, va_list ap)
 int targetkyrie(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
 	if ((!sd->sc.data[SC_KYRIE]) && (!sd->sc.data[SC_ASSUMPTIO])) { targetbl = bl; foundtargetID = sd->bl.id; };
-
 	return 0;
 }
 
@@ -3993,6 +4046,7 @@ int targetendow(block_list * bl, va_list ap)
 {
 	// Not already endowed, and is a physical attack class (base atk high enough)
 	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
 	if ((!sd->sc.data[SC_ASPERSIO]) && (!sd->sc.data[SC_FIREWEAPON])
 		&& (!sd->sc.data[SC_WATERWEAPON]) && (!sd->sc.data[SC_WINDWEAPON]) && (!sd->sc.data[SC_EARTHWEAPON])
 		&& ((sd->battle_status.batk>sd->status.base_level) || (sd->battle_status.batk>120))) {
@@ -4013,8 +4067,39 @@ int targetresu(block_list * bl, va_list ap)
 int targetmanus(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
 	if ((!sd->sc.data[SC_IMPOSITIO]) && ((sd->battle_status.batk>sd->status.base_level) || (sd->battle_status.batk>120))) { targetbl = bl; foundtargetID = sd->bl.id; };
 
+	return 0;
+}
+
+int countprovidence(block_list * bl, va_list ap)
+{
+	struct mob_data *md;
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+	if (md->status.def_ele == ELE_HOLY) return 1;
+	if (md->status.race == RC_DEMON) return 1;
+	return 0;
+}
+
+int targetprovidence(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
+	// Must have at least 3 appropriate enemies neabry to cast
+	if (map_foreachinrange(countprovidence, &sd->bl, 25, BL_MOB, sd) < 3) return 0;
+
+	if ((!sd->sc.data[SC_PROVIDENCE])) { targetbl = bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
+
+int sgn(int x)
+{
+	if (x > 0) return 1;
+	if (x < 0) return -1;
 	return 0;
 }
 
@@ -4220,13 +4305,22 @@ void unit_skilluse_ifablexy(struct block_list *src, int target_id, uint16 skill_
 
 	pc_delinvincibletimer(sd);
 
+
 //	unit_stop_walking(src, 1); // Important! If trying to skill while walking and out of range, skill gets queued 
 	struct block_list *tgtbl;
 	tgtbl = map_id2bl(target_id);
+	int tgtx, tgty; tgtx = tgtbl->x; tgty = tgtbl->y;
+
+	// Pneuma is special. Always put it on tiles with coordinates divisible by 3 to avoid unintended overlap, target is still in range.
+	if (skill_id == AL_PNEUMA) {
+		tgtx = 3 * trunc((tgtx + 1) / 3);
+		tgty = 3 * trunc((tgty + 1) / 3);
+	}
+
 	if (sd->skillitem == skill_id) {
 		if (skill_lv != sd->skillitemlv)
 			skill_lv = sd->skillitemlv;
-		unit_skilluse_pos(&sd->bl, tgtbl->x, tgtbl->y, skill_id, skill_lv, false);
+		unit_skilluse_pos(&sd->bl, tgtx, tgty, skill_id, skill_lv, false);
 	}
 	else {
 		int lv;
@@ -4234,7 +4328,7 @@ void unit_skilluse_ifablexy(struct block_list *src, int target_id, uint16 skill_
 		if ((lv = pc_checkskill(sd, skill_id)) > 0) {
 			if (skill_lv > lv)
 				skill_lv = lv;
-			unit_skilluse_pos(&sd->bl, tgtbl->x, tgtbl->y, skill_id, skill_lv, false);
+			unit_skilluse_pos(&sd->bl, tgtx, tgty, skill_id, skill_lv, false);
 		}
 	}
 
@@ -4313,6 +4407,7 @@ bool isdisabled(mob_data* md)
 {
 	if ((md->sc.data[SC_FREEZE])) return true;
 	if ((md->sc.data[SC_STONE])) return true;
+	if ((md->sc.data[SC_SPIDERWEB])) return true;
 	return false;
 }
 
@@ -4407,6 +4502,46 @@ void skillwhenidle(struct map_session_data *sd) {
 			unit_skilluse_ifable(&sd->bl, SELF, MG_ENERGYCOAT, pc_checkskill(sd, MG_ENERGYCOAT));
 		}
 	}
+
+	// Double Casting
+	if (pc_checkskill(sd, PF_DOUBLECASTING) > 0) {
+		if (!(sd->sc.data[SC_DOUBLECAST])) {
+			unit_skilluse_ifable(&sd->bl, SELF, PF_DOUBLECASTING, pc_checkskill(sd, PF_DOUBLECASTING));
+		}
+	}
+
+	// Memorize
+	if (pc_checkskill(sd, PF_MEMORIZE) > 0) {
+		if (!(sd->sc.data[SC_MEMORIZE])) {
+			unit_skilluse_ifable(&sd->bl, SELF, PF_MEMORIZE, pc_checkskill(sd, PF_MEMORIZE));
+		}
+	}
+	
+	// Auto Guard
+	if (pc_checkskill(sd, CR_AUTOGUARD) > 0) {
+		if (!(sd->sc.data[SC_AUTOGUARD]))
+			if (sd->status.shield > 0) {
+				unit_skilluse_ifable(&sd->bl, SELF, CR_AUTOGUARD, pc_checkskill(sd, CR_AUTOGUARD));
+			}
+	}
+	// Reflect Shield
+	if (pc_checkskill(sd, CR_REFLECTSHIELD) > 0) {
+		if (!(sd->sc.data[SC_REFLECTSHIELD]))
+			if (sd->status.shield > 0) {
+				unit_skilluse_ifable(&sd->bl, SELF, CR_REFLECTSHIELD, pc_checkskill(sd, CR_REFLECTSHIELD));
+			}
+	}
+
+	// Spear quicken
+	// Only in tanking mode. There is no point in ASPD if not using normal attacks.
+	if (pc_checkskill(sd, CR_SPEARQUICKEN) > 0) {
+		if ((sd->status.weapon == W_1HSPEAR) || (sd->status.weapon == W_2HSPEAR))
+			if (sd->state.autopilotmode==1)
+		if (!(sd->sc.data[SC_SPEARQUICKEN])) {
+			unit_skilluse_ifable(&sd->bl, SELF, CR_SPEARQUICKEN, pc_checkskill(sd, CR_SPEARQUICKEN));
+		}
+	}
+
 	// Attention Concentrate
 	if (pc_checkskill(sd, AC_CONCENTRATION) > 0) {
 		if (!(sd->sc.data[SC_CONCENTRATE])) {
@@ -4490,7 +4625,7 @@ TIMER_FUNC(unit_autopilot_timer)
 	}
 	else {
 		targetthis = p->party.member[i].char_id;
-		foundtargetID = -1; leaderdistance = 999;
+		resettargets(); leaderdistance = 999; leaderID = -1;
 		map_foreachinmap(targetthischar, sd->bl.m, BL_PC, sd);
 		leaderID = foundtargetID;  leaderbl = targetbl;
 		leadersd = (struct map_session_data*)targetbl;
@@ -4556,7 +4691,7 @@ TIMER_FUNC(unit_autopilot_timer)
 	/////////////////////////////////////////////////////////////////////////////////////
 		/// Asura Strike
 		if (canskill(sd)) if (pc_checkskill(sd, MO_EXTREMITYFIST)>0) {
-			foundtargetID = -1; targetdistance = 0;
+			resettargets2();
 			map_foreachinrange(asuratarget, &sd->bl, 12, BL_MOB, sd);
 			if (foundtargetID > -1) {
 			// if target exists, check for Spheres, then Fury, then SP, then use
@@ -4586,34 +4721,52 @@ TIMER_FUNC(unit_autopilot_timer)
 					}
 					else {
 						if (distance_bl(bl,targetbl)> 1) { unit_walktoxy(bl, targetbl->x, targetbl->y, 8); return 0; }
-						if (sd->battle_status.sp < 0.9*sd->battle_status.max_sp) { recoversp(sd, 100); return 0; }
+						// At least 80% SP required to use. Important : this amount should be no more than the threshhold for using Soul Exchange
+						if (sd->battle_status.sp < 0.8*sd->battle_status.max_sp) { recoversp(sd, 100); return 0; }
 						unit_skilluse_ifable(&sd->bl, foundtargetID, MO_EXTREMITYFIST, pc_checkskill(sd, MO_EXTREMITYFIST));
 					}
 				}
 			}
 		}
 
+		// Indulge
+		// Use if below 80% SP and above 60% HP. We want as close to max SP as possible for soul exchanges
+		if (canskill(sd)) if (pc_checkskill(sd, PF_HPCONVERSION)>0) 
+		if (sd->battle_status.sp<sd->battle_status.max_sp*0.8) if
+			(sd->battle_status.hp>sd->battle_status.max_hp*0.6) {
+			unit_skilluse_ifable(&sd->bl, SELF, PF_HPCONVERSION, pc_checkskill(sd, PF_HPCONVERSION));
+		}
+		// Soul Exchange
+		if (canskill(sd)) if ((pc_checkskill(sd, PF_SOULCHANGE)>0)) {
+			resettargets2(); 
+			map_foreachinrange(targetsoulexchange, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, PF_SOULCHANGE, pc_checkskill(sd, PF_SOULCHANGE));
+			}
+		}
+		
 		/// Pneuma
 		if (canskill(sd)) if  (pc_checkskill(sd, AL_PNEUMA)>0) {
-			foundtargetID = -1;
+			resettargets();
 			map_foreachinrange(targetpneuma, &sd->bl, 12, BL_MOB, sd);
 			if (foundtargetID > -1) {
 				// Not if pneuma already exists on target and also not if safety wall exists, they are mutually exclusive
 				struct status_change *sc;
-				sc = status_get_sc(bl);
-				if (!(sc->data[SC_PNEUMA] || sc->data[SC_SAFETYWALL])) { unit_skilluse_ifablexy(&sd->bl, foundtargetID, AL_PNEUMA, pc_checkskill(sd, AL_PNEUMA)); }
-			}
+				sc = status_get_sc(targetbl);
+				if (!(sc->data[SC_PNEUMA]) && !(sc->data[SC_SAFETYWALL])) { 
+					unit_skilluse_ifablexy(&sd->bl, foundtargetID, AL_PNEUMA, pc_checkskill(sd, AL_PNEUMA)); }
+			} 
 		}
 		/// Redemptio
 		if (canskill(sd)) if (pc_checkskill(sd, PR_REDEMPTIO)>0) {
-			foundtargetID = -1;
+			resettargets();
 			if (map_foreachinrange(targetresu, &sd->bl, 6, BL_PC, sd)>=4)	{
 				unit_skilluse_ifable(&sd->bl, foundtargetID, PR_REDEMPTIO, pc_checkskill(sd, PR_REDEMPTIO));
 			}
 		}
 		/// Resurrection
 		if (canskill(sd)) if ((pc_checkskill(sd, ALL_RESURRECTION)>0) && (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE)>0)) {
-			foundtargetID = -1;
+			resettargets();
 			map_foreachinrange(targetresu, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, ALL_RESURRECTION, pc_checkskill(sd, ALL_RESURRECTION));
@@ -4621,7 +4774,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 		/// Heal
 		if (canskill(sd)) if (pc_checkskill(sd, AL_HEAL)>0) {
-			foundtargetID = -1;
+			resettargets();
 			map_foreachinrange(targethealing, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, AL_HEAL, pc_checkskill(sd, AL_HEAL));
@@ -4629,7 +4782,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 		/// Status Recovery
 		if (canskill(sd)) if (pc_checkskill(sd, PR_STRECOVERY)>0) {
-			foundtargetID = -1;
+			resettargets();
 			map_foreachinrange(targetstatusrecovery, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, PR_STRECOVERY, pc_checkskill(sd, PR_STRECOVERY));
@@ -4637,7 +4790,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 		/// LEX DIVINA to remove silence
 		if (canskill(sd)) if (pc_checkskill(sd, PR_LEXDIVINA)>0) {
-			foundtargetID = -1;
+			resettargets();
 			map_foreachinrange(targetlexdivina, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, PR_LEXDIVINA, pc_checkskill(sd, PR_LEXDIVINA));
@@ -4645,7 +4798,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 		/// Cure
 		if (canskill(sd)) if (pc_checkskill(sd, AL_CURE)>0) {
-			foundtargetID = -1;
+			resettargets();
 			map_foreachinrange(targetCure, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, AL_CURE, pc_checkskill(sd, AL_CURE));
@@ -4653,7 +4806,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 		/// Detoxify
 		if (canskill(sd)) if (pc_checkskill(sd, TF_DETOXIFY)>0) {
-			foundtargetID = -1;
+			resettargets();
 			map_foreachinrange(targetDetoxify, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, TF_DETOXIFY, pc_checkskill(sd, TF_DETOXIFY));
@@ -4661,7 +4814,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 		/// Slow Poison
 		if (canskill(sd)) if (pc_checkskill(sd, PR_SLOWPOISON)>0) {
-			foundtargetID = -1;
+			resettargets();
 			map_foreachinrange(targetSlowPoison, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, PR_SLOWPOISON, pc_checkskill(sd, PR_SLOWPOISON));
@@ -4669,7 +4822,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 		/// MAGNIFICAT
 		if (canskill(sd)) if ((pc_checkskill(sd, PR_MAGNIFICAT)>0) && ((Dangerdistance >900) || (sd->special_state.no_castcancel))) {
-			foundtargetID = -1;
+			resettargets();
 			map_foreachinrange(targetmagnificat, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, SELF, PR_MAGNIFICAT, pc_checkskill(sd, PR_MAGNIFICAT));
@@ -4677,7 +4830,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 		/// Inc Agi
 		if (canskill(sd)) if (pc_checkskill(sd, AL_INCAGI)>0) {
-			foundtargetID = -1;
+			resettargets();
 			map_foreachinrange(targetincagi, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, AL_INCAGI, pc_checkskill(sd, AL_INCAGI));
@@ -4685,7 +4838,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 		/// Blessing
 		if (canskill(sd)) if (pc_checkskill(sd, AL_BLESSING)>0) {
-			foundtargetID = -1;
+			resettargets();
 			map_foreachinrange(targetbless, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, AL_BLESSING, pc_checkskill(sd, AL_BLESSING));
@@ -4693,18 +4846,63 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 		/// Aspersio
 		if (canskill(sd)) if (pc_checkskill(sd, PR_ASPERSIO)>0) if (pc_search_inventory(sd, ITEMID_HOLY_WATER)>0) {
-			foundtargetID = -1;
+			resettargets();
 			if (map_foreachinmap(endowneed, sd->bl.m, BL_MOB, ELE_HOLY) > 0){
-				foundtargetID = -1;
+				resettargets();
 				map_foreachinrange(targetendow, &sd->bl, 9, BL_PC, sd);
 				if (foundtargetID > -1) {
 					unit_skilluse_ifable(&sd->bl, foundtargetID, PR_ASPERSIO, pc_checkskill(sd, PR_ASPERSIO));
 				}
 			}
 		}
+		/// Fire weapon
+		if (canskill(sd)) if (pc_checkskill(sd, SA_FLAMELAUNCHER)>0) if (pc_search_inventory(sd,990)>0) {
+			resettargets();
+			if (map_foreachinmap(endowneed, sd->bl.m, BL_MOB, ELE_FIRE) > 0){
+				resettargets();
+				map_foreachinrange(targetendow, &sd->bl, 9, BL_PC, sd);
+				if (foundtargetID > -1) {
+					unit_skilluse_ifable(&sd->bl, foundtargetID, SA_FLAMELAUNCHER, pc_checkskill(sd, SA_FLAMELAUNCHER));
+				}
+			}
+		}
+		/// Ice weapon
+		if (canskill(sd)) if (pc_checkskill(sd, SA_FROSTWEAPON)>0) if (pc_search_inventory(sd, 991 )>0) {
+			resettargets();
+			if (map_foreachinmap(endowneed, sd->bl.m, BL_MOB, ELE_WATER) > 0){
+				resettargets();
+				map_foreachinrange(targetendow, &sd->bl, 9, BL_PC, sd);
+				if (foundtargetID > -1) {
+					unit_skilluse_ifable(&sd->bl, foundtargetID, SA_FROSTWEAPON, pc_checkskill(sd, SA_FROSTWEAPON));
+				}
+			}
+		}
+		///wind weapon
+		if (canskill(sd)) if (pc_checkskill(sd, SA_LIGHTNINGLOADER)>0) if (pc_search_inventory(sd,992)>0) {
+			resettargets();
+			if (map_foreachinmap(endowneed, sd->bl.m, BL_MOB, ELE_WIND) > 0){
+				resettargets();
+				map_foreachinrange(targetendow, &sd->bl, 9, BL_PC, sd);
+				if (foundtargetID > -1) {
+					unit_skilluse_ifable(&sd->bl, foundtargetID, SA_LIGHTNINGLOADER, pc_checkskill(sd, SA_LIGHTNINGLOADER));
+				}
+			}
+		}
+		/// Earth weapon
+		if (canskill(sd)) if (pc_checkskill(sd, SA_SEISMICWEAPON)>0) if (pc_search_inventory(sd, 993)>0) {
+			resettargets();
+			if (map_foreachinmap(endowneed, sd->bl.m, BL_MOB, ELE_EARTH) > 0){
+				resettargets();
+				map_foreachinrange(targetendow, &sd->bl, 9, BL_PC, sd);
+				if (foundtargetID > -1) {
+					unit_skilluse_ifable(&sd->bl, foundtargetID, SA_SEISMICWEAPON, pc_checkskill(sd, SA_SEISMICWEAPON));
+				}
+			}
+		}
+
 		/// Assumptio
 		if (canskill(sd)) if ((pc_checkskill(sd, HP_ASSUMPTIO)>0) && ((Dangerdistance >900) || (sd->special_state.no_castcancel))) {
-			foundtargetID = -1;
+			resettargets();
 			map_foreachinrange(targetassumptio, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, HP_ASSUMPTIO, pc_checkskill(sd, HP_ASSUMPTIO));
@@ -4712,7 +4910,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 		/// Kyrie Elison
 		if (canskill(sd)) if ((pc_checkskill(sd, PR_KYRIE)>0) && ((Dangerdistance >900) || (sd->special_state.no_castcancel))) {
-			foundtargetID = -1;
+			resettargets();
 			map_foreachinrange(targetkyrie, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, PR_KYRIE, pc_checkskill(sd, PR_KYRIE));
@@ -4720,15 +4918,15 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 		/// Angelus
 		if (canskill(sd)) if (pc_checkskill(sd, AL_ANGELUS)>0) {
-			foundtargetID = -1;
+			resettargets();
 			map_foreachinrange(targetangelus, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
-				unit_skilluse_ifable(&sd->bl, foundtargetID, AL_ANGELUS, pc_checkskill(sd, AL_ANGELUS));
+				unit_skilluse_ifable(&sd->bl, SELF, AL_ANGELUS, pc_checkskill(sd, AL_ANGELUS));
 			}
 		}
 		/// GLORIA
 		if (canskill(sd)) if (pc_checkskill(sd, PR_GLORIA)>0) {
-			foundtargetID = -1;
+			resettargets();
 			map_foreachinrange(targetgloria, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, SELF, PR_GLORIA, pc_checkskill(sd, PR_GLORIA));
@@ -4736,39 +4934,129 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 		/// Impositio Manus
 		if (canskill(sd)) if (pc_checkskill(sd, PR_IMPOSITIO)>0) {
-			foundtargetID = -1;
+			resettargets();
 			map_foreachinrange(targetmanus, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
-				unit_skilluse_ifable(&sd->bl, foundtargetID, PR_IMPOSITIO, pc_checkskill(sd, PR_GLORIA));
+				unit_skilluse_ifable(&sd->bl, foundtargetID, PR_IMPOSITIO, pc_checkskill(sd, PR_IMPOSITIO));
 			}
 		}
+		// Providence
+		if (canskill(sd)) if (pc_checkskill(sd, CR_PROVIDENCE)>0) {
+			resettargets();
+			map_foreachinrange(targetprovidence, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, CR_PROVIDENCE, pc_checkskill(sd, CR_PROVIDENCE));
+			}
+		}
+
+		//
+		// Songs
+		//
+		// Note : I'm using "player_skill_partner_check: no" so ensembles do not check for a partner. If that option is yes, an additional trigger to walk next to a potential partner is necessary.
+		// Must be in party with a leader to sing
+		if (leaderID > -1) {
+			// Use longing if doing ensemble to enable other skills
+			if (sd->sc.data[SC_DANCING]) if (sd->sc.data[SC_DANCING]->val4) if (canskill(sd)) if (!(sd->sc.data[SC_LONGING]))
+				if ((pc_checkskill(sd, CG_LONGINGFREEDOM) > 0)) unit_skilluse_ifable(&sd->bl, SELF, CG_LONGINGFREEDOM, pc_checkskill(sd, CG_LONGINGFREEDOM));
+			// Close to leader, and not already performing
+			if ((leaderdistance <= 2) && (sd->state.autosong > 0) && !(sd->sc.data[SC_DANCING])) {
+				if (canskill(sd) && ((sd->status.weapon == W_WHIP) || (sd->status.weapon == W_MUSICAL))) {
+					if ((sd->skill_id_dance == sd->state.autosong) && (pc_checkskill(sd, BD_ENCORE) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BD_ENCORE, pc_checkskill(sd, BD_ENCORE));
+					else if ((pc_checkskill(sd, sd->state.autosong) > 0)) unit_skilluse_ifable(&sd->bl, SELF, sd->state.autosong, pc_checkskill(sd, sd->state.autosong));
+
+/*					else switch (sd->state.autosong) {
+				case 1: if ((pc_checkskill(sd, BA_WHISTLE) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BA_WHISTLE, pc_checkskill(sd, BA_WHISTLE));
+					break; 
+				case 2: if ((pc_checkskill(sd, BA_ASSASSINCROSS) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BA_ASSASSINCROSS, pc_checkskill(sd, BA_ASSASSINCROSS));
+					break; 
+				case 3: if ((pc_checkskill(sd, BA_POEMBRAGI) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BA_POEMBRAGI, pc_checkskill(sd, BA_POEMBRAGI));
+					break; 
+				case 4: if ((pc_checkskill(sd, BA_APPLEIDUN) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BA_APPLEIDUN, pc_checkskill(sd, BA_APPLEIDUN));
+					break; 
+				case 5: if ((pc_checkskill(sd, BD_LULLABY) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BD_LULLABY, pc_checkskill(sd, BD_LULLABY));
+					break;
+				case 6: if ((pc_checkskill(sd, BD_ROKISWEIL) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BD_ROKISWEIL, pc_checkskill(sd, BD_ROKISWEIL));
+					break; 
+				case 7:if ((pc_checkskill(sd, BD_SIEGFRIED) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BD_SIEGFRIED, pc_checkskill(sd, BD_SIEGFRIED));
+					break; 
+				case 8: if ((pc_checkskill(sd, BD_DRUMBATTLEFIELD) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BD_DRUMBATTLEFIELD, pc_checkskill(sd, BD_DRUMBATTLEFIELD));
+					break; 
+				case 9: if ((pc_checkskill(sd, BD_INTOABYSS) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BD_INTOABYSS, pc_checkskill(sd, BD_INTOABYSS));
+					break; 
+				case 10: if ((pc_checkskill(sd, BD_ETERNALCHAOS) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BD_ETERNALCHAOS, pc_checkskill(sd, BD_ETERNALCHAOS));
+					break; 
+				case 11: if ((pc_checkskill(sd, BD_RICHMANKIM) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BD_RICHMANKIM, pc_checkskill(sd, BD_RICHMANKIM));
+					break; 
+				case 12: if ((pc_checkskill(sd, BD_RINGNIBELUNGEN) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BD_RINGNIBELUNGEN, pc_checkskill(sd, BD_RINGNIBELUNGEN));
+					break;
+				case 13: if ((pc_checkskill(sd, CG_MOONLIT) > 0)) unit_skilluse_ifable(&sd->bl, SELF, CG_MOONLIT, pc_checkskill(sd, CG_MOONLIT));
+					break; 
+				case 14: if ((pc_checkskill(sd, DC_HUMMING) > 0)) unit_skilluse_ifable(&sd->bl, SELF, DC_HUMMING, pc_checkskill(sd, DC_HUMMING));
+					break; 
+				case 15: if ((pc_checkskill(sd, DC_DONTFORGETME) > 0)) unit_skilluse_ifable(&sd->bl, SELF, DC_DONTFORGETME, pc_checkskill(sd, DC_DONTFORGETME));
+					break; 
+				case 16: if ((pc_checkskill(sd, DC_FORTUNEKISS) > 0)) unit_skilluse_ifable(&sd->bl, SELF, DC_FORTUNEKISS, pc_checkskill(sd, DC_FORTUNEKISS));
+					break; 
+				case 17: if ((pc_checkskill(sd, DC_SERVICEFORYOU) > 0)) unit_skilluse_ifable(&sd->bl, SELF, DC_SERVICEFORYOU, pc_checkskill(sd, DC_SERVICEFORYOU));
+					break; 
+				case 18:if ((pc_checkskill(sd, BA_DISSONANCE) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BA_DISSONANCE, pc_checkskill(sd, BA_DISSONANCE));
+					break; 
+				case 19: if ((pc_checkskill(sd, DC_UGLYDANCE) > 0)) unit_skilluse_ifable(&sd->bl, SELF, DC_UGLYDANCE, pc_checkskill(sd, DC_UGLYDANCE));
+					break; */
+				}
+			}
+			else { // Far from leader or song mode turned off, stop.
+				if ((sd->sc.data[SC_DANCING]) && ((leaderdistance >= 8) || sd->state.autosong==0)) {
+					// Do not use if ensemble, can walk away
+					if (!(sd->sc.data[SC_DANCING]->val4)) if ((pc_checkskill(sd, BD_ADAPTATION) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BD_ADAPTATION, pc_checkskill(sd, BD_ADAPTATION));
+				}
+				// Walk to leader is top priority in song mode, don't care about using other skills until in range.
+				// Note : this only triggers if leader was found, otherwise normal fight/walk rules apply.
+				if ((sd->state.autosong > 0) && (leaderdistance >= 5)) { newwalk(bl, leaderbl->x, leaderbl->y, 8); return 0; }
+			}
+		}
+
+
 		// Arrow Shower
-		if (canskill(sd)) if ((pc_checkskill(sd, AC_SHOWER) > 0)) {
-			foundtargetID = -1; targetdistance = 999;
+		if (canskill(sd)) if ((pc_checkskill(sd, AC_SHOWER) > 0)) if (sd->state.autopilotmode != 3) {
+			resettargets();
 			map_foreachinrange(targetnearest, &sd->bl, 14, BL_MOB, sd);
-			if (foundtargetID>-1)
+			if (foundtargetID>-1) if (sd->status.weapon == W_BOW)
 			{	int foundtargetID2 = foundtargetID;
 			// Must hit at least 3 enemies!
-			foundtargetID = -1; targetdistance = 999;
+			resettargets();
 			if (map_foreachinrange(targetnearest, targetbl, 1, BL_MOB, sd)>=3)
 				unit_skilluse_ifable(&sd->bl, foundtargetID2, AC_SHOWER, pc_checkskill(sd, AC_SHOWER));
 			}
 		}
 		// Double Strafe
-		if (canskill(sd)) if ((pc_checkskill(sd, AC_DOUBLE) > 0)) {
-			foundtargetID = -1; targetdistance = 999;
+		if (canskill(sd)) if ((pc_checkskill(sd, AC_DOUBLE) > 0)) if (sd->state.autopilotmode != 3) {
+			resettargets();
 			map_foreachinrange(targetnearest, &sd->bl, 14, BL_MOB, sd);
-			if (foundtargetID>-1)
+			if (foundtargetID>-1) if (sd->status.weapon == W_BOW)
 			if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
 				|| (status_get_hp(bl) < status_get_max_hp(bl) / 3)) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, AC_DOUBLE, pc_checkskill(sd, AC_DOUBLE));
 			}
 		}
 
+		// Defending Aura
+		// Activate if being targeted by a ranged enemy	
+		if (Dangerdistance<900)	if (canskill(sd)) if ((pc_checkskill(sd, CR_DEFENDER)>0) && (dangermd->status.rhw.range > 3) &&
+				!(sd->sc.data[SC_DEFENDER]))
+			{			
+					unit_skilluse_ifablexy(&sd->bl, sd->bl.id, MG_SAFETYWALL, pc_checkskill(sd, MG_SAFETYWALL));
+			}
 
 		///////////////////////////////////////////////////////////////////////////////////////////////
 		/// Emergency spells to use when in danger of being attacked (mostly useful for mage classes)
 		///////////////////////////////////////////////////////////////////////////////////////////////
+		// Free Casting? Walk away from enemy!
+		if (Dangerdistance <= 6) if (pc_checkskill(sd, SA_FREECAST) > 0) if ((leaderID == -1) || (leaderdistance <= 10)) 
+		// Not in tanking mode!
+			if (sd->state.autopilotmode>1) {
+				newwalk(&sd->bl, bl->x - sgn(dangerbl->x - bl->x), bl->y - sgn(dangerbl->y - bl->y), 0);
+		}
 		// Safety Wall
 		// At most 3 mobs, nearest must be close and melee.
 		// Must be very powerful and a real threat!
@@ -4822,6 +5110,29 @@ TIMER_FUNC(unit_autopilot_timer)
 				}
 			}
 		}
+		// Fiber Lock
+		// Only against dangerous enemies that are not in range to attack us, costs cobweb
+		if (canskill(sd)) if (pc_checkskill(sd, PF_SPIDERWEB) > 0) {
+			if ((Dangerdistance <= 7) && (dangermd->status.rhw.range < Dangerdistance)
+				&& (dangermd->status.rhw.atk2>sd->battle_status.hp / 5) && (pc_search_inventory(sd, 1025)>0)) {
+				if (!isdisabled(dangermd)) {
+					int maxcount = 99;
+					if (BL_PC&battle_config.land_skill_limit) if (!((maxcount = skill_get_maxcount(PF_SPIDERWEB, pc_checkskill(sd, PF_SPIDERWEB)))==0)) maxcount = 99;
+
+					int v;
+					for (v = 0; v<MAX_SKILLUNITGROUP && sd->ud.skillunit[v] && maxcount; v++) {
+						if (sd->ud.skillunit[v]->skill_id == PF_SPIDERWEB)
+							maxcount--;
+					}
+
+					if (maxcount>0)	unit_skilluse_ifable(&sd->bl, founddangerID, PF_SPIDERWEB, pc_checkskill(sd, PF_SPIDERWEB));
+				}
+				}
+			}
+		
+
+
+
 		// Don't bother with these suboptimal spells if casting is uninterruptable (note, they can be still cast as a damage spell, but not as an emergency reaction when fast cast time is needed)
 		if (!(sd->special_state.no_castcancel)) {
 			/// Napalm Beat
@@ -4890,7 +5201,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		// Ruwach, Sight
 		if (canskill(sd)) if ((pc_checkskill(sd, AL_RUWACH) > 0) || (pc_checkskill(sd, MG_SIGHT) > 0)){
 			if (!((sd->sc.data[SC_RUWACH]) || (sd->sc.data[SC_SIGHT]))) {
-				foundtargetID = -1; targetdistance = 999;
+				resettargets();
 				map_foreachinrange(targetnearest, &sd->bl, 11, BL_MOB, sd);
 				if ((targetdistance <= 3) && (targetdistance > -1) && (targetmd->sc.data[SC_HIDING] || targetmd->sc.data[SC_CLOAKING])) {
 					if (pc_checkskill(sd, AL_RUWACH) > 0) unit_skilluse_ifable(&sd->bl, SELF, AL_RUWACH, pc_checkskill(sd, AL_RUWACH));
@@ -4918,7 +5229,7 @@ TIMER_FUNC(unit_autopilot_timer)
 				for (j = 0; j < MAX_PARTY; j++) {
 
 					targetthis = p->party.member[j].char_id;
-					foundtargetID = -1; 
+					resettargets();
 					map_foreachinmap(targetthischar, sd->bl.m, BL_PC, sd);
 
 					// This party member is on the map?
@@ -5035,7 +5346,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		// Only if below 20% SP
 		if (canskill(sd)) if (pc_checkskill(sd, MO_ABSORBSPIRITS) > 0) if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) 
 			if (sd->battle_status.sp<0.2*sd->battle_status.max_sp) {
-				foundtargetID = -1; targetdistance = 0;
+				resettargets2();
 				map_foreachinrange(targethighestlevel, &sd->bl, 9, BL_MOB, sd);
 				if ((foundtargetID > -1) && (targetdistance>=50)){
 					unit_skilluse_ifable(&sd->bl, foundtargetID, MO_ABSORBSPIRITS, pc_checkskill(sd, MO_ABSORBSPIRITS));
@@ -5044,7 +5355,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 		// Turn Undead, has special targeting restriction
 		if (canskill(sd)) if (pc_checkskill(sd, PR_TURNUNDEAD) > 0) if (sd->state.autopilotmode == 2) {
-			foundtargetID = -1; targetdistance = 999;
+			resettargets();
 			map_foreachinrange(targetturnundead, &sd->bl, 9, BL_MOB, sd);
 			if (foundtargetID > -1){
 				unit_skilluse_ifable(&sd->bl, foundtargetID, PR_TURNUNDEAD, pc_checkskill(sd, PR_TURNUNDEAD));
@@ -5053,7 +5364,7 @@ TIMER_FUNC(unit_autopilot_timer)
 
 		// get target for single target spells only once - pick best skill to use on nearest enemy, not pick best enemy for best skill.
 		// probably could do better but targeting too many times causes lags as it includes finding paths.
-		foundtargetID = -1; targetdistance = 999;
+		resettargets();
 		map_foreachinrange(targetnearest, &sd->bl, 9, BL_MOB, sd);
 		int foundtargetID2 = foundtargetID;
 		if (foundtargetID2 > -1) {
@@ -5119,11 +5430,33 @@ TIMER_FUNC(unit_autopilot_timer)
 			// Finger Offensive
 			if (canskill(sd)) if ((pc_checkskill(sd, MO_FINGEROFFENSIVE) > 0)) if (sd->spiritball >= pc_checkskill(sd, MO_FINGEROFFENSIVE)) {
 				if ((sd->state.autopilotmode == 2)) {
-					if (elemallowed(targetmd, skill_get_ele(MO_FINGEROFFENSIVE, pc_checkskill(sd, MO_FINGEROFFENSIVE)))) {
 						unit_skilluse_ifable(&sd->bl, foundtargetID2, MO_FINGEROFFENSIVE, pc_checkskill(sd, MO_FINGEROFFENSIVE));
-					}
 				}
 			}
+			// Shield Boomerang
+			if (canskill(sd)) if ((pc_checkskill(sd, CR_SHIELDBOOMERANG) > 0)) if (sd->status.shield > 0) {
+				// not really strong enough to use if aleady engaged in melee in tanking mode
+				if ((sd->state.autopilotmode == 2)) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, CR_SHIELDBOOMERANG, pc_checkskill(sd, CR_SHIELDBOOMERANG));
+				}
+			}
+			// Pressure
+			// Only use if very low STR or having no equipped shield -> can't use Shield Chain effectively.
+			// Uninterruptable so ok during tanking mode but in that case, don't use up all the SP, keep most of it for tanking skills like healing.
+			// Characters with at least some STR are probably better off using their normal attack or bash in most cases, and of Shield Chain if available.
+			if (canskill(sd)) if ((pc_checkskill(sd, PA_PRESSURE) > 1)) if ((sd->status.shield <= 0) || (sd->battle_status.str<30)) 
+				if ((sd->state.autopilotmode == 2) || ((sd->state.autopilotmode == 1) && (sd->battle_status.sp >= 0.6*sd->battle_status.max_sp))){
+				unit_skilluse_ifable(&sd->bl, foundtargetID2, PA_PRESSURE, pc_checkskill(sd, PA_PRESSURE));
+			}
+			// Shield Chain
+			if (canskill(sd)) if ((pc_checkskill(sd, PA_SHIELDCHAIN) > 0)) if (sd->status.shield > 0) {
+				// casting time is interruptable so bad for tanking mode. Tanking mode should preserve sp for healing anyway.
+				if (elemallowed(targetmd, ELE_NEUTRAL))
+				if ((sd->state.autopilotmode == 2)) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, PA_SHIELDCHAIN, pc_checkskill(sd, PA_SHIELDCHAIN));
+				}
+			}
+
 			// Jupitel Thunder
 			if (canskill(sd)) if ((pc_checkskill(sd, WZ_JUPITEL) > 0)) {
 				if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) {
@@ -5173,6 +5506,31 @@ TIMER_FUNC(unit_autopilot_timer)
 					}
 				}
 			}
+			// Arrow Vulcan
+			if (canskill(sd) && ((sd->status.weapon == W_WHIP) || (sd->status.weapon == W_MUSICAL))) if ((pc_checkskill(sd, CG_ARROWVULCAN) > 0)) {
+				if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) {
+					if (elemallowed(targetmd, skill_get_ele(CG_ARROWVULCAN, pc_checkskill(sd, CG_ARROWVULCAN)))) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, CG_ARROWVULCAN, pc_checkskill(sd, CG_ARROWVULCAN));
+					}
+				}
+			}
+			// Musical strike
+			if (canskill(sd) && ((sd->status.weapon == W_WHIP) || (sd->status.weapon == W_MUSICAL))) if ((pc_checkskill(sd, BA_MUSICALSTRIKE) > 0)) {
+				if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) {
+					if (elemallowed(targetmd, skill_get_ele(BA_MUSICALSTRIKE, pc_checkskill(sd, BA_MUSICALSTRIKE)))) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, BA_MUSICALSTRIKE, pc_checkskill(sd, BA_MUSICALSTRIKE));
+					}
+				}
+			}
+			// Throw Arrow
+			if (canskill(sd) && ((sd->status.weapon == W_WHIP) || (sd->status.weapon == W_MUSICAL))) if ((pc_checkskill(sd, DC_THROWARROW) > 0)) {
+				if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) {
+					if (elemallowed(targetmd, skill_get_ele(DC_THROWARROW, pc_checkskill(sd, DC_THROWARROW)))) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, DC_THROWARROW, pc_checkskill(sd, DC_THROWARROW));
+					}
+				}
+			}
+
 			// Holy Light
 			if (canskill(sd)) if ((pc_checkskill(sd, AL_HOLYLIGHT) > 0)) {
 				if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) {
@@ -5194,7 +5552,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		/////////////////////////////////////////////////////////////////////
 		// Provoke
 		if (pc_checkskill(sd, SM_PROVOKE) > 0) {
-			foundtargetID = -1; targetdistance = 999;
+			resettargets();
 			map_foreachinrange(provokethis, &sd->bl, 9, BL_MOB, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, SM_PROVOKE, pc_checkskill(sd, SM_PROVOKE));
@@ -5202,7 +5560,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 		// Throw Stone
 		if (pc_checkskill(sd, TF_THROWSTONE) > 0) {
-			foundtargetID = -1; targetdistance = 999;
+			resettargets();
 			map_foreachinrange(provokethis, &sd->bl, 9, BL_MOB, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, TF_THROWSTONE, pc_checkskill(sd, TF_THROWSTONE));
@@ -5210,14 +5568,14 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 
 		// Find nearest enemy
-		foundtargetID = -1; targetdistance = 999;
+		resettargets();
 		// No leader then closest to ourselves we can see
 		if (leaderID == -1) {
 			map_foreachinrange(targetnearest, &sd->bl, 12, BL_MOB, sd);
 		}
 		// but if leader exists then closest to them to avoid going outside their range
 		else {
-			map_foreachinrange(targetnearest, leaderbl, 12, BL_MOB, sd);
+			map_foreachinrange(targetnearest, leaderbl, 14, BL_MOB, sd);
 		}
 
 		// attack nearest thing if it exists and we aren't losing the leader
@@ -5226,6 +5584,26 @@ TIMER_FUNC(unit_autopilot_timer)
 			/////////////////////////////////////////////////////////////////////
 			// Skills that can be used while tanking only, on tanked enemy 
 			/////////////////////////////////////////////////////////////////////
+			// Sacrifice
+			// At least 90% HP and must be allowed to use neutral element on target
+			// Also don't do it if it won't actually kill at least one enemy
+			if (canskill(sd)) if ((pc_checkskill(sd, PA_SACRIFICE) > 0)) {
+				if ((sd->battle_status.hp>0.9*sd->battle_status.hp) && (sd->battle_status.hp*.45*(0.9 + 0.1*pc_checkskill(sd, PA_SACRIFICE)) >= targetmd->status.hp))
+					// At least 4 enemies in range (or 3 if weak to element)
+					if (elemallowed(targetmd,ELE_NEUTRAL))
+						unit_skilluse_ifable(&sd->bl, SELF, PA_SACRIFICE, pc_checkskill(sd, PA_SACRIFICE));
+			}
+
+			// Grand Cross
+			// Must have at least 54% HP remaining to risk using this
+			if (canskill(sd)) if ((pc_checkskill(sd, CR_GRANDCROSS) > 0)) {
+				if (sd->battle_status.hp>0.54*sd->battle_status.hp)
+					// Are we in the build to use this?
+					if (sd->battle_status.int_ + sd->battle_status.str>=1.2*sd->status.base_level)
+				// At least 4 enemies in range (or 3 if weak to element)
+				if (map_foreachinrange(AOEPriority, bl, 2, BL_MOB, skill_get_ele(CR_GRANDCROSS, pc_checkskill(sd, CR_GRANDCROSS))) >= 8)
+					unit_skilluse_ifable(&sd->bl, SELF, CR_GRANDCROSS, pc_checkskill(sd, CR_GRANDCROSS));
+			}
 			// Magnum Break
 			if (canskill(sd)) if ((pc_checkskill(sd, SM_MAGNUM) > 0)) {
 					// At least 3 enemies in range (or 2 if weak to element)
@@ -5294,6 +5672,15 @@ TIMER_FUNC(unit_autopilot_timer)
 				}
 			}
 			
+			// Holy Cross skill
+			if (canskill(sd)) if (pc_checkskill(sd, CR_HOLYCROSS)>0) {
+				// Use like bash but ONLY if enemy is weak to holy, otherwise damage isn't that much better and Stun is superior to Blind
+				if (elemstrong(targetmd, skill_get_ele(CR_HOLYCROSS, pc_checkskill(sd, CR_HOLYCROSS))))
+					if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
+					|| (status_get_hp(bl) < status_get_max_hp(bl) / 3)){
+					unit_skilluse_ifable(&sd->bl, foundtargetID, CR_HOLYCROSS, pc_checkskill(sd, CR_HOLYCROSS));
+				}
+			}
 			// Bash skill
 			if (canskill(sd)) if (pc_checkskill(sd, SM_BASH)>0) {
 			// Always use if critically wounded otherwise use on mobs that will take longer to kill only if sp is lower
@@ -5314,7 +5701,8 @@ TIMER_FUNC(unit_autopilot_timer)
 
 			// Do normal attack if not using skill
 			if ((sd->battle_status.rhw.range <= 3) || (targetdistance<3))
-			clif_parse_ActionRequest_sub(sd, 7, foundtargetID, gettick());
+				unit_attack(&sd->bl, foundtargetID, 1);
+				//clif_parse_ActionRequest_sub(sd, 7, foundtargetID, gettick());
 			// We are tanking as an archer? Move close before attacking...
 			else {
 				newwalk(&sd->bl, targetbl->x + rand() % 5 - 2, targetbl->y + rand() % 5 - 2, 8);
@@ -5336,16 +5724,15 @@ TIMER_FUNC(unit_autopilot_timer)
 					return 0;
 				}
 			} 
-			// If there is a leader and we aren't already attacking something in their area, follow them closely just like support
+			// If there is a leader and we haven't found a target in their area, stay near them.
 			// Note : client.conf maxwalkpath needs to be very high (99 recommended) otherwise we fail to follow!
-//			if (leaderdistance > 6) {
 			if ((leaderID > -1) && (leaderID != sd->bl.id)) {
-					if ((abs(sd->bl.x - leaderbl->x) > 2) || abs(sd->bl.y - leaderbl->y) > 2) {
-						newwalk(&sd->bl, leaderbl->x + rand() % 5 - 2, leaderbl->y + rand() % 5 - 2, 8);
+				if (leaderdistance >= 2) {
+					newwalk(&sd->bl, leaderbl->x + rand() % 3 - 1, leaderbl->y + rand() % 3 - 1, 8);
 					}
 				}
 				else if ((p) && (leaderID != sd->bl.id)) {
-					foundtargetID = -1; targetdistance = 999;
+					resettargets();
 					// leader wasn't on map, target nearest NPC. Hopefully it's the warp the leader entered.
 					// However don't if there was no party, means we are soloing!
 					map_foreachinmap(targetnearestwarp, sd->bl.m, BL_NPC, sd);
@@ -5358,7 +5745,7 @@ TIMER_FUNC(unit_autopilot_timer)
 				// seek next enemy outside range if nothing else to do and we are the leader or party doesn't exist (solo)
 				// Note : client.conf maxwalkpath needs to be very high (99 recommended) otherwise we fail to move if enemy is too far!
 				// for same reason, disabling official walkpath and raising MAX_WALK_PATH in source is necessary
-				foundtargetID = -1; targetdistance = 999;
+				resettargets();
 				map_foreachinmap(targetnearest, sd->bl.m, BL_MOB, sd);
 				//			ShowError("No target found, moving?");
 				if (foundtargetID > -1) {
@@ -5395,7 +5782,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 		// Party leader left map?
 		else if (p) {
-			foundtargetID = -1; targetdistance = 999;
+			resettargets();
 			// target nearest NPC. Hopefully it's the warp the leader entered.
 			map_foreachinmap(targetnearestwarp, sd->bl.m, BL_NPC, sd);
 			if (foundtargetID > -1) {
