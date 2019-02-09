@@ -20,4 +20,4 @@ close;
 }
 
 gef_tower,104,36,5	duplicate(skillremover)	Skill Point Remover	569
-in_moc_16,15,31,5	duplicate(skillremover)	Skill Point Remover	648
+in_moc_16,15,31,5	duplicate(skillremover)	Skill Point Remover#assa	648

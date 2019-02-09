@@ -331,7 +331,7 @@
 4210  // Wander_Man_Card
 4211  // Vocal_Card
 4212	//Bon_Gun_Card
-4213	//Brilight_Card
+4213  // Brilight_Card
 4214  // Bloody_Murderer_Card
 4215  // Blazzer_Card
 4216  // Sasquatch_Card
@@ -342,7 +342,7 @@
 4221  // Skeleton_General_Card
 4222  // Skel_Prisoner_Card
 4223  // Stalactic_Golem_Card
-4224	//Stem_Worm_Card
+4224  // Stem_Worm_Card
 4225	//Stone_Shooter_Card
 4226  // Sting_Card
 4227  // Spring_Rabbit_Card
@@ -425,7 +425,7 @@
 4304  // Tamruan_Card
 4305	//Turtle_General_Card
 4306  // Toad_Card
-4307	//Kind_Of_Beetle_Card
+4307  // Kind_Of_Beetle_Card
 4308  // Tri_Joint_Card
 4309  // Parasite_Card
 4310  // Panzer_Goblin_Card
@@ -472,7 +472,7 @@
 4351	//Kavac_Card
 4352  // B_Ygnizem_Card
 4353  // Removal_Card
-4354	//Gemini_Card
+4354  // Gemini_Card
 4355	//Gremlin_Card
 4356  // Beholder_Card
 4357	//B_Seyren_Card
@@ -522,7 +522,7 @@
 4401  // Alicel_Card
 4402  // Aliot_Card
 4403	//Kiel_Card
-4404	//Skogul_Card
+4404  // Skogul_Card
 4405  // Frus_Card
 4406  // Skeggiold_Card
 4407	//Randgris_Card
@@ -553,7 +553,7 @@
 4432  // Magmaring_Card
 4433	//Imp_Card
 4434  // Knocker_Card
-4435	//Zombie_Slaughter_Card
+4435  // Zombie_Slaughter_Card
 4436	//Ragged_Zombie_Card
 4437  // Hell_Poodle_Card
 4438  // Banshee_Card

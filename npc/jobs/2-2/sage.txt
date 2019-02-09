@@ -323,7 +323,7 @@ yuno_in03,154,35,4	script	Staff of the Academy#a	742,{
 				mes "[Metheus Sylphe]";
 				mes "Your name is ... " + strcharinfo(0) + ". It's a very nice name.";
 				next;
-				if (JobLevel == 50) {
+				if (JobLevel >= 50) {
 					mes "[Metheus Sylphe]";
 					mes "Oh, you've mastered the Mage job! You're great!! *Clap Clap Clap*";
 					mes "In reward for your great effort, you will be exempt from the registration fee!";
@@ -387,7 +387,7 @@ yuno_in03,154,35,4	script	Staff of the Academy#a	742,{
 					mes "Please go study more, and then come back to enroll.";
 					close;
 				}
-				if (JobLevel == 50) {
+				if (JobLevel >= 50) {
 					mes "[Metheus Sylphe]";
 					mes "Well, I can't help you with that issue. If you don't have the fee, you are not allowed to enter the academy.";
 					mes "Even if you might think it's absurdly expensive, it's a justifiable price to pay in order to become a Sage.";

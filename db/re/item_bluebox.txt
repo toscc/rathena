@@ -733,7 +733,6 @@ IG_BlueBox,2510,3	// Somber Novice Hood
 IG_BlueBox,2512,1	// Novice Manteau
 IG_BlueBox,2513,1	// Heavenly Maiden Robe
 IG_BlueBox,2514,1	// Pauldron
-IG_BlueBox,2515,1	// Eagle Wing
 IG_BlueBox,2601,3	// Ring
 IG_BlueBox,2602,3	// Earring
 IG_BlueBox,2603,3	// Necklace

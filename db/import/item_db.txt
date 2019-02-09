@@ -65,7 +65,7 @@
 // Non-kRO Eden Group Mark effect
 //=============================================================
 //22508,Para_Team_Mark_,Eden Group Mark,11,0,,0,,,,0,0xFFFFFFFF,63,2,,,,,,{ unitskilluseid getcharid(3),"AL_TELEPORT",3; },{},{}
-19044,Morrigane's_Helm,Morrigane's Helm,4,30000,,500,,8,,1,0xFFFFFFFE,63,2,256,,61,1,257,{ bonus bLuk,2; bonus bBaseAtk,7; },{},{}
+19044,Morrigane's_Helm_S,Morrigane's Helm,4,30000,,500,,8,,1,0xFFFFFFFE,63,2,256,,61,1,257,{ bonus bLuk,2; bonus bBaseAtk,7; },{},{}
 31800,DRESSER_TICKET,Alternate Costume Ticket,3,200000,,10,,,,,,,,,,,,,{},{},{}
 31801,Linker_Disguise,Soul Linker Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4049; },{},{ changebase Class; }
 31802,Acolyte_Disguise,Acolyte Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4; },{},{ changebase Class; }
@@ -96,3 +96,4 @@
 31827,BSorcerer_Disguise,Baby Sorcerer Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4103; },{},{ changebase Class; }
 31828,Mage_Disguise,Magician Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 2; },{},{ changebase Class; }
 31829,HP_Disguise,High Priest Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4009; },{},{ changebase Class; }
+31830,Unimplemented_Disguise,? Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase Class; },{},{ changebase Class; }

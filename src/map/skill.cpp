@@ -12936,13 +12936,10 @@ struct skill_unit_group *skill_unitsetting(struct block_list *src, uint16 skill_
 		}
 		break;
 	case DC_HUMMING:
-#ifdef RENEWAL
-		val1 = 20 + 2 * skill_lv + status->dex / 15; // Hit increase
-#else
-		val1 = 1 + 2 * skill_lv + status->dex / 10; // Hit increase
-#endif
-		if (sd)
-			val1 += pc_checkskill(sd, DC_DANCINGLESSON);
+		val1 = 3 * skill_lv + status->dex / 10; // Casting time reduction
+		if (sd) {
+			val1 += pc_checkskill(sd, BA_MUSICALLESSON);
+		}
 		break;
 	case BA_POEMBRAGI:
 		val1 = 3 * skill_lv + status->dex / 10; // Casting time reduction
@@ -12994,6 +12991,13 @@ struct skill_unit_group *skill_unitsetting(struct block_list *src, uint16 skill_
 		val1 *= 10; //Because every 10 crit is an actual cri point.
 		if (sd)
 			val1 += 5 * pc_checkskill(sd, DC_DANCINGLESSON);
+#ifdef RENEWAL
+		val2 = 20 + 2 * skill_lv + status->dex / 15; // Hit increase
+#else
+		val2 = 1 + 2 * skill_lv + status->dex / 10; // Hit increase
+#endif
+		if (sd)
+			val2 += pc_checkskill(sd, DC_DANCINGLESSON);
 		break;
 	case BD_DRUMBATTLEFIELD:
 	#ifdef RENEWAL
@@ -16681,8 +16685,10 @@ int skill_vfcastfix(struct block_list *bl, double time, uint16 skill_id, uint16 
 			if ((--sc->data[SC_MEMORIZE]->val2) <= 0)
 				status_change_end(bl, SC_MEMORIZE, INVALID_TIMER);
 		}
-		if (sc->data[SC_POEMBRAGI])
-			reduce_cast_rate += sc->data[SC_POEMBRAGI]->val2;
+		if (sc->data[SC_HUMMING]) {
+			reduce_cast_rate += sc->data[SC_HUMMING]->val2;
+			fixcast_r += sc->data[SC_HUMMING]->val2;
+		}
 		if (sc->data[SC_IZAYOI])
 			VARCAST_REDUCTION(50);
 		if (sc->data[SC_WATER_INSIGNIA] && sc->data[SC_WATER_INSIGNIA]->val1 == 3 && skill_get_type(skill_id) == BF_MAGIC && skill_get_ele(skill_id, skill_lv) == ELE_WATER)

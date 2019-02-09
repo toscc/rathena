@@ -4810,6 +4810,15 @@
 	export_constant(IG_SANTA_GIFT);
 	export_constant(IG_PRIZEOFHERO);
 	export_constant(IG_PRIVATE_AIRSHIP);
+	export_constant(IG_GOODARMOR);
+	export_constant(IG_GOODWEAPON);
+	export_constant(IG_GOODSHIELD);
+	export_constant(IG_GOODSHOES);
+	export_constant(IG_GOODGARMENT);
+	export_constant(IG_GOODACC);
+	export_constant(IG_GOODHEADGEAR);
+	export_constant(IG_GOODCOSTUME);
+	export_constant(IG_ULTIMATE);
 
 	/* unit stop walking */
 	export_constant(USW_NONE);

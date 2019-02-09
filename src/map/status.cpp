@@ -403,7 +403,7 @@ void initChangeTables(void)
 	add_sc( DC_SCREAM		, SC_STUN );
 	set_sc( DC_HUMMING		, SC_HUMMING		, EFST_HUMMING		, SCB_HIT );
 	set_sc( DC_DONTFORGETME		, SC_DONTFORGETME	, EFST_DONTFORGETME	, SCB_SPEED|SCB_ASPD );
-	set_sc( DC_FORTUNEKISS		, SC_FORTUNE		, EFST_FORTUNEKISS	, SCB_CRI );
+	set_sc(DC_FORTUNEKISS, SC_FORTUNE, EFST_FORTUNEKISS, SCB_CRI | SCB_HIT);
 	set_sc( DC_SERVICEFORYOU	, SC_SERVICE4U		, EFST_SERVICEFORYOU	, SCB_ALL );
 	add_sc( NPC_DARKCROSS		, SC_BLIND		);
 	add_sc( NPC_GRANDDARKNESS	, SC_BLIND		);
@@ -4686,7 +4686,7 @@ void status_calc_regen_rate(struct block_list *bl, struct regen_data *regen, str
 		regen->flag = RGN_NONE;
 
 	// No natural SP regen
-	if (sc->data[SC_DANCING] ||
+	if ( //sc->data[SC_DANCING] ||
 #ifdef RENEWAL
 		sc->data[SC_MAXIMIZEPOWER] ||
 #endif
@@ -6303,8 +6303,8 @@ static signed short status_calc_hit(struct block_list *bl, struct status_change 
 		hit += sc->data[SC_HITFOOD]->val1;
 	if(sc->data[SC_TRUESIGHT])
 		hit += sc->data[SC_TRUESIGHT]->val3;
-	if(sc->data[SC_HUMMING])
-		hit += sc->data[SC_HUMMING]->val2;
+	if (sc->data[SC_FORTUNE])
+		hit += sc->data[SC_FORTUNE]->val3;
 	if(sc->data[SC_CONCENTRATION])
 		hit += sc->data[SC_CONCENTRATION]->val3;
 	if(sc->data[SC_INSPIRATION])
@@ -6798,7 +6798,7 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 				val = max( val, 50 - 10 * sc->data[SC_LONGING]->val1 );
 			else
 			if( sd && sc->data[SC_DANCING] )
-				val = max( val, 500 - (40 + 10 * (sc->data[SC_SPIRIT] && sc->data[SC_SPIRIT]->val2 == SL_BARDDANCER)) * pc_checkskill(sd,(sd->status.sex?BA_MUSICALLESSON:DC_DANCINGLESSON)) );
+				val = max( val, 250 - (40 + 10 * (sc->data[SC_SPIRIT] && sc->data[SC_SPIRIT]->val2 == SL_BARDDANCER)) * pc_checkskill(sd,(sd->status.sex?BA_MUSICALLESSON:DC_DANCINGLESSON)) );
 
 			if( sc->data[SC_DECREASEAGI] )
 				val = max( val, 25 );
@@ -14336,11 +14336,11 @@ static int status_natural_heal(struct block_list* bl, va_list args)
 		// Homun SP regen fix (they should regen as if they were sitting (twice as fast)
 		if(bl->type==BL_HOM)
 			rate *= 2;
-#ifdef RENEWAL
+/*#ifdef RENEWAL
 		if (bl->type == BL_PC && (((TBL_PC*)bl)->class_&MAPID_UPPERMASK) == MAPID_MONK &&
 			sc && sc->data[SC_EXPLOSIONSPIRITS] && (!sc->data[SC_SPIRIT] || sc->data[SC_SPIRIT]->val2 != SL_MONK))
 			rate /= 2; // Tick is doubled in Fury state
-#endif
+#endif*/
 		regen->tick.sp += rate;
 
 		if(regen->tick.sp >= (unsigned int)battle_config.natural_healsp_interval) {
