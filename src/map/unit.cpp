@@ -4442,6 +4442,20 @@ bool isdisabled(mob_data* md)
 	return false;
 }
 
+void saythis(struct block_list *src, char* message, int i)
+{
+	if ((rand() % i) != 1) return;
+	send_target target = PARTY;
+	struct StringBuf sbuf;
+
+	StringBuf_Init(&sbuf);
+	StringBuf_Printf(&sbuf, "%s", message);
+	clif_disp_overhead_(src, StringBuf_Value(&sbuf), target);
+	StringBuf_Destroy(&sbuf);
+
+}
+
+
 
 void recoversp(map_session_data *sd, int goal)
 {
@@ -4673,11 +4687,20 @@ TIMER_FUNC(unit_autopilot_timer)
 	}
 	
 	if pc_issit(sd) { return 0; }
-	int Dangerdistance = inDanger(sd);
-
-	//ShowError(sd->status.name);
-
 	recoversp(sd, sd->state.autospgoal);
+
+	// Say in party chat if something is wrong!
+	if (sd->sc.data[SC_WEIGHT50]) {
+		char* msg = "I can't carry all this by myself, please help!";
+		saythis(bl, msg, 50);
+	}
+	else if (sd->battle_status.sp < 0.1*sd->battle_status.max_sp)
+	{
+		char* msg = "Please let me rest, I need SP!";
+			saythis(bl, msg, 50);
+	}
+
+	int Dangerdistance = inDanger(sd);
 
 	// Use potions if low on health?
 		if ((status_get_hp(bl) <  status_get_max_hp(bl) / 2) &&
