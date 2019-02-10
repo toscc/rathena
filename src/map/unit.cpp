@@ -5019,8 +5019,9 @@ TIMER_FUNC(unit_autopilot_timer)
 			// Use longing if doing ensemble to enable other skills
 			if (sd->sc.data[SC_DANCING]) if (sd->sc.data[SC_DANCING]->val4) if (canskill(sd)) if (!(sd->sc.data[SC_LONGING]))
 				if ((pc_checkskill(sd, CG_LONGINGFREEDOM) > 0)) unit_skilluse_ifable(&sd->bl, SELF, CG_LONGINGFREEDOM, pc_checkskill(sd, CG_LONGINGFREEDOM));
-			// Close to leader, and not already performing
-			if ((leaderdistance <= 2) && (sd->state.autosong > 0) && !(sd->sc.data[SC_DANCING])) {
+			// Close to leader, and not already performing (distance 6 is how far away we try to be if leader is tanking monsters
+			// Distance will no longer be relevant once increased song range is implemented from official
+			if ((leaderdistance <= 6) && (sd->state.autosong > 0) && !(sd->sc.data[SC_DANCING])) {
 				if (canskill(sd) && ((sd->status.weapon == W_WHIP) || (sd->status.weapon == W_MUSICAL))) {
 					if ((sd->skill_id_dance == sd->state.autosong) && (pc_checkskill(sd, BD_ENCORE) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BD_ENCORE, pc_checkskill(sd, BD_ENCORE));
 					else if ((pc_checkskill(sd, sd->state.autosong) > 0)) unit_skilluse_ifable(&sd->bl, SELF, sd->state.autosong, pc_checkskill(sd, sd->state.autosong));
@@ -5067,13 +5068,16 @@ TIMER_FUNC(unit_autopilot_timer)
 				}
 			}
 			else { // Far from leader or song mode turned off, stop.
-				if ((sd->sc.data[SC_DANCING]) && ((leaderdistance >= 8) || sd->state.autosong==0)) {
+				if ((sd->sc.data[SC_DANCING]) && ((leaderdistance >= 10) || sd->state.autosong==0)) {
 					// Do not use if ensemble, can walk away
 					if (!(sd->sc.data[SC_DANCING]->val4)) if ((pc_checkskill(sd, BD_ADAPTATION) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BD_ADAPTATION, pc_checkskill(sd, BD_ADAPTATION));
 				}
 				// Walk to leader is top priority in song mode, don't care about using other skills until in range.
 				// Note : this only triggers if leader was found, otherwise normal fight/walk rules apply.
-				if ((sd->state.autosong > 0) && (leaderdistance >= 5)) { newwalk(bl, leaderbl->x, leaderbl->y, 8); return 0; }
+				if ((sd->state.autosong > 0) && (leaderdistance >= 7)) {
+					goto followleader;
+
+				}
 			}
 		}
 
@@ -5875,6 +5879,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		// Follow the leader
 		if (leaderID > -1) { 
 			
+			followleader:
 			Dangerdistance = inDangerLeader(leadersd);
 
 			// If party leader not under attack, get in range of 2
@@ -5887,7 +5892,12 @@ TIMER_FUNC(unit_autopilot_timer)
 				// but if they are under attack, as we are not in tanking mode, maintain a distance of 6 by taking only 1 step at a time closer
 				else
 				{
-					if ((abs(sd->bl.x - leaderbl->x) > 6) || abs(sd->bl.y - leaderbl->y) > 6) {
+					// If either leader or nearest monster attacking them is not directly shootable, go closer
+					// This is necessary to avoid the party behind stuck behind a corner, unable to attack 
+					if ((abs(sd->bl.x - leaderbl->x) > 6) || (abs(sd->bl.y - leaderbl->y) > 6) 
+						|| !(path_search_long(NULL, leadersd->bl.m, bl->x, bl->y, leaderbl->x, leaderbl->y, CELL_CHKWALL))
+						|| !(path_search_long(NULL, leadersd->bl.m, bl->x, bl->y, dangerbl->x, dangerbl->y, CELL_CHKWALL))
+						) {
 
 						struct walkpath_data wpd1; 
 						if (path_search(&wpd1, leadersd->bl.m, bl->x, bl->y, leaderbl->x, leaderbl->y, 0, CELL_CHKWALL))
