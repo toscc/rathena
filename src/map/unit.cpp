@@ -4472,6 +4472,41 @@ void saythis(struct block_list *src, char* message, int i)
 
 }
 
+void arrowchange(map_session_data * sd, mob_data *targetmd)
+{
+	unsigned short arrows[] = {
+		1750, 1751, 1752, 1753, 1754, 1755, 1756, 1757, 1762, 1765, 1766, 1767 ,1770, 1772, 1773, 1774
+	};
+	unsigned short arrowelem[] = {
+		ELE_NEUTRAL, ELE_HOLY, ELE_FIRE, ELE_NEUTRAL, ELE_WATER, ELE_WIND, ELE_EARTH, ELE_GHOST, ELE_NEUTRAL, ELE_POISON, ELE_HOLY, ELE_DARK, ELE_NEUTRAL, ELE_HOLY, ELE_NEUTRAL, ELE_NEUTRAL
+	};
+	unsigned short arrowatk[] = {
+		25,30,30,40,30,30,30,30,30,50,50,30,30,50,45,35
+	};
+
+	int16 index = -1;
+	int i,j;
+	int best = -1; int bestprio = -1;
+
+	for (i = 0; i < ARRAYLENGTH(arrows); i++) {
+		if ((index = pc_search_inventory(sd, arrows[i])) >= 0) {
+		j = arrowatk[i];
+		if (elemstrong(targetmd, arrowelem[i])) j += 500;
+		if (elemallowed(targetmd, arrowelem[i])) if (j>bestprio) {
+			bestprio = j; best = i;
+		}
+		}
+	}
+	if (best > -1) {
+		pc_equipitem(sd, best, EQP_AMMO);
+	}
+	else {
+		char* msg = "I have no arrows to shoot my target!";
+		saythis(&sd->bl, msg, 50);
+	}
+
+}
+
 
 
 void recoversp(map_session_data *sd, int goal)
@@ -5113,8 +5148,10 @@ TIMER_FUNC(unit_autopilot_timer)
 			{	int foundtargetID2 = foundtargetID;
 			// Must hit at least 3 enemies!
 			resettargets();
-			if (map_foreachinrange(targetnearest, targetbl, 1, BL_MOB, sd)>=3)
+			if (map_foreachinrange(targetnearest, targetbl, 1, BL_MOB, sd) >= 3) {
+				arrowchange(sd, targetmd);
 				unit_skilluse_ifable(&sd->bl, foundtargetID2, AC_SHOWER, pc_checkskill(sd, AC_SHOWER));
+			}
 			}
 		}
 		// Double Strafe
@@ -5124,6 +5161,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			if (foundtargetID>-1) if (sd->status.weapon == W_BOW)
 			if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
 				|| (status_get_hp(bl) < status_get_max_hp(bl) / 3)) {
+				arrowchange(sd, targetmd);
 				unit_skilluse_ifable(&sd->bl, foundtargetID, AC_DOUBLE, pc_checkskill(sd, AC_DOUBLE));
 			}
 		}
@@ -5477,7 +5515,7 @@ TIMER_FUNC(unit_autopilot_timer)
 
 		// get target for single target spells only once - pick best skill to use on nearest enemy, not pick best enemy for best skill.
 		// probably could do better but targeting too many times causes lags as it includes finding paths.
-		/// Also featch target for skills blocked by Pneuma separately
+		/// Also fetch target for skills blocked by Pneuma separately
 		resettargets();
 		map_foreachinrange(targetnearestusingranged, &sd->bl, 9, BL_MOB, sd);
 		int foundtargetRA = foundtargetID;
@@ -5637,6 +5675,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			if (canskill(sd) && ((sd->status.weapon == W_WHIP) || (sd->status.weapon == W_MUSICAL))) if ((pc_checkskill(sd, CG_ARROWVULCAN) > 0)) {
 				if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) {
 					if (elemallowed(targetRAmd, skill_get_ele(CG_ARROWVULCAN, pc_checkskill(sd, CG_ARROWVULCAN)))) {
+						arrowchange(sd, targetmd);
 						unit_skilluse_ifable(&sd->bl, foundtargetRA, CG_ARROWVULCAN, pc_checkskill(sd, CG_ARROWVULCAN));
 					}
 				}
@@ -5645,6 +5684,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			if (canskill(sd) && ((sd->status.weapon == W_WHIP) || (sd->status.weapon == W_MUSICAL))) if ((pc_checkskill(sd, BA_MUSICALSTRIKE) > 0)) {
 				if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) {
 					if (elemallowed(targetRAmd, skill_get_ele(BA_MUSICALSTRIKE, pc_checkskill(sd, BA_MUSICALSTRIKE)))) {
+						arrowchange(sd, targetmd);
 						unit_skilluse_ifable(&sd->bl, foundtargetRA, BA_MUSICALSTRIKE, pc_checkskill(sd, BA_MUSICALSTRIKE));
 					}
 				}
@@ -5653,6 +5693,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			if (canskill(sd) && ((sd->status.weapon == W_WHIP) || (sd->status.weapon == W_MUSICAL))) if ((pc_checkskill(sd, DC_THROWARROW) > 0)) {
 				if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) {
 					if (elemallowed(targetRAmd, skill_get_ele(DC_THROWARROW, pc_checkskill(sd, DC_THROWARROW)))) {
+						arrowchange(sd, targetmd);
 						unit_skilluse_ifable(&sd->bl, foundtargetRA, DC_THROWARROW, pc_checkskill(sd, DC_THROWARROW));
 					}
 				}
@@ -5667,8 +5708,10 @@ TIMER_FUNC(unit_autopilot_timer)
 				}
 			}
 			// Do normal attack if not using skill and being an archer
-			if ((sd->battle_status.rhw.range >= 6) && (sd->state.autopilotmode > 1))
-				clif_parse_ActionRequest_sub(sd, 7, foundtargetID2, gettick());
+			if ((sd->battle_status.rhw.range >= 6) && (sd->state.autopilotmode > 1)) {
+				if (sd->status.weapon == W_BOW) { arrowchange(sd, targetRAmd); }
+				clif_parse_ActionRequest_sub(sd, 7, foundtargetRA, gettick());
+			}
 
 		}
 
@@ -5835,6 +5878,8 @@ TIMER_FUNC(unit_autopilot_timer)
 				}
 			}
 
+
+			if (sd->status.weapon == W_BOW) { arrowchange(sd, targetmd); }
 
 			// Do normal attack if not using skill
 			if ((sd->battle_status.rhw.range <= 3) || (targetdistance<3))
