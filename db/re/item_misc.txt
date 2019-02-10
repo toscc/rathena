@@ -1524,6 +1524,32 @@ IG_GoodWeapon,1275,1
 IG_GoodWeapon,1276,1
 IG_GoodWeapon,1277,1
 IG_GoodWeapon,1278,1
+IG_Ultimate,1306,1
+IG_GoodWeapon,1305,1
+IG_GoodWeapon,1309,1
+IG_GoodWeapon,1311,1
+IG_Ultimate,1323,1
+IG_GoodWeapon,1363,1
+IG_GoodWeapon,1364,1
+IG_GoodWeapon,1365,1
+IG_GoodWeapon,1366,1
+IG_Ultimate,1367,1
+IG_GoodWeapon,1368,1
+IG_GoodWeapon,1369,1
+IG_GoodWeapon,1370,1
+IG_GoodWeapon,1371,1
+IG_GoodWeapon,1375,1
+IG_GoodWeapon,1376,1
+IG_GoodWeapon,1377,1
+IG_GoodWeapon,1413,1
+IG_GoodWeapon,1415,1
+IG_GoodWeapon,1416,1
+IG_GoodWeapon,1417,1
+IG_GoodWeapon,1418,1
+IG_GoodWeapon,1420,1
+IG_GoodWeapon,1422,1
+
+
 
 
 
