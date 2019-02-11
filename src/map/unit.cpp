@@ -3656,6 +3656,33 @@ int targetturnundead(block_list * bl, va_list ap)
 	return 1;
 }
 
+int targetdispel(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd2;
+
+	struct mob_data *md;
+
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+
+	// Only use on bosses
+	if (!((status_get_class_(bl) == CLASS_BOSS))) return 0;
+
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+
+	
+	if (!(path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKWALL))) return 0;
+	
+	if (
+		(md->sc.data[SC_ASSUMPTIO])
+
+		)
+	{ foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
+
+	return 1;
+}
+
+
 int signumcount(block_list * bl, va_list ap)
 {
 
@@ -4459,9 +4486,10 @@ bool isdisabled(mob_data* md)
 	return false;
 }
 
-void saythis(struct block_list *src, char* message, int i)
+void saythis(struct map_session_data * src, char* message, int i)
 {
 	if ((rand() % i) != 1) return;
+	/*
 	send_target target = PARTY;
 	struct StringBuf sbuf;
 
@@ -4469,8 +4497,26 @@ void saythis(struct block_list *src, char* message, int i)
 	StringBuf_Printf(&sbuf, "%s", message);
 	clif_disp_overhead_(src, StringBuf_Value(&sbuf), target);
 	StringBuf_Destroy(&sbuf);
+	*/
+	party_send_message(src, message, strlen(message) + 1);
 
 }
+
+bool duplicateskill(struct party_data *p, int skillID) {
+
+	if (!p) return false;
+	int i;
+	unit_data * ud;
+	for (i = 0; i < MAX_PARTY; i++) {
+		struct map_session_data * sd = p->data[i].sd;
+		if (sd) {
+			ud = unit_bl2ud(&sd->bl);
+			if (ud->skill_id == skillID) return true;
+		}
+	}
+	return false;
+}
+
 
 void arrowchange(map_session_data * sd, mob_data *targetmd)
 {
@@ -4502,7 +4548,7 @@ void arrowchange(map_session_data * sd, mob_data *targetmd)
 	}
 	else {
 		char* msg = "I have no arrows to shoot my target!";
-		saythis(&sd->bl, msg, 50);
+		saythis(sd, msg, 50);
 	}
 
 }
@@ -4519,7 +4565,11 @@ void recoversp(map_session_data *sd, int goal)
 		//ShowError("Need to heal");
 
 		unsigned short spotions[] = {
+			533, // Grape Juice
+			518, // Honey
+			514, // Grape
 			578, // Strawberry
+			582, // Orange
 			505, // Blue Potion
 			11502, // Light Blue Pot
 			608, // Ygg Seed
@@ -4549,7 +4599,8 @@ void skillwhenidle(struct map_session_data *sd) {
 
 	// Fury
 	// Use if tanking mode only, otherwise unlikely to be normal attacking so crit doesn't matter.
-	// For Asura preparation, use in the asura strike logic instead
+	// For Asura preparation, it is used in the asura strike logic instead
+	// Note : I modded this to not reduce SP regen. If it reduces SP regen, it might be better if the AI never uses it.
 		if ((pc_checkskill(sd, MO_EXPLOSIONSPIRITS) > 0) ){
 		if (!(sd->sc.data[SC_EXPLOSIONSPIRITS]))
 		if ((sd->spiritball>=5) && (sd->state.autopilotmode==1)) {
@@ -4744,12 +4795,12 @@ TIMER_FUNC(unit_autopilot_timer)
 	// Say in party chat if something is wrong!
 	if (sd->sc.data[SC_WEIGHT50]) {
 		char* msg = "I can't carry all this by myself, please help!";
-		saythis(bl, msg, 50);
+		saythis(sd, msg, 50);
 	}
 	else if (sd->battle_status.sp < 0.1*sd->battle_status.max_sp)
 	{
 		char* msg = "Please let me rest, I need SP!";
-			saythis(bl, msg, 50);
+			saythis(sd, msg, 50);
 	}
 
 	int Dangerdistance = inDanger(sd);
@@ -4770,6 +4821,8 @@ TIMER_FUNC(unit_autopilot_timer)
 			ITEMID_APPLE,
 			515,
 			513, // Banana
+			520,
+			521,
 			522, // Mastela Fruit			
 			529, // Candy
 			530, // Candy Cane
@@ -4837,6 +4890,43 @@ TIMER_FUNC(unit_autopilot_timer)
 			}
 		}
 
+		// LEX ATHENA
+		if (canskill(sd)) if (pc_checkskill(sd, PR_LEXAETERNA) > 0) if (p) {
+
+			int lextarget = -1;
+			int i;
+			unit_data * lud;
+			for (i = 0; i < MAX_PARTY; i++) {
+				struct map_session_data * psd = p->data[i].sd;
+				if (psd) {
+					lud = unit_bl2ud(&psd->bl);
+					struct block_list *lbl;
+
+					lbl = map_id2bl(lud->skilltarget);
+					struct map_session_data *lsd = (struct map_session_data*)lbl;
+					if (!((lsd) && (lsd->sc.data[SC_AETERNA])))
+					{
+						if (lud->skill_id == MO_EXTREMITYFIST) lextarget = lud->skilltarget; 
+						if (lud->skill_id == CR_ACIDDEMONSTRATION) lextarget = lud->skilltarget;
+					}
+				}
+			}
+			if (lextarget > -1){
+				unit_skilluse_ifable(&sd->bl, lextarget, PR_LEXAETERNA, pc_checkskill(sd, PR_LEXAETERNA));
+			}
+
+		}
+
+		/// Dispell
+		if (canskill(sd)) if ((pc_checkskill(sd, SA_DISPELL)>0) && (pc_search_inventory(sd, 715)>0)) {
+			resettargets();
+			map_foreachinrange(targetdispel, &sd->bl, 9, BL_MOB, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, SA_DISPELL, pc_checkskill(sd, SA_DISPELL));
+			}
+		}
+
+
 		// Indulge
 		// Use if below 80% SP and above 60% HP. We want as close to max SP as possible for soul exchanges
 		if (canskill(sd)) if (pc_checkskill(sd, PF_HPCONVERSION)>0) 
@@ -4869,7 +4959,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		if (canskill(sd)) if (pc_checkskill(sd, PR_REDEMPTIO)>0) {
 			resettargets();
 			if (map_foreachinrange(targetresu, &sd->bl, 6, BL_PC, sd)>=4)	{
-				unit_skilluse_ifable(&sd->bl, foundtargetID, PR_REDEMPTIO, pc_checkskill(sd, PR_REDEMPTIO));
+				if (!duplicateskill(p, PR_REDEMPTIO)) unit_skilluse_ifable(&sd->bl, foundtargetID, PR_REDEMPTIO, pc_checkskill(sd, PR_REDEMPTIO));
 			}
 		}
 		/// Resurrection
@@ -4901,7 +4991,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			resettargets();
 			map_foreachinrange(targetlexdivina, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
-				unit_skilluse_ifable(&sd->bl, foundtargetID, PR_LEXDIVINA, pc_checkskill(sd, PR_LEXDIVINA));
+				if (!duplicateskill(p, PR_LEXDIVINA)) unit_skilluse_ifable(&sd->bl, foundtargetID, PR_LEXDIVINA, pc_checkskill(sd, PR_LEXDIVINA));
 			}
 		}
 		/// Cure
@@ -4933,7 +5023,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			resettargets();
 			map_foreachinrange(targetmagnificat, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
-				unit_skilluse_ifable(&sd->bl, SELF, PR_MAGNIFICAT, pc_checkskill(sd, PR_MAGNIFICAT));
+				if (!duplicateskill(p, PR_MAGNIFICAT)) unit_skilluse_ifable(&sd->bl, SELF, PR_MAGNIFICAT, pc_checkskill(sd, PR_MAGNIFICAT));
 			}
 		}
 		/// Angelus
@@ -4949,7 +5039,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			resettargets();
 			map_foreachinrange(targetincagi, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
-				unit_skilluse_ifable(&sd->bl, foundtargetID, AL_INCAGI, pc_checkskill(sd, AL_INCAGI));
+				if (!duplicateskill(p, AL_INCAGI)) unit_skilluse_ifable(&sd->bl, foundtargetID, AL_INCAGI, pc_checkskill(sd, AL_INCAGI));
 			}
 		}
 		/// Blessing
@@ -5032,7 +5122,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			resettargets();
 			map_foreachinrange(targetassumptio, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
-				unit_skilluse_ifable(&sd->bl, foundtargetID, HP_ASSUMPTIO, pc_checkskill(sd, HP_ASSUMPTIO));
+				if (!duplicateskill(p, HP_ASSUMPTIO)) unit_skilluse_ifable(&sd->bl, foundtargetID, HP_ASSUMPTIO, pc_checkskill(sd, HP_ASSUMPTIO));
 			}
 		}
 		/// Kyrie Elison
@@ -5040,7 +5130,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			resettargets();
 			map_foreachinrange(targetkyrie, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
-				unit_skilluse_ifable(&sd->bl, foundtargetID, PR_KYRIE, pc_checkskill(sd, PR_KYRIE));
+				if (!duplicateskill(p, PR_KYRIE)) unit_skilluse_ifable(&sd->bl, foundtargetID, PR_KYRIE, pc_checkskill(sd, PR_KYRIE));
 			}
 		}
 		/// GLORIA
@@ -5402,7 +5492,7 @@ TIMER_FUNC(unit_autopilot_timer)
 							if (canskill(sd)) if ((pc_checkskill(sd, WZ_STORMGUST) > 0) && (Dangerdistance > 900)) {
 								int area = 5;
 								priority = 3 * map_foreachinrange(AOEPrioritySG, targetbl2, area, BL_MOB, skill_get_ele(WZ_STORMGUST, pc_checkskill(sd, WZ_STORMGUST)));
-								if ((priority >= 18) && (priority > bestpriority)) {
+								if ((priority >= 18) && (priority > bestpriority)) if (!duplicateskill(p, WZ_STORMGUST)) {
 									spelltocast = WZ_STORMGUST; bestpriority = priority; IDtarget = foundtargetID2;
 								}
 							}
