@@ -4481,7 +4481,12 @@ void saythis(struct map_session_data * src, char* message, int i)
 	clif_disp_overhead_(src, StringBuf_Value(&sbuf), target);
 	StringBuf_Destroy(&sbuf);
 	*/
-	party_send_message(src, message, strlen(message) + 1);
+	char* msg;
+	strcpy(msg, src->status.name);
+	strcat(msg, ":");
+	strcat(msg, message);
+
+	party_send_message(src, msg, strlen(msg) + 1);
 
 }
 
@@ -4945,12 +4950,18 @@ TIMER_FUNC(unit_autopilot_timer)
 				if (!duplicateskill(p, PR_REDEMPTIO)) unit_skilluse_ifable(&sd->bl, foundtargetID, PR_REDEMPTIO, pc_checkskill(sd, PR_REDEMPTIO));
 			}
 		}
+		/// If Resurrection known, warn when low on gems!
+		if ((pc_checkskill(sd, ALL_RESURRECTION)>0)) if (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE) < 8)
+			saythis(sd, "I'm low on Blue Gemstones!", 600); // Once per minute
 		/// Resurrection
-		if (canskill(sd)) if ((pc_checkskill(sd, ALL_RESURRECTION)>0) && (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE)>0)) {
+		if (canskill(sd)) if ((pc_checkskill(sd, ALL_RESURRECTION)>0)) {
 			resettargets();
 			map_foreachinrange(targetresu, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
-				unit_skilluse_ifable(&sd->bl, foundtargetID, ALL_RESURRECTION, pc_checkskill(sd, ALL_RESURRECTION));
+				if (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE) > 0) {
+					unit_skilluse_ifable(&sd->bl, foundtargetID, ALL_RESURRECTION, pc_checkskill(sd, ALL_RESURRECTION));
+				}
+				else saythis(sd, "I'm out of Blue Gemstones!",5); // Twice per second
 			}
 		}
 		/// Heal
