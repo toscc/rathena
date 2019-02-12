@@ -264,8 +264,7 @@ static void script_save_mapreg(void)
 /**
  * Timer event to auto-save permanent variables.
  */
-static int script_autosave_mapreg(int tid, unsigned int tick, int id, intptr_t data)
-{
+static TIMER_FUNC(script_autosave_mapreg){
 	script_save_mapreg();
 	return 0;
 }
@@ -334,7 +333,7 @@ void mapreg_final(void)
 void mapreg_init(void)
 {
 	regs.vars = i64db_alloc(DB_OPT_BASE);
-	mapreg_ers = ers_new(sizeof(struct mapreg_save), "mapreg.c:mapreg_ers", ERS_OPT_CLEAN);
+	mapreg_ers = ers_new(sizeof(struct mapreg_save), "mapreg.cpp:mapreg_ers", ERS_OPT_CLEAN);
 
 	skip_insert = false;
 	regs.arrays = NULL;

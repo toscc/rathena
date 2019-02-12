@@ -32,7 +32,7 @@ void trade_traderequest(struct map_session_data *sd, struct map_session_data *ta
 {
 	nullpo_retv(sd);
 
-	if (map[sd->bl.m].flag.notrade) {
+	if (map_getmapflag(sd->bl.m, MF_NOTRADE)) {
 		clif_displaymessage (sd->fd, msg_txt(sd,272));
 		return; //Can't trade in notrade mapflag maps.
 	}
@@ -394,6 +394,11 @@ void trade_tradeadditem(struct map_session_data *sd, short index, short amount)
 	if( ((item->bound == BOUND_ACCOUNT || item->bound > BOUND_GUILD) || (item->bound == BOUND_GUILD && sd->status.guild_id != target_sd->status.guild_id)) && !pc_can_give_bounded_items(sd) ) { // Item Bound
 		clif_displaymessage(sd->fd, msg_txt(sd,293));
 		clif_tradeitemok(sd, index+2, 1);
+		return;
+	}
+
+	if( item->equipSwitch ){
+		clif_msg(sd, C_ITEM_EQUIP_SWITCH);
 		return;
 	}
 

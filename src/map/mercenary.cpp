@@ -106,7 +106,7 @@ bool mercenary_create(struct map_session_data *sd, uint16 class_, unsigned int l
 * @param md The Mercenary
 * @return The Lifetime
 **/
-int mercenary_get_lifetime(struct mercenary_data *md) {
+t_tick mercenary_get_lifetime(struct mercenary_data *md) {
 	const struct TimerData * td;
 	if( md == NULL || md->contract_timer == INVALID_TIMER )
 		return 0;
@@ -274,7 +274,7 @@ void mercenary_save(struct mercenary_data *md) {
 /**
 * Ends contract of Mercenary
 **/
-static int merc_contract_end(int tid, unsigned int tick, int id, intptr_t data) {
+static TIMER_FUNC(merc_contract_end){
 	struct map_session_data *sd;
 	struct mercenary_data *md;
 

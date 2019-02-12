@@ -205,8 +205,7 @@ int Sql_Ping(Sql* self)
 /// Wrapper function for Sql_Ping.
 ///
 /// @private
-static int Sql_P_KeepaliveTimer(int tid, unsigned int tick, int id, intptr_t data)
-{
+static TIMER_FUNC(Sql_P_KeepaliveTimer){
 	Sql* self = (Sql*)data;
 	ShowInfo("Pinging SQL server to keep connection alive...\n");
 	Sql_Ping(self);
@@ -808,7 +807,7 @@ int SqlStmt_BindColumn(SqlStmt* self, size_t idx, enum SqlDataType buffer_type, 
 	{
 		if( buffer_len < 1 )
 		{
-			ShowDebug("SqlStmt_BindColumn: buffer_len(%d) is too small, no room for the nul-terminator\n", buffer_len);
+			ShowDebug("SqlStmt_BindColumn: buffer_len(%" PRIuPTR ") is too small, no room for the nul-terminator\n", buffer_len);
 			return SQL_ERROR;
 		}
 		--buffer_len;// nul-terminator
