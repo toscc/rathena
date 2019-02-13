@@ -409,6 +409,9 @@ static TIMER_FUNC(unit_walktoxy_timer){
 	map_foreachinmovearea(clif_insight, bl, AREA_SIZE, -dx, -dy, sd?BL_ALL:BL_PC, bl);
 	ud->walktimer = INVALID_TIMER;
 
+	// When stopped walking, immediately execute AI. This is required to ensure there is no time lost between walks waiting for the AI to trigger
+	add_timer(gettick() + 1, unit_autopilot_timer, id, 0);
+
 	if (bl->x == ud->to_x && bl->y == ud->to_y) {
 		if (ud->walk_done_event[0]){
 			char walk_done_event[EVENT_NAME_LENGTH];
@@ -3544,7 +3547,7 @@ int targetnearest(block_list * bl, va_list ap)
 	int dist = distance_bl(&sd2->bl, bl);
 	int dist2 = dist+12;
 	if ((status_get_class_(bl) == CLASS_BOSS)) dist2 = dist2 - 12; // Always hit the boss in a crowd or nearby enemies
-	if ((dist2 < targetdistanceb) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKWALL))) { targetdistance = dist; targetdistanceb = dist2; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
+	if ((dist2 < targetdistanceb) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS))) { targetdistance = dist; targetdistanceb = dist2; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
 
 	return 1;
 }
@@ -3576,7 +3579,7 @@ int targetsoulexchange(block_list * bl, va_list ap)
 	if (sd->battle_status.sp>0.8*sd->battle_status.max_sp) return 0;
 
 	int dist = min(sd2->battle_status.sp,sd->battle_status.max_sp) - sd->battle_status.sp;
-	if ((dist > targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKWALL))) { targetdistance = dist; foundtargetID = bl->id; targetbl = bl; };
+	if ((dist > targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS))) { targetdistance = dist; foundtargetID = bl->id; targetbl = bl; };
 
 	return 1;
 }
@@ -3593,7 +3596,7 @@ int targethighestlevel(block_list * bl, va_list ap)
 	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
 
 	int dist = distance_bl(&sd2->bl, bl);
-	if ((md->level > targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKWALL))) { targetdistance = md->level; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
+	if ((md->level > targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS))) { targetdistance = md->level; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
 
 	return 1;
 }
@@ -3613,7 +3616,7 @@ int asuratarget(block_list * bl, va_list ap)
 	if (!(status_get_class_(bl) == CLASS_BOSS)) return 0; // Boss monsters only
 	if (md->status.hp < 600 * sd2->status.base_level) return 0; // Must be strong enough monster
 	if (targetdistance > md->status.hp) return 0; // target strongest first
-	if (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKWALL)) { targetdistance = md->status.hp; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
+	if (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS)) { targetdistance = md->status.hp; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
 
 	return 1;
 }
@@ -3634,7 +3637,7 @@ int targetturnundead(block_list * bl, va_list ap)
 
 	// target the highest hp, not the nearest enemy
 	int dist = md->status.hp;
-	if ((dist > targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKWALL))) { targetdistance = dist; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
+	if ((dist > targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS))) { targetdistance = dist; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
 
 	return 1;
 }
@@ -3654,11 +3657,12 @@ int targetdispel(block_list * bl, va_list ap)
 	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
 
 	
-	if (!(path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKWALL))) return 0;
+	if (!(path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS))) return 0;
 	
 	if (
-		(md->sc.data[SC_ASSUMPTIO])
-
+//		(md->sc.data[SC_ASSUMPTIO])
+		(md->sc.data[SC_INCFLEERATE]) ||
+		(md->sc.data[CR_REFLECTSHIELD])
 		)
 	{ foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
 
@@ -3902,7 +3906,7 @@ int targetthischar(block_list * bl, va_list ap)
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	struct map_session_data *sd2;
 	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
-	if ((sd->status.char_id == targetthis) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKWALL))) { targetbl = bl; foundtargetID = bl->id; };
+	if ((sd->status.char_id == targetthis) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS))) { targetbl = bl; foundtargetID = bl->id; };
 
 	return 0;
 }
@@ -4155,7 +4159,7 @@ int finddanger(block_list * bl, va_list ap)
 	}
 
 	int dist = distance_bl(&sd2->bl, bl) - md->status.rhw.range;
-	if ((dist < dangerdistancebest) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKWALL))
+	if ((dist < dangerdistancebest) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS))
 		&&(md->target_id==sd2->bl.id)) { 
 		dangerdistancebest = dist; founddangerID = bl->id; dangerbl = &md->bl; dangermd = md; 
 		return 1;
@@ -4180,7 +4184,7 @@ int finddanger2(block_list * bl, va_list ap)
 	sc = status_get_sc(bl);
 
 	int dist = distance_bl(&sd2->bl, bl) - md->status.rhw.range;
-	if ((dist < dangerdistancebest) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKWALL))
+	if ((dist < dangerdistancebest) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS))
 		&& (md->target_id == sd2->bl.id)) {
 		dangerdistancebest = dist; founddangerID = bl->id; dangerbl = &md->bl; dangermd = md;
 		return 1;
@@ -4231,7 +4235,7 @@ int provokethis(block_list * bl, va_list ap)
 
 	// want nearest anyway
 	int dist = distance_bl(&sd2->bl, bl);
-	if ((dist < targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKWALL))) { targetdistance = dist; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
+	if ((dist < targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS))) { targetdistance = dist; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
 
 	return 0;
 }
@@ -4481,7 +4485,7 @@ void saythis(struct map_session_data * src, char* message, int i)
 	clif_disp_overhead_(src, StringBuf_Value(&sbuf), target);
 	StringBuf_Destroy(&sbuf);
 	*/
-	char* msg;
+	char* msg = new char[300];
 	strcpy(msg, src->status.name);
 	strcat(msg, ":");
 	strcat(msg, message);
@@ -4783,7 +4787,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		return 0;
 	}
 
-	if (bl->type != BL_PC) // Players are handled by map_quit
+	if (bl->type != BL_PC) 
 	{
 		ShowError("Nonplayer set to autopilot!");
 		return 0;
@@ -5894,13 +5898,14 @@ TIMER_FUNC(unit_autopilot_timer)
 		if (leaderID == -1) {
 			map_foreachinrange(targetnearest, &sd->bl, 12, BL_MOB, sd);
 		}
-		// but if leader exists then closest to them to avoid going outside their range
+		// but if leader exists then still closest to us but in leader's range
 		else {
-			map_foreachinrange(targetnearest, leaderbl, 14, BL_MOB, leadersd);
+			map_foreachinrange(targetnearest, leaderbl, 14, BL_MOB, sd);
 		}
 
-		// attack nearest thing if it exists and we aren't losing the leader
-		if ((foundtargetID > -1) && ((leaderdistance<=14) || (leaderID==-1))) {
+		// attack nearest thing in range if available
+		if (foundtargetID>-1) {
+		//if ((foundtargetID > -1) && ((leaderdistance<=14) || (leaderID==-1))) {
 
 			/////////////////////////////////////////////////////////////////////
 			// Skills that can be used while tanking only, on tanked enemy 
@@ -6086,14 +6091,29 @@ TIMER_FUNC(unit_autopilot_timer)
 
 			if (sd->status.weapon == W_BOW) { arrowchange(sd, targetmd); }
 
+			
 			// Do normal attack if not using skill
+			/*
+			// Buggy code
 			if ((sd->battle_status.rhw.range <= 3) || (targetdistance<3))
 				unit_attack(&sd->bl, foundtargetID, 1);
 				//clif_parse_ActionRequest_sub(sd, 7, foundtargetID, gettick());
 			// We are tanking as an archer? Move close before attacking...
 			else {
-				newwalk(&sd->bl, targetbl->x + rand() % 5 - 2, targetbl->y + rand() % 5 - 2, 8);
+				newwalk(&sd->bl, targetbl->x + rand() % 3 - 1, targetbl->y + rand() % 3 - 1, 8);
 			}
+			*/
+			 
+			// Correct code
+			if ((sd->battle_status.rhw.range >= targetdistance) && (sd->battle_status.rhw.range <= 3)) {
+				unit_attack(&sd->bl, foundtargetID, 1);
+			} else
+			{	struct walkpath_data wpd1;
+				if (path_search(&wpd1, sd->bl.m, bl->x, bl->y, targetbl->x, targetbl->y, 0, CELL_CHKNOPASS))
+					newwalk(&sd->bl, bl->x + dirx[wpd1.path[0]], bl->y + diry[wpd1.path[0]], 8);
+				return 0;
+			}
+			
 		}
 		else {
 			///////////////////////////////////////////////////////////
@@ -6166,12 +6186,12 @@ TIMER_FUNC(unit_autopilot_timer)
 					// If either leader or nearest monster attacking them is not directly shootable, go closer
 					// This is necessary to avoid the party behind stuck behind a corner, unable to attack 
 					if ((abs(sd->bl.x - leaderbl->x) > 6) || (abs(sd->bl.y - leaderbl->y) > 6) 
-						|| !(path_search_long(NULL, leadersd->bl.m, bl->x, bl->y, leaderbl->x, leaderbl->y, CELL_CHKWALL))
-						|| !(path_search_long(NULL, leadersd->bl.m, bl->x, bl->y, dangerbl->x, dangerbl->y, CELL_CHKWALL))
+						|| !(path_search_long(NULL, leadersd->bl.m, bl->x, bl->y, leaderbl->x, leaderbl->y, CELL_CHKNOPASS))
+						|| !(path_search_long(NULL, leadersd->bl.m, bl->x, bl->y, dangerbl->x, dangerbl->y, CELL_CHKNOPASS))
 						) {
 
 						struct walkpath_data wpd1; 
-						if (path_search(&wpd1, leadersd->bl.m, bl->x, bl->y, leaderbl->x, leaderbl->y, 0, CELL_CHKWALL))
+						if (path_search(&wpd1, leadersd->bl.m, bl->x, bl->y, leaderbl->x, leaderbl->y, 0, CELL_CHKNOPASS))
 							newwalk(&sd->bl, bl->x + dirx[wpd1.path[0]], bl->y + diry[wpd1.path[0]], 8);
 						return 0;
 					}
