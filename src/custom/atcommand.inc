@@ -20,11 +20,20 @@
 
 ACMD_FUNC(autopilot)
 {
-if (!message || !*message) { clif_displaymessage(fd, "please specify type : Tank,Skill,Support, Off"); }
+if (!message || !*message) { clif_displaymessage(fd, "please specify type : Tank,Skill,Support,Tank+, Off"); 
+clif_displaymessage(fd, "Tank : Character engages enemy in melee combat and uses melee skills and support skills."); 
+clif_displaymessage(fd, "Skill : Character will use long range attacks, long range DPS skills and support skills."); 
+clif_displaymessage(fd, "Support : Character uses support skills only and will not attack enemies."); 
+clif_displaymessage(fd, "Tank+ : Same as above but character will also do the following :"); 
+clif_displaymessage(fd, "Monk : Will use Steel Body regardless of enemy strength."); 
+clif_displaymessage(fd, "Merchant classes : Will use skills that cost zeny to eliminate enemies."); 
+clif_displaymessage(fd, "Lord Knight : Will use Berserk, or if not available then Concentration."); 
+}
 else {
 sd->state.autopilotmode = 0; clif_displaymessage(fd, message);
 
-if (!strcmp(message,"Tank")) {sd->state.autopilotmode = 1; clif_displaymessage(fd, "Tanking..."); };
+if (!strcmp(message,"Tank")) {sd->state.autopilotmode = 1; sd->state.specialtanking=false; clif_displaymessage(fd, "Tanking..."); };
+if (!strcmp(message,"Tank+")) {sd->state.autopilotmode = 1; sd->state.specialtanking=true; clif_displaymessage(fd, "Tanking..."); };
 if (!strcmp(message,"Skill")) {sd->state.autopilotmode = 2; clif_displaymessage(fd, "Skilling..."); };
 if (!strcmp(message,"Support")) {sd->state.autopilotmode = 3; clif_displaymessage(fd, "Supporting..."); };
 //char buffer [33];
@@ -37,7 +46,7 @@ ACMD_FUNC(autopilotsp)
 {
 if (!message || !*message) { clif_displaymessage(fd, "please specify amount : 0-100"); }
 else {
-sd->state.autospgoal = atoi(message);
+sd->state.autospgoal = atoi(message); clif_displaymessage(fd, "Will use SP items automatically.");
 }
 return 0; 
 }
@@ -71,4 +80,10 @@ if (!strcmp(message,"Diss")) {sd->state.autosong = BA_DISSONANCE; };
 if (!strcmp(message,"Ugly")) {sd->state.autosong = DC_UGLYDANCE; };
 }
 return 0; 
+}
+
+ACMD_FUNC(autoconc)
+{
+sd->state.enableconc=!sd->state.enableconc;
+return 0;
 }
