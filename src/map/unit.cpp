@@ -4670,6 +4670,13 @@ void skillwhenidle(struct map_session_data *sd) {
 		}
 	}
 	
+	// Aura Blade
+	if (pc_checkskill(sd, LK_AURABLADE) > 0) {
+		if (!(sd->sc.data[SC_AURABLADE])) {
+			unit_skilluse_ifable(&sd->bl, SELF, LK_AURABLADE, pc_checkskill(sd, LK_AURABLADE));
+		}
+	}
+
 	// Auto Guard
 	if (pc_checkskill(sd, CR_AUTOGUARD) > 0) {
 		if (!(sd->sc.data[SC_AUTOGUARD]))
@@ -4694,6 +4701,36 @@ void skillwhenidle(struct map_session_data *sd) {
 			unit_skilluse_ifable(&sd->bl, SELF, CR_SPEARQUICKEN, pc_checkskill(sd, CR_SPEARQUICKEN));
 		}
 	}
+
+	// 2H quicken
+	// Only in tanking mode. There is no point in ASPD if not using normal attacks.
+	if (pc_checkskill(sd, KN_TWOHANDQUICKEN) > 0) {
+		if ((sd->status.weapon == W_2HSWORD))
+			if (sd->state.autopilotmode == 1)
+				if (!(sd->sc.data[KN_TWOHANDQUICKEN])) {
+					unit_skilluse_ifable(&sd->bl, SELF, KN_TWOHANDQUICKEN, pc_checkskill(sd, KN_TWOHANDQUICKEN));
+				}
+	}
+
+	// 1H quicken
+	// Only in tanking mode. There is no point in ASPD if not using normal attacks.
+	if (pc_checkskill(sd, KN_ONEHAND) > 0) {
+		if ((sd->status.weapon == W_1HSWORD))
+			if (sd->state.autopilotmode == 1)
+				if (!(sd->sc.data[KN_ONEHAND])) {
+					unit_skilluse_ifable(&sd->bl, SELF, KN_ONEHAND, pc_checkskill(sd, KN_ONEHAND));
+				}
+	}
+
+	// Parrying
+	if (pc_checkskill(sd, LK_PARRYING) > 0) {
+		if ((sd->status.weapon == W_2HSWORD))
+				if (!(sd->sc.data[LK_PARRYING])) {
+					unit_skilluse_ifable(&sd->bl, SELF, LK_PARRYING, pc_checkskill(sd, LK_PARRYING));
+				}
+	}
+
+	
 
 	// Attention Concentrate
 	if (pc_checkskill(sd, AC_CONCENTRATION) > 0) {
@@ -4726,6 +4763,18 @@ bool canskill(struct map_session_data *sd)
 	return ((sd->ud.skilltimer == INVALID_TIMER) && (DIFF_TICK(gettick(), sd->ud.canact_tick) >= 0));
 
 };
+
+void sitdown(struct map_session_data *sd) {
+	if (pc_checkskill(sd, LK_TENSIONRELAX) > 0)
+	{
+		unit_skilluse_ifable(&sd->bl, SELF, LK_TENSIONRELAX, pc_checkskill(sd, LK_TENSIONRELAX));
+	}
+	else {
+		pc_setsit(sd);
+		skill_sit(sd, 1);
+		clif_sitting(&sd->bl);
+	}
+}
 
 // @autopilot timer
 TIMER_FUNC(unit_autopilot_timer)
@@ -5310,8 +5359,8 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 		// Steel Body
 		// Tanking mode only, against very powerful enemies
-		if ((Dangerdistance <= 10)) {
-			if (canskill(sd)) if ((pc_checkskill(sd, MO_STEELBODY)>0) && (dangermd->status.rhw.atk2>sd->battle_status.hp / 5) && (!sd->sc.data[SC_STEELBODY]))
+		if ((Dangerdistance <= 10) || sd->state.specialtanking) {
+			if (canskill(sd)) if ((pc_checkskill(sd, MO_STEELBODY)>0) && ((dangermd->status.rhw.atk2>sd->battle_status.hp / 5) || sd->state.specialtanking) && (!sd->sc.data[SC_STEELBODY]))
 				if ((sd->spiritball >= 5) && (sd->state.autopilotmode == 1)) {
 					unit_skilluse_ifable(&sd->bl, SELF, MO_STEELBODY, pc_checkskill(sd, MO_STEELBODY));
 				}
@@ -5706,6 +5755,14 @@ TIMER_FUNC(unit_autopilot_timer)
 						unit_skilluse_ifable(&sd->bl, foundtargetRA, CR_SHIELDBOOMERANG, pc_checkskill(sd, CR_SHIELDBOOMERANG));
 				}
 			}
+			// Spear Boomerang
+			if (canskill(sd)) if ((pc_checkskill(sd, KN_SPEARBOOMERANG) > 0)) 
+				if ((sd->status.weapon == W_1HSPEAR) || (sd->status.weapon == W_2HSPEAR)) {
+				// not really strong enough to use if aleady engaged in melee in tanking mode
+				if ((sd->state.autopilotmode == 2)) {
+					unit_skilluse_ifable(&sd->bl, foundtargetRA, KN_SPEARBOOMERANG, pc_checkskill(sd, KN_SPEARBOOMERANG));
+				}
+			}
 			// Pressure
 			// Only use if very low STR or having no equipped shield -> can't use Shield Chain effectively.
 			// Uninterruptable so ok during tanking mode but in that case, don't use up all the SP, keep most of it for tanking skills like healing.
@@ -5721,6 +5778,16 @@ TIMER_FUNC(unit_autopilot_timer)
 				if ((sd->state.autopilotmode == 2)) {
 						unit_skilluse_ifable(&sd->bl, foundtargetRA, PA_SHIELDCHAIN, pc_checkskill(sd, PA_SHIELDCHAIN));
 				}
+			}
+
+			// Spiral Pierce
+			if (canskill(sd)) if ((pc_checkskill(sd, LK_SPIRALPIERCE) > 0))  {
+				// Unlike Paladin, this class can't heal so ok to use up SP even if in tanking mode, but skill is interruptable so be careful of that
+				if (elemallowed(targetRAmd, ELE_NEUTRAL)) 
+					if ((sd->state.autopilotmode == 2) || ((Dangerdistance > 900) || (sd->special_state.no_castcancel)))
+					{
+						unit_skilluse_ifable(&sd->bl, foundtargetRA, LK_SPIRALPIERCE, pc_checkskill(sd, LK_SPIRALPIERCE));
+					}
 			}
 
 			// Jupitel Thunder
@@ -5864,6 +5931,18 @@ TIMER_FUNC(unit_autopilot_timer)
 					if (elemallowed(targetmd,ELE_NEUTRAL))
 						unit_skilluse_ifable(&sd->bl, SELF, PA_SACRIFICE, pc_checkskill(sd, PA_SACRIFICE));
 			}
+			// Berserk
+			if (pc_checkskill(sd, LK_BERSERK) > 0) if (sd->state.specialtanking) {
+				if (!(sd->sc.data[SC_BERSERK])) {
+					unit_skilluse_ifable(&sd->bl, SELF, LK_BERSERK, pc_checkskill(sd, LK_BERSERK));
+				}
+			}
+			// Concentration
+			if (pc_checkskill(sd, LK_CONCENTRATION) > 0) if (sd->state.enableconc) {
+				if (!(sd->sc.data[SC_CONCENTRATION])) {
+					unit_skilluse_ifable(&sd->bl, SELF, LK_CONCENTRATION, pc_checkskill(sd, LK_CONCENTRATION));
+				}
+			}
 
 			// Grand Cross
 			// Must have at least 54% HP remaining to risk using this
@@ -5952,7 +6031,33 @@ TIMER_FUNC(unit_autopilot_timer)
 					unit_skilluse_ifable(&sd->bl, foundtargetID, MO_INVESTIGATE, pc_checkskill(sd, MO_INVESTIGATE));
 				}
 			}
-			
+
+			// Charge Attack skill
+			// Note, I modded this to not knock back the target, but should likely have same AI use without mod
+			if (canskill(sd)) if (pc_checkskill(sd, KN_CHARGEATK)>0) {
+				if (targetdistance>=8){
+					unit_skilluse_ifable(&sd->bl, foundtargetID, KN_CHARGEATK, pc_checkskill(sd, KN_CHARGEATK));
+				}
+			}
+
+
+			// Cart Revolution skill
+			if (canskill(sd)) if (pc_checkskill(sd, MC_CARTREVOLUTION)>0) if (pc_iscarton(sd)) {
+				// Always use if critically wounded or mobbed otherwise use on mobs that will take longer to kill only if sp is lower
+				if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
+					|| (status_get_hp(bl) < status_get_max_hp(bl) / 3) || (dangercount>3)) {
+					unit_skilluse_ifable(&sd->bl, foundtargetID, MC_CARTREVOLUTION, pc_checkskill(sd, MC_CARTREVOLUTION));
+				}
+			}
+			// Mammonite skill
+			if (canskill(sd)) if (pc_checkskill(sd, MC_MAMMONITE)>0) if (sd->state.specialtanking) {
+				// Always use if critically wounded otherwise use on mobs that will take longer to kill only if sp is lower
+				if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
+					|| (status_get_hp(bl) < status_get_max_hp(bl) / 3)){
+					unit_skilluse_ifable(&sd->bl, foundtargetID, MC_MAMMONITE, pc_checkskill(sd, MC_MAMMONITE));
+				}
+			}
+
 			// Holy Cross skill
 			if (canskill(sd)) if (pc_checkskill(sd, CR_HOLYCROSS)>0) {
 				// Use like bash but ONLY if enemy is weak to holy, otherwise damage isn't that much better and Stun is superior to Blind
@@ -5962,21 +6067,37 @@ TIMER_FUNC(unit_autopilot_timer)
 					unit_skilluse_ifable(&sd->bl, foundtargetID, CR_HOLYCROSS, pc_checkskill(sd, CR_HOLYCROSS));
 				}
 			}
+
+			// Pierce skill
+			if (canskill(sd)) if (pc_checkskill(sd, KN_PIERCE)>0) if ((dangercount<3) || pc_checkskill(sd, KN_BOWLINGBASH) == 0)
+				if ((sd->status.weapon == W_1HSPEAR) || (sd->status.weapon == W_2HSPEAR))
+				// Use on LARGE enemies only, otherwise bash/bowling bash is more cost effective.
+					if (targetmd->status.size==SZ_BIG) {
+				// Always use if critically wounded otherwise use on mobs that will take longer to kill only if sp is lower
+				if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
+					|| (status_get_hp(bl) < status_get_max_hp(bl) / 3)){
+					unit_skilluse_ifable(&sd->bl, foundtargetID, KN_PIERCE, pc_checkskill(sd, KN_PIERCE));
+				}
+			}
+
+			
+
+			// Bowling Bash skill
+			if (canskill(sd)) if (pc_checkskill(sd, KN_BOWLINGBASH)>0) if (pc_iscarton(sd)) {
+				// Always use if critically wounded or mobbed otherwise use on mobs that will take longer to kill only if sp is lower
+				if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
+					|| (status_get_hp(bl) < status_get_max_hp(bl) / 3) || (dangercount>3)) {
+					unit_skilluse_ifable(&sd->bl, foundtargetID, KN_BOWLINGBASH, pc_checkskill(sd, KN_BOWLINGBASH));
+				}
+			}
 			// Bash skill
-			if (canskill(sd)) if (pc_checkskill(sd, SM_BASH)>0) {
+			if (canskill(sd)) if (pc_checkskill(sd, SM_BASH)>0) if (pc_checkskill(sd, KN_BOWLINGBASH)<pc_checkskill(sd, SM_BASH)) {
+			// Do not use is Bowling Bash is known at equal or higher level, as it's strictly better
 			// Always use if critically wounded otherwise use on mobs that will take longer to kill only if sp is lower
 					if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
 						|| (status_get_hp(bl) < status_get_max_hp(bl) / 3)){
 								unit_skilluse_ifable(&sd->bl, foundtargetID, SM_BASH, pc_checkskill(sd, SM_BASH));
 					}
-			}
-			// Cart Revolution skill
-			if (canskill(sd)) if (pc_checkskill(sd, MC_CARTREVOLUTION)>0) if (pc_iscarton(sd)) {
-				// Always use if critically wounded or mobbed otherwise use on mobs that will take longer to kill only if sp is lower
-				if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
-					|| (status_get_hp(bl) < status_get_max_hp(bl) / 3) || (dangercount>3)) {
-					unit_skilluse_ifable(&sd->bl, foundtargetID, MC_CARTREVOLUTION, pc_checkskill(sd, MC_CARTREVOLUTION));
-				}
 			}
 
 
@@ -6001,9 +6122,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			// If leader is sitting, also sit down
 			if (leaderID>-1) if (pc_issit(leadersd) && (leaderdistance<=14)) {
 				if (!pc_issit(sd)) {
-					pc_setsit(sd);
-					skill_sit(sd, 1);
-					clif_sitting(&sd->bl);
+					sitdown(sd);
 					return 0;
 				}
 			} 
@@ -6079,9 +6198,7 @@ TIMER_FUNC(unit_autopilot_timer)
 
 			if pc_issit(leadersd) {
 					if (!pc_issit(sd)) {
-						pc_setsit(sd);
-						skill_sit(sd, 1);
-						clif_sitting(&sd->bl);
+						sitdown(sd);
 						return 0;
 					}
 			}
