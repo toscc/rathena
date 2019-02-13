@@ -4819,13 +4819,13 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, uint
 			skill_blown(src, src, 1, (dir+4)%8, BLOWN_NONE); //Target position is actually one cell next to the target
 
 		// cause damage and knockback if the path to target was a straight one
-		if (path) {
+		/*if (path) {
 			if(skill_attack(BF_WEAPON, src, src, bl, skill_id, skill_lv, tick, dist))
 				skill_blown(src, bl, dist, dir, BLOWN_NONE);
 			//HACK: since knockback officially defaults to the left, the client also turns to the left... therefore,
 			// make the caster look in the direction of the target
 			unit_setdir(src, (dir+4)%8);
-		}
+		}*/
 
 		}
 		break;
