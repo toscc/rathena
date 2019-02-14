@@ -551,7 +551,7 @@ static TIMER_FUNC(unit_walktoxy_timer){
 				unit_attack(bl, tbl->id, ud->state.attack_continue);
 			}
 		} else { // Update chase-path
-			unit_walktobl(bl, tbl, ud->chaserange, ud->state.walk_easy|(ud->state.attack_continue?2:0));
+			unit_walktobl(bl, tbl, ud->chaserange, (ud->state.attack_continue?2:0));
 
 			return 0;
 		}
@@ -4548,7 +4548,7 @@ void arrowchange(map_session_data * sd, mob_data *targetmd)
 		j = arrowatk[i];
 		if (elemstrong(targetmd, arrowelem[i])) j += 500;
 		if (elemallowed(targetmd, arrowelem[i])) if (j>bestprio) {
-			bestprio = j; best = i;
+			bestprio = j; best = index;
 		}
 		}
 	}
@@ -6122,7 +6122,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			*/
 			 
 			// Correct code
-			if ((sd->battle_status.rhw.range >= targetdistance) && (sd->battle_status.rhw.range <= 3)) {
+			if ((sd->battle_status.rhw.range >= targetdistance) && (targetdistance<3)) {
 				unit_attack(&sd->bl, foundtargetID, 1);
 			} else
 			{	struct walkpath_data wpd1;
@@ -6201,7 +6201,7 @@ TIMER_FUNC(unit_autopilot_timer)
 				else
 				{
 					// If either leader or nearest monster attacking them is not directly shootable, go closer
-					// This is necessary to avoid the party behind stuck behind a corner, unable to attack 
+					// This is necessary to avoid the party stuck behind a corner, unable to attack 
 					if ((abs(sd->bl.x - leaderbl->x) > 6) || (abs(sd->bl.y - leaderbl->y) > 6) 
 						|| !(path_search_long(NULL, leadersd->bl.m, bl->x, bl->y, leaderbl->x, leaderbl->y, CELL_CHKNOPASS))
 						|| !(path_search_long(NULL, leadersd->bl.m, bl->x, bl->y, dangerbl->x, dangerbl->y, CELL_CHKNOPASS))
