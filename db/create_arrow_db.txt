@@ -21,7 +21,7 @@
 // Empty Bottle --> 2 Iron Arrows
 713,1770,2
 // Emperium --> 600 Immaterial Arrows, 600 Mute Arrows, 600 Oridecon Arrows
-714,1757,600,1769,600,1765,600
+714,1757,1000,1769,1000,1765,1000,1772,1000,1767,1000
 // Yellow Gemstone --> 30 Stone Arrows, 1 Sleep Arrow
 715,1756,30,1768,1
 // Red Gemstone --> 10 Rusty Arrows, 1 Poison Arrow, 1 Cursed Arrow
