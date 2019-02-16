@@ -529,8 +529,6 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, uint16 sk
 		if (skill_id != NPC_EVILLAND && skill_id != BA_APPLEIDUN) {
 			if (tsc->data[SC_INCHEALRATE])
 				hp_bonus += tsc->data[SC_INCHEALRATE]->val1; //Only affects Heal, Sanctuary and PotionPitcher.(like bHealPower) [Inkfish]
-			if (tsc->data[SC_EXTRACT_WHITE_POTION_Z])
-				hp_bonus += tsc->data[SC_EXTRACT_WHITE_POTION_Z]->val1;
 			if (tsc->data[SC_GLASTHEIM_HEAL])
 				hp_bonus += tsc->data[SC_GLASTHEIM_HEAL]->val2;
 			if (tsc->data[SC_ANCILLA])
@@ -10487,7 +10485,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 		break;
 	case GN_SLINGITEM:
 		if( sd ) {
-			short ammo_id;
+			int ammo_id;
+
 			i = sd->equip_index[EQI_AMMO];
 			if( i < 0 )
 				break; // No ammo.
@@ -10503,9 +10502,38 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 						skill_attack(BF_WEAPON,src,src,bl,GN_SLINGITEM_RANGEMELEEATK,skill_lv,tick,flag);
 				} else //Otherwise, it fails, shows animation and removes items.
 					clif_skill_fail(sd,GN_SLINGITEM_RANGEMELEEATK,USESKILL_FAIL,0);
-			} else if (itemdb_group_item_exists(IG_THROWABLE, ammo_id))
-				if (dstsd)
-					run_script(sd->inventory_data[i]->script, 0, dstsd->bl.id, fake_nd->bl.id);
+			} else if (itemdb_group_item_exists(IG_THROWABLE, ammo_id)) {
+				switch (ammo_id) {
+					case ITEMID_HP_INC_POTS_TO_THROW: // MaxHP +(500 + Thrower BaseLv * 10 / 3) and heals 1% MaxHP
+						sc_start2(src, bl, SC_PROMOTE_HEALTH_RESERCH, 100, 2, 1, 500000);
+						status_percent_heal(bl, 1, 0);
+						break;
+					case ITEMID_HP_INC_POTM_TO_THROW: // MaxHP +(1500 + Thrower BaseLv * 10 / 3) and heals 2% MaxHP
+						sc_start2(src, bl, SC_PROMOTE_HEALTH_RESERCH, 100, 2, 2, 500000);
+						status_percent_heal(bl, 2, 0);
+						break;
+					case ITEMID_HP_INC_POTL_TO_THROW: // MaxHP +(2500 + Thrower BaseLv * 10 / 3) and heals 5% MaxHP
+						sc_start2(src, bl, SC_PROMOTE_HEALTH_RESERCH, 100, 2, 3, 500000);
+						status_percent_heal(bl, 5, 0);
+						break;
+					case ITEMID_SP_INC_POTS_TO_THROW: // MaxSP +(Thrower BaseLv / 10 - 5)% and recovers 2% MaxSP
+						sc_start2(src, bl, SC_ENERGY_DRINK_RESERCH, 100, 2, 1, 500000);
+						status_percent_heal(bl, 0, 2);
+						break;
+					case ITEMID_SP_INC_POTM_TO_THROW: // MaxSP +(Thrower BaseLv / 10)% and recovers 4% MaxSP
+						sc_start2(src, bl, SC_ENERGY_DRINK_RESERCH, 100, 2, 2, 500000);
+						status_percent_heal(bl, 0, 4);
+						break;
+					case ITEMID_SP_INC_POTL_TO_THROW: // MaxSP +(Thrower BaseLv / 10 + 5)% and recovers 8% MaxSP
+						sc_start2(src, bl, SC_ENERGY_DRINK_RESERCH, 100, 2, 3, 500000);
+						status_percent_heal(bl, 0, 8);
+						break;
+					default:
+						if (dstsd)
+							run_script(sd->inventory_data[i]->script, 0, dstsd->bl.id, fake_nd->bl.id);
+						break;
+				}
+			}
 		}
 		clif_skill_nodamage(src,bl,skill_id,skill_lv,1);
 		clif_skill_nodamage(src,bl,skill_id,skill_lv,1);// This packet is received twice actually, I think it is to show the animation.
@@ -13238,7 +13266,7 @@ struct skill_unit_group *skill_unitsetting(struct block_list *src, uint16 skill_
 				unit_val2 = group->val2;
 				break;
 			case WZ_ICEWALL:
-				unit_val1 = (skill_lv <= 1) ? 500 : 200 + 200*skill_lv;
+				unit_val1 = 200 + 200*skill_lv;
 				unit_val2 = map_getcell(src->m, ux, uy, CELL_GETTYPE);
 				break;
 			case WZ_WATERBALL:
@@ -13580,13 +13608,6 @@ static int skill_unit_onplace(struct skill_unit *unit, struct block_list *bl, t_
 					sc_start4(ss, bl, type, 100, 0, 0, sg->group_id, ss->id, sg->limit);
 			}
 			break;
-
-		// officially, icewall has no problems existing on occupied cells [ultramage]
-		//	case UNT_ICEWALL: //Destroy the cell. [Skotlex]
-		//		unit->val1 = 0;
-		//		if(unit->limit + sg->tick > tick + 700)
-		//			unit->limit = DIFF_TICK(tick+700,sg->tick);
-		//		break;
 
 		case UNT_MOONLIT:
 			//Knockback out of area if affected char isn't in Moonlit effect
@@ -18505,6 +18526,13 @@ static int skill_unit_timer_sub(DBKey key, DBData *data, va_list ap)
 	if( !group->state.guildaura && (DIFF_TICK(tick,group->tick) >= group->limit || DIFF_TICK(tick,group->tick) >= unit->limit) )
 	{// skill unit expired (inlined from skill_unit_onlimit())
 		switch( group->unit_id ) {
+			case UNT_ICEWALL:
+				unit->val1 -= 50; // icewall loses 50 hp every second
+				group->limit = DIFF_TICK(tick + group->interval,group->tick);
+				unit->limit = DIFF_TICK(tick + group->interval,group->tick);
+				if( unit->val1 <= 0 )
+					skill_delunit(unit);
+			break;
 			case UNT_BLASTMINE:
 #ifdef RENEWAL
 			case UNT_CLAYMORETRAP:
@@ -18648,12 +18676,6 @@ static int skill_unit_timer_sub(DBKey key, DBData *data, va_list ap)
 		}
 	} else {// skill unit is still active
 		switch( group->unit_id ) {
-			case UNT_ICEWALL:
-				// icewall loses 50 hp every second
-				unit->val1 -= SKILLUNITTIMER_INTERVAL/20; // trap's hp
-				if( unit->val1 <= 0 && unit->limit + group->tick > tick + 700 )
-					unit->limit = DIFF_TICK(tick+700,group->tick);
-				break;
 			case UNT_BLASTMINE:
 			case UNT_SKIDTRAP:
 			case UNT_LANDMINE:
@@ -19994,6 +20016,11 @@ int skill_elementalanalysis(struct map_session_data* sd, int n, uint16 skill_lv,
 		struct item tmp_item;
 
 		idx = item_list[i*2+0]-2;
+
+		if( idx < 0 || idx >= MAX_INVENTORY ){
+			return 1;
+		}
+
 		del_amount = item_list[i*2+1];
 
 		if( skill_lv == 2 )
@@ -20067,6 +20094,11 @@ int skill_changematerial(struct map_session_data *sd, int n, unsigned short *ite
 					if( skill_produce_db[i].mat_id[j] > 0 ) {
 						for( k = 0; k < n; k++ ) {
 							int idx = item_list[k*2+0]-2;
+
+							if( idx < 0 || idx >= MAX_INVENTORY ){
+								return 0;
+							}
+
 							nameid = sd->inventory.u.items_inventory[idx].nameid;
 							amount = item_list[k*2+1];
 							if( nameid > 0 && sd->inventory.u.items_inventory[idx].identify == 0 ){
