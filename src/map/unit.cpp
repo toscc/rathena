@@ -3532,7 +3532,33 @@ void resettargets2()
 
 }
 
+// Use this to pick a target to walk to/tank/engage in melee.
+int targetnearestwalkto(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd2;
 
+	struct mob_data *md;
+
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+
+	struct walkpath_data wpd1;
+
+	int dist; 
+	if (path_search(&wpd1, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS)) {
+		dist = wpd1.path_len;
+		int dist2 = dist + 12;
+		if ((status_get_class_(bl) == CLASS_BOSS)) dist2 = dist2 - 12; // Always hit the boss in a crowd of nearby enemies
+		if ((dist2 < targetdistanceb)) { targetdistance = dist; targetdistanceb = dist2; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
+		return 1;
+	}
+	else return 0;
+
+}
+
+// Use this to target a skill or attack that goes over cliffs but not through walls
 int targetnearest(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd2;
@@ -3544,12 +3570,17 @@ int targetnearest(block_list * bl, va_list ap)
 
 	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
 
-	int dist = distance_bl(&sd2->bl, bl);
-	int dist2 = dist+12;
-	if ((status_get_class_(bl) == CLASS_BOSS)) dist2 = dist2 - 12; // Always hit the boss in a crowd or nearby enemies
-	if ((dist2 < targetdistanceb) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS))) { targetdistance = dist; targetdistanceb = dist2; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
+	struct walkpath_data wpd1;
 
-	return 1;
+	int dist= distance_bl(&sd2->bl, bl);
+	int dist2 = dist + 12;
+	if ((status_get_class_(bl) == CLASS_BOSS)) dist2 = dist2 - 12; // Always hit the boss in a crowd of nearby enemies
+	if (dist2 < targetdistanceb) if (path_search_long(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, CELL_CHKWALL)) {
+		 targetdistance = dist; targetdistanceb = dist2; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; 
+		return 1;
+	}
+	else return 0;
+
 }
 
 int targetnearestusingranged(block_list * bl, va_list ap)
@@ -5280,12 +5311,12 @@ TIMER_FUNC(unit_autopilot_timer)
 		// Arrow Shower
 		if (canskill(sd)) if ((pc_checkskill(sd, AC_SHOWER) > 0)) if (sd->state.autopilotmode != 3) {
 			resettargets();
-			map_foreachinrange(targetnearest, &sd->bl, 14, BL_MOB, sd);
+			map_foreachinrange(targetnearestusingranged, &sd->bl, 14, BL_MOB, sd);
 			if (foundtargetID>-1) if (sd->status.weapon == W_BOW)
 			{	int foundtargetID2 = foundtargetID;
 			// Must hit at least 3 enemies!
 			resettargets();
-			if (map_foreachinrange(targetnearest, targetbl, 1, BL_MOB, sd) >= 3) {
+			if (map_foreachinrange(targetnearestusingranged, targetbl, 1, BL_MOB, sd) >= 3) {
 				arrowchange(sd, targetmd);
 				unit_skilluse_ifable(&sd->bl, foundtargetID2, AC_SHOWER, pc_checkskill(sd, AC_SHOWER));
 			}
@@ -5896,13 +5927,15 @@ TIMER_FUNC(unit_autopilot_timer)
 		resettargets();
 		// No leader then closest to ourselves we can see
 		if (leaderID == -1) {
-			map_foreachinrange(targetnearest, &sd->bl, 12, BL_MOB, sd);
+			map_foreachinrange(targetnearestwalkto, &sd->bl, 12, BL_MOB, sd);
 		}
 		// but if leader exists then still closest to us but in leader's range
 		else {
-			map_foreachinrange(targetnearest, leaderbl, 14, BL_MOB, sd);
+			map_foreachinrange(targetnearestwalkto, leaderbl, 14, BL_MOB, sd);
+			// have to walk too many tiles means the target is probably behind some wall. Don't try to engage it, even if maxpath allows.
+			if (targetdistance > 29) { foundtargetID = -1; }
 		}
-
+		
 		// attack nearest thing in range if available
 		if (foundtargetID>-1) {
 		//if ((foundtargetID > -1) && ((leaderdistance<=14) || (leaderID==-1))) {
@@ -6130,7 +6163,7 @@ TIMER_FUNC(unit_autopilot_timer)
 				}
 			} 
 			// If there is a leader and we haven't found a target in their area, stay near them.
-			// Note : client.conf maxwalkpath needs to be very high (99 recommended) otherwise we fail to follow!
+			// Note : maxwalkpath needs to be very high otherwise we fail to follow!
 			if ((leaderID > -1) && (leaderID != sd->bl.id)) {
 				if (leaderdistance >= 2) {
 					newwalk(&sd->bl, leaderbl->x + rand() % 3 - 1, leaderbl->y + rand() % 3 - 1, 8);
@@ -6148,10 +6181,12 @@ TIMER_FUNC(unit_autopilot_timer)
 	// }
 			if ((leaderID==sd->bl.id) || (!p)) {
 				// seek next enemy outside range if nothing else to do and we are the leader or party doesn't exist (solo)
-				// Note : client.conf maxwalkpath needs to be very high (99 recommended) otherwise we fail to move if enemy is too far!
+				// Note : client.conf maxwalkpath needs to be very high otherwise we fail to move if enemy is too far!
 				// for same reason, disabling official walkpath and raising MAX_WALK_PATH in source is necessary
+				// However, excessively large max walkpath might cause lagging so don't expect this to seek out enemies on the other side of the map.
+				// The feature isn't meant for botting, it's meant for controlling secondary characters. So it's ok if the leader gets stuck if no enemies left nearby.
 				resettargets();
-				map_foreachinmap(targetnearest, sd->bl.m, BL_MOB, sd);
+				map_foreachinmap(targetnearestwalkto, sd->bl.m, BL_MOB, sd);
 				//			ShowError("No target found, moving?");
 				if (foundtargetID > -1) {
 					//				ShowError("No target found, moving!");
