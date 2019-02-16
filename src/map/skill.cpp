@@ -21411,7 +21411,7 @@ static bool skill_parse_row_createarrowdb(char* split[], int columns, int curren
 	skill_arrow_db[i].nameid = material_id;
 	for (x = 1, y = 0; x+1 < columns && split[x] && split[x+1] && y < MAX_ARROW_RESULT; x += 2, y++) {
 		skill_arrow_db[i].cre_id[y] = atoi(split[x]);
-		skill_arrow_db[i].cre_amount[y] = atoi(split[x+1]);
+		skill_arrow_db[i].cre_amount[y] = atoi(split[x+1]) * battle_config.amp_rate /100;
 	}
 	if (i == skill_arrow_count)
 		skill_arrow_count++;
