@@ -103,11 +103,11 @@ L_Var:
 OnInit:
 	// Seals roll at 25/50 in Renewal and 50/100 in Pre-Renewal.
 	if (checkre(0)) {
-		set $@god_check1,25;
-		set $@god_check2,50;
+		set $@god_check1,1;
+		set $@god_check2,3;
 	} else {
-		set $@god_check1,50;
-		set $@god_check2,100;
+		set $@god_check1,1;
+		set $@god_check2,3;
 	}
 	end;
 }

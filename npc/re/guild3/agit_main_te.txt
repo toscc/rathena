@@ -24,51 +24,53 @@ OnAgitInit3:
 		killmonster .@map$, .@npc_name$ +"::OnMyMobDead";
 		donpcevent strnpcinfo(0)+"::OnEmpSpawn";
 		if (compare(.@map$,"te_aldecas")) {
-			monster .@map$,0,0,"Evil Druid",1117,10,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,0,0,"Khalitzburg",1132,4,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,0,0,"Abysmal Knight",1219,2,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,0,0,"Executioner",1205,1,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,0,0,"Penomena",1216,10,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,0,0,"Alarm",1193,18,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,0,0,"Clock",1269,9,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,0,0,"Raydric Archer",1276,7,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,0,0,"Wanderer",1208,3,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,0,0,"Alice",1275,1,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,0,0,"Bloody Knight",1268,1,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,0,0,"Dark Lord",1272,1,.@npc_name$ +"::OnMyMobDead";
+			callsub(Addmonster,"Evil Druid",1117,10, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Khalitzburg",1132,4, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Abysmal Knight",1219,2, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Executioner",1205,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Penomena",1216,10, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Alarm",1193,18, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Clock",1269,9, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Raydric Archer",1276,7, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Wanderer",1208,3, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Alice",1275,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Bloody Knight",1268,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Dark Lord",1272,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
 			if (.@map$ == "te_aldecas1") { setarray .@emproom[0],216,23; }
 			else if (.@map$ == "te_aldecas2") { setarray .@emproom[0],213,23; }
 			else if (.@map$ == "te_aldecas3") { setarray .@emproom[0],205,31; }
 			else if (.@map$ == "te_aldecas4") { setarray .@emproom[0],36,217; }
 			else if (.@map$ == "te_aldecas5") { setarray .@emproom[0],27,101; }
-			monster .@map$,.@emproom[0],.@emproom[1],"Dark Lord",1272,1,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,.@emproom[0],.@emproom[1],"Tower Keeper",1270,4,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,.@emproom[0],.@emproom[1],"Bloody Knight",1268,1,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,.@emproom[0],.@emproom[1],"Abysmal Knight",1219,1,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,.@emproom[0],.@emproom[1],"Raydric Archer",1276,5,.@npc_name$ +"::OnMyMobDead";
+			callsub(Addmonster,"Dark Lord",1272,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),.@emproom[0],.@emproom[1],.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Tower Keeper",1270,4, getcastledata(.@map$, CD_CURRENT_ECONOMY ),.@emproom[0],.@emproom[1],.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Bloody Knight",1268,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),.@emproom[0],.@emproom[1],.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Abysmal Knight",1219,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),.@emproom[0],.@emproom[1],.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Raydric Archer",1276,5, getcastledata(.@map$, CD_CURRENT_ECONOMY ),.@emproom[0],.@emproom[1],.@map$,.@npc_name$ +"::OnMyMobDead"); 
 		}
 		else if (compare(.@map$,"te_prtcas")) {
-			monster .@map$,0,0,"Raydric",1163,10,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,0,0,"Khalitzburg",1132,10,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,0,0,"Abysmal Knight",1219,5,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,0,0,"Bloody Knight",1268,5,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,0,0,"Stormy Knight",1251,1,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,0,0,"Hatii",1252,1,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,0,0,"Raydric Archer",1276,5,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,0,0,"Gryphon",1259,2,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,0,0,"Chimera",1283,2,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,0,0,"Alice",1275,1,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,0,0,"Zealotus",1200,1,.@npc_name$ +"::OnMyMobDead";
+			callsub(Addmonster,"Raydric",1163,10, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Khalitzburg",1132,10, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Abysmal Knight",1219,5, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Bloody Knight",1268,5, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Stormy Knight",1251,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Garm",1252,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Raydric Archer",1276,5, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Gryphon",1259,2, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Chimera",1283,2, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Alice",1275,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Zealotus",1200,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+
+	
 			if (.@map$ == "te_prtcas01") { setarray .@emproom[0],197,197; }
 			else if (.@map$ == "te_prtcas02") { setarray .@emproom[0],157,174; }
 			else if (.@map$ == "te_prtcas03") { setarray .@emproom[0],16,220; }
 			else if (.@map$ == "te_prtcas04") { setarray .@emproom[0],291,14; }
 			else if (.@map$ == "te_prtcas05") { setarray .@emproom[0],266,266; }
-			monster .@map$,.@emproom[0],.@emproom[1],"Guardian Knight of Emperium",1268,1,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,.@emproom[0],.@emproom[1],"Chief Guardian Knight of Emperium",1251,1,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,.@emproom[0],.@emproom[1],"Hatii",1252,1,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,.@emproom[0],.@emproom[1],"Guardian Knight of Emperium",1219,2,.@npc_name$ +"::OnMyMobDead";
-			monster .@map$,.@emproom[0],.@emproom[1],"Raydric Archer",1276,5,.@npc_name$ +"::OnMyMobDead";
+			callsub(Addmonster,"Guardian Knight of Emperium",1268,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),.@emproom[0],.@emproom[1],.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Chief Guardian Knight of Emperium",1251,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),.@emproom[0],.@emproom[1],.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Garm",1252,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),.@emproom[0],.@emproom[1],.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Guardian Knight of Emperium",1219,2, getcastledata(.@map$, CD_CURRENT_ECONOMY ),.@emproom[0],.@emproom[1],.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Raydric Archer",1276,5, getcastledata(.@map$, CD_CURRENT_ECONOMY ),.@emproom[0],.@emproom[1],.@map$,.@npc_name$ +"::OnMyMobDead"); 
 		}
 		disablenpc "Kafra Employee#"+ replacestr(.@map$, "cas", "");
 	}
@@ -91,6 +93,25 @@ OnAgitInit3:
 		else if (.@map$ == "te_prtcas05") donpcevent "Pisaro::OnSpawnGuardians";
 	}
 	end;
+Addmonster:
+			monster getarg(6),getarg(4),getarg(5),getarg(0),getarg(1),getarg(2)* (100+2*getarg(3)) / 200, getarg(7);
+			for ( .@i = 0; .@i < getarg(2)* (100+2*getarg(3)) / 100; ++.@i ) {
+				setunitdata $@mobid[.@i], UMOB_LEVEL, getmonsterinfo( getarg(1), MOB_LV ) * (100+getarg(3)) / 150;
+				setunitdata $@mobid[.@i], UMOB_MAXHP, getmonsterinfo( getarg(1), MOB_MAXHP ) * (100+3*getarg(3)) / 150;
+				setunitdata $@mobid[.@i], UMOB_ATKMIN, getmonsterinfo( getarg(1), MOB_ATK1 ) * (100+3*getarg(3)) / 150;
+				setunitdata $@mobid[.@i], UMOB_ATKMAX, getmonsterinfo( getarg(1), MOB_ATK2 ) * (100+3*getarg(3)) / 150;
+				setunitdata $@mobid[.@i], UMOB_MATK, getmonsterinfo( getarg(1), MOB_MATK ) * (100+3*getarg(3)) / 150;
+				setunitdata $@mobid[.@i], UMOB_STR, getmonsterinfo( getarg(1), MOB_STR ) * (100+getarg(3)) / 150;
+				setunitdata $@mobid[.@i], UMOB_AGI, getmonsterinfo( getarg(1), MOB_AGI ) * (100+getarg(3)) / 150;
+				setunitdata $@mobid[.@i], UMOB_VIT, getmonsterinfo( getarg(1), MOB_VIT ) * (100+getarg(3)) / 150;
+				setunitdata $@mobid[.@i], UMOB_INT, getmonsterinfo( getarg(1), MOB_INT ) * (100+getarg(3)) / 150;
+				setunitdata $@mobid[.@i], UMOB_DEX, getmonsterinfo( getarg(1), MOB_DEX ) * (100+getarg(3)) / 150;
+				setunitdata $@mobid[.@i], UMOB_LUK, getmonsterinfo( getarg(1), MOB_LUK ) * (100+getarg(3)) / 150;
+				setunitdata $@mobid[.@i], UMOB_DEF, getmonsterinfo( getarg(1), MOB_DEF ) * (100+getarg(3)) / 150;
+				setunitdata $@mobid[.@i], UMOB_MDEF, getmonsterinfo( getarg(1), MOB_MDEF ) * (100+getarg(3)) / 150;
+				}
+	
+	return;
 
 OnEmpSpawn:
 	.@map$ = strnpcinfo(4);
@@ -133,17 +154,17 @@ OnAgitBreak:
 	.@guild_id = getcharid(2);
 	.@map$ = strnpcinfo(4);
 
-	.@economy = getcastledata(.@map$,CD_CURRENT_ECONOMY) - 5;// Adjust economy Invest Level for Castle
-	if (.@economy < 1)
-		setcastledata .@map$, CD_CURRENT_ECONOMY,1;
-	else
-		setcastledata .@map$, CD_CURRENT_ECONOMY,.@economy;
-	.@defense = getcastledata(.@map$,CD_CURRENT_DEFENSE) - 5;// Adjust Defense Invest Level for Castle
-	if (.@defense < 1)
-		setcastledata .@map$, CD_CURRENT_DEFENSE,1;
-	else
-		setcastledata .@map$, CD_CURRENT_DEFENSE,.@defense;
-	setcastledata .@map$,CD_GUILD_ID,.@guild_id;
+	//.@economy = getcastledata(.@map$,CD_CURRENT_ECONOMY) - 5;// Adjust economy Invest Level for Castle
+	//if (.@economy < 1)
+	//	setcastledata .@map$, CD_CURRENT_ECONOMY,1;
+	//else
+	//	setcastledata .@map$, CD_CURRENT_ECONOMY,.@economy;
+	//.@defense = getcastledata(.@map$,CD_CURRENT_DEFENSE) - 5;// Adjust Defense Invest Level for Castle
+	//if (.@defense < 1)
+	//	setcastledata .@map$, CD_CURRENT_DEFENSE,1;
+	//else
+	//	setcastledata .@map$, CD_CURRENT_DEFENSE,.@defense;
+	//setcastledata .@map$,CD_GUILD_ID,.@guild_id;
 
 	// Reset Invest information and refresh castle data
 	for ( .@i = CD_INVESTED_ECONOMY; .@i < CD_ENABLED_GUARDIAN00; .@i++ )
@@ -164,6 +185,287 @@ OnAgitBreak:
 		donpcevent strnpcinfo(0) +"::OnEmpSpawn";
 	sleep 7000;
 	announce "The [" + getcastlename(.@map$) + "] castle has been conquered by the [" + getguildName(.@guild_id) + "] guild.",bc_all|bc_woe;
+	.@economy = getcastledata(.@map$,CD_CURRENT_ECONOMY);
+	.@defense = getcastledata(.@map$,CD_CURRENT_DEFENSE);
+	.@economy_today = getcastledata(.@map$,CD_INVESTED_ECONOMY);
+	.@defense_today = getcastledata(.@map$,CD_INVESTED_DEFENSE);
+
+	killmonster .@map$, strnpcinfo(0)+"::OnTreasureDied";
+		setcastledata .@map$,CD_INVESTED_ECONOMY,0;
+		setcastledata .@map$,CD_INVESTED_DEFENSE,0;
+
+	if (.@map$ == "te_aldecas1") {
+		setarray .@data[0],// <mob_id>, <x>,<y>
+			2452, 115,226,// TREASURE_BOX_TE
+			2458, 122,226,// TREASURE_BOX_TE_6
+			2452, 115,219,
+			2458, 122,219,
+			2452, 116,225,
+			2458, 117,225,
+			2452, 118,225,
+			2458, 119,225,
+			2452, 120,225,
+			2458, 121,225,
+			2452, 121,224,
+			2458, 121,223,
+			2452, 121,222,
+			2458, 121,221,
+			2452, 121,220,
+			2458, 120,220,
+			2452, 119,220,
+			2458, 118,220,
+			2452, 117,220,
+			2458, 116,220,
+			2452, 116,221,
+			2458, 116,222,
+			2452, 116,223,
+			2458, 116,224;
+	}
+	else if (.@map$ == "te_aldecas2") {
+		setarray .@data[0],
+			2452, 134,231,// TREASURE_BOX_TE
+			2459, 135,231,// TREASURE_BOX_TE_7
+			2452, 135,230,
+			2459, 134,230,
+			2452, 132,233,
+			2459, 133,233,
+			2452, 134,233,
+			2459, 135,233,
+			2452, 136,233,
+			2459, 137,233,
+			2452, 137,232,
+			2459, 137,231,
+			2452, 137,230,
+			2459, 137,229,
+			2452, 137,228,
+			2459, 136,228,
+			2452, 135,228,
+			2459, 134,228,
+			2452, 133,228,
+			2459, 132,228,
+			2452, 132,229,
+			2459, 132,230,
+			2452, 132,231,
+			2459, 132,232;
+	}
+	else if (.@map$ == "te_aldecas3") {
+		setarray .@data[0],
+			2452, 224,269,// TREASURE_BOX_TE
+			2460, 225,269,// TREASURE_BOX_TE_8
+			2452, 225,268,
+			2460, 224,268,
+			2452, 222,271,
+			2460, 223,271,
+			2452, 224,271,
+			2460, 225,271,
+			2452, 226,271,
+			2460, 227,271,
+			2452, 227,270,
+			2460, 227,269,
+			2452, 227,268,
+			2460, 227,267,
+			2452, 227,266,
+			2460, 226,266,
+			2452, 225,266,
+			2460, 224,266,
+			2452, 223,266,
+			2460, 222,266,
+			2452, 222,267,
+			2460, 222,268,
+			2452, 222,269,
+			2460, 222,270;
+	}
+	else if (.@map$ == "te_aldecas4") {
+		setarray .@data[0],
+			2452, 84,13,// TREASURE_BOX_TE
+			2461, 85,13,// TREASURE_BOX_TE_9
+			2452, 85,12,
+			2461, 84,12,
+			2452, 82,15,
+			2461, 83,15,
+			2452, 84,15,
+			2461, 85,15,
+			2452, 86,15,
+			2461, 87,15,
+			2452, 87,14,
+			2461, 87,13,
+			2452, 87,12,
+			2461, 87,11,
+			2452, 87,10,
+			2461, 86,10,
+			2452, 85,10,
+			2461, 84,10,
+			2452, 83,10,
+			2461, 82,10,
+			2452, 82,11,
+			2461, 82,12,
+			2452, 82,13,
+			2461, 82,14;
+	}
+	else if (.@map$ == "te_aldecas5") {
+		setarray .@data[0],
+			2452, 62,12,// TREASURE_BOX_TE
+			2462, 62,11,// TREASURE_BOX_TE_10
+			2452, 61,11,
+			2462, 59,14,
+			2452, 60,14,
+			2462, 61,14,
+			2452, 62,14,
+			2462, 63,14,
+			2452, 64,14,
+			2462, 64,13,
+			2452, 64,12,
+			2462, 64,11,
+			2452, 64,10,
+			2462, 64,9,
+			2452, 63,9,
+			2462, 62,9,
+			2452, 61,9,
+			2462, 60,9,
+			2452, 59,9,
+			2462, 59,10,
+			2452, 59,11,
+			2462, 59,12,
+			2452, 59,13;
+	}
+	else if (.@map$ == "te_prtcas01") {
+		setarray .@data[0],
+			2452, 8,211,// TREASURE_BOX_TE
+			2453, 9,211,// TREASURE_BOX_TE_1
+			2452, 10,211,
+			2453, 11,211,
+			2452, 12,211,
+			2453, 13,211,
+			2452, 13,209,
+			2453, 12,209,
+			2452, 11,209,
+			2453, 10,209,
+			2452, 9,209,
+			2453, 8,209,
+			2452, 8,207,
+			2453, 9,207,
+			2452, 10,207,
+			2453, 11,207,
+			2452, 12,207,
+			2453, 13,207,
+			2452, 13,206,
+			2453, 12,206,
+			2452, 11,206,
+			2453, 10,206,
+			2452, 9,206,
+			2453, 8,206;
+	}
+	else if (.@map$ == "te_prtcas02") {
+		setarray .@data[0],
+			2452, 201,228,// TREASURE_BOX_TE
+			2454, 202,228,// TREASURE_BOX_TE_2
+			2452, 202,227,
+			2454, 201,227,
+			2452, 199,230,
+			2454, 200,230,
+			2452, 201,230,
+			2454, 202,230,
+			2452, 203,230,
+			2454, 204,230,
+			2452, 204,229,
+			2454, 204,228,
+			2452, 204,227,
+			2454, 204,226,
+			2452, 204,225,
+			2454, 203,225,
+			2452, 202,225,
+			2454, 201,225,
+			2452, 200,225,
+			2454, 199,225,
+			2452, 199,226,
+			2454, 199,227,
+			2452, 199,228,
+			2454, 199,229;
+	}
+	else if (.@map$ == "te_prtcas03") {
+		setarray .@data[0],
+			2452, 187,132,// TREASURE_BOX_TE
+			2455, 188,132,// TREASURE_BOX_TE_3
+			2452, 188,131,
+			2455, 187,131,
+			2452, 185,134,
+			2455, 186,134,
+			2452, 187,134,
+			2455, 188,134,
+			2452, 189,134,
+			2455, 190,134,
+			2452, 190,133,
+			2455, 190,132,
+			2452, 190,131,
+			2455, 190,130,
+			2452, 190,129,
+			2455, 189,129,
+			2452, 188,129,
+			2455, 187,129,
+			2452, 186,129,
+			2455, 185,129,
+			2452, 185,130,
+			2455, 185,131,
+			2452, 185,132,
+			2455, 185,133;
+	}
+	else if (.@map$ == "te_prtcas04") {
+		setarray .@data[0],
+			2452, 269,162,// TREASURE_BOX_TE
+			2456, 270,162,// TREASURE_BOX_TE_4
+			2452, 270,161,
+			2456, 269,161,
+			2452, 267,164,
+			2456, 268,164,
+			2452, 269,164,
+			2456, 270,164,
+			2452, 271,164,
+			2456, 272,164,
+			2452, 272,163,
+			2456, 272,162,
+			2452, 272,161,
+			2456, 272,160,
+			2452, 272,159,
+			2456, 271,159,
+			2452, 270,159,
+			2456, 269,159,
+			2452, 268,159,
+			2456, 267,159,
+			2452, 267,160,
+			2456, 267,161,
+			2452, 267,162,
+			2456, 267,163;
+	}
+	else if (.@map$ == "te_prtcas05") {
+		setarray .@data[0],
+			2452, 275,178,// TREASURE_BOX_TE
+			2457, 276,178,// TREASURE_BOX_TE_5
+			2452, 276,177,
+			2457, 275,177,
+			2452, 273,180,
+			2457, 274,180,
+			2452, 275,180,
+			2457, 276,180,
+			2452, 277,180,
+			2457, 278,180,
+			2452, 278,179,
+			2457, 278,178,
+			2452, 278,177,
+			2457, 278,176,
+			2452, 278,175,
+			2457, 277,175,
+			2452, 276,175,
+			2457, 275,175,
+			2452, 274,175,
+			2457, 273,175,
+			2452, 273,176,
+			2457, 273,177,
+			2452, 273,178,
+			2457, 273,179;
+	}
+	.@treasure_num = ( 4 + ( .@economy /5 ) ) *3;// x3 <-> data[] size
+	for ( .@i = 0; .@i < getarraysize(.@data) && .@treasure_num > .@i; .@i += 3 )// nb. [4;24] chests
+		monster .@map$, .@data[.@i+1], .@data[.@i+2],"Treasure Chest", .@data[.@i],1, strnpcinfo(0)+"::OnTreasureDied";
 	end;
 
 OnGuildBreak:
@@ -554,7 +856,10 @@ S_Invest:
 		}
 		Zeny = Zeny - .@cost_invest;
 		setcastledata strnpcinfo(4), getarg(0), (.@num_invest_today +1);
-		mes "We finished the investment safely. I expect that our "+ getarg(3) +" level will be increased by tomorrow.";
+		if (getarg(0)==4) { setcastledata strnpcinfo(4), CD_CURRENT_ECONOMY , CD_CURRENT_ECONOMY+1+(rand(2) && getgdskilllv(getcastledata(strnpcinfo(2),CD_GUILD_ID),10014));
+		} else { setcastledata strnpcinfo(4),CD_CURRENT_DEFENSE,getcastledata(strnpcinfo(4),CD_CURRENT_DEFENSE)+1;
+		}
+		mes "We finished the investment safely. I expect that our "+ getarg(3) +" level will be increased soon.";
 		close;
 	case 2:
 		mes .@npc_name$;
@@ -765,11 +1070,11 @@ OnSpawnGuardians:
 // Treasure Room Spawn Template
 //============================================================
 -	script	treasure_TE	-1,{
-OnClock0001:// Spawn Treasure Chests based on castle economy.
+//OnClock0001:// Spawn Treasure Chests based on castle economy.
 	.@map$ = strnpcinfo(4);
 	if (.@map$ == "") end;
 	.@guild_id = getcastledata(.@map$,CD_GUILD_ID);
-	if (.@guild_id == 0) end;
+	if (.@guild_id != 0) end;
 
 	.@economy = getcastledata(.@map$,CD_CURRENT_ECONOMY);
 	.@defense = getcastledata(.@map$,CD_CURRENT_DEFENSE);
