@@ -1863,7 +1863,7 @@
 2649,Morpheus's_Armlet,Morpheus's Bracelet,4,30000,,100,,0,,0,0xFFFFFFFE,63,2,136,,33,0,0,{ bonus bInt,2; bonus bMaxSPrate,5; },{},{}
 2650,Morrigane's_Belt,Morrigane's Belt,4,30000,,200,,0,,0,0xFFFFFFFE,63,2,136,,61,0,0,{ bonus bBaseAtk,5; bonus bCritical,3; },{},{}
 2651,Morrigane's_Pendant,Morrigane's Pendant,4,30000,,200,,0,,0,0xFFFFFFFE,63,2,136,,61,0,0,{ bonus bStr,2; bonus bCritical,3; },{},{}
-2652,Cursed_Lucky_Brooch,Goddess of Fortune's Cursed Brooch,4,46000,,100,,0,,0,0xFFFFFFFF,63,2,136,,40,0,0,{ bonus bCritical,6; bonus2 bAddEff2,Eff_Curse,50; },{},{}
+2652,Cursed_Lucky_Brooch,Goddess of Fortune's Cursed Brooch,4,46000,,100,,0,,0,0xFFFFFFFF,63,2,136,,40,0,0,{ bonus bCritical,6; bonus2 bAddEff2,Eff_Curse,5; },{},{}
 2653,Sacrifice_Ring,Sacrifice Ring,4,20,,100,,0,,0,0xFFFFFFFF,63,2,136,,90,0,0,{},{},{}
 2654,Shinobi's_Sash,Shinobi Sash,4,20000,,300,,1,,1,0x02021040,63,2,136,,30,0,0,{ bonus bStr,1; bonus bAgi,1; bonus bMdef,1; },{},{}
 2655,Bloody_Iron_Ball,Bloodied Shackle Ball,4,50000,,4000,,0,,0,0xFFFFFFFE,63,2,136,,0,0,0,{},{},{}
