@@ -5534,7 +5534,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 		// Signum Cruxis
 		if (canskill(sd)) if ((pc_checkskill(sd, AL_CRUCIS) > 0)){
-			if (map_foreachinrange(signumcount, &sd->bl, 15, BL_MOB, sd)>=3) {
+			if (map_foreachinrange(signumcount, &sd->bl, 15, BL_MOB, sd) >= 3) if (!duplicateskill(p, AL_CRUCIS)) {
 				unit_skilluse_ifable(&sd->bl, SELF, AL_CRUCIS, pc_checkskill(sd, AL_CRUCIS));
 			}
 		}
