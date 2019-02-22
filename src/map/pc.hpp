@@ -305,6 +305,7 @@ struct map_session_data {
 		unsigned int autopilotmode;
 		bool specialtanking;
 		bool enableconc;
+		bool asurapreparation;
 		unsigned int autospgoal;
 		unsigned disable_atcommand_on_npc : 1; //Prevent to use atcommand while talking with NPC [Kichi]
 		uint8 isBoundTrading; // Player is currently add bound item to trade list [Cydh]

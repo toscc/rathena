@@ -3610,6 +3610,29 @@ int targetsoulexchange(block_list * bl, va_list ap)
 	if (sd->battle_status.sp>0.8*sd->battle_status.max_sp) return 0;
 
 	int dist = min(sd2->battle_status.sp,sd->battle_status.max_sp) - sd->battle_status.sp;
+	if (sd->state.asurapreparation) dist = 500;
+	if ((dist > targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS))) { targetdistance = dist; foundtargetID = bl->id; targetbl = bl; };
+
+	return 1;
+}
+
+int targetbluepitcher(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd2;
+	struct map_session_data *sd = (struct map_session_data*)bl;
+
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+
+	if (pc_isdead(sd)) return 0;
+	if (sd->sc.data[SC_EXTREMITYFIST2]) return 0;
+	if (sd->sc.data[SC_NORECOVER_STATE]) return 0;
+	// Consider SP recovery setting on target
+	if ((sd->battle_status.sp>sd->state.autospgoal*sd->battle_status.max_sp/100) && !(sd->state.asurapreparation)) return 0;
+	// Nearly maxed, don't bother even for asura
+	if (sd->battle_status.sp>0.98*sd->battle_status.max_sp) return 0;
+
+	int dist = min(sd2->battle_status.sp, sd->battle_status.max_sp) - sd->battle_status.sp;
+	if (sd->state.asurapreparation) dist = 500;
 	if ((dist > targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS))) { targetdistance = dist; foundtargetID = bl->id; targetbl = bl; };
 
 	return 1;
@@ -4863,6 +4886,7 @@ TIMER_FUNC(unit_autopilot_timer)
 	
 	if pc_issit(sd) { return 0; }
 	recoversp(sd, sd->state.autospgoal);
+	sd->state.asurapreparation = false;
 
 	// Say in party chat if something is wrong!
 	if (sd->sc.data[SC_WEIGHT50]) {
@@ -4873,6 +4897,23 @@ TIMER_FUNC(unit_autopilot_timer)
 	{
 		char* msg = "Please let me rest, I need SP!";
 			saythis(sd, msg, 50);
+	}
+
+	if (pc_checkequip(sd,EQP_ARMOR)==-1)
+	{
+		char* msg = "Omg, I'm not wearing armor, that's dangerous!";
+		saythis(sd, msg, 100);
+	}
+	if (pc_checkequip(sd, EQP_HAND_R) == -1)
+	{
+		char* msg = "I need a weapon to fight!";
+		saythis(sd, msg, 100);
+	}
+
+	if (pc_checkequip(sd, EQP_HAND_L) == -1)
+	{
+		char* msg = "Using a shield might be a good idea?";
+		saythis(sd, msg, 100);
 	}
 
 	int Dangerdistance = inDanger(sd);
@@ -4920,6 +4961,15 @@ TIMER_FUNC(unit_autopilot_timer)
 	/////////////////////////////////////////////////////////////////////////////////////
 	// Skills that aren't tanking mode exclusive (nonmelee skills generally)
 	/////////////////////////////////////////////////////////////////////////////////////
+		/// Acid Demonstration
+		if (canskill(sd)) if (pc_checkskill(sd, CR_ACIDDEMONSTRATION)>0) if (sd->state.autopilotmode == 2) {
+			resettargets2();
+			map_foreachinrange(asuratarget, &sd->bl, 12, BL_MOB, sd);
+			if (!targetmd->sc.data[SC_PNEUMA])
+				if (foundtargetID > -1) {
+					unit_skilluse_ifable(&sd->bl, foundtargetID, CR_ACIDDEMONSTRATION, pc_checkskill(sd, CR_ACIDDEMONSTRATION));
+				}
+		}
 		/// Asura Strike
 		if (canskill(sd)) if (pc_checkskill(sd, MO_EXTREMITYFIST)>0) if (sd->state.autopilotmode == 2) {
 			resettargets2();
@@ -4953,7 +5003,7 @@ TIMER_FUNC(unit_autopilot_timer)
 					else {
 						// At least 80% SP required to use. Important : this amount should be no more than the threshhold for using Soul Exchange
 						// Note : If SP items are not available and SP isn't restored by Professor, character will be stuck doing nothing.
-						if (sd->battle_status.sp < 0.8*sd->battle_status.max_sp) { recoversp(sd, 100); return 0; }
+						if (sd->battle_status.sp < 0.8*sd->battle_status.max_sp) { recoversp(sd, 100); sd->state.asurapreparation = true; return 0; }
 						// Walk near mvp only if SP already available
 						if (distance_bl(bl, targetbl)> 1) { unit_walktoxy(bl, targetbl->x, targetbl->y, 8); return 0; }
 						unit_skilluse_ifable(&sd->bl, foundtargetID, MO_EXTREMITYFIST, pc_checkskill(sd, MO_EXTREMITYFIST));
@@ -5014,7 +5064,16 @@ TIMER_FUNC(unit_autopilot_timer)
 				unit_skilluse_ifable(&sd->bl, foundtargetID, PF_SOULCHANGE, pc_checkskill(sd, PF_SOULCHANGE));
 			}
 		}
-		
+		/// Potion Pitcher Blue
+		if (canskill(sd)) if (pc_checkskill(sd, AM_POTIONPITCHER) >= 5) {
+			resettargets();
+			map_foreachinrange(targetbluepitcher, &sd->bl, 9, BL_PC, sd);
+			// HP must be below 40% to ensure we don't waste items when other ways to heal are available
+			if (foundtargetID > -1) {
+				if (pc_search_inventory(sd, 504) > 0)	unit_skilluse_ifable(&sd->bl, foundtargetID, AM_POTIONPITCHER, 5);
+			}
+		}
+
 		/// Pneuma
 		if (canskill(sd)) if  (pc_checkskill(sd, AL_PNEUMA)>0) {
 			resettargets();
@@ -5054,6 +5113,30 @@ TIMER_FUNC(unit_autopilot_timer)
 			map_foreachinrange(targethealing, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, AL_HEAL, pc_checkskill(sd, AL_HEAL));
+			}
+		}
+		/// Slim Potion Pitcher
+		// Note : used as if it was single target, wasteful. This should be improved!
+		if (canskill(sd)) if (pc_checkskill(sd, CR_SLIMPITCHER) >=10) {
+			resettargets();
+			map_foreachinrange(targethealing, &sd->bl, 9, BL_PC, sd);
+			// HP must be below 40% to ensure we don't waste items when other ways to heal are available
+			if (foundtargetID > -1) if (targetdistance<40) {
+				if (pc_search_inventory(sd, 547) > 0)	unit_skilluse_ifablexy(&sd->bl, foundtargetID, CR_SLIMPITCHER, 10); else
+					if (pc_search_inventory(sd, 546) > 0)	unit_skilluse_ifablexy(&sd->bl, foundtargetID, CR_SLIMPITCHER, 9); else
+						if (pc_search_inventory(sd, 545) > 0)	unit_skilluse_ifablexy(&sd->bl, foundtargetID, CR_SLIMPITCHER, 5); 
+			}
+		}
+		/// Potion Pitcher
+		if (canskill(sd)) if (pc_checkskill(sd, AM_POTIONPITCHER)>=4) {
+			resettargets();
+			map_foreachinrange(targethealing, &sd->bl, 9, BL_PC, sd);
+			// HP must be below 40% to ensure we don't waste items when other ways to heal are available
+			if (foundtargetID > -1) if (targetdistance<40) {
+				if (pc_search_inventory(sd, 504) > 0)	unit_skilluse_ifable(&sd->bl, foundtargetID, AM_POTIONPITCHER, 4); else
+				if (pc_search_inventory(sd, 503) > 0)	unit_skilluse_ifable(&sd->bl, foundtargetID, AM_POTIONPITCHER, 3); else
+				if (pc_search_inventory(sd, 502) > 0)	unit_skilluse_ifable(&sd->bl, foundtargetID, AM_POTIONPITCHER, 2); else
+				if (pc_search_inventory(sd, 501) > 0)	unit_skilluse_ifable(&sd->bl, foundtargetID, AM_POTIONPITCHER, 1); 
 			}
 		}
 		/// Status Recovery
@@ -5252,45 +5335,6 @@ TIMER_FUNC(unit_autopilot_timer)
 					if ((sd->skill_id_dance == sd->state.autosong) && (pc_checkskill(sd, BD_ENCORE) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BD_ENCORE, pc_checkskill(sd, BD_ENCORE));
 					else if ((pc_checkskill(sd, sd->state.autosong) > 0)) unit_skilluse_ifable(&sd->bl, SELF, sd->state.autosong, pc_checkskill(sd, sd->state.autosong));
 
-/*					else switch (sd->state.autosong) {
-				case 1: if ((pc_checkskill(sd, BA_WHISTLE) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BA_WHISTLE, pc_checkskill(sd, BA_WHISTLE));
-					break; 
-				case 2: if ((pc_checkskill(sd, BA_ASSASSINCROSS) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BA_ASSASSINCROSS, pc_checkskill(sd, BA_ASSASSINCROSS));
-					break; 
-				case 3: if ((pc_checkskill(sd, BA_POEMBRAGI) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BA_POEMBRAGI, pc_checkskill(sd, BA_POEMBRAGI));
-					break; 
-				case 4: if ((pc_checkskill(sd, BA_APPLEIDUN) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BA_APPLEIDUN, pc_checkskill(sd, BA_APPLEIDUN));
-					break; 
-				case 5: if ((pc_checkskill(sd, BD_LULLABY) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BD_LULLABY, pc_checkskill(sd, BD_LULLABY));
-					break;
-				case 6: if ((pc_checkskill(sd, BD_ROKISWEIL) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BD_ROKISWEIL, pc_checkskill(sd, BD_ROKISWEIL));
-					break; 
-				case 7:if ((pc_checkskill(sd, BD_SIEGFRIED) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BD_SIEGFRIED, pc_checkskill(sd, BD_SIEGFRIED));
-					break; 
-				case 8: if ((pc_checkskill(sd, BD_DRUMBATTLEFIELD) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BD_DRUMBATTLEFIELD, pc_checkskill(sd, BD_DRUMBATTLEFIELD));
-					break; 
-				case 9: if ((pc_checkskill(sd, BD_INTOABYSS) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BD_INTOABYSS, pc_checkskill(sd, BD_INTOABYSS));
-					break; 
-				case 10: if ((pc_checkskill(sd, BD_ETERNALCHAOS) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BD_ETERNALCHAOS, pc_checkskill(sd, BD_ETERNALCHAOS));
-					break; 
-				case 11: if ((pc_checkskill(sd, BD_RICHMANKIM) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BD_RICHMANKIM, pc_checkskill(sd, BD_RICHMANKIM));
-					break; 
-				case 12: if ((pc_checkskill(sd, BD_RINGNIBELUNGEN) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BD_RINGNIBELUNGEN, pc_checkskill(sd, BD_RINGNIBELUNGEN));
-					break;
-				case 13: if ((pc_checkskill(sd, CG_MOONLIT) > 0)) unit_skilluse_ifable(&sd->bl, SELF, CG_MOONLIT, pc_checkskill(sd, CG_MOONLIT));
-					break; 
-				case 14: if ((pc_checkskill(sd, DC_HUMMING) > 0)) unit_skilluse_ifable(&sd->bl, SELF, DC_HUMMING, pc_checkskill(sd, DC_HUMMING));
-					break; 
-				case 15: if ((pc_checkskill(sd, DC_DONTFORGETME) > 0)) unit_skilluse_ifable(&sd->bl, SELF, DC_DONTFORGETME, pc_checkskill(sd, DC_DONTFORGETME));
-					break; 
-				case 16: if ((pc_checkskill(sd, DC_FORTUNEKISS) > 0)) unit_skilluse_ifable(&sd->bl, SELF, DC_FORTUNEKISS, pc_checkskill(sd, DC_FORTUNEKISS));
-					break; 
-				case 17: if ((pc_checkskill(sd, DC_SERVICEFORYOU) > 0)) unit_skilluse_ifable(&sd->bl, SELF, DC_SERVICEFORYOU, pc_checkskill(sd, DC_SERVICEFORYOU));
-					break; 
-				case 18:if ((pc_checkskill(sd, BA_DISSONANCE) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BA_DISSONANCE, pc_checkskill(sd, BA_DISSONANCE));
-					break; 
-				case 19: if ((pc_checkskill(sd, DC_UGLYDANCE) > 0)) unit_skilluse_ifable(&sd->bl, SELF, DC_UGLYDANCE, pc_checkskill(sd, DC_UGLYDANCE));
-					break; */
 				}
 			}
 			else { // Far from leader or song mode turned off, stop.
