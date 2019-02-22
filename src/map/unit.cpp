@@ -627,7 +627,7 @@ int newwalk(struct block_list *bl, short x, short y, unsigned char flag)
 
 	// We aren't yet walking or are walking to somewhere at least 3 tiles away from the intended destination, start a new walk
 	if ((abs(x - ud->to_x) > 2) || (abs(y - ud->to_y) > 2) || (ud->walktimer == INVALID_TIMER)) {
-		unit_stop_walking(bl, USW_MOVE_ONCE);
+		//unit_stop_walking(bl, USW_MOVE_ONCE);
 		unit_walktoxy(bl, x, y, flag);
 	}
 }
