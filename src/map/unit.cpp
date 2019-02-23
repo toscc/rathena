@@ -4155,6 +4155,21 @@ int targetmanus(block_list * bl, va_list ap)
 	return 0;
 }
 
+int targetrepair(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
+
+	for ( int i = 0; i < MAX_INVENTORY; i++){
+		if (((sd->inventory.u.items_inventory[i].nameid) > 0) && (sd->inventory.u.items_inventory[i].attribute != 0)){
+			targetbl = bl; foundtargetID = sd->bl.id;
+		}
+	}
+	return 0;
+}
+
+
+
 int countprovidence(block_list * bl, va_list ap)
 {
 	struct mob_data *md;
@@ -4715,6 +4730,31 @@ void skillwhenidle(struct map_session_data *sd) {
 	if (pc_checkskill(sd, LK_AURABLADE) > 0) {
 		if (!(sd->sc.data[SC_AURABLADE])) {
 			unit_skilluse_ifable(&sd->bl, SELF, LK_AURABLADE, pc_checkskill(sd, LK_AURABLADE));
+		}
+	}
+
+	// Cart Boost
+	if (pc_checkskill(sd, WS_CARTBOOST) > 0) {
+		if (!(sd->sc.data[SC_CARTBOOST])) 
+			if  (pc_iscarton(sd)) {
+			unit_skilluse_ifable(&sd->bl, SELF, WS_CARTBOOST, pc_checkskill(sd, WS_CARTBOOST));
+		}
+	}
+	
+	// Weapon Repair
+	if (pc_checkskill(sd, BS_REPAIRWEAPON) > 0) {
+		if ((pc_search_inventory(sd, 998) > 0) && (pc_search_inventory(sd, 1002) > 0) && (pc_search_inventory(sd, 999) > 0)
+			&& (pc_search_inventory(sd, 756) > 0))
+		{
+			resettargets();
+			map_foreachinrange(targetrepair, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, BS_REPAIRWEAPON, pc_checkskill(sd, BS_REPAIRWEAPON));
+			}
+		} else {
+			char* msg = "My repair material set is incomplete! (Iron Ore, Iron, Steel, Rough Oridecon)";
+			saythis(sd, msg, 50);
+
 		}
 	}
 
@@ -6114,6 +6154,15 @@ TIMER_FUNC(unit_autopilot_timer)
 					unit_skilluse_ifable(&sd->bl, foundtargetID, MC_CARTREVOLUTION, pc_checkskill(sd, MC_CARTREVOLUTION));
 				}
 			}
+			// Cart Termination skill
+			if (canskill(sd)) if (pc_checkskill(sd, WS_CARTTERMINATION)>0) if (sd->state.specialtanking)
+				if (sd->sc.data[SC_CARTBOOST]) {
+					// Always use if critically wounded otherwise use on mobs that will take longer to kill only if sp is lower
+					if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
+						|| (status_get_hp(bl) < status_get_max_hp(bl) / 3)){
+						unit_skilluse_ifable(&sd->bl, foundtargetID, WS_CARTTERMINATION, pc_checkskill(sd, WS_CARTTERMINATION));
+					}
+				}
 			// Mammonite skill
 			if (canskill(sd)) if (pc_checkskill(sd, MC_MAMMONITE)>0) if (sd->state.specialtanking) {
 				// Always use if critically wounded otherwise use on mobs that will take longer to kill only if sp is lower
