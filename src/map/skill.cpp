@@ -7552,8 +7552,23 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 		break;
 
 	case BS_REPAIRWEAPON:
-		if(sd && dstsd)
-			clif_item_repair_list(sd,dstsd,skill_lv);
+		if (sd && dstsd) {
+			if (sd->state.autopilotmode == 0)
+				clif_item_repair_list(sd, dstsd, skill_lv); else
+			{
+				int idx = -1;
+				for (int i = 0; i < MAX_INVENTORY; i++){
+					if (((dstsd->inventory.u.items_inventory[i].nameid) > 0) && (dstsd->inventory.u.items_inventory[i].attribute != 0)){
+						idx = i; }
+				}
+				//if (!(target_sd = map_id2sd(sd->menuskill_val))) //Failed....
+					sd->menuskill_val = dstsd->bl.id;
+					sd->menuskill_id = BS_REPAIRWEAPON;
+					sd->menuskill_val2 = pc_checkskill(sd, BS_REPAIRWEAPON);
+				if (!pc_istrading(sd)) skill_repairweapon(sd, idx);
+				sd->menuskill_id = 0; sd->menuskill_val = 0;
+			}
+		}
 		break;
 
 	case MC_IDENTIFY:
