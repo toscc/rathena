@@ -97,3 +97,4 @@
 31828,Mage_Disguise,Magician Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 2; },{},{ changebase Class; }
 31829,HP_Disguise,High Priest Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase 4009; },{},{ changebase Class; }
 31830,Unimplemented_Disguise,? Clothes,4,500000,,0,,0,,0,0xFFFFFFFF,63,2,8192,,50,0,0,{ changebase Class; },{},{ changebase Class; }
+31849,Boxed_Steel,Box of Steel,2,3000,,200,,,,,0xFFFFFFFF,63,2,,,,,,{ getitem 999,3; },{},{}
