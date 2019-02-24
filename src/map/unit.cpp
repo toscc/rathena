@@ -4694,13 +4694,13 @@ void skillwhenidle(struct map_session_data *sd) {
 
 	// Pick Stone
 	if (pc_checkskill(sd, TF_PICKSTONE) > 0) {
-		if (sd->inventory.u.items_inventory[pc_search_inventory(sd, 7049)].amount < 12) {
+		if (pc_inventory_count(sd, 7049) < 12) {
 			unit_skilluse_ifable(&sd->bl, SELF, TF_PICKSTONE, pc_checkskill(sd, TF_PICKSTONE));
 		}
 	}
 	// Aqua Benedicta
 	if (pc_checkskill(sd, AL_HOLYWATER) > 0) {
-		if ((sd->inventory.u.items_inventory[pc_search_inventory(sd, 523)].amount < 40) && (pc_search_inventory(sd, ITEMID_EMPTY_BOTTLE)>0)
+		if ((pc_inventory_count(sd, 523) < 40) && (pc_inventory_count(sd, ITEMID_EMPTY_BOTTLE)>0)
 			&& (skill_produce_mix(sd, AL_HOLYWATER, ITEMID_HOLY_WATER, 0, 0, 0, 1, -1))) {
 			unit_skilluse_ifable(&sd->bl, SELF, AL_HOLYWATER, pc_checkskill(sd, AL_HOLYWATER));
 		}
@@ -4743,8 +4743,8 @@ void skillwhenidle(struct map_session_data *sd) {
 	
 	// Weapon Repair
 	if (pc_checkskill(sd, BS_REPAIRWEAPON) > 0) {
-		if ((pc_search_inventory(sd, 998) > 0) && (pc_search_inventory(sd, 1002) > 0) && (pc_search_inventory(sd, 999) > 0)
-			&& (pc_search_inventory(sd, 756) > 0))
+		if ((pc_search_inventory(sd, 998) >= 0) && (pc_search_inventory(sd, 1002) >= 0) && (pc_search_inventory(sd, 999) >= 0)
+			&& (pc_search_inventory(sd, 756) >= 0))
 		{
 			resettargets();
 			map_foreachinrange(targetrepair, &sd->bl, 9, BL_PC, sd);
@@ -5134,7 +5134,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			}
 		}
 		/// If Resurrection known, warn when low on gems!
-		if ((pc_checkskill(sd, ALL_RESURRECTION)>0)) if (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE) < 8)
+		if ((pc_checkskill(sd, ALL_RESURRECTION)>0)) if (pc_inventory_count(sd, ITEMID_BLUE_GEMSTONE) < 8)
 			saythis(sd, "I'm low on Blue Gemstones!", 600); // Once per minute
 		/// Resurrection
 		if (canskill(sd)) if ((pc_checkskill(sd, ALL_RESURRECTION)>0)) {
@@ -5623,11 +5623,19 @@ TIMER_FUNC(unit_autopilot_timer)
 			if (p) //Search leader
 				for (j = 0; j < MAX_PARTY; j++) {
 
-					targetthis = p->party.member[j].char_id;
 					resettargets();
-					map_foreachinmap(targetthischar, sd->bl.m, BL_PC, sd);
+					
+					// This is for finding if a walkable path exists. We don't need to waste CPU resources on that to target a spell.
+					//targetthis = p->party.member[j].char_id;
+					//map_foreachinmap(targetthischar, &sd->bl.m, BL_PC, sd);
+					
+					// This party member is in range?
+					targetbl = map_id2bl(p->party.member[j].account_id);
+					if (targetbl) {
+						if (distance_bl(&sd->bl, targetbl) <= 9) // No more than 9 range and must be shootable to target
+							if (path_search_long(NULL, sd->bl.m, sd->bl.x, sd->bl.y, targetbl->x, targetbl->y, CELL_CHKWALL)) { foundtargetID = p->party.member[j].account_id; }
+					}
 
-					// This party member is on the map?
 					if (foundtargetID > -1) {
 						int foundtargetID2 = foundtargetID;  
 						map_session_data *membersd = (struct map_session_data*)targetbl;
@@ -5977,6 +5985,39 @@ TIMER_FUNC(unit_autopilot_timer)
 					}
 				}
 			}
+
+			// If we still failed to pick a skill, the enemy is probably dark or holy and resists all elements so we have to compromise and use whatever.
+			if (canskill(sd)) if ((targetmd->status.def_ele == ELE_DARK) || ((targetmd->status.def_ele == ELE_HOLY)))
+			{ // Gravity Field
+				// High Wizards can pull this ace out of their sleeve if they have gems and aren't under attack
+				if (canskill(sd)) if ((pc_checkskill(sd, HW_GRAVITATION) > 0) && (Dangerdistance > 900) && (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE)>0)) {
+					unit_skilluse_ifablexy(&sd->bl, foundtargetID2, HW_GRAVITATION, pc_checkskill(sd, HW_GRAVITATION));
+				}
+				// Storm Gust - this can at least freeze things and keep them under control, as well as change them to water element
+				// However use at lowest level for maximal freezing efficiency and faster cast time - damage isn't going to be good anyway
+				if (!((targetmd->status.def_ele == ELE_HOLY) || (targetmd->status.def_ele < 4)))
+				if (canskill(sd)) if ((pc_checkskill(sd, WZ_STORMGUST) > 0) && ((Dangerdistance > 900) && (!duplicateskill(p, WZ_STORMGUST)))) {
+					if ((!(dangermd->status.def_ele == ELE_UNDEAD)) && (!((status_get_class_(dangerbl) == CLASS_BOSS))))
+					unit_skilluse_ifablexy(&sd->bl, foundtargetID2, WZ_STORMGUST, 1);
+					else // Immune to freezing, use highest level!
+						unit_skilluse_ifablexy(&sd->bl, foundtargetID2, WZ_STORMGUST, pc_checkskill(sd, WZ_STORMGUST));
+				}
+				//  Use JT if SG isn't an option, best single target damage
+				if (!((targetmd->status.def_ele == ELE_HOLY) || (targetmd->status.def_ele < 4)))
+					if (canskill(sd)) if ((pc_checkskill(sd, WZ_JUPITEL) > 0) && ((Dangerdistance > 900) || (sd->special_state.no_castcancel))) {
+					unit_skilluse_ifable(&sd->bl, foundtargetID2, WZ_JUPITEL, pc_checkskill(sd, WZ_JUPITEL));
+				}
+				// If we are under attack, we have to cast something faster...
+				if (canskill(sd)) if ((pc_checkskill(sd, HW_MAGICCRASHER) > 0) && (elemallowed(targetmd,sd->battle_status.rhw.ele))) {
+					unit_skilluse_ifable(&sd->bl, foundtargetID2, HW_MAGICCRASHER, pc_checkskill(sd, HW_MAGICCRASHER));
+				}
+				// Not everyone is a high wizard
+				if (!((targetmd->status.def_ele == ELE_HOLY) || (targetmd->status.def_ele < 4)))
+					if (canskill(sd)) if ((pc_checkskill(sd, MG_SOULSTRIKE) > 0)) {
+					unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_SOULSTRIKE, pc_checkskill(sd, MG_SOULSTRIKE));
+				}
+			};
+
 			// Do normal attack if not using skill and being an archer
 			if ((sd->battle_status.rhw.range >= 6) && (sd->state.autopilotmode > 1)) {
 				if (sd->status.weapon == W_BOW) { arrowchange(sd, targetRAmd); }
