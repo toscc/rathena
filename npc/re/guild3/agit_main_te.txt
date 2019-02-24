@@ -94,7 +94,7 @@ OnAgitInit3:
 	}
 	end;
 Addmonster:
-			monster getarg(6),getarg(4),getarg(5),getarg(0),getarg(1),getarg(2)* (100+2*getarg(3)) / 200, getarg(7);
+			monster getarg(6),getarg(4),getarg(5),getarg(0),getarg(1),getarg(2)* (100+2*getarg(3)) / 100, getarg(7);
 			for ( .@i = 0; .@i < getarg(2)* (100+2*getarg(3)) / 100; ++.@i ) {
 				setunitdata $@mobid[.@i], UMOB_LEVEL, getmonsterinfo( getarg(1), MOB_LV ) * (100+getarg(3)) / 150;
 				setunitdata $@mobid[.@i], UMOB_MAXHP, getmonsterinfo( getarg(1), MOB_MAXHP ) * (100+3*getarg(3)) / 150;
@@ -114,7 +114,8 @@ Addmonster:
 	return;
 
 OnEmpSpawn:
-	.@map$ = strnpcinfo(4);
+callsub(Emprespawn,strnpcinfo(4));
+	/*.@map$ = ;
 	if (!mobcount( .@map$, strnpcinfo(0) +"::OnAgitBreak" )) {
 		if (.@map$ == "te_aldecas1") { setarray .@emproom[0],216,23; }
 		else if (.@map$ == "te_aldecas2") { setarray .@emproom[0],213,23; }
@@ -127,7 +128,7 @@ OnEmpSpawn:
 		else if (.@map$ == "te_prtcas04") { setarray .@emproom[0],291,14; }
 		else if (.@map$ == "te_prtcas05") { setarray .@emproom[0],266,266; }
 		monster .@map$,.@emproom[0],.@emproom[1],"Emperium",1288,1, strnpcinfo(0) +"::OnAgitBreak";
-	}
+	}*/
 	end;
 
 OnAgitStart3:
@@ -150,10 +151,40 @@ OnAgitEnd3:
 	callsub S_Message,"OnReset";
 	end;
 
+EmpRespawn:
+	.@map$ = getarg(0);
+	if (!mobcount( .@map$, strnpcinfo(0) +"::OnAgitBreak" )) {
+		if (.@map$ == "te_aldecas1") { setarray .@emproom[0],216,23; }
+		else if (.@map$ == "te_aldecas2") { setarray .@emproom[0],213,23; }
+		else if (.@map$ == "te_aldecas3") { setarray .@emproom[0],205,31; }
+		else if (.@map$ == "te_aldecas4") { setarray .@emproom[0],36,217; }
+		else if (.@map$ == "te_aldecas5") { setarray .@emproom[0],27,101; }
+		else if (.@map$ == "te_prtcas01") { setarray .@emproom[0],197,197; }
+		else if (.@map$ == "te_prtcas02") { setarray .@emproom[0],157,174; }
+		else if (.@map$ == "te_prtcas03") { setarray .@emproom[0],16,220; }
+		else if (.@map$ == "te_prtcas04") { setarray .@emproom[0],291,14; }
+		else if (.@map$ == "te_prtcas05") { setarray .@emproom[0],266,266; }
+		monster .@map$,.@emproom[0],.@emproom[1],"Emperium",1288,1, strnpcinfo(0) +"::OnAgitBreak";
+	}
+	return;
+	
 OnAgitBreak:
 	.@guild_id = getcharid(2);
 	.@map$ = strnpcinfo(4);
 
+.@num = getmapunits(BL_MOB,.@map$,.@array[0]);
+	freeloop(1);	// for if the list was too big.
+	for(.@i=0;.@i<getarraysize(.@array);.@i++) {
+		getunitdata .@array[.@i],.@arr2[0];
+		if (.@arr2[UMOB_MODE] & MD_MVP) {
+		// mapannounce .@arr2[??? no UMOB_NAME???] +" revives the Emperium!";
+		mapannounce .@map$,"The boss monsters revive the Emperium! You have to defeat them first!",bc_map,"0x00FF00",FW_NORMAL,20,0,40;;
+		callsub(Emprespawn,.@map$);
+		end;
+		}
+		}
+	freeloop(0);	
+	
 	//.@economy = getcastledata(.@map$,CD_CURRENT_ECONOMY) - 5;// Adjust economy Invest Level for Castle
 	//if (.@economy < 1)
 	//	setcastledata .@map$, CD_CURRENT_ECONOMY,1;
@@ -164,12 +195,13 @@ OnAgitBreak:
 	//	setcastledata .@map$, CD_CURRENT_DEFENSE,1;
 	//else
 	//	setcastledata .@map$, CD_CURRENT_DEFENSE,.@defense;
-	//setcastledata .@map$,CD_GUILD_ID,.@guild_id;
+	
+	setcastledata .@map$,CD_GUILD_ID,.@guild_id;
 
 	// Reset Invest information and refresh castle data
-	for ( .@i = CD_INVESTED_ECONOMY; .@i < CD_ENABLED_GUARDIAN00; .@i++ )
-		setcastledata .@map$,.@i,0;
-	donpcevent strnpcinfo(0) +"::OnAgitInit3";// spawn guardians / monsters
+	//for ( .@i = CD_INVESTED_ECONOMY; .@i < CD_ENABLED_GUARDIAN00; .@i++ )
+	//	setcastledata .@map$,.@i,0;
+	//donpcevent strnpcinfo(0) +"::OnAgitInit3";// spawn guardians / monsters
 
 	// Erase Guardian Database information if the new owners do not have Guardian Research.
 	if (getgdskilllv(.@guild_id,10002) == 0) {
@@ -856,7 +888,7 @@ S_Invest:
 		}
 		Zeny = Zeny - .@cost_invest;
 		setcastledata strnpcinfo(4), getarg(0), (.@num_invest_today +1);
-		if (getarg(0)==4) { setcastledata strnpcinfo(4), CD_CURRENT_ECONOMY , CD_CURRENT_ECONOMY+1+(rand(2) && getgdskilllv(getcastledata(strnpcinfo(2),CD_GUILD_ID),10014));
+		if (getarg(0)==4) { setcastledata strnpcinfo(4), CD_CURRENT_ECONOMY , CD_CURRENT_ECONOMY+1+(rand(2) && getgdskilllv(getcastledata(strnpcinfo(4),CD_GUILD_ID),10014));
 		} else { setcastledata strnpcinfo(4),CD_CURRENT_DEFENSE,getcastledata(strnpcinfo(4),CD_CURRENT_DEFENSE)+1;
 		}
 		mes "We finished the investment safely. I expect that our "+ getarg(3) +" level will be increased soon.";

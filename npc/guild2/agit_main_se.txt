@@ -112,20 +112,24 @@ OnStart:
 	}
 
 OnEmpSpawn:
-	set .@str$, substr(strnpcinfo(2),0,1)+substr(strnpcinfo(2),8,9);
-	if (mobcount(strnpcinfo(2),"Steward#"+.@str$+"::OnStartArena")) end;
-	if (compare(strnpcinfo(2),"arug")) {
-		if (strnpcinfo(2) == "arug_cas01") setarray .@i[0],87,219;
-		else if (strnpcinfo(2) == "arug_cas02") setarray .@i[0],89,256;
+	callsub(Emprespawn,strnpcinfo(2));
+	end;
+
+Emprespawn:
+	set .@str$, substr(getarg(0),0,1)+substr(getarg(0),8,9);
+	if (mobcount(getarg(0),"Steward#"+.@str$+"::OnStartArena")) end;
+	if (compare(getarg(0),"arug")) {
+		if (getarg(0) == "arug_cas01") setarray .@i[0],87,219;
+		else if (getarg(0) == "arug_cas02") setarray .@i[0],89,256;
 		else setarray .@i[0],141,293;	// Castles 3,4,5 are identical.
 	}
 	else {
-		if (strnpcinfo(2) == "schg_cas02") setarray .@i[0],162,193;
-		else if (strnpcinfo(2) == "schg_cas03") setarray .@i[0],338,202;
+		if (getarg(0) == "schg_cas02") setarray .@i[0],162,193;
+		else if (getarg(0) == "schg_cas03") setarray .@i[0],338,202;
 		else setarray .@i[0],120,272;	// Castles 1,4,5 are identical.
 	}
-	monster strnpcinfo(2),.@i[0],.@i[1],"Emperium",1288,1,"Steward#"+.@str$+"::OnStartArena";
-	end;
+	monster getarg(0),.@i[0],.@i[1],"Emperium",1288,1,"Steward#"+.@str$+"::OnStartArena";
+	return;
 
 OnReset:
 	set .@str$, substr(strnpcinfo(2),0,1)+substr(strnpcinfo(2),8,9);
@@ -353,7 +357,7 @@ OnTreasureDied:
 			}
 			set Zeny, Zeny-.@eco_invest;
 			setcastledata strnpcinfo(4),CD_INVESTED_ECONOMY,getcastledata(strnpcinfo(4),CD_INVESTED_ECONOMY)+1;
-			setcastledata strnpcinfo(4),CD_CURRENT_ECONOMY,getcastledata(strnpcinfo(4),CD_CURRENT_ECONOMY)+1+(rand(2) && getgdskilllv(getcastledata(strnpcinfo(2),CD_GUILD_ID),10014));
+			setcastledata strnpcinfo(4),CD_CURRENT_ECONOMY,getcastledata(strnpcinfo(4),CD_CURRENT_ECONOMY)+1+(rand(2) && getgdskilllv(getcastledata(strnpcinfo(4),CD_GUILD_ID),10014));
 			mes "[ Steward ]";
 			mes "A wise use of the guild's";
 			mes "funds, Master. We can expect";
@@ -625,6 +629,22 @@ OnStop:
 OnStartArena:
 	set .@GID,getcharid(2);
 	set .@region$, (compare(strnpcinfo(4),"arug"))?"Valfreyja":"Nithafjoll";
+	
+	.@num = getmapunits(BL_MOB,strnpcinfo(4),.@array[0]);
+	freeloop(1);	// for if the list was too big.
+	for(.@i=0;.@i<getarraysize(.@array);.@i++) {
+		getunitdata .@array[.@i],.@arr2[0];
+		if (.@arr2[UMOB_MODE] & MD_MVP) {
+		// mapannounce .@arr2[??? no UMOB_NAME???] +" revives the Emperium!";
+		mapannounce strnpcinfo(4),"The boss monsters revive the Emperium! You have to defeat them first!",bc_map,"0x00FF00",FW_NORMAL,20,0,40;;
+		callsub(Emprespawn,strnpcinfo(4));
+		end;
+		}
+		}
+	freeloop(0);
+	
+	killmonsterall strnpcinfo(4);
+	
 	// Lower castle Economy
 	//set .@Economy,getcastledata(strnpcinfo(4),CD_CURRENT_ECONOMY)-5;
 	//if (.@Economy < 0) set .@Economy, 0;
@@ -636,8 +656,8 @@ OnStartArena:
 	// Set new owner
 	setcastledata strnpcinfo(4),CD_GUILD_ID,.@GID;
 	// Clear castle's data.
-	for(set .@i,CD_INVESTED_ECONOMY; .@i<CD_ENABLED_GUARDIAN00; set .@i,.@i+1)
-		setcastledata strnpcinfo(4),.@i,0;
+	// for(set .@i,CD_INVESTED_ECONOMY; .@i<CD_ENABLED_GUARDIAN00; set .@i,.@i+1)
+	//		setcastledata strnpcinfo(4),.@i,0;
 	// Disable Kafra
 	disablenpc "Kafra Employee#"+strnpcinfo(2);
 
@@ -652,57 +672,73 @@ OnStartArena:
 		donpcevent "Manager#"+strnpcinfo(4)+"::OnChange";
 		mapannounce strnpcinfo(4),"Rebuild this stronghold's Guardian Stones and Fortress Gates to secure your guild's new aquisition!",bc_map,"0x00FF00",FW_NORMAL,20,0,40;
 	}
-	if (getcastledata(strnpcinfo(2),CD_GUILD_ID)) end;
-	killmonster strnpcinfo(2),strnpcinfo(0)+"::OnTreasureDied";
-	setcastledata strnpcinfo(2),CD_INVESTED_ECONOMY,0;
-	setcastledata strnpcinfo(2),CD_INVESTED_DEFENSE,0;
-	set .@Treasure,getcastledata(strnpcinfo(2),CD_CURRENT_ECONOMY)/5+4;
+
+	killmonster strnpcinfo(4),strnpcinfo(0)+"::OnTreasureDied";
+	setcastledata strnpcinfo(4),CD_INVESTED_ECONOMY,0;
+	setcastledata strnpcinfo(4),CD_INVESTED_DEFENSE,0;
+	set .@Treasure,getcastledata(strnpcinfo(4),CD_CURRENT_ECONOMY)/5+4;
 	if (!.@Treasure) end;
 	freeloop(1);
-	if (compare(strnpcinfo(2),"arug")) {
-		if (strnpcinfo(2) == "arug_cas01") { 
+	if (compare(strnpcinfo(4),"arug")) {
+		if (strnpcinfo(4) == "arug_cas01") { 
 			set .@treasurebox,1943;
 			setarray .@treasurex[0],251,252,253,254,255,256,257,258,251,252,253,254,255,256,257,258,251,252,253,254,255,256,257,258;
 			setarray .@treasurey[0],369,369,369,369,368,368,368,368,367,367,367,367,366,366,366,366,365,365,365,365,364,364,364,364;
 		}
-		else if (strnpcinfo(2) == "arug_cas02") { 
+		else if (strnpcinfo(4) == "arug_cas02") { 
 			set .@treasurebox,1944;
 			setarray .@treasurex[0],382,383,384,385,386,387,384,385,386,387,388,389,382,383,384,385,386,387,384,385,386,387,388,389;
 			setarray .@treasurey[0],231,231,231,231,231,231,230,230,230,230,230,230,225,225,225,225,225,225,224,224,224,224,224,224;
 		}
 		else { 	// Castles 3,4,5 are identical, except 4's treasure.
-			set .@treasurebox,(strnpcinfo(2) == "arug_cas04")?1946:1945;
+			set .@treasurebox,(strnpcinfo(4) == "arug_cas04")?1946:1945;
 			setarray .@treasurex[0],291,292,293,294,295,296,293,294,295,296,297,298,291,292,293,294,295,296,293,294,295,296,297,298;
 			setarray .@treasurey[0],276,276,276,276,276,276,274,274,274,274,274,274,272,272,272,272,272,272,269,269,269,269,269,269;
 		}
 	}
 	else {
-		if (strnpcinfo(2) == "schg_cas02") { 
+		if (strnpcinfo(4) == "schg_cas02") { 
 			set .@treasurebox,1939;
 			setarray .@treasurex[0],249,250,251,252,253,246,247,248,249,250,250,251,252,253,246,247,248,249,250,249,250,251,252,253;
 			setarray .@treasurey[0],378,378,378,378,378,376,376,376,376,376,374,374,374,374,372,372,372,372,372,370,370,370,370,370;
 		}
-		else if (strnpcinfo(2) == "schg_cas03") { 
+		else if (strnpcinfo(4) == "schg_cas03") { 
 			set .@treasurebox,1940;
 			setarray .@treasurex[0],189,190,191,192,193,194,189,190,191,192,193,194,189,190,191,192,193,194,189,190,191,192,193,194;
 			setarray .@treasurey[0], 21, 21, 21, 21, 21, 21, 19, 19, 19, 19, 19, 19, 17, 17, 17, 17, 17, 17, 15, 15, 15, 15, 15, 15;
 		}
 		else {	// Castles 1,4,5 are identical, except treasures.
-			if (strnpcinfo(2) == "schg_cas01") set .@treasurebox,1938;
-			else if (strnpcinfo(2) == "schg_cas04") set .@treasurebox,1941;
+			if (strnpcinfo(4) == "schg_cas01") set .@treasurebox,1938;
+			else if (strnpcinfo(4) == "schg_cas04") set .@treasurebox,1941;
 			else set .@treasurebox,1942;
 			setarray .@treasurex[0],388,388,388,387,386,385,384,384,384,384,384,384,385,386,387,388,389,390,390,390,389,388,387,386;
 			setarray .@treasurey[0],388,389,390,390,390,390,389,388,387,386,385,384,384,384,384,384,384,384,385,386,386,386,386,386;
 		}
 	}
 	for(set .@i,0; .@i<4; set .@i,.@i+1)
-		monster strnpcinfo(2),.@treasurex[.@i],.@treasurey[.@i],"Treasure Chest",(.@i%2)?.@treasurebox:1324,1,strnpcinfo(0)+"::OnTreasureDied";
+		monster strnpcinfo(4),.@treasurex[.@i],.@treasurey[.@i],"Treasure Chest",(.@i%2)?.@treasurebox:1324,1,strnpcinfo(0)+"::OnTreasureDied";
 	for(set .@i,4; .@i<24; set .@i,.@i+1) {
 		if (.@Treasure < .@i+1) break;
-		monster strnpcinfo(2),.@treasurex[.@i],.@treasurey[.@i],"Treasure Chest",(.@i%2)?.@treasurebox:1324,1,strnpcinfo(0)+"::OnTreasureDied";
+		monster strnpcinfo(4),.@treasurex[.@i],.@treasurey[.@i],"Treasure Chest",(.@i%2)?.@treasurebox:1324,1,strnpcinfo(0)+"::OnTreasureDied";
 	}
 	freeloop(0);
 	end;
+
+Emprespawn:
+	set .@str$, substr(getarg(0),0,1)+substr(getarg(0),8,9);
+	if (mobcount(getarg(0),"Steward#"+.@str$+"::OnStartArena")) end;
+	if (compare(getarg(0),"arug")) {
+		if (getarg(0) == "arug_cas01") setarray .@i[0],87,219;
+		else if (getarg(0) == "arug_cas02") setarray .@i[0],89,256;
+		else setarray .@i[0],141,293;	// Castles 3,4,5 are identical.
+	}
+	else {
+		if (getarg(0) == "schg_cas02") setarray .@i[0],162,193;
+		else if (getarg(0) == "schg_cas03") setarray .@i[0],338,202;
+		else setarray .@i[0],120,272;	// Castles 1,4,5 are identical.
+	}
+	monster getarg(0),.@i[0],.@i[1],"Emperium",1288,1,"Steward#"+.@str$+"::OnStartArena";
+	return;
 }
 
 // Castle Guardians
