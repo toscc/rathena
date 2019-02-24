@@ -1047,6 +1047,8 @@ bool pc_memo(struct map_session_data* sd, int pos);
 char pc_checkadditem(struct map_session_data *sd, unsigned short nameid, int amount);
 uint8 pc_inventoryblank(struct map_session_data *sd);
 short pc_search_inventory(struct map_session_data *sd, unsigned short nameid);
+int pc_inventory_count(struct map_session_data *sd, unsigned short nameid);
+
 char pc_payzeny(struct map_session_data *sd, int zeny, enum e_log_pick_type type, struct map_session_data *tsd);
 char pc_additem(struct map_session_data *sd, struct item *item, int amount, e_log_pick_type log_type);
 char pc_getzeny(struct map_session_data *sd, int zeny, enum e_log_pick_type type, struct map_session_data *tsd);

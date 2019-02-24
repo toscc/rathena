@@ -4514,6 +4514,20 @@ short pc_search_inventory(struct map_session_data *sd, unsigned short nameid) {
 	return ( i < MAX_INVENTORY ) ? i : -1;
 }
 
+/**
+* Searching a specified itemid in inventory and return the amount owned
+* @param sd Player
+* @param nameid Find this Item!
+* @return Stored index in inventory, or 0 if not found.
+**/
+int pc_inventory_count(struct map_session_data *sd, unsigned short nameid) {
+	short i;
+	nullpo_retr(-1, sd);
+
+	ARR_FIND(0, MAX_INVENTORY, i, sd->inventory.u.items_inventory[i].nameid == nameid && (sd->inventory.u.items_inventory[i].amount > 0 || nameid == 0));
+	return (i < MAX_INVENTORY) ? sd->inventory.u.items_inventory[i].amount : 0;
+}
+
 /** Attempt to add a new item to player inventory
  * @param sd
  * @param item_data
