@@ -16952,29 +16952,54 @@ void skill_weaponrefine(struct map_session_data *sd, int idx)
 		struct item_data *ditem = sd->inventory_data[idx];
 		item = &sd->inventory.u.items_inventory[idx];
 
-		if(item->nameid > 0 && ditem->type == IT_WEAPON) {
+		if(item->nameid > 0) {
 			int i = 0, per;
-			unsigned short material[5] = { 0, ITEMID_PHRACON, ITEMID_EMVERETARCON, ITEMID_ORIDECON, ITEMID_ORIDECON };
-			if( ditem->flag.no_refine ) { 	// if the item isn't refinable
+			unsigned short material[8] = { 0, ITEMID_PHRACON, ITEMID_EMVERETARCON, ITEMID_ORIDECON, ITEMID_ORIDECON, 985, 6223, 6224 };
+			unsigned short difficulty[8] = { 0, 0, 2000, 400, 500, 1000, 1500, 1200 };
+			if (ditem->flag.no_refine) { 	// if the item isn't refinable
 				clif_skill_fail(sd,sd->menuskill_id,USESKILL_FAIL_LEVEL,0);
 				return;
 			}
-			if( item->refine >= sd->menuskill_val || item->refine >= 10 ) {
+			if( item->refine >= sd->menuskill_val || item->refine >= 20 ) {
 				clif_upgrademessage(sd->fd, 2, item->nameid);
 				return;
 			}
-			if( (i = pc_search_inventory(sd, material [ditem->wlv])) < 0 ) {
-				clif_upgrademessage(sd->fd, 3, material[ditem->wlv]);
+			// Default is armor, Elunium
+			int refreq = 5; 
+			int reftype = 0;
+			// Has weapon level then it's a weapon.
+			if ((ditem->wlv >= 1)) {
+				refreq = ditem->wlv; reftype = ditem->wlv;
+			}
+			// If already +10 or higher, requires Carnium or Bradium instead
+			if (item->refine >= 10)
+			{
+				if (refreq == 5) refreq = 6; else refreq = 7;
+			}
+			// Do we have the material?
+			if( (i = pc_search_inventory(sd, material[refreq])) < 0 ) {
+				clif_upgrademessage(sd->fd, 3, material[refreq]);
 				return;
 			}
-			per = status_get_refine_chance(static_cast<refine_type>(ditem->wlv), (int)item->refine, false);
-			if( sd->class_&JOBL_THIRD )
-				per += 10;
+			// Get base chance of success
+			per = 100*status_get_refine_chance(static_cast<refine_type>(reftype), (int)item->refine, false);
+			
+			// Official success rates, uncomment if necessary
+			/*if( sd->class_&JOBL_THIRD )
+				per += 1000;
 			else
-				per += (((signed int)sd->status.job_level)-50)/2; //Updated per the new kro descriptions. [Skotlex]
+				per += 100*(((signed int)sd->status.job_level)-50)/2; //Updated per the new kro descriptions. [Skotlex]
+			*/
+			// Custom success rates, remove if necessary
+			if (per < 10000) {
+				per -= difficulty[refreq];
+				per += 10 * sd->battle_status.luk + 6 * sd->battle_status.dex;
+				if (sd->sc.data[SC_GLORIA]) per -= 300;
+			}
+			// Custom success rates end
 
 			pc_delitem(sd, i, 1, 0, 0, LOG_TYPE_OTHER);
-			if (per > rnd() % 100) {
+			if (per > rnd() % 10000) {
 				int ep=0;
 				log_pick_pc(sd, LOG_TYPE_OTHER, -1, item);
 				item->refine++;
@@ -17008,15 +17033,27 @@ void skill_weaponrefine(struct map_session_data *sd, int idx)
 					}
 				}
 			} else {
-				item->refine = 0;
-				if(item->equip)
-					pc_unequipitem(sd,idx,3);
-				clif_upgrademessage(sd->fd, 1, item->nameid);
-				clif_refine(sd->fd,1,idx,item->refine);
-				achievement_update_objective(sd, AG_REFINE_FAIL, 1, 1);
-				pc_delitem(sd,idx,1,0,2, LOG_TYPE_OTHER);
-				clif_misceffect(&sd->bl,2);
-				clif_emotion(&sd->bl, ET_HUK);
+				// Custom refining failure : +10 item loses a level instead of being destroyed, can't drop below +10
+				// remove lines marked *** if desired
+				if (item->refine >= 10) { //***
+					if (item->refine > 10) item->refine--; //***
+					clif_upgrademessage(sd->fd, 1, item->nameid);//***
+					clif_refine(sd->fd, 1, idx, item->refine);//***
+					achievement_update_objective(sd, AG_REFINE_FAIL, 1, 1);//***
+					clif_misceffect(&sd->bl, 2);//***
+					clif_emotion(&sd->bl, ET_HUK);//***
+				}//***
+				else {//***
+					item->refine = 0;
+					if (item->equip)
+						pc_unequipitem(sd, idx, 3);
+					clif_upgrademessage(sd->fd, 1, item->nameid);
+					clif_refine(sd->fd, 1, idx, item->refine);
+					achievement_update_objective(sd, AG_REFINE_FAIL, 1, 1);
+					pc_delitem(sd, idx, 1, 0, 2, LOG_TYPE_OTHER);
+					clif_misceffect(&sd->bl, 2);
+					clif_emotion(&sd->bl, ET_HUK);
+				}//***
 			}
 		}
 	}

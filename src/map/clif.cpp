@@ -6774,7 +6774,7 @@ void clif_item_refine_list(struct map_session_data *sd)
 	int i,c;
 	int fd;
 	uint16 skill_lv;
-	int refine_item[5];
+	int refine_item[8];
 
 	nullpo_retv(sd);
 
@@ -6786,19 +6786,37 @@ void clif_item_refine_list(struct map_session_data *sd)
 	refine_item[1] = pc_search_inventory(sd,ITEMID_PHRACON);
 	refine_item[2] = pc_search_inventory(sd,ITEMID_EMVERETARCON);
 	refine_item[3] = refine_item[4] = pc_search_inventory(sd,ITEMID_ORIDECON);
+	refine_item[5] = pc_search_inventory(sd, 985); // Elunium
+	refine_item[6] = pc_search_inventory(sd, 6223); // Carnium for armor +10
+	refine_item[7] = pc_search_inventory(sd, 6224); // Bradium for weapons +10
+	int refreq;
+	unsigned char wlv;
+	int32 eqp;
 
 	WFIFOHEAD(fd, MAX_INVENTORY * 13 + 4);
 	WFIFOW(fd,0) = 0x221;
 	for(i = c = 0; i < MAX_INVENTORY; i++) {
-		unsigned char wlv;
-		if(sd->inventory.u.items_inventory[i].nameid > 0 && sd->inventory.u.items_inventory[i].refine < skill_lv &&
-			sd->inventory.u.items_inventory[i].identify && (wlv = itemdb_wlv(sd->inventory.u.items_inventory[i].nameid)) >=1 &&
-			refine_item[wlv] != -1 && !(sd->inventory.u.items_inventory[i].equip&EQP_ARMS)){
-			WFIFOW(fd,c*13+ 4)=i+2;
-			WFIFOW(fd,c*13+ 6) = sd->inventory.u.items_inventory[i].nameid;
-			WFIFOB(fd,c*13+ 8) = sd->inventory.u.items_inventory[i].refine;
-			clif_addcards(WFIFOP(fd,c*13+9), &sd->inventory.u.items_inventory[i]);
-			c++;
+		if((sd->inventory.u.items_inventory[i].nameid > 0) && (sd->inventory.u.items_inventory[i].refine < skill_lv) &&
+			(sd->inventory.u.items_inventory[i].identify) && !(sd->inventory.u.items_inventory[i].equip)){
+			refreq = 0;
+			wlv = itemdb_wlv(sd->inventory.u.items_inventory[i].nameid);
+			eqp = itemdb_equip(sd->inventory.u.items_inventory[i].nameid);
+			if ((wlv >= 1)) refreq = wlv;
+			else if ((eqp&EQP_SHIELD) && (wlv <= 0)) refreq = 5;
+			else if ((eqp&EQP_SHOES) || (eqp&EQP_GARMENT)
+				|| (eqp&EQP_ARMOR) || (eqp&EQP_HEAD_TOP)
+				|| (eqp&EQP_HEAD_MID) || (eqp&EQP_HEAD_LOW))
+				refreq = 5;
+			if (sd->inventory.u.items_inventory[i].refine >= 10) {
+				if (refreq == 5) refreq = 6; else refreq = 7;
+			} 
+			if ((refreq>0) && (refine_item[refreq]>=0))
+				{
+					WFIFOW(fd, c * 13 + 4) = i + 2;
+					WFIFOW(fd, c * 13 + 6) = sd->inventory.u.items_inventory[i].nameid;
+					WFIFOB(fd, c * 13 + 8) = sd->inventory.u.items_inventory[i].refine;
+					clif_addcards(WFIFOP(fd, c * 13 + 9), &sd->inventory.u.items_inventory[i]);
+					c++; }
 		}
 	}
 	WFIFOW(fd,2)=c*13+4;
