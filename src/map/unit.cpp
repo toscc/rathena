@@ -4088,6 +4088,43 @@ int targetangelus(block_list * bl, va_list ap)
 	return 0;
 }
 
+int targetadrenaline(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
+	if (!(((sd->status.weapon == W_MACE) || (sd->status.weapon == W_1HAXE) || (sd->status.weapon == W_2HAXE)))) return 0;
+	if ((!sd->sc.data[SC_ADRENALINE]) && (!sd->sc.data[SC_ADRENALINE2])) { targetbl = bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
+int targetadrenaline2(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
+	if (!sd->sc.data[SC_ADRENALINE2]) { targetbl = bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
+int targetwperfect(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
+	if (!sd->sc.data[SC_WEAPONPERFECTION]) { targetbl = bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
+int targetovert(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
+	if ((!sd->sc.data[SC_OVERTHRUST]) && (!sd->sc.data[SC_MAXOVERTHRUST])){ targetbl = bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
 int targetmagnificat(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
@@ -4725,13 +4762,6 @@ void skillwhenidle(struct map_session_data *sd) {
 			unit_skilluse_ifable(&sd->bl, SELF, PF_MEMORIZE, pc_checkskill(sd, PF_MEMORIZE));
 		}
 	}
-	
-	// Aura Blade
-	if (pc_checkskill(sd, LK_AURABLADE) > 0) {
-		if (!(sd->sc.data[SC_AURABLADE])) {
-			unit_skilluse_ifable(&sd->bl, SELF, LK_AURABLADE, pc_checkskill(sd, LK_AURABLADE));
-		}
-	}
 
 	// Cart Boost
 	if (pc_checkskill(sd, WS_CARTBOOST) > 0) {
@@ -4755,74 +4785,6 @@ void skillwhenidle(struct map_session_data *sd) {
 			char* msg = "My repair material set is incomplete! (Iron Ore, Iron, Steel, Rough Oridecon)";
 			saythis(sd, msg, 50);
 
-		}
-	}
-
-	// Auto Guard
-	if (pc_checkskill(sd, CR_AUTOGUARD) > 0) {
-		if (!(sd->sc.data[SC_AUTOGUARD]))
-			if (sd->status.shield > 0) {
-				unit_skilluse_ifable(&sd->bl, SELF, CR_AUTOGUARD, pc_checkskill(sd, CR_AUTOGUARD));
-			}
-	}
-	// Reflect Shield
-	if (pc_checkskill(sd, CR_REFLECTSHIELD) > 0) {
-		if (!(sd->sc.data[SC_REFLECTSHIELD]))
-			if (sd->status.shield > 0) {
-				unit_skilluse_ifable(&sd->bl, SELF, CR_REFLECTSHIELD, pc_checkskill(sd, CR_REFLECTSHIELD));
-			}
-	}
-
-	// Spear quicken
-	// Only in tanking mode. There is no point in ASPD if not using normal attacks.
-	if (pc_checkskill(sd, CR_SPEARQUICKEN) > 0) {
-		if ((sd->status.weapon == W_1HSPEAR) || (sd->status.weapon == W_2HSPEAR))
-			if (sd->state.autopilotmode==1)
-		if (!(sd->sc.data[SC_SPEARQUICKEN])) {
-			unit_skilluse_ifable(&sd->bl, SELF, CR_SPEARQUICKEN, pc_checkskill(sd, CR_SPEARQUICKEN));
-		}
-	}
-
-	// 2H quicken
-	// Only in tanking mode. There is no point in ASPD if not using normal attacks.
-	if (pc_checkskill(sd, KN_TWOHANDQUICKEN) > 0) {
-		if ((sd->status.weapon == W_2HSWORD))
-			if (sd->state.autopilotmode == 1)
-				if (!(sd->sc.data[KN_TWOHANDQUICKEN])) {
-					unit_skilluse_ifable(&sd->bl, SELF, KN_TWOHANDQUICKEN, pc_checkskill(sd, KN_TWOHANDQUICKEN));
-				}
-	}
-
-	// 1H quicken
-	// Only in tanking mode. There is no point in ASPD if not using normal attacks.
-	if (pc_checkskill(sd, KN_ONEHAND) > 0) {
-		if ((sd->status.weapon == W_1HSWORD))
-			if (sd->state.autopilotmode == 1)
-				if (!(sd->sc.data[KN_ONEHAND])) {
-					unit_skilluse_ifable(&sd->bl, SELF, KN_ONEHAND, pc_checkskill(sd, KN_ONEHAND));
-				}
-	}
-
-	// Parrying
-	if (pc_checkskill(sd, LK_PARRYING) > 0) {
-		if ((sd->status.weapon == W_2HSWORD))
-				if (!(sd->sc.data[LK_PARRYING])) {
-					unit_skilluse_ifable(&sd->bl, SELF, LK_PARRYING, pc_checkskill(sd, LK_PARRYING));
-				}
-	}
-
-	
-
-	// Attention Concentrate
-	if (pc_checkskill(sd, AC_CONCENTRATION) > 0) {
-		if (!(sd->sc.data[SC_CONCENTRATE])) {
-			unit_skilluse_ifable(&sd->bl, SELF, AC_CONCENTRATION, pc_checkskill(sd, AC_CONCENTRATION));
-		}
-	}
-	// Crazy Uproar
-	if (pc_checkskill(sd, MC_LOUD) > 0) {
-		if (!(sd->sc.data[SC_LOUD])) {
-			unit_skilluse_ifable(&sd->bl, SELF, MC_LOUD, pc_checkskill(sd, MC_LOUD));
 		}
 	}
 
@@ -5235,6 +5197,41 @@ TIMER_FUNC(unit_autopilot_timer)
 				unit_skilluse_ifable(&sd->bl, SELF, AL_ANGELUS, pc_checkskill(sd, AL_ANGELUS));
 			}
 		}
+		/// Advanced Adrenaline Rush
+		if (canskill(sd)) if (pc_checkskill(sd, BS_ADRENALINE2)>0) {
+			resettargets();
+			map_foreachinrange(targetadrenaline, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, SELF, BS_ADRENALINE2, pc_checkskill(sd, BS_ADRENALINE2));
+			}
+		}
+		/// Adrenaline Rush
+		if (canskill(sd)) if (pc_checkskill(sd, BS_ADRENALINE)>0) {
+			resettargets();
+			map_foreachinrange(targetadrenaline, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, SELF, BS_ADRENALINE, pc_checkskill(sd, BS_ADRENALINE));
+			}
+		}
+		/// Weapon Perfection
+		if (canskill(sd)) if (pc_checkskill(sd, BS_WEAPONPERFECT)>0) {
+			resettargets();
+			map_foreachinrange(targetwperfect, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, SELF, BS_WEAPONPERFECT, pc_checkskill(sd, BS_WEAPONPERFECT));
+			}
+		}
+		/// Over Thrust
+		if (canskill(sd)) if (pc_checkskill(sd, BS_OVERTHRUST)>0) {
+			resettargets();
+			map_foreachinrange(targetovert, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, SELF, BS_OVERTHRUST, pc_checkskill(sd, BS_OVERTHRUST));
+			}
+		}
+
+		
+
 		/// Inc Agi
 		if (canskill(sd)) if (pc_checkskill(sd, AL_INCAGI)>0) {
 			resettargets();
@@ -5348,6 +5345,92 @@ TIMER_FUNC(unit_autopilot_timer)
 			map_foreachinrange(targetmanus, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, PR_IMPOSITIO, pc_checkskill(sd, PR_IMPOSITIO));
+			}
+		}
+		// Aura Blade
+		if (pc_checkskill(sd, LK_AURABLADE) > 0) {
+			if (!(sd->sc.data[SC_AURABLADE])) {
+				unit_skilluse_ifable(&sd->bl, SELF, LK_AURABLADE, pc_checkskill(sd, LK_AURABLADE));
+			}
+		}
+		// Maximize Power
+		if (pc_checkskill(sd, BS_MAXIMIZE) > 0) {
+			if (!(sd->sc.data[SC_MAXIMIZEPOWER])) {
+				unit_skilluse_ifable(&sd->bl, SELF, BS_MAXIMIZE, pc_checkskill(sd, BS_MAXIMIZE));
+			}
+		}
+		// Maximum Over Thrust
+		if (pc_checkskill(sd, WS_OVERTHRUSTMAX) > 0) {
+			if (!(sd->sc.data[SC_MAXOVERTHRUST])) {
+				unit_skilluse_ifable(&sd->bl, SELF, WS_OVERTHRUSTMAX, pc_checkskill(sd, WS_OVERTHRUSTMAX));
+			}
+		}
+		// Auto Guard
+		if (pc_checkskill(sd, CR_AUTOGUARD) > 0) {
+			if (!(sd->sc.data[SC_AUTOGUARD]))
+				if (sd->status.shield > 0) {
+					unit_skilluse_ifable(&sd->bl, SELF, CR_AUTOGUARD, pc_checkskill(sd, CR_AUTOGUARD));
+				}
+		}
+		// Reflect Shield
+		if (pc_checkskill(sd, CR_REFLECTSHIELD) > 0) {
+			if (!(sd->sc.data[SC_REFLECTSHIELD]))
+				if (sd->status.shield > 0) {
+					unit_skilluse_ifable(&sd->bl, SELF, CR_REFLECTSHIELD, pc_checkskill(sd, CR_REFLECTSHIELD));
+				}
+		}
+		// Spear quicken
+		// Only in tanking mode. There is no point in ASPD if not using normal attacks.
+		if (pc_checkskill(sd, CR_SPEARQUICKEN) > 0) {
+			if (sd->state.autopilotmode == 1)
+				if (!(sd->sc.data[SC_SPEARQUICKEN])) {
+					unit_skilluse_ifable(&sd->bl, SELF, CR_SPEARQUICKEN, pc_checkskill(sd, CR_SPEARQUICKEN));
+				}
+		}
+
+		// 2H quicken
+		// Only in tanking mode. There is no point in ASPD if not using normal attacks.
+		if (pc_checkskill(sd, KN_TWOHANDQUICKEN) > 0) {
+			if ((sd->status.weapon == W_2HSWORD))
+				if (sd->state.autopilotmode == 1)
+					if (!(sd->sc.data[KN_TWOHANDQUICKEN])) {
+						unit_skilluse_ifable(&sd->bl, SELF, KN_TWOHANDQUICKEN, pc_checkskill(sd, KN_TWOHANDQUICKEN));
+					}
+		}
+
+		// 1H quicken
+		// Only in tanking mode. There is no point in ASPD if not using normal attacks.
+		if (pc_checkskill(sd, KN_ONEHAND) > 0) {
+			if ((sd->status.weapon == W_1HSWORD))
+				if (sd->state.autopilotmode == 1)
+					if (!(sd->sc.data[KN_ONEHAND])) {
+						unit_skilluse_ifable(&sd->bl, SELF, KN_ONEHAND, pc_checkskill(sd, KN_ONEHAND));
+					}
+		}
+		// Parrying
+		if (pc_checkskill(sd, LK_PARRYING) > 0) {
+			if ((sd->status.weapon == W_2HSWORD))
+				if (!(sd->sc.data[LK_PARRYING])) {
+					unit_skilluse_ifable(&sd->bl, SELF, LK_PARRYING, pc_checkskill(sd, LK_PARRYING));
+				}
+		}
+		// Concentration
+		if (pc_checkskill(sd, LK_CONCENTRATION) > 0) if (sd->state.enableconc) {
+			if (!(sd->sc.data[SC_CONCENTRATION])) {
+				unit_skilluse_ifable(&sd->bl, SELF, LK_CONCENTRATION, pc_checkskill(sd, LK_CONCENTRATION));
+			}
+		}
+
+		// Attention Concentrate
+		if (pc_checkskill(sd, AC_CONCENTRATION) > 0) {
+			if (!(sd->sc.data[SC_CONCENTRATE])) {
+				unit_skilluse_ifable(&sd->bl, SELF, AC_CONCENTRATION, pc_checkskill(sd, AC_CONCENTRATION));
+			}
+		}
+		// Crazy Uproar
+		if (pc_checkskill(sd, MC_LOUD) > 0) {
+			if (!(sd->sc.data[SC_LOUD])) {
+				unit_skilluse_ifable(&sd->bl, SELF, MC_LOUD, pc_checkskill(sd, MC_LOUD));
 			}
 		}
 		// Providence
@@ -6083,12 +6166,23 @@ TIMER_FUNC(unit_autopilot_timer)
 					unit_skilluse_ifable(&sd->bl, SELF, LK_BERSERK, pc_checkskill(sd, LK_BERSERK));
 				}
 			}
-			// Concentration
-			if (pc_checkskill(sd, LK_CONCENTRATION) > 0) if (sd->state.enableconc) {
-				if (!(sd->sc.data[SC_CONCENTRATION])) {
-					unit_skilluse_ifable(&sd->bl, SELF, LK_CONCENTRATION, pc_checkskill(sd, LK_CONCENTRATION));
+
+			// Hammerfall
+			// If 4 or more things are attacking us and the nearest is in range and can be stunned
+			// Don't bother at low skill levels, at least require 50% chance to stun
+			if (canskill(sd)) if (pc_checkskill(sd, BS_HAMMERFALL) >= 3) {
+				if ((sd->status.weapon == W_MACE) || (sd->status.weapon == W_1HAXE) || (sd->status.weapon == W_2HAXE))
+					if (Dangerdistance <= 2) {
+					if (dangercount>=4) {
+						if (!isdisabled(dangermd))
+							if (!(dangermd->status.def_ele == ELE_UNDEAD)) {
+								if (!((status_get_class_(dangerbl) == CLASS_BOSS)))
+									unit_skilluse_ifablexy(&sd->bl, founddangerID, BS_HAMMERFALL, pc_checkskill(sd, BS_HAMMERFALL));
+							}
+					}
 				}
 			}
+
 
 			// Grand Cross
 			// Must have at least 54% HP remaining to risk using this
