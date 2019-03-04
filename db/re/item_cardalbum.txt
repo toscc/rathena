@@ -445,3 +445,4 @@ IG_MagicCardAlbum,4384,1	// Hydro Card
 IG_MagicCardAlbum,4395,3	// Thanatos Maero Card
 IG_MagicCardAlbum,4396,3	// Thanatos Odium Card
 IG_MagicCardAlbum,4397,3	// Thanatos Despero Card
+IG_MagicCardAlbum,616,100	// Old Card Album

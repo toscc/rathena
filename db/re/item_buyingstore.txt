@@ -1034,7 +1034,7 @@
 606	//Aloebera
 607	//Yggdrasilberry
 608	//Seed_Of_Yggdrasil
-609	//Amulet
+609  // Amulet
 610	//Leaf_Of_Yggdrasil
 611	//Spectacles
 612	//Portable_Furnace
@@ -1043,7 +1043,7 @@
 615	//Oridecon_Hammer
 616	//Old_Card_Album
 617	//Old_Violet_Box
-618	//Worn_Out_Scroll
+618  // Worn_Out_Scroll
 619	//Unripe_Apple
 620	//Orange_Juice
 621	//Bitter_Herb
@@ -1731,7 +1731,7 @@
 7033	//Poison_Spore
 7034	//Red_Socks_With_Holes
 7035	//Matchstick
-7036	//Fang_Of_Garm
+7036  // Fang_Of_Garm
 7038	//Yarn
 7041	//Fine_Grit
 7043	//Fine_Sand

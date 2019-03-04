@@ -1308,7 +1308,6 @@
 12275,507,100	// Gold_Pill_2
 12276,475,100	// Mimic_Scroll
 12277,475,100	// Disguise_Scroll
-12278,475,100	// Alice_Scroll
 12287,507,100	// Love_Angel
 12288,507,100	// Squirrel
 12289,507,100	// Gogo
@@ -2238,7 +2237,6 @@
 14032,475,100	// F_Alice_Scroll_Box5
 14033,475,100	// F_Mimic_Scroll_Box10
 14034,475,100	// F_Disguise_Scroll_Box10
-14035,475,100	// F_Alice_Scroll_Box10
 14036,475,100	// F_New_Style_Coupon_Box
 14037,475,100	// F_Repair_Scroll_Box
 14038,475,100	// F_Repair_Scroll_Box10
