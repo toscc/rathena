@@ -1862,3 +1862,4 @@ IG_Ultimate,2992,1
 IG_Ultimate,31843,1
 IG_Ultimate,31902,1
 IG_Ultimate,31903,1
+IG_GoodHeadgear,31905,1

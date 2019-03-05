@@ -1006,7 +1006,7 @@
 12619	//Cgrade_Pocket
 12620	//Dgrade_Pocket
 12621	//Egrade_Pocket
-12623	//High_Weapon_Box
+12623  // High_Weapon_Box
 12675	//Sg_Weapon_Supply_Box
 12676	//Sg_Violet_Potion_Box
 12677	//Siege_Arrow_Quiver_S

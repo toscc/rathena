@@ -1106,7 +1106,6 @@
 7767,475,100	// Chung_E_Cake
 7773,499,100	// War_Badge
 7775,475,100	// Spring_Rabbit_Ticket
-7776,475,100	// Max_Weight_Up_Scroll
 7779,475,100	// Gold_Key_TW
 7780,475,100	// Silver_Key
 7784,475,100	// Fawner_Coupon1

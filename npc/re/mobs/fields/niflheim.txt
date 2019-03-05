@@ -24,7 +24,7 @@ niflheim,0,0	monster	Quve	1508,20,5000
 niflheim,0,0	monster	Gibbet	1503,10,5000
 niflheim,0,0	monster	Heirozoist	1510,10,5000
 niflheim,0,0	monster	Dullahan	1504,5,5000
-niflheim,0,0,	monster Seravy's Loli Ruri	29999,1,300000;
+niflheim,0,0,	monster	Seravy's Loli Ruri	29999,1,300000;
 
 //==================================================
 // nif_fild01 - Skellington, a Solitary Village in Niflheim

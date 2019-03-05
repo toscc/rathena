@@ -169,7 +169,7 @@
 2353:5123,{ if(readparam(bDex)>69) bonus bUseSPrate,-10; }
 2353:5493,{ if(readparam(bDex)>69) bonus bUseSPrate,-10; }
 2354:2419:2520:5128,{ bonus bVit,5; bonus bMaxHPrate,15; bonus bMaxSPrate,5; bonus bDef,5; bonus bMdef,15; bonus2 bSubEle,Ele_Water,10; bonus2 bSubEle,Ele_Earth,10; bonus2 bSubEle,Ele_Fire,10; bonus2 bSubEle,Ele_Wind,10; }
-2357:2421:2524:5171,{ bonus bAllStats,1; }
+2357:2421:2524:5171,{ bonus bAllStats,3; }
 2358:5153,{ bonus bLuk,6; bonus bFlee,5; bonus bInt,2; }
 2359:2654,{ bonus bUseSPrate,-20; bonus bMaxHP,300; }
 2365:2881,{ bonus bDelayRate,-15; }
