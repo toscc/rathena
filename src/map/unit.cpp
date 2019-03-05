@@ -6151,11 +6151,13 @@ TIMER_FUNC(unit_autopilot_timer)
 		// Find nearest enemy
 		resettargets();
 		// No leader then closest to ourselves we can see
-		if (leaderID == -1) {
+		//if (leaderID == -1) {
+		if ((!p) || (leaderID == sd->bl.id)) {
 			map_foreachinrange(targetnearestwalkto, &sd->bl, 12, BL_MOB, sd);
 		}
-		// but if leader exists then still closest to us but in leader's range
-		else {
+		// but if leader exists, then still closest to us but in leader's range
+		// If leader does not exist, we are not leader, and we are in party, then leader is on another map. Do not attack things, follow them.
+		else if (leaderID>-1) {
 			map_foreachinrange(targetnearestwalkto, leaderbl, 14, BL_MOB, sd);
 			// have to walk too many tiles means the target is probably behind some wall. Don't try to engage it, even if maxpath allows.
 			if (targetdistance > 29) { foundtargetID = -1; }
