@@ -3497,6 +3497,7 @@ int dangerdistancebest;
 struct block_list * dangerbl;
 struct mob_data * dangermd;
 int dangercount;
+int warpx, warpy;
 
 // nearest monster or other object the player can walk to
 int targetnearestwarp(block_list * bl, va_list ap)
@@ -3614,6 +3615,33 @@ int targetsoulexchange(block_list * bl, va_list ap)
 	if ((dist > targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS))) { targetdistance = dist; foundtargetID = bl->id; targetbl = bl; };
 
 	return 1;
+}
+
+int warplocation(block_list * bl, va_list ap)
+{
+
+struct unit_data *ud2;
+ud2 = unit_bl2ud(bl);
+
+struct map_session_data *sd2;
+sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+
+int i;
+for (i = 0; i < MAX_SKILLUNITGROUP && ud2->skillunit[i]; i++) {
+	if (ud2->skillunit[i]->skill_id == AL_WARP)
+	{
+		int dist = distance_bl(&sd2->bl, bl);
+		if (dist<16)
+			if (path_search_long(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, ud2->skillunit[i]->unit->bl.x, ud2->skillunit[i]->unit->bl.y, CELL_CHKWALL)) {
+				warpx = ud2->skillunit[i]->unit->bl.x;
+				warpy = ud2->skillunit[i]->unit->bl.y;
+				return 1;
+			}
+
+//		if (((abs(ud2->skillunit[i]->unit->bl.x - ((sd2->bl.x + bl->x) / 2)) < 3) && (abs(ud2->skillunit[i]->unit->bl.y - ((sd2->bl.y + bl->y) / 2)) < 3))) return 0;
+}
+	}
+return 0;
 }
 
 int targetbluepitcher(block_list * bl, va_list ap)
@@ -4877,7 +4905,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		if (leaderID > -1) { leaderdistance = distance_bl(leaderbl, bl); }
 	}
 
-	// Stand up if sitting and leader isn'tleader
+	// Stand up if sitting and leader isn't
 	if (leaderID>-1) if (!pc_issit(leadersd)) {
 		if (pc_issit(sd) && pc_setstand(sd, false)) {
 			skill_sit(sd, 0);
@@ -4885,7 +4913,15 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 
 	}
-	
+
+	// Find Warp to enter
+	warpx = -9999; warpy = -9999;
+	map_foreachinmap(warplocation, sd->bl.m, BL_PC, sd);
+	if (warpx != -9999) {
+		newwalk(&sd->bl, warpx, warpy, 0);
+		return 0;
+	}
+
 	if pc_issit(sd) { return 0; }
 	recoversp(sd, sd->state.autospgoal);
 	sd->state.asurapreparation = false;
