@@ -1929,6 +1929,15 @@ IG_GoodHeadgear,5354,1
 IG_GoodHeadgear,5358,1
 IG_GoodHeadgear,5359,1
 IG_GoodHeadgear,5362,1
+IG_GoodHeadgear,5364,1
+IG_GoodHeadgear,5377,1
+IG_GoodHeadgear,5378,1
+IG_GoodHeadgear,5382,1
+IG_GoodHeadgear,5387,1
+IG_GoodHeadgear,5389,1
+IG_GoodCostume,5390,1
+IG_GoodHeadgear,5393,1
+IG_GoodHeadgear,5398,1
 
 
 

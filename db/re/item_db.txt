@@ -3541,16 +3541,16 @@
 5361,Gang_Scarf,Gangster Scarf,4,20,,100,,0,,0,0xFFFFFFFF,63,2,1,,0,0,369,{ bonus bBaseAtk,5; if(BaseJob==Job_Rogue) skill "RG_GANGSTER",1; },{},{}
 5362,Ninja_Scroll,Ninja Scroll,4,20,,200,,0,,0,0xFFFFFFFF,63,2,1,,0,0,370,{ bonus bMatkRate,1; },{},{}
 5363,Helm_Of_Abyss,Helm Of Abyss,4,20,,1000,,9,,1,0x000654E2,63,2,256,,70,1,371,{ bonus2 bSubClass,Class_Normal,-5; bonus2 bSubClass,Class_Boss,10; },{},{}
-5364,Dark_Snake_Lord_Hat,Evil Snake Lord Hat,4,20,,500,,4,,1,0xFFFFFFFF,63,2,256,,60,1,372,{ bonus bStr,1; bonus bInt,1; bonus bAgi,2; bonus2 bAddMonsterDropItem,12582,30; },{},{}
+5364,Dark_Snake_Lord_Hat,Evil Snake Lord Hat,4,20,,500,,4,,1,0xFFFFFFFF,63,2,256,,60,1,372,{ bonus bMatk,12; },{},{}
 5365,Fried_Egg,Magnolia Hat,4,20,,100,,2,,1,0xFFFFFFFF,63,2,256,,1,0,373,{ bonus bBaseAtk,5; bonus3 bAutoSpellWhenHit,"BS_GREED",1,5; },{},{}
 5366,Hat_0f_King,Love Dad Bandana,4,20,,200,,5,,0,0xFFFFFFFF,63,2,256,,0,1,374,{ bonus bAllStats,5; },{},{}
 5367,Hyegun_Hat,Hyegun Hat,4,20,,100,,5,,1,0xFFFFFFFF,63,2,769,,10,0,375,{ bonus bMdef,3; bonus2 bSubRace,RC_Demon,10; },{},{}
 5368,White_Wing,White Wing,4,20,,100,,4,,0,0xFFFFFFFF,63,2,256,,0,1,38,{ bonus2 bAddMonsterDropItem,12280,300; },{},{}
 5369,Dark_Wing,Dark Wing,4,20,,100,,4,,0,0xFFFFFFFF,63,2,256,,0,1,39,{ bonus2 bAddMonsterDropItem,12279,300; },{},{}
-5370,Orchid_Hairband,Orchid Hairband,4,20,,200,,1,,0,0xFFFFFFFF,63,2,256,,0,1,376,{ bonus bInt,1; },{},{}
+5370,Orchid_Hairband,Orchid Hairband,4,25000,,200,,1,,1,0xFFFFFFFF,63,2,256,,0,1,376,{ bonus bInt,1; },{},{}
 5371,Hat_Of_Judge,Judge Hat,4,20,,300,,2,,0,0xFFFFFFFF,63,2,768,,0,1,377,{ bonus bLuk,1; bonus bMaxSP,30; },{},{}
 5372,Drooping_White_Kitty,Koneko Hat,4,20,,500,,3,,0,0xFFFFFFFF,63,2,256,,0,1,378,{ bonus bInt,1; bonus bDelayRate,-3; bonus bMatkRate,3; bonus bMaxSPrate,3; bonus bMdef,3; },{},{}
-5373,Darkness_Helm,Dark Randgris Helm,4,20,,300,,2,,1,0xFFFFFFFF,63,2,768,,0,1,379,{ bonus bDex,3; bonus bMdef,1; },{},{}
+5373,Darkness_Helm,Dark Randgris Helm,4,20,,300,,2,,1,0xFFFFFFFF,63,2,768,,0,1,379,{ bonus bDex,5; bonus bMdef,1; },{},{}
 5374,L_Magestic_Goat,Gigantic Majestic Goat,4,20,,800,,10,,0,0xFFFFFFFF,63,2,256,,0,1,380,{ bonus2 bAddRace,RC_DemiHuman,12; bonus2 bAddRace,RC_Player,12; bonus bBaseAtk,(JobLevel*2)/7; },{},{}
 5375,L_Orc_Hero_Helm,Orc Hero Headdress,4,20,,900,,5,,1,0xFFFFFFFF,63,2,768,,0,1,381,{ bonus bStr,2; bonus3 bAutoSpellWhenHit,"BS_WEAPONPERFECT",3,10; },{},{}
 5376,Satanic_Chain_P,Flying Evil Wing,4,20,,100,,6,,1,0xFFFFFFFF,63,2,256,,0,1,382,{ bonus bMaxSP,120; bonus2 bAddEff2,Eff_Curse,10; },{},{}
@@ -3559,7 +3559,7 @@
 5379,Balloon_Hat,Tam,4,0,,800,,5,,1,0xFFFFFFFF,63,2,256,,50,1,385,{ bonus bMdef,2; bonus bMatkRate,2+(getrefine()/2); },{},{}
 5380,Fish_Head_Hat,Fish Head Hat,4,20,,400,,2,,0,0xFFFFFFFF,63,2,256,,0,1,386,{ bonus3 bAutoSpell,"SA_FROSTWEAPON",1,5; },{},{}
 5381,Santa_Poring_Hat,Santa Poring Hat,4,20,,100,,4,,1,0xFFFFFFFF,63,2,256,,0,0,387,{ bonus bMdef,2; bonus2 bAddEle,Ele_Dark,3; bonus2 bSubEle,Ele_Dark,3; },{},{}
-5382,Bell_Ribbon,Bell Ribbon,4,20,,200,,5,,1,0xFFFFFFFF,63,2,256,,0,1,388,{ bonus bVit,1; skill "AL_ANGELUS",1; },{},{ sc_end SC_ANGELUS; }
+5382,Bell_Ribbon,Bell Ribbon,4,20,,200,,5,,1,0xFFFFFFFF,63,2,256,,0,1,388,{ bonus bVit,2; skill "AL_ANGELUS",3; },{},{ sc_end SC_ANGELUS; }
 5383,Hunting_Cap,Hunter's Cap,4,20,,250,,6,,1,0xFFFFFFFE,63,2,256,,50,1,389,{ bonus bLuk,1; bonus2 bAddRace,RC_Brute,10; bonus2 bAddRace,RC_DemiHuman,5; bonus2 bAddRace,RC_Player,5; },{},{}
 5384,Santa_Hat_1,Twin Pompom By JB,4,20,,200,,2,,1,0xFFFFFFFF,63,2,256,,20,1,390,{ bonus bLuk,3; skill "WZ_ESTIMATION",1; bonus3 bAutoSpell,"AL_INCAGI",1,500; },{},{}
 5385,Yoyo_Hat,Yoyo Hat,4,20,,300,,2,,0,0xFFFFFFFF,63,2,256,,20,1,391,{ skill "TF_HIDING",1; },{},{ sc_end SC_HIDING; }
@@ -3567,7 +3567,7 @@
 5387,Neko_Mimi_Kafra,Neko Mimi Kafra,4,20,,200,,1,,1,0xFFFFFFFF,63,2,256,,30,1,392,{ bonus bMdef,5; bonus2 bAddEffWhenHit,Eff_Silence,1000; bonus2 bAddEffWhenHit,Eff_Poison,1000; bonus2 bAddEffWhenHit,Eff_Curse,1000; bonus2 bAddEffWhenHit,Eff_Blind,1000; bonus2 bAddEffWhenHit,Eff_Stone,1000; bonus2 bAddEffWhenHit,Eff_Freeze,1000; bonus2 bAddEffWhenHit,Eff_Stun,1000; bonus2 bAddEffWhenHit,Eff_Sleep,1000; },{},{}
 5388,Snake_Head,Snake Head Hat,4,20,,200,,2,,1,0xFFFFFFFF,63,2,256,,30,1,393,{ skill "TF_DOUBLE",5; bonus bDoubleRate,25; },{},{}
 5389,Angel_Spirit,Angel Spirit,4,20,,200,,0,,0,0xFFFFFFFF,63,2,512,,0,0,394,{ bonus bStr,2; bonus bHit,15; },{},{}
-5390,Santa_Hat_2,Frozen Twin Pompom,4,20,,100,,4,,0,0xFFFFFFFF,63,2,256,,0,1,395,{ bonus2 bResEff,Eff_Freeze,3000; },{},{}
+5390,Santa_Hat_2,Frozen Twin Pompom,4,40000,,0,,0,,0,0xFFFFFFFF,63,2,1024,,0,0,395,{},{},{}
 5391,Toast_C,Toast,4,20,,0,,1,,0,0xFFFFFFFF,63,2,1,,0,0,188,{ bonus bMaxHP,100; bonus2 bAddMonsterDropItem,617,10; },{},{}
 5392,Louyang_Cap,Louyang NewYear Hat,4,20,,300,,6,,1,0xFFFFFFFF,63,2,256,,0,1,396,{ bonus bLuk,2; },{},{}
 5393,Valentine_Hat,Love Valentine's Hat,4,20,,200,,4,,0,0xFFFFFFFF,63,2,256,,0,0,397,{ bonus bMaxSPrate,7; bonus bMaxHPrate,7; },{},{}
