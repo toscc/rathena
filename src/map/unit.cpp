@@ -7242,10 +7242,19 @@ TIMER_FUNC(unit_autopilot_timer)
 			// If there is a leader and we haven't found a target in their area, stay near them.
 			// Note : maxwalkpath needs to be very high otherwise we fail to follow!
 			if ((leaderID > -1) && (leaderID != sd->bl.id)) {
-				if (leaderdistance >= 2) {
-					newwalk(&sd->bl, leaderbl->x + rand() % 3 - 1, leaderbl->y + rand() % 3 - 1, 8);
+				if (sd->state.autopilotmode != 1) {
+					if (leaderdistance >= 2) {
+						newwalk(&sd->bl, leaderbl->x + rand() % 3 - 1, leaderbl->y + rand() % 3 - 1, 8);
+					}
+				} // If tanking mode, try to get slightly ahead of leader
+				else {
+					int tankdestinationx = leaderbl->x + 2* dirx[leadersd->ud.dir];
+					int tankdestinationy = leaderbl->y + 2* diry[leadersd->ud.dir];
+					if ((abs(tankdestinationx - sd->bl.x) >= 2) || (abs(tankdestinationy - sd->bl.y) >= 2)) {
+						newwalk(&sd->bl, tankdestinationx + rand() % 3 - 1, tankdestinationy + rand() % 3 - 1, 8);
 					}
 				}
+			}
 				else if ((p) && (leaderID != sd->bl.id)) {
 					resettargets();
 					// leader wasn't on map, target nearest NPC. Hopefully it's the warp the leader entered.
