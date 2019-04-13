@@ -1678,7 +1678,7 @@
 13307,499,100	// Krieger_Huuma_Shuriken1
 13308,507,100	// Huuma_Blaze_I
 13309,507,100	// Huuma_Giant_Wheel_C
-13310,499,100	// P_Huuma_Suriken1
+13310,499,100	// P_Huuma_Shuriken1
 13312,507,100	// Huuma_Job_Test
 13317,499,100	// TE_Woe_Huuma
 13322,499,100	// Huuma_Metal_Shuriken

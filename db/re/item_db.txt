@@ -7495,7 +7495,7 @@
 13307,Krieger_Huuma_Shuriken1,Glorious Shuriken,5,20,,0,55:90,,1,0,0x02000000,63,2,34,4,80,1,22,{ bonus2 bAddRace,RC_DemiHuman,95; bonus2 bAddRace,RC_Player,95; bonus2 bIgnoreDefRaceRate,RC_DemiHuman,20; bonus2 bIgnoreDefRaceRate,RC_Player,20; bonus bMatkRate,15; autobonus "{ bonus2 bSkillAtk,\"NJ_HUUMA\",100; bonus2 bSkillAtk,\"NJ_ISSEN\",100; }",50,10000; bonus bUnbreakableWeapon; .@r = getrefine(); if(.@r>5) { bonus2 bAddRace,RC_DemiHuman,pow(min(14,.@r)-3,2); bonus2 bAddRace,RC_Player,pow(min(14,.@r)-3,2); bonus2 bIgnoreDefRaceRate,RC_DemiHuman,5; bonus2 bIgnoreDefRaceRate,RC_Player,5; } if(.@r>8) { bonus5 bAutoSpellOnSkill,"NJ_ISSEN","AL_HEAL",10,1000,1; bonus4 bAutoSpellOnSkill,"NJ_HUUMA","NPC_CRITICALWOUND",2,200; } },{},{}
 13308,Huuma_Blaze_I,Huuma Blaze Shuriken,5,0,,0,230,,1,0,0x02000000,63,2,34,4,0,0,22,{ bonus bUnbreakableWeapon; bonus bAtkEle,Ele_Fire; bonus bDex,2; },{},{}
 13309,Huuma_Giant_Wheel_C,Huuma Giant Wheel Shuriken,5,0,,0,99,,1,0,0x02000000,63,2,34,4,1,0,22,{ bonus2 bAddSize,Size_All,80; },{},{}
-13310,P_Huuma_Shuriken1,P.Huuma Suriken I,5,0,,0,150:50,,1,0,0x02000000,63,2,34,3,60,0,22,{},{},{}
+13310,P_Huuma_Shuriken1,P.Huuma Suriken I,5,0,,0,140:50,,1,0,0x02000000,63,2,34,3,60,0,22,{},{},{}
 13311,Huuma_Shadow,Sword Huuma Shuriken,5,5000,,1500,170,,1,0,0x02000000,63,2,34,3,99,1,22,{ bonus bStr,3; },{},{}
 13312,Huuma_Job_Test,Prototype Huuma Shuriken,5,0,,3000,0,,1,0,0x02000000,63,2,34,4,99,1,22,{},{},{}
 13313,Huuma_Swirling_Petal,Flower Huuma Shuriken,5,100000,,1500,150:50,,1,2,0x02000000,63,2,34,3,110,1,22,{ bonus2 bSkillAtk,"KO_HUUMARANKA",20; },{},{}
