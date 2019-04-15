@@ -1,0 +1,44 @@
+prontera,146,167,6	script	Rich Girl::richgirlreins	612,{
+if (checkquest(30180)==-1) {
+mes "[Rich Girl]";
+mes "Oh, you're walking on your FEET????!!!";
+mes "What a commoner... how dare you talk to me like that?";
+next;
+mes "[Rich Girl]";
+mes "An advanturer you say?";
+mes "All the more reason you should be riding a mount! Not only is it more noble, but faster too!";
+mes "The ability to escape quickly might save your life you know?";
+next;
+mes "[Rich Girl]";
+mes "I can let you have one... oh, don't worry, our stables have hundreds of these, I don't mind.";
+mes "Your life is more important!";
+next;
+mes "[Rich Girl]";
+mes "Not so fast!";
+mes "You have to first prove you are what you claim. This should be easy for a REAL adventurer!";
+mes "Go and kill a Soldier Skeleton, 7 Poison Spores, a Myst Case, a Bigfoot, and... let me think...";
+next;
+mes "[Rich Girl]";
+mes "Yes, the last one should be a bit harder...";
+mes "How does dragon slaying sound? Hey, stop shaking, I don't mean that sort of dragon...";
+mes "I'm doing this to save your life you know? I wouldn't send you after something that dangerous!";
+mes "So, go and kill a Dragon Fly for me, and return after you killed everything!";
+setquest 30180;
+setquest 30181;
+close;} else {
+if ((checkquest(30180,HUNTING)==2) && (checkquest(30181,HUNTING)==2)) {
+mes "[Rich Girl]";
+mes "Amazing, you're a real adventurer indeed!";
+mes "As promised, this mount is now yours. Take care, and beware of dragons!";
+completequest(30180);
+completequest(30181);
+getexp 4000,0;
+getitem 12622,1;
+close;
+} else {
+mes "[Rich Girl]";
+mes "I was looking forward to hearding about your adventures...";
+close;
+}
+}
+}
