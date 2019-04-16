@@ -5940,12 +5940,12 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 							skillratio += 25 * sd->spiritcharm;
 						break;
 					case NJ_RAIGEKISAI:
-						skillratio += 60 + 40 * skill_lv;
+						skillratio += 100 * skill_lv;
 						if(sd && sd->spiritcharm_type == CHARM_TYPE_WIND && sd->spiritcharm > 0)
 							skillratio += 15 * sd->spiritcharm;
 						break;
 					case NJ_KAMAITACHI:
-						skillratio += 100 * skill_lv;
+						skillratio += 200 * skill_lv;
 						if(sd && sd->spiritcharm_type == CHARM_TYPE_WIND && sd->spiritcharm > 0)
 							skillratio += 10 * sd->spiritcharm;
 						break;
@@ -6605,10 +6605,10 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 				md.damage = (skill_id == NJ_ZENYNAGE ? rnd()%md.damage + md.damage : md.damage * rnd_value(50,100)) / (skill_id == NJ_ZENYNAGE ? 1 : 100);
 				if (sd && skill_id == KO_MUCHANAGE && !pc_checkskill(sd, NJ_TOBIDOUGU))
 					md.damage = md.damage / 2;
-				if (status_get_class_(target) == CLASS_BOSS) // Specific to Boss Class
+/*				if (status_get_class_(target) == CLASS_BOSS) // Specific to Boss Class
 					md.damage = md.damage / (skill_id == NJ_ZENYNAGE ? 3 : 2);
 				else if (tsd && skill_id == NJ_ZENYNAGE)
-					md.damage = md.damage / 2;
+					md.damage = md.damage / 2;*/
 			break;
 #ifdef RENEWAL
 		case NJ_ISSEN:
