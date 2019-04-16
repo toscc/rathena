@@ -3504,13 +3504,13 @@ int unit_free(struct block_list *bl, clr_type clrtype)
 }
 
 int foundtargetID;
-int targetdistance;
-int targetdistanceb;
+int64 targetdistance;
+int64 targetdistanceb;
 int targetthis;
 struct block_list * targetbl;
 struct mob_data * targetmd;
 int founddangerID;
-int dangerdistancebest;
+int64 dangerdistancebest;
 struct block_list * dangerbl;
 struct mob_data * dangermd;
 int dangercount;
@@ -3715,6 +3715,29 @@ int asuratarget(block_list * bl, va_list ap)
 	if (!(status_get_class_(bl) == CLASS_BOSS)) return 0; // Boss monsters only
 	if (md->status.hp < 600 * sd2->status.base_level) return 0; // Must be strong enough monster
 	if (targetdistance > md->status.hp) return 0; // target strongest first
+	if (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS)) { targetdistance = md->status.hp; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
+
+	return 1;
+}
+
+// base damage = currenthp + ((atk * currenthp * skill level) / maxhp)
+// final damage = base damage + ((mirror image count + 1) / 5 * base damage) - (edef + sdef)
+int finaltarget(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd2;
+
+	struct mob_data *md;
+
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+
+	int64 damage = (pc_rightside_atk(sd2) * 10 + sd2->battle_status.max_hp) * 2; // Assume 1 mirror image is missing
+
+	if (md->status.def_ele == ELE_GHOST) return 0;  // Ghosts are immune
+	if (md->status.hp < 0.6 * damage) return 0; // Must be strong enough monster
+	if (targetdistance < md->status.hp) return 0; // target weakest first if it's strong enough
 	if (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS)) { targetdistance = md->status.hp; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
 
 	return 1;
@@ -3999,6 +4022,21 @@ int AOEPrioritySG(block_list * bl, va_list ap)
 	return 2; // Default
 }
 
+int AOEPriorityIP(block_list * bl, va_list ap)
+{
+	struct mob_data *md;
+
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+
+	uint16 elem = va_arg(ap, int); // the element
+
+	if (md->sc.data[SC_FREEZE]) return 0;
+	if (!elemallowed(md, elem)) return 0; // This target won't be hurt by this element enough to care
+	if (elemstrong(md, elem)) return 3; // This target is weak to it so it's worth 50% more
+	return 2; // Default
+}
+
 
 int targetthischar(block_list * bl, va_list ap)
 {
@@ -4069,7 +4107,12 @@ int targethealing(block_list * bl, va_list ap)
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
 	// Always heal below 55% hp
-	if ((sd->battle_status.hp<sd->battle_status.max_hp*0.55) || ((sd2->battle_status.sp * 100) / sd2->battle_status.max_sp>(100 * sd->battle_status.hp) / sd->battle_status.max_hp+12))
+	// or if we have a lot of sp
+	// or if target is a ninja with Final Strike then go above 95% hp
+	if ((sd->battle_status.hp<sd->battle_status.max_hp*0.55)
+		|| ((sd2->battle_status.sp * 100) / sd2->battle_status.max_sp>(100 * sd->battle_status.hp) / sd->battle_status.max_hp+12)
+		|| ((sd->battle_status.hp < sd->battle_status.max_hp*0.95) && (pc_checkskill(sd, NJ_ISSEN) >= 10))
+		)
 	{
 		// prioritize lowest hp percentage player
 		if (targetdistance > 100 * sd->battle_status.hp / sd->battle_status.max_hp) {
@@ -4298,6 +4341,7 @@ int finddanger(block_list * bl, va_list ap)
 	sc = status_get_sc(bl);
 	if ((sc->data[SC_PNEUMA]) && (md->status.rhw.range > 3)) return 0;
 	if ((sc->data[SC_SAFETYWALL]) && (md->status.rhw.range <= 3)) return 0;
+	if ((sc->data[SC_TATAMIGAESHI]) && (md->status.rhw.range > 3)) return 0;
 	// Are we protected by Firewall between?
 	if (md->status.rhw.range <= 3) {
 		struct unit_data *ud2;
@@ -4661,7 +4705,37 @@ bool duplicateskill(struct party_data *p, int skillID) {
 }
 
 
-void arrowchange(map_session_data * sd, mob_data *targetmd)
+int shurikenchange(map_session_data * sd, mob_data *targetmd)
+{
+	unsigned short skens[] = {
+		 13295,13250,13251,13252,13253,13254,13255
+	};
+	unsigned short skenlevel[] = {
+		 1,1,20,40,60,80
+	};
+
+	if (DIFF_TICK(sd->canequip_tick, gettick()) > 0) return 0;
+
+	int16 index = -1; int j = -1;
+	int i;
+	for (i = 0; i < ARRAYLENGTH(skens); i++) {
+		if ((index = pc_search_inventory(sd, skens[i])) >= 0) {
+			if (sd->status.base_level >= skenlevel[i]) j = index;
+		}
+	}
+		if (j > -1) {
+			pc_equipitem(sd, j, EQP_AMMO);
+			return 1;
+		}
+		else {
+			char* msg = "I have no shurikens to throw!";
+			saythis(sd, msg, 50);
+			return 0;
+		}
+}
+
+
+int arrowchange(map_session_data * sd, mob_data *targetmd)
 {
 	unsigned short arrows[] = {
 		1750, 1751, 1752, 1753, 1754, 1755, 1756, 1757, 1762, 1765, 1766, 1767 ,1770, 1772, 1773, 1774
@@ -4672,6 +4746,8 @@ void arrowchange(map_session_data * sd, mob_data *targetmd)
 	unsigned short arrowatk[] = {
 		25,30,30,40,30,30,30,30,30,50,50,30,30,50,45,35
 	};
+
+	if (DIFF_TICK(sd->canequip_tick, gettick()) > 0) return 0;
 
 	int16 index = -1;
 	int i,j;
@@ -4688,14 +4764,56 @@ void arrowchange(map_session_data * sd, mob_data *targetmd)
 	}
 	if (best > -1) {
 		pc_equipitem(sd, best, EQP_AMMO);
+		return 1;
 	}
 	else {
 		char* msg = "I have no arrows to shoot my target!";
 		saythis(sd, msg, 50);
+		return 0;
 	}
 
 }
 
+int kunaichange(map_session_data * sd, mob_data *targetmd)
+{
+	unsigned short arrows[] = {
+		13255,13256,13257,13258,13259,13294
+	};
+	unsigned short arrowelem[] = {
+		ELE_WATER, ELE_EARTH, ELE_WIND, ELE_FIRE, ELE_POISON, ELE_NEUTRAL
+	};
+	unsigned short arrowatk[] = {
+		30,30,30,30,30,50
+	};
+
+	if (DIFF_TICK(sd->canequip_tick, gettick()) > 0) return 0;
+
+	int16 index = -1;
+	int i, j;
+	int best = -1; int bestprio = -1;
+
+	for (i = 0; i < ARRAYLENGTH(arrows); i++) {
+		if ((index = pc_search_inventory(sd, arrows[i])) >= 0) {
+			j = arrowatk[i];
+			if (elemstrong(targetmd, arrowelem[i])) j += 500;
+			if (elemallowed(targetmd, arrowelem[i])) if (j > bestprio)
+				// Explosive Kunai has a level requirement
+				if ((arrows[i]!=13294) || (sd->status.base_level>=100)){
+				bestprio = j; best = index;
+			}
+		}
+	}
+	if (best > -1) {
+		pc_equipitem(sd, best, EQP_AMMO);
+		return 1;
+	}
+	else {
+		char* msg = "I have no kunai left to throw!";
+		saythis(sd, msg, 50);
+		return 0;
+	}
+
+}
 
 
 void recoversp(map_session_data *sd, int goal)
@@ -4840,7 +4958,13 @@ void skillwhenidle(struct map_session_data *sd) {
 		}
 	}
 
-	
+	// Ninja Aura
+	if (pc_checkskill(sd, NJ_NEN) > 0) {
+		if (!(sd->sc.data[SC_NEN])) {
+			unit_skilluse_ifable(&sd->bl, SELF, NJ_NEN, pc_checkskill(sd, NJ_NEN));
+		}
+	}
+
 		return;
 }
 
@@ -4862,6 +4986,50 @@ void sitdown(struct map_session_data *sd) {
 		skill_sit(sd, 1);
 		clif_sitting(&sd->bl);
 	}
+}
+
+void usehpitem(struct map_session_data *sd, int hppercentage)
+{
+	// Use potions if low on health?
+	if ((status_get_hp(&sd->bl) < status_get_max_hp(&sd->bl) * hppercentage * 0.01) &&
+		(!(sd->sc.data[SC_NORECOVER_STATE])) && (!(sd->sc.data[SC_BITESCAR]))
+		)
+	{
+		//ShowError("Need to heal");
+
+		unsigned short potions[] = {
+			569,  // Novice Potion
+			11567, // Novice Potion
+			ITEMID_RED_POTION,
+			ITEMID_YELLOW_POTION,
+			ITEMID_WHITE_POTION,
+			ITEMID_APPLE,
+			515,
+			513, // Banana
+			520,
+			521,
+			522, // Mastela Fruit			
+			529, // Candy
+			530, // Candy Cane
+			538, // Cookie
+			539 // Cake
+		};
+
+		int16 index = -1;
+		int i;
+
+		for (i = 0; i < ARRAYLENGTH(potions); i++) {
+			if ((index = pc_search_inventory(sd, potions[i])) >= 0) {
+				//ShowError("Found a potion to use");
+				if (pc_isUseitem(sd, index)) {
+					pc_useitem(sd, index);
+					break;
+				}
+			}
+		}
+
+	}
+
 }
 
 // @autopilot timer
@@ -4973,45 +5141,7 @@ TIMER_FUNC(unit_autopilot_timer)
 
 	int Dangerdistance = inDanger(sd);
 
-	// Use potions if low on health?
-		if ((status_get_hp(bl) <  status_get_max_hp(bl) / 2) &&
-			(!(sd->sc.data[SC_NORECOVER_STATE])) && (!(sd->sc.data[SC_BITESCAR]))
-			 )
-			{
-		//ShowError("Need to heal");
-
-		unsigned short potions[] = { 
-			569,  // Novice Potion
-			11567, // Novice Potion
-			ITEMID_RED_POTION,
-			ITEMID_YELLOW_POTION,
-			ITEMID_WHITE_POTION,
-			ITEMID_APPLE,
-			515,
-			513, // Banana
-			520,
-			521,
-			522, // Mastela Fruit			
-			529, // Candy
-			530, // Candy Cane
-			538, // Cookie
-			539 // Cake
-		};
-
-		int16 index = -1;
-		int i;
-
-		for (i = 0; i < ARRAYLENGTH(potions); i++) {
-			if ((index = pc_search_inventory(sd, potions[i])) >= 0) {
-				//ShowError("Found a potion to use");
-				if (pc_isUseitem(sd, index)) {
-					pc_useitem(sd, index);
-					break;
-				}
-			}
-		}
-
-	}
+	usehpitem(sd, 50);
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	// Skills that aren't tanking mode exclusive (nonmelee skills generally)
@@ -5094,6 +5224,53 @@ TIMER_FUNC(unit_autopilot_timer)
 
 		}
 
+		// Final Strike
+		// base damage = currenthp + ((atk * currenthp * skill level) / maxhp)
+		// final damage = base damage + ((mirror image count + 1) / 5 * base damage) - (edef + sdef)
+
+		if (pc_checkskill(sd, NJ_ISSEN) >= 10) // Skill level must be maxed
+		if ((pc_search_inventory(sd, 7524) >= 0) || (sd->sc.data[SC_BUNSINJYUTSU])) // requires Shadow Orb for Mirror Image
+		if (sd->state.autopilotmode == 2) {
+
+			resettargets2();
+			targetdistance = 99999999;
+			map_foreachinrange(finaltarget, &sd->bl, 12, BL_MOB, sd);
+			if (foundtargetID > -1) 
+			{
+				bool havepriest = false;
+				if (p) for (i = 0; i < MAX_PARTY; i++) {
+					if (pc_checkskill(p->data[i].sd, ALL_RESURRECTION) >= 4) havepriest=true;
+				}
+				if (havepriest) {
+					// Ninja Aura to enable Mirror Image
+					if (pc_checkskill(sd, NJ_NEN) > 0)
+						if (pc_checkskill(sd, NJ_BUNSINJYUTSU) > 0)
+								if (!(sd->sc.data[SC_NEN])) {
+									unit_skilluse_ifable(&sd->bl, SELF, NJ_NEN, pc_checkskill(sd, NJ_NEN));
+							}
+
+					// Mirror Image
+					// Use this for tanking instead of cicada because no backwards movement.
+					// Interruptable though so need Phen or equipvalent while actually tanking a monster.
+					if (pc_checkskill(sd, NJ_BUNSINJYUTSU) > 0)
+						
+								if (!(sd->sc.data[SC_BUNSINJYUTSU])) {
+									unit_skilluse_ifable(&sd->bl, SELF, NJ_BUNSINJYUTSU, pc_checkskill(sd, NJ_BUNSINJYUTSU));
+								}
+
+					// We have both buffs, ready to strike but need high hp!
+					if ((sd->sc.data[SC_BUNSINJYUTSU]) && (sd->sc.data[SC_NEN])) {
+						usehpitem(sd, 91);
+						if (status_get_hp(&sd->bl) >= status_get_max_hp(&sd->bl) * 0.91) {
+							if (distance_bl(bl, targetbl) > 5) { unit_walktoxy(bl, targetbl->x, targetbl->y, 8); return 0; }
+							unit_skilluse_ifable(&sd->bl, foundtargetID, NJ_ISSEN, pc_checkskill(sd, NJ_ISSEN));
+						}
+					}
+				}
+			}
+
+		}
+
 		/// Dispell
 		if (canskill(sd)) if ((pc_checkskill(sd, SA_DISPELL)>0) && (pc_search_inventory(sd, 715)>0)) {
 			resettargets();
@@ -5141,6 +5318,21 @@ TIMER_FUNC(unit_autopilot_timer)
 					unit_skilluse_ifablexy(&sd->bl, foundtargetID, AL_PNEUMA, pc_checkskill(sd, AL_PNEUMA)); }
 			} 
 		}
+		/// Flip Tatami
+		// Note : I modded this skill to have a skill reuse cooldown instead of global delay.
+		// Without that mod it's better to remove this and never allow the AI to use it.
+		if (canskill(sd)) if (pc_checkskill(sd, NJ_TATAMIGAESHI) > 0) {
+			struct status_change *sc;
+			sc = status_get_sc(&sd->bl);
+			if (!(sc->data[SC_PNEUMA]) && !(sc->data[SC_TATAMIGAESHI])) {
+				resettargets();
+				map_foreachinrange(targetpneuma, &sd->bl, 12, BL_MOB, sd);
+				if (foundtargetID == sd->bl.id) {
+					unit_skilluse_ifable(&sd->bl, SELF, NJ_TATAMIGAESHI, pc_checkskill(sd, NJ_TATAMIGAESHI));
+				}
+			}
+		}
+
 		/// Redemptio
 		if (canskill(sd)) if (pc_checkskill(sd, PR_REDEMPTIO)>0) {
 			resettargets();
@@ -5242,6 +5434,14 @@ TIMER_FUNC(unit_autopilot_timer)
 				if (!duplicateskill(p, PR_MAGNIFICAT)) unit_skilluse_ifable(&sd->bl, SELF, PR_MAGNIFICAT, pc_checkskill(sd, PR_MAGNIFICAT));
 			}
 		}
+
+		// Cicada Skin Shedding
+		if (pc_checkskill(sd, NJ_UTSUSEMI) > 0) if (sd->state.autopilotmode != 1) { // Do not use in tanking mode, due to moving back it's bad
+			if (!(sd->sc.data[SC_UTSUSEMI])) {
+				unit_skilluse_ifable(&sd->bl, SELF, NJ_UTSUSEMI, pc_checkskill(sd, NJ_UTSUSEMI));
+			}
+		}
+
 		/// Angelus
 		if (canskill(sd)) if (pc_checkskill(sd, AL_ANGELUS)>0) {
 			resettargets();
@@ -5780,7 +5980,8 @@ TIMER_FUNC(unit_autopilot_timer)
 
 						// Don't try to use if member too far, must get closer first
 						// member must be in tanking mode, or controlled by human player. Other characters are unlikely to keep monsters in the AOE while casting.
-						if ((membersd->state.autopilotmode<=1) && (targetdistance2 <= 9)) {
+						// targeting self is also ok if we don't have the sage skill to walk away, in case of skills with short enough cast times and no interruption.
+						if (((membersd->state.autopilotmode<=1) || ((membersd->bl.id==sd->bl.id) && (pc_checkskill(sd, SA_FREECAST)==0))) && (targetdistance2 <= 9)) {
 							// obsolete now that leader has own variable
 
 							// Unlike single target, here we calculate priority and select the best one
@@ -5832,6 +6033,7 @@ TIMER_FUNC(unit_autopilot_timer)
 									spelltocast = WZ_METEOR; bestpriority = priority; IDtarget = foundtargetID2;
 								}
 							}
+
 							// Thunderstorm
 							if (canskill(sd)) if ((pc_checkskill(sd, MG_THUNDERSTORM) > 0) && (Dangerdistance > 900)) {
 								// modded : 5x5 but 7x7 at level 6 or higher.
@@ -5841,6 +6043,34 @@ TIMER_FUNC(unit_autopilot_timer)
 									spelltocast = MG_THUNDERSTORM; bestpriority = priority; IDtarget = foundtargetID2;
 								}
 							}
+
+							// NIN : Lightning Jolt
+							if (canskill(sd)) if ((pc_checkskill(sd, NJ_RAIGEKISAI) > 2) && (Dangerdistance > 900))
+								if (pc_search_inventory(sd, 7523) > 0) 
+									if (pc_rightside_atk(sd) < sd->battle_status.matk_min) 
+										{
+								int area = 2; if (pc_checkskill(sd, NJ_RAIGEKISAI) >= 5) area++;
+								priority = map_foreachinrange(AOEPriority, targetbl2, area, BL_MOB, skill_get_ele(NJ_RAIGEKISAI, pc_checkskill(sd, NJ_RAIGEKISAI)));
+								if ((priority >= 6) && (priority > bestpriority)) {
+									spelltocast = NJ_RAIGEKISAI; bestpriority = priority; IDtarget = foundtargetID2;
+								}
+							}
+							// NIN : First Wind
+							if (canskill(sd)) if ((pc_checkskill(sd, NJ_KAMAITACHI) > 2) && (Dangerdistance > 900))
+								if (pc_search_inventory(sd, 7523) > 0)
+									if (pc_rightside_atk(sd) < sd->battle_status.matk_min)
+									{  // Note : This hits in a line but has a cast time and tanking does not guarantee
+									   // the targets will stay in that line plus the moving target moves the line itself.
+									   // However all monsters on the same time are likely to still be together so pretend
+									   // it's a 1x1 AOE. Priority is higher than Jolt. 
+										foundtargetID = -1; targetdistance = 999;
+										map_foreachinrange(targetnearest, targetbl2, 9, BL_MOB, sd); // Nearest to the tank, not us!
+										int area = 1;
+										priority = 2*map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(NJ_KAMAITACHI, pc_checkskill(sd, NJ_KAMAITACHI)));
+										if ((priority >= 12) && (priority > bestpriority)) {
+											spelltocast = NJ_KAMAITACHI; bestpriority = priority; IDtarget = foundtargetID;
+										}
+									}
 							// Fireball
 							// This is special - it targets a monster despite having AOE, not a ground skill
 							if (canskill(sd)) if ((pc_checkskill(sd, MG_FIREBALL) > 0)) {
@@ -5852,6 +6082,34 @@ TIMER_FUNC(unit_autopilot_timer)
 									spelltocast = MG_FIREBALL; bestpriority = priority; IDtarget = foundtargetID;
 								}
 							}
+
+							// NIN- Exploding Dragon
+							// This is special - it targets a monster despite having AOE, not a ground skill
+							if (canskill(sd)) if ((pc_checkskill(sd, NJ_BAKUENRYU) > 0)) if ((Dangerdistance > 900) || (sd->special_state.no_castcancel))
+							if (pc_search_inventory(sd, 7521) > 0) {
+								if (pc_rightside_atk(sd) < sd->battle_status.matk_min) { 
+									foundtargetID = -1; targetdistance = 999;
+									map_foreachinrange(targetnearest, targetbl2, 9, BL_MOB, sd);
+									int area = 2;
+									priority = 2 * map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(NJ_BAKUENRYU, pc_checkskill(sd, NJ_BAKUENRYU)));
+									if ((priority >= 12) && (priority > bestpriority)) {
+										spelltocast = NJ_BAKUENRYU; bestpriority = priority; IDtarget = foundtargetID;
+									}
+								}
+							}
+
+							// Throw Huuma
+							if (canskill(sd)) if ((pc_checkskill(sd, NJ_HUUMA) >= 4))
+								if (sd->status.weapon == W_HUUMA) {
+								foundtargetID = -1; targetdistance = 999;
+								map_foreachinrange(targetnearest, targetbl2, 9, BL_MOB, sd);
+								int area = 2;
+								priority = 2 * map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(NJ_HUUMA, pc_checkskill(sd, NJ_HUUMA)));
+								if ((priority >= 12) && (priority > bestpriority)) {
+									spelltocast = NJ_HUUMA; bestpriority = priority; IDtarget = foundtargetID;
+								}
+							}
+
 							// Magnus Exorcismus
 							if (canskill(sd)) if ((pc_checkskill(sd, PR_MAGNUS) > 0) && ((Dangerdistance > 900) || (sd->special_state.no_castcancel)) && (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE) > 0)) {
 								priority = 3 * map_foreachinrange(Magnuspriority, targetbl2, 3, BL_MOB, skill_get_ele(PR_MAGNUS, pc_checkskill(sd, PR_MAGNUS)));
@@ -5880,10 +6138,31 @@ TIMER_FUNC(unit_autopilot_timer)
 						}
 					}
 
+					// NIN Ice Meteor - always centered on user
+					if (canskill(sd)) if ((pc_checkskill(sd, NJ_HYOUSYOURAKU) >= 4)
+						//					 &&	((Dangerdistance > 900) || (sd->special_state.no_castcancel)) // Note : I modded this skill to be uninterruptable - a self targeted crowd control AOE is useless if it is interrupted. If yours is not modded, uncomment this line!
+						) {
+						if (pc_search_inventory(sd, 7522) > 0) {
+							int area = 2;
+							priority = 2 * map_foreachinrange(AOEPriorityIP, &sd->bl, area, BL_MOB, skill_get_ele(NJ_HYOUSYOURAKU, pc_checkskill(sd, NJ_HYOUSYOURAKU)));
+							if ((priority >= 12) && (priority > bestpriority)) {
+								spelltocast = NJ_HYOUSYOURAKU; bestpriority = priority; IDtarget = sd->bl.id;
+							}
+						}
+					}
+
 
 					// Cast the chosen spell
 					if (spelltocast > -1) {
-						if (spelltocast == MG_FIREBALL) unit_skilluse_ifable(&sd->bl, IDtarget, spelltocast, pc_checkskill(sd, spelltocast));
+						if ((spelltocast == NJ_HYOUSYOURAKU) // Skills that target SELF, not the ground 
+							|| (spelltocast == ASC_METEORASSAULT)
+							) unit_skilluse_ifable(&sd->bl, SELF, spelltocast, pc_checkskill(sd, spelltocast));
+						else
+						if ((spelltocast == MG_FIREBALL) // Skills that target a monster, not the ground 
+							|| (spelltocast == NJ_HUUMA)
+							|| (spelltocast == NJ_BAKUENRYU)
+							|| (spelltocast == NJ_KAMAITACHI)
+							) unit_skilluse_ifable(&sd->bl, IDtarget, spelltocast, pc_checkskill(sd, spelltocast));
 						else
 							unit_skilluse_ifablexy(&sd->bl, IDtarget, spelltocast, pc_checkskill(sd, spelltocast));
 					}
@@ -5954,6 +6233,15 @@ TIMER_FUNC(unit_autopilot_timer)
 					}
 				}
 			}
+			// NIN : Crimson Fire Petal
+			if (canskill(sd)) if (pc_checkskill(sd, NJ_KOUENKA) > 0)
+			if (pc_rightside_atk(sd)*1.2 <sd->battle_status.matk_min) { // Note : if skill is unmodded, a higher multiplier is needed
+				if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
+					if (elemstrong(targetmd, skill_get_ele(NJ_KOUENKA, pc_checkskill(sd, NJ_KOUENKA)))) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, NJ_KOUENKA, pc_checkskill(sd, NJ_KOUENKA));
+					}
+				}
+			}
 			// Cold Bolt on vulnerable enemy
 			if (canskill(sd)) if (pc_checkskill(sd, MG_COLDBOLT) > 0) {
 				if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
@@ -5962,11 +6250,29 @@ TIMER_FUNC(unit_autopilot_timer)
 					}
 				}
 			}
+			// NIN : Spear of Ice
+			if (canskill(sd)) if (pc_checkskill(sd, NJ_HYOUSENSOU) > 0)
+				if (pc_rightside_atk(sd)*1.2 < sd->battle_status.matk_min) { // Note : if skill is unmodded, a higher multiplier is needed
+				if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
+					if (elemstrong(targetmd, skill_get_ele(NJ_HYOUSENSOU, pc_checkskill(sd, NJ_HYOUSENSOU)))) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, NJ_HYOUSENSOU, pc_checkskill(sd, NJ_HYOUSENSOU));
+					}
+				}
+			}
 			// Lightning Bolt on vulnerable enemy
 			if (canskill(sd)) if (pc_checkskill(sd, MG_LIGHTNINGBOLT) > 0) {
 				if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
 					if (elemstrong(targetmd, skill_get_ele(MG_LIGHTNINGBOLT, pc_checkskill(sd, MG_LIGHTNINGBOLT)))) {
 						unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_LIGHTNINGBOLT, pc_checkskill(sd, MG_LIGHTNINGBOLT));
+					}
+				}
+			}
+			// NIN : Wind Blade
+			if (canskill(sd)) if (pc_checkskill(sd, NJ_HUUJIN) > 0)
+				if (pc_rightside_atk(sd)*1.2 < sd->battle_status.matk_min) { // Note : if skill is unmodded, a higher multiplier is needed
+				if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
+					if (elemstrong(targetmd, skill_get_ele(NJ_HUUJIN, pc_checkskill(sd, NJ_HUUJIN)))) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, NJ_HUUJIN, pc_checkskill(sd, NJ_HUUJIN));
 					}
 				}
 			}
@@ -5993,6 +6299,14 @@ TIMER_FUNC(unit_autopilot_timer)
 					unit_skilluse_ifable(&sd->bl, foundtargetRA, ASC_BREAKER, pc_checkskill(sd, ASC_BREAKER));
 				}
 			}
+
+			// Throw Kunai
+			if (canskill(sd)) if ((pc_checkskill(sd, NJ_KUNAI) > 0))
+				// If enemy has less than 2x ATK health left, more economic to use Shurikens.
+				if (targetRAmd->status.hp>2* pc_rightside_atk(sd)) {
+				if (kunaichange(sd, targetRAmd)==1) unit_skilluse_ifable(&sd->bl, foundtargetRA, NJ_KUNAI, pc_checkskill(sd, NJ_KUNAI));
+			}
+
 
 			// Shield Boomerang
 			if (canskill(sd)) if ((pc_checkskill(sd, CR_SHIELDBOOMERANG) > 0)) if (sd->status.shield > 0) {
@@ -6077,6 +6391,33 @@ TIMER_FUNC(unit_autopilot_timer)
 					}
 				}
 			}
+			// ninja bolts, use highest level
+			if (pc_rightside_atk(sd)*1.5 < sd->battle_status.matk_min) { // Note : if skill is unmodded, a higher multiplier is needed
+				if (canskill(sd)) if ((pc_checkskill(sd, NJ_HUUJIN) > 0) && (pc_checkskill(sd, NJ_HUUJIN) >= pc_checkskill(sd, NJ_HYOUSENSOU))
+					&& (pc_checkskill(sd, NJ_HUUJIN) >= pc_checkskill(sd, NJ_KOUENKA))) {
+					if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) {
+						if (elemallowed(targetmd, skill_get_ele(NJ_HUUJIN, pc_checkskill(sd, NJ_HUUJIN)))) {
+							unit_skilluse_ifable(&sd->bl, foundtargetID2, NJ_HUUJIN, pc_checkskill(sd, NJ_HUUJIN));
+						}
+					}
+				}
+				if (canskill(sd)) if ((pc_checkskill(sd, NJ_HYOUSENSOU) > 0) && (pc_checkskill(sd, NJ_HYOUSENSOU) >= pc_checkskill(sd, NJ_HUUJIN))
+					&& (pc_checkskill(sd, NJ_HYOUSENSOU) >= pc_checkskill(sd, NJ_KOUENKA))) {
+					if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) {
+						if (elemallowed(targetmd, skill_get_ele(NJ_HYOUSENSOU, pc_checkskill(sd, NJ_HYOUSENSOU)))) {
+							unit_skilluse_ifable(&sd->bl, foundtargetID2, NJ_HYOUSENSOU, pc_checkskill(sd, NJ_HYOUSENSOU));
+						}
+					}
+				}
+				if (canskill(sd)) if ((pc_checkskill(sd, NJ_KOUENKA) > 0) && (pc_checkskill(sd, NJ_KOUENKA) >= pc_checkskill(sd, NJ_HYOUSENSOU))
+					&& (pc_checkskill(sd, NJ_KOUENKA) >= pc_checkskill(sd, NJ_HUUJIN))) {
+					if ((sd->state.autopilotmode == 2) && (Dangerdistance > 900)) {
+						if (elemallowed(targetmd, skill_get_ele(NJ_KOUENKA, pc_checkskill(sd, NJ_KOUENKA)))) {
+							unit_skilluse_ifable(&sd->bl, foundtargetID2, NJ_KOUENKA, pc_checkskill(sd, NJ_KOUENKA));
+						}
+					}
+				}
+			}
 			// Soul Strike
 			if (canskill(sd)) if ((pc_checkskill(sd, MG_SOULSTRIKE) > 0)) {
 				if ((sd->state.autopilotmode == 2)) {
@@ -6154,6 +6495,13 @@ TIMER_FUNC(unit_autopilot_timer)
 				}
 			};
 
+			// Throw Shuriken
+				if (canskill(sd)) if ((pc_checkskill(sd, NJ_SYURIKEN) > 0)) {
+					shurikenchange(sd, targetRAmd);
+					unit_skilluse_ifable(&sd->bl, foundtargetRA, NJ_SYURIKEN, pc_checkskill(sd, NJ_SYURIKEN));
+				}
+			
+
 			// Do normal attack if not using skill and being an archer
 			if ((sd->battle_status.rhw.range >= 6) && (sd->state.autopilotmode > 1)) {
 				if (sd->status.weapon == W_BOW) { arrowchange(sd, targetRAmd); }
@@ -6164,6 +6512,29 @@ TIMER_FUNC(unit_autopilot_timer)
 
 	// Tanking mode is set
 	if (sd->state.autopilotmode == 1) 	{
+
+		/////////////////////////////////////////////////////////////////////
+		// Tanking mode skills that actually help to tank
+		/////////////////////////////////////////////////////////////////////
+		// Ninja Aura to enable Mirror Image
+		if (pc_checkskill(sd, NJ_NEN) > 0) 
+		if (pc_checkskill(sd, NJ_BUNSINJYUTSU) > 0)
+			if ((sd->special_state.no_castcancel) || (Dangerdistance > 900)) {
+				if (!(sd->sc.data[SC_NEN])) {
+					unit_skilluse_ifable(&sd->bl, SELF, NJ_NEN, pc_checkskill(sd, NJ_NEN));
+				}
+			}
+
+		// Mirror Image
+		// Use this for tanking instead of cicada because no backwards movement.
+		// Interruptable though so need Phen or equipvalent while actually tanking a monster.
+		if (pc_checkskill(sd, NJ_BUNSINJYUTSU) > 0)
+			if (pc_search_inventory(sd, 7524) >= 0) // requires Shadow Orb
+				if ((sd->special_state.no_castcancel) || (Dangerdistance > 900)) {
+					if (!(sd->sc.data[SC_BUNSINJYUTSU])) {
+						unit_skilluse_ifable(&sd->bl, SELF, NJ_BUNSINJYUTSU, pc_checkskill(sd, NJ_BUNSINJYUTSU));
+					}
+				}
 		/////////////////////////////////////////////////////////////////////
 		// Skills that can be used while tanking only, for supporting others
 		/////////////////////////////////////////////////////////////////////
