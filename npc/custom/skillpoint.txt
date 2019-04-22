@@ -22,3 +22,4 @@ close;
 gef_tower,104,36,5	duplicate(skillremover)	Skill Point Remover	569
 in_moc_16,15,31,5	duplicate(skillremover)	Skill Point Remover#assa	648
 ein_in01,22,37,5	duplicate(skillremover)	Skill Point Remover#smith	668
+in_rogue,366,124,5	duplicate(skillremover)	Skill Point Remover#rogue	636

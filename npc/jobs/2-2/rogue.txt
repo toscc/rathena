@@ -310,7 +310,7 @@ in_rogue,363,122,4	script	Rogue Guildsman#rg	747,{
 				mes "[Markie]";
 				mes "7. Choose the monster that receives more damage from a Dagger with the Fire property.";
 				next;
-				if (select("Dagger Goblin:Mace Goblin:Morning Star Goblin:Hammer Goblin") == 4)
+				if (select("Dagger Goblin:Hunter Fly:Marc:Giearth") == 4)
 					set .@assassin_t,.@assassin_t+10;
 
 				mes "[Markie]";
@@ -391,13 +391,13 @@ in_rogue,363,122,4	script	Rogue Guildsman#rg	747,{
 				mes "[Markie]";
 				mes "8. You want to dye your hair blue. What town do you go to, and in which direction, with 12 o' clock being North.";
 				next;
-				if (select("Morroc, 7 o'clock:Prontera, 7 o'clock:Morroc, 5 o'clock:Prontera, 1 o'clock") == 2)
+				if (select("Morroc, 7 o'clock:Prontera, Center or 7 o'clock:Morroc, 5 o'clock:Prontera, 1 o'clock") == 2)
 					set .@assassin_t,.@assassin_t+10;
 
 				mes "[Markie]";
-				mes "9. Choose the mushroom that is required on the Thief job change quest.";
+				mes "9. Which of these can you steal from monsters as a Rogue?";
 				next;
-				switch(select("Orange Gooey Mushroom:Red Hairy Mushroom:Orange Net Mushroom:Orange Sticky Mushroom")) {
+				switch(select("Items:Stats:Zeny:Levels")) {
 				default:
 					break;
 				case 1:
@@ -1373,7 +1373,7 @@ OnMyMobDead:
 in_rogue,250,389,0	script	gen_ro#4	-1,3,3,{
 OnTouch_:
 	if (BaseJob == Job_Thief) {
-		monster "in_rogue",200,389,"Abysmal Knight",1219,1,"gen_ro#4::OnMyMobDead";
+		monster "in_rogue",200,389,"Thing",1489,1,"gen_ro#4::OnMyMobDead";
 		donpcevent "gen_ro#3::OnDisable";
 	}
 	else
