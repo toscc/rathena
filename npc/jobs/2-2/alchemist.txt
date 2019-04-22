@@ -438,7 +438,7 @@ alde_alche,175,107,3	script	Fastidious Alchemist#am	749,{
 			mes "I plan on weeding out all the dumb and incompetent, and chase them";
 			mes "all away! We don't need morons!";
 			next;
-			if (JobLevel == 50) {
+			if (JobLevel >= 50) {
 				mes "[Raspuchin Gregory]";
 				mes "Wait...";
 				mes "Maybe I've";
@@ -511,7 +511,7 @@ alde_alche,175,107,3	script	Fastidious Alchemist#am	749,{
 			mes "this time.";
 		}
 		next;
-		switch(rand(1,3)) {
+		switch(rand(1,1)) {
 		case 1:
 			mes "[Raspuchin Gregory]";
 			mes "12 + 23 + 34 + 45 = ?";
@@ -529,56 +529,59 @@ alde_alche,175,107,3	script	Fastidious Alchemist#am	749,{
 			input .@input;
 			if (.@input != 714) set .@w_point,.@w_point+1;
 			mes "[Raspuchin Gregory]";
-			mes "9765 / 3 / 5 / 7 = ?";
+			mes "Which of these metals is liquid?";
+			mes "Lead";
+			mes "Mercury";
+			mes "Mithril";
+			mes "Cobalt?";
 			next;
-			input .@input;
-			if (.@input != 93) set .@w_point,.@w_point+1;
+			input .@inputt$;
+			if ((.@inputt$ != "Mercury") && (.@inputt$ != "mercury")) set .@w_point,.@w_point+1;
 			mes "[Raspuchin Gregory]";
-			mes "(47 * 28) - (1376 / 4) = ?";
+			mes "Which is the heaviest element?";
+			mes "Iron";
+			mes "Lead";
+			mes "Gold";
+			mes "Mercury?";
 			next;
-			input .@input;
-			if (.@input != 972) set .@w_point,.@w_point+1;
+			input .@inputt$;
+			if ((.@inputt$ != "Gold") && (.@inputt$ != "gold")) set .@w_point,.@w_point+1;
 			mes "[Raspuchin Gregory]";
-			mes "(2646 / 7) + (13 * 28) = ?";
+			mes "Which of these is poison?";
+			mes "Nitrogen";
+			mes "Chlorine";
+			mes "Helium";
+			mes "Argon?";
 			next;
-			input .@input;
-			if (.@input != 742) set .@w_point,.@w_point+1;
+			input .@inputt$;
+			if ((.@inputt$ != "Chlorine") && (.@inputt$ != "chlorine")) set .@w_point,.@w_point+3;
 			mes "[Raspuchin Gregory]";
-			mes "How much do";
-			mes "12 Red Potions,";
-			mes "1 Butterfly Wing";
-			mes "and 5 Fly Wings cost";
-			mes "after a 24 % discount?";
+			mes "You can brew Alcohol from?";
+			mes "Fruit";
+			mes "Roots";
+			mes "Stem";
+			mes "Leaves?";
 			next;
-			input .@input;
-			if (.@input != 909) set .@w_point,.@w_point+1;
+			input .@inputt$;
+			if ((.@inputt$ != "Stem") && (.@inputt$ != "stem")) set .@w_point,.@w_point+1;
 			mes "[Raspuchin Gregory]";
-			mes "What is the";
-			mes "total weight of";
-			mes "3 Scimiters, 2 Helms";
-			mes "and 1 Long Coat?";
+			mes "Alchemists can create";
+			mes "Gold";
+			mes "Life";
+			mes "Elunium";
+			mes "Emperium";
 			next;
-			input .@input;
-			if (.@input != 450) set .@w_point,.@w_point+1;
+			input .@inputt$;
+			if ((.@inputt$ != "Life") && (.@inputt$ != "life")) set .@w_point,.@w_point+1;
 			mes "[Raspuchin Gregory]";
-			mes "What is the";
-			mes "total defense of";
-			mes "a Biretta, Mantle,";
-			mes "Opera Mask, Ribbon,";
-			mes "Muffler, Boots, and";
-			mes "Ear Muffs?";
+			mes "One of these is necessary for human life to exist :";
+			mes "Money";
+			mes "Cadmium";
+			mes "Ozmium";
+			mes "Oxygen";
 			next;
-			input .@input;
-			if (.@input != 20) set .@w_point,.@w_point+1;
-			mes "[Raspuchin Gregory]";
-			mes "If you buy 5 Helms";
-			mes "with a 24 % discount";
-			mes "and sell it at 20";
-			mes "how much profit";
-			mes "do you earn?";
-			next;
-			input .@input;
-			if (.@input != 8800) set .@w_point,.@w_point+1;
+			input .@inputt$;
+			if ((.@inputt$ != "Oxygen") && (.@inputt$ != "oxygen")) set .@w_point,.@w_point+2;
 			break;
 		case 2:
 			mes "[Raspuchin Gregory]";
@@ -738,7 +741,7 @@ alde_alche,175,107,3	script	Fastidious Alchemist#am	749,{
 		else if (.@w_point == 2 && ALCH_Q == 5) {
 			mes "[Raspuchin Gregory]";
 			mes "You've got serious";
-			mes "weaknesses in math,";
+			mes "weaknesses in your studies,";
 			mes "but I'll let you go this time...";
 			next;
 		}

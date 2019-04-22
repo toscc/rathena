@@ -659,9 +659,9 @@ gef_tower,102,24,2	script	Gloomy Wizard	735,{
 			if (select("125%:150%:175%:200%") == 4)
 				set .@wizard_t,.@wizard_t+10;
 			mes "[Raulel]";
-			mes "5. If a Baby Desert Wolf and a Familiar fought, which one would win?";
+			mes "5. If a Desert Wolf and a Familiar fought, which one would win?";
 			next;
-			if (select("Baby Desert Wolf:Familiar:Neither:I don't know") == 1)
+			if (select("Desert Wolf:Familiar:Neither:I don't know") == 1)
 				set .@wizard_t,.@wizard_t+10;
 			mes "[Raulel]";
 			mes "6. Which of the following cannot be a Cute Pet?";
@@ -671,12 +671,12 @@ gef_tower,102,24,2	script	Gloomy Wizard	735,{
 			mes "[Raulel]";
 			mes "7. Choose the monster that is weak against a fire attribute attack.";
 			next;
-			if (select("Dagger Goblin:Mace Goblin:Morningstar Goblin:Hammer Goblin") == 4)
+			if (select("Dagger Goblin:Mace Goblin:Morningstar Goblin:Geographer") == 4)
 				set .@wizard_t,.@wizard_t+10;
 			mes "[Raulel]";
-			mes "8. Which of the following has the highest defense?";
+			mes "8. Which of the following is the highest level?";
 			next;
-			if (select("Horn:Chonchon:Andre:Caramel") == 4)
+			if (select("Horn:Chonchon:Andre:Eddga") == 4)
 				set .@wizard_t,.@wizard_t+10;
 			mes "[Raulel]";
 			mes "9. Choose the monster that's of a different species.";
@@ -713,7 +713,7 @@ gef_tower,102,24,2	script	Gloomy Wizard	735,{
 			mes "[Raulel]";
 			mes "5. Which of the following cards has nothing to do with INT?";
 			next;
-			if (select("Andre Egg Card:Soldier Andre Card:Baby Desert Wolf Card:Elder Willow Card") == 2)
+			if (select("Andre Egg Card:Andre Card:Baby Desert Wolf Card:Elder Willow Card") == 2)
 				set .@wizard_t,.@wizard_t+10;
 			mes "[Raulel]";
 			mes "6. What is the Mage good at compared to other job classes?";
@@ -721,19 +721,19 @@ gef_tower,102,24,2	script	Gloomy Wizard	735,{
 			if (select("Exceptional Vocal Ability:Exceptional Acting Ability:Exceptional Dance Skills:Exceptional Magic Skills") == 4)
 				set .@wizard_t,.@wizard_t+10;
 			mes "[Raulel]";
-			mes "7. What is the INT bonus at Job Lv 40 for a Mage?";
+			mes "7. Which weapon is best for a mage?";
 			next;
-			if (select("8:7:6:5") == 4)
+			if (select("Rod:Staff of Destruction:Staff:Arc Wand") == 4)
 				set .@wizard_t,.@wizard_t+10;
 			mes "[Raulel]";
 			mes "8. Which item can a Mage not equip?";
 			next;
-			if (select("Knife:Boys Cap:Sandle:Eye of Dullahan") == 2)
+			if (select("Knife:Boys Cap:Skull Ring:Eye of Dullahan") == 2)
 				set .@wizard_t,.@wizard_t+10;
 			mes "[Raulel]";
-			mes "9. Which of the following is the catalyst when making the Mage test solution 3?";
+			mes "9. Which of the following is useless for a Mage?";
 			next;
-			if (select("Blue Gemstone:Red Gemstone:Yellow Gemstone:Red Blood") == 1)
+			if (select("Soldier Skeleton Card:Elder Willow Card:Drops Card:Zerom Card") == 1)
 				set .@wizard_t,.@wizard_t+10;
 			mes "[Raulel]";
 			mes "10. Which card is irrelevant to magic?";

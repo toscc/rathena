@@ -1027,7 +1027,6 @@
 7536,507,100	// Photo_Album_03
 7537,507,100	// Photo_Album_04
 7538,499,100	// Sifted_Sand
-7539,499,100	// Poring_Coin
 7547,499,100	// Soccer_Ball
 7548,499,100	// Soccer_Shoes
 7549,499,100	// Brazilian_Flag
