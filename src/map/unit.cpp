@@ -4988,8 +4988,33 @@ void sitdown(struct map_session_data *sd) {
 	}
 }
 
+void aspdpotion(struct map_session_data *sd)
+{	int index;
+	// Berserk potion
+	if ((index = pc_search_inventory(sd, 647)) >= 0)
+	if (!(sd->sc.data[SC_ASPDPOTION0])) if (!(sd->sc.data[SC_ASPDPOTION1])) if (!(sd->sc.data[SC_ASPDPOTION2])) {
+		if (pc_isUseitem(sd, index)) pc_useitem(sd, index);
+	}
+	// Awakening Potion potion
+	if ((index = pc_search_inventory(sd, 646)) >= 0)
+		if (!(sd->sc.data[SC_ASPDPOTION0])) if (!(sd->sc.data[SC_ASPDPOTION1])) if (!(sd->sc.data[SC_ASPDPOTION2])) {
+			if (pc_isUseitem(sd, index)) pc_useitem(sd, index);
+		}
+	// Concentration potion
+	if ((index = pc_search_inventory(sd, 645)) >= 0)
+		if (!(sd->sc.data[SC_ASPDPOTION0])) if (!(sd->sc.data[SC_ASPDPOTION1])) if (!(sd->sc.data[SC_ASPDPOTION2])) {
+			if (pc_isUseitem(sd, index)) pc_useitem(sd, index);
+		}
+
+
+}
+
+
 void usehpitem(struct map_session_data *sd, int hppercentage)
 {
+	// Don't if you are going to throw potions
+	if ((pc_checkskill(sd, AM_POTIONPITCHER) >= 5) && (sd->battle_status.sp>=50)) return;
+
 	// Use potions if low on health?
 	if ((status_get_hp(&sd->bl) < status_get_max_hp(&sd->bl) * hppercentage * 0.01) &&
 		(!(sd->sc.data[SC_NORECOVER_STATE])) && (!(sd->sc.data[SC_BITESCAR]))
@@ -5000,10 +5025,11 @@ void usehpitem(struct map_session_data *sd, int hppercentage)
 		unsigned short potions[] = {
 			569,  // Novice Potion
 			11567, // Novice Potion
-			ITEMID_RED_POTION,
-			ITEMID_YELLOW_POTION,
-			ITEMID_WHITE_POTION,
-			ITEMID_APPLE,
+			501,
+			502,
+			503,
+			504,
+			512,
 			515,
 			513, // Banana
 			520,
@@ -5101,7 +5127,7 @@ TIMER_FUNC(unit_autopilot_timer)
 
 	// Find Warp to enter
 	warpx = -9999; warpy = -9999;
-	map_foreachinmap(warplocation, sd->bl.m, BL_PC, sd);
+	map_foreachinrange(warplocation, &sd->bl, MAX_WALKPATH, BL_PC, sd);
 	if (warpx != -9999) {
 		newwalk(&sd->bl, warpx, warpy, 0);
 		return 0;
@@ -5272,7 +5298,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 
 		/// Dispell
-		if (canskill(sd)) if ((pc_checkskill(sd, SA_DISPELL)>0) && (pc_search_inventory(sd, 715)>0)) {
+		if (canskill(sd)) if ((pc_checkskill(sd, SA_DISPELL)>0) && (pc_search_inventory(sd, 715)>=0)) {
 			resettargets();
 			map_foreachinrange(targetdispel, &sd->bl, 9, BL_MOB, sd);
 			if (foundtargetID > -1) {
@@ -5302,7 +5328,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			map_foreachinrange(targetbluepitcher, &sd->bl, 9, BL_PC, sd);
 			// HP must be below 40% to ensure we don't waste items when other ways to heal are available
 			if (foundtargetID > -1) {
-				if (pc_search_inventory(sd, 504) > 0)	unit_skilluse_ifable(&sd->bl, foundtargetID, AM_POTIONPITCHER, 5);
+				if (pc_search_inventory(sd, 504) >= 0)	unit_skilluse_ifable(&sd->bl, foundtargetID, AM_POTIONPITCHER, 5);
 			}
 		}
 
@@ -5348,7 +5374,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			resettargets();
 			map_foreachinrange(targetresu, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
-				if (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE) > 0) {
+				if (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE) >= 0) {
 					unit_skilluse_ifable(&sd->bl, foundtargetID, ALL_RESURRECTION, pc_checkskill(sd, ALL_RESURRECTION));
 				}
 				else saythis(sd, "I'm out of Blue Gemstones!",5); // Twice per second
@@ -5369,9 +5395,9 @@ TIMER_FUNC(unit_autopilot_timer)
 			map_foreachinrange(targethealing, &sd->bl, 9, BL_PC, sd);
 			// HP must be below 40% to ensure we don't waste items when other ways to heal are available
 			if (foundtargetID > -1) if (targetdistance<40) {
-				if (pc_search_inventory(sd, 547) > 0)	unit_skilluse_ifablexy(&sd->bl, foundtargetID, CR_SLIMPITCHER, 10); else
-					if (pc_search_inventory(sd, 546) > 0)	unit_skilluse_ifablexy(&sd->bl, foundtargetID, CR_SLIMPITCHER, 9); else
-						if (pc_search_inventory(sd, 545) > 0)	unit_skilluse_ifablexy(&sd->bl, foundtargetID, CR_SLIMPITCHER, 5); 
+				if (pc_search_inventory(sd, 547) >= 0)	unit_skilluse_ifablexy(&sd->bl, foundtargetID, CR_SLIMPITCHER, 10); else
+					if (pc_search_inventory(sd, 546) >= 0)	unit_skilluse_ifablexy(&sd->bl, foundtargetID, CR_SLIMPITCHER, 9); else
+						if (pc_search_inventory(sd, 545) >= 0)	unit_skilluse_ifablexy(&sd->bl, foundtargetID, CR_SLIMPITCHER, 5); 
 			}
 		}
 		/// Potion Pitcher
@@ -5380,10 +5406,10 @@ TIMER_FUNC(unit_autopilot_timer)
 			map_foreachinrange(targethealing, &sd->bl, 9, BL_PC, sd);
 			// HP must be below 40% to ensure we don't waste items when other ways to heal are available
 			if (foundtargetID > -1) if (targetdistance<40) {
-				if (pc_search_inventory(sd, 504) > 0)	unit_skilluse_ifable(&sd->bl, foundtargetID, AM_POTIONPITCHER, 4); else
-				if (pc_search_inventory(sd, 503) > 0)	unit_skilluse_ifable(&sd->bl, foundtargetID, AM_POTIONPITCHER, 3); else
-				if (pc_search_inventory(sd, 502) > 0)	unit_skilluse_ifable(&sd->bl, foundtargetID, AM_POTIONPITCHER, 2); else
-				if (pc_search_inventory(sd, 501) > 0)	unit_skilluse_ifable(&sd->bl, foundtargetID, AM_POTIONPITCHER, 1); 
+				if (pc_search_inventory(sd, 504) >= 0)	unit_skilluse_ifable(&sd->bl, foundtargetID, AM_POTIONPITCHER, 4); else
+				if (pc_search_inventory(sd, 503) >= 0)	unit_skilluse_ifable(&sd->bl, foundtargetID, AM_POTIONPITCHER, 3); else
+				if (pc_search_inventory(sd, 502) >= 0)	unit_skilluse_ifable(&sd->bl, foundtargetID, AM_POTIONPITCHER, 2); else
+				if (pc_search_inventory(sd, 501) >= 0)	unit_skilluse_ifable(&sd->bl, foundtargetID, AM_POTIONPITCHER, 1); 
 			}
 		}
 		/// Status Recovery
@@ -5502,7 +5528,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			}
 		}
 		/// Aspersio
-		if (canskill(sd)) if (pc_checkskill(sd, PR_ASPERSIO)>0) if (pc_search_inventory(sd, ITEMID_HOLY_WATER)>0) {
+		if (canskill(sd)) if (pc_checkskill(sd, PR_ASPERSIO)>0) if (pc_search_inventory(sd, ITEMID_HOLY_WATER)>=0) {
 			resettargets();
 			if (map_foreachinmap(endowneed, sd->bl.m, BL_MOB, ELE_HOLY) > 0){
 				resettargets();
@@ -5513,7 +5539,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			}
 		}
 		/// Fire weapon
-		if (canskill(sd)) if (pc_checkskill(sd, SA_FLAMELAUNCHER)>0) if (pc_search_inventory(sd,990)>0) {
+		if (canskill(sd)) if (pc_checkskill(sd, SA_FLAMELAUNCHER)>0) if (pc_search_inventory(sd,990)>=0) {
 			resettargets();
 			if (map_foreachinmap(endowneed, sd->bl.m, BL_MOB, ELE_FIRE) > 0){
 				resettargets();
@@ -5524,7 +5550,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			}
 		}
 		/// Ice weapon
-		if (canskill(sd)) if (pc_checkskill(sd, SA_FROSTWEAPON)>0) if (pc_search_inventory(sd, 991 )>0) {
+		if (canskill(sd)) if (pc_checkskill(sd, SA_FROSTWEAPON)>0) if (pc_search_inventory(sd, 991 )>=0) {
 			resettargets();
 			if (map_foreachinmap(endowneed, sd->bl.m, BL_MOB, ELE_WATER) > 0){
 				resettargets();
@@ -5535,7 +5561,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			}
 		}
 		///wind weapon
-		if (canskill(sd)) if (pc_checkskill(sd, SA_LIGHTNINGLOADER)>0) if (pc_search_inventory(sd,992)>0) {
+		if (canskill(sd)) if (pc_checkskill(sd, SA_LIGHTNINGLOADER)>0) if (pc_search_inventory(sd,992)>=0) {
 			resettargets();
 			if (map_foreachinmap(endowneed, sd->bl.m, BL_MOB, ELE_WIND) > 0){
 				resettargets();
@@ -5546,7 +5572,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			}
 		}
 		/// Earth weapon
-		if (canskill(sd)) if (pc_checkskill(sd, SA_SEISMICWEAPON)>0) if (pc_search_inventory(sd, 993)>0) {
+		if (canskill(sd)) if (pc_checkskill(sd, SA_SEISMICWEAPON)>0) if (pc_search_inventory(sd, 993)>=0) {
 			resettargets();
 			if (map_foreachinmap(endowneed, sd->bl.m, BL_MOB, ELE_EARTH) > 0){
 				resettargets();
@@ -5788,7 +5814,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		// Must be very powerful and a real threat!
 		if ((Dangerdistance <= 3) && (dangercount<4)) {
 			if (canskill(sd)) if ((pc_checkskill(sd, MG_SAFETYWALL)>0) && (dangermd->status.rhw.range <= 3)
-				&& (dangermd->status.rhw.atk2>sd->battle_status.hp / 5) && (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE)>0)
+				&& (dangermd->status.rhw.atk2>sd->battle_status.hp / 5) && (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE)>=0)
 				&& (!sd->sc.data[SC_PNEUMA]) && (!sd->sc.data[SC_SAFETYWALL]))
 			// If we are in tanking mode, distance must be 1, we will otherwise move towards monster!
 			{ if ((sd->state.autopilotmode != 1) || (Dangerdistance <= 1))
@@ -5840,7 +5866,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		// Only against dangerous enemies that are not in range to attack us, costs cobweb
 		if (canskill(sd)) if (pc_checkskill(sd, PF_SPIDERWEB) > 0) {
 			if ((Dangerdistance <= 7) && (dangermd->status.rhw.range < Dangerdistance)
-				&& (dangermd->status.rhw.atk2>sd->battle_status.hp / 5) && (pc_search_inventory(sd, 1025)>0)) {
+				&& (dangermd->status.rhw.atk2>sd->battle_status.hp / 5) && (pc_search_inventory(sd, 1025)>=0)) {
 				if (!isdisabled(dangermd)) {
 					int maxcount = 99;
 					if (BL_PC&battle_config.land_skill_limit) if (!((maxcount = skill_get_maxcount(PF_SPIDERWEB, pc_checkskill(sd, PF_SPIDERWEB)))==0)) maxcount = 99;
@@ -5911,7 +5937,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			// Otherwise it might be best to avoid using it by the AI altogether, it's just too useless?
 			if (canskill(sd)) if (pc_checkskill(sd, MG_STONECURSE) > 0) {
 				if (Dangerdistance <= 6) {
-					if ((dangermd->status.rhw.atk2 > sd->battle_status.hp / 5) && (pc_search_inventory(sd, ITEMID_RED_GEMSTONE) > 0))
+					if ((dangermd->status.rhw.atk2 > sd->battle_status.hp / 5) && (pc_search_inventory(sd, ITEMID_RED_GEMSTONE) >= 0))
 						if (elemallowed(dangermd, skill_get_ele(MG_STONECURSE, pc_checkskill(sd, MG_STONECURSE)))) {
 							if (!isdisabled(dangermd))
 								if (!(dangermd->status.def_ele == ELE_UNDEAD)) {
@@ -6046,7 +6072,7 @@ TIMER_FUNC(unit_autopilot_timer)
 
 							// NIN : Lightning Jolt
 							if (canskill(sd)) if ((pc_checkskill(sd, NJ_RAIGEKISAI) > 2) && (Dangerdistance > 900))
-								if (pc_search_inventory(sd, 7523) > 0) 
+								if (pc_search_inventory(sd, 7523) >= 0) 
 									if (pc_rightside_atk(sd) < sd->battle_status.matk_min) 
 										{
 								int area = 2; if (pc_checkskill(sd, NJ_RAIGEKISAI) >= 5) area++;
@@ -6057,7 +6083,7 @@ TIMER_FUNC(unit_autopilot_timer)
 							}
 							// NIN : First Wind
 							if (canskill(sd)) if ((pc_checkskill(sd, NJ_KAMAITACHI) > 2) && (Dangerdistance > 900))
-								if (pc_search_inventory(sd, 7523) > 0)
+								if (pc_search_inventory(sd, 7523) >= 0)
 									if (pc_rightside_atk(sd) < sd->battle_status.matk_min)
 									{  // Note : This hits in a line but has a cast time and tanking does not guarantee
 									   // the targets will stay in that line plus the moving target moves the line itself.
@@ -6086,7 +6112,7 @@ TIMER_FUNC(unit_autopilot_timer)
 							// NIN- Exploding Dragon
 							// This is special - it targets a monster despite having AOE, not a ground skill
 							if (canskill(sd)) if ((pc_checkskill(sd, NJ_BAKUENRYU) > 0)) if ((Dangerdistance > 900) || (sd->special_state.no_castcancel))
-							if (pc_search_inventory(sd, 7521) > 0) {
+							if (pc_search_inventory(sd, 7521) >= 0) {
 								if (pc_rightside_atk(sd) < sd->battle_status.matk_min) { 
 									foundtargetID = -1; targetdistance = 999;
 									map_foreachinrange(targetnearest, targetbl2, 9, BL_MOB, sd);
@@ -6111,7 +6137,7 @@ TIMER_FUNC(unit_autopilot_timer)
 							}
 
 							// Magnus Exorcismus
-							if (canskill(sd)) if ((pc_checkskill(sd, PR_MAGNUS) > 0) && ((Dangerdistance > 900) || (sd->special_state.no_castcancel)) && (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE) > 0)) {
+							if (canskill(sd)) if ((pc_checkskill(sd, PR_MAGNUS) > 0) && ((Dangerdistance > 900) || (sd->special_state.no_castcancel)) && (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE) >= 0)) {
 								priority = 3 * map_foreachinrange(Magnuspriority, targetbl2, 3, BL_MOB, skill_get_ele(PR_MAGNUS, pc_checkskill(sd, PR_MAGNUS)));
 								if ((priority >= 18) && (priority > bestpriority)) {
 									spelltocast = PR_MAGNUS; bestpriority = priority; IDtarget = foundtargetID2;
@@ -6142,7 +6168,7 @@ TIMER_FUNC(unit_autopilot_timer)
 					if (canskill(sd)) if ((pc_checkskill(sd, NJ_HYOUSYOURAKU) >= 4)
 						//					 &&	((Dangerdistance > 900) || (sd->special_state.no_castcancel)) // Note : I modded this skill to be uninterruptable - a self targeted crowd control AOE is useless if it is interrupted. If yours is not modded, uncomment this line!
 						) {
-						if (pc_search_inventory(sd, 7522) > 0) {
+						if (pc_search_inventory(sd, 7522) >= 0) {
 							int area = 2;
 							priority = 2 * map_foreachinrange(AOEPriorityIP, &sd->bl, area, BL_MOB, skill_get_ele(NJ_HYOUSYOURAKU, pc_checkskill(sd, NJ_HYOUSYOURAKU)));
 							if ((priority >= 12) && (priority > bestpriority)) {
@@ -6467,7 +6493,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			if (canskill(sd)) if ((targetmd->status.def_ele == ELE_DARK) || ((targetmd->status.def_ele == ELE_HOLY)))
 			{ // Gravity Field
 				// High Wizards can pull this ace out of their sleeve if they have gems and aren't under attack
-				if (canskill(sd)) if ((pc_checkskill(sd, HW_GRAVITATION) > 0) && (Dangerdistance > 900) && (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE)>0)) {
+				if (canskill(sd)) if ((pc_checkskill(sd, HW_GRAVITATION) > 0) && (Dangerdistance > 900) && (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE)>=0)) {
 					unit_skilluse_ifablexy(&sd->bl, foundtargetID2, HW_GRAVITATION, pc_checkskill(sd, HW_GRAVITATION));
 				}
 				// Storm Gust - this can at least freeze things and keep them under control, as well as change them to water element
@@ -6505,6 +6531,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			// Do normal attack if not using skill and being an archer
 			if ((sd->battle_status.rhw.range >= 6) && (sd->state.autopilotmode > 1)) {
 				if (sd->status.weapon == W_BOW) { arrowchange(sd, targetRAmd); }
+				aspdpotion(sd);
 				clif_parse_ActionRequest_sub(sd, 7, foundtargetRA, gettick());
 			}
 
@@ -6777,22 +6804,10 @@ TIMER_FUNC(unit_autopilot_timer)
 
 
 			if (sd->status.weapon == W_BOW) { arrowchange(sd, targetmd); }
-
-			
-			// Do normal attack if not using skill
-			/*
-			// Buggy code
-			if ((sd->battle_status.rhw.range <= 3) || (targetdistance<3))
-				unit_attack(&sd->bl, foundtargetID, 1);
-				//clif_parse_ActionRequest_sub(sd, 7, foundtargetID, gettick());
-			// We are tanking as an archer? Move close before attacking...
-			else {
-				newwalk(&sd->bl, targetbl->x + rand() % 3 - 1, targetbl->y + rand() % 3 - 1, 8);
-			}
-			*/
-			 
+		 
 			// Correct code
 			if ((sd->battle_status.rhw.range >= targetdistance) && (targetdistance<3)) {
+				aspdpotion(sd);
 				unit_attack(&sd->bl, foundtargetID, 1);
 			} else
 			{	struct walkpath_data wpd1;
@@ -6849,7 +6864,7 @@ TIMER_FUNC(unit_autopilot_timer)
 				// However, excessively large max walkpath might cause lagging so don't expect this to seek out enemies on the other side of the map.
 				// The feature isn't meant for botting, it's meant for controlling secondary characters. So it's ok if the leader gets stuck if no enemies left nearby.
 				resettargets();
-				map_foreachinmap(targetnearestwalkto, sd->bl.m, BL_MOB, sd);
+				map_foreachinrange(targetnearestwalkto, &sd->bl, MAX_WALKPATH, BL_MOB, sd);
 				//			ShowError("No target found, moving?");
 				if (foundtargetID > -1) {
 					//				ShowError("No target found, moving!");
