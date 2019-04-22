@@ -4420,6 +4420,7 @@ int inDangerLeader(struct map_session_data * sd)
 int provokethis(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd2;
+	struct map_session_data *sd3;
 
 	struct mob_data *md;
 
@@ -4436,6 +4437,12 @@ int provokethis(block_list * bl, va_list ap)
 	if (md->target_id == sd2->bl.id) return 0;
 	if (md->status.def_ele == ELE_UNDEAD) return 0;
 	if ((status_get_class_(bl) == CLASS_BOSS)) return 0;
+
+	struct block_list *tgtbl;
+	tgtbl = map_id2bl(md->target_id);
+	nullpo_ret(sd3 = (struct map_session_data *)tgtbl);
+	// ignore if monster is targeting another tanking mode character
+	if (sd3->state.autopilotmode == 1) return 0;
 
 	// want nearest anyway
 	int dist = distance_bl(&sd2->bl, bl);
