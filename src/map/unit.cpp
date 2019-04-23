@@ -6637,13 +6637,25 @@ TIMER_FUNC(unit_autopilot_timer)
 						unit_skilluse_ifable(&sd->bl, SELF, SM_MAGNUM, pc_checkskill(sd, SM_MAGNUM));
 			}
 
-				// Steal skill
+			// Steal skill
 			// Use in any mode above 50% SP only, and never use below 1/3 health, that's not the time for messing around.
-			if (canskill(sd)) if (pc_checkskill(sd, TF_STEAL)>0) {
+			if (canskill(sd)) if (pc_checkskill(sd, TF_STEAL)>0)
+				// Do not steal if can do it automaticaly for free
+				if ((pc_checkskill(sd, RG_SNATCHER) <= 0) || (sd->battle_status.rhw.range>3))
+			{
 				if ((status_get_sp(bl) >= status_get_max_sp(bl) / 2) && (status_get_hp(bl) >  status_get_max_hp(bl) / 3)) {
 					if (!(((targetmd->state.steal_flag == UCHAR_MAX) || (targetmd->sc.opt1 && targetmd->sc.opt1 != OPT1_BURNING))))
 					{
 						unit_skilluse_ifable(&sd->bl, foundtargetID, TF_STEAL, pc_checkskill(sd, TF_STEAL));
+					}
+				}
+			}
+			// MUG skill
+			if (canskill(sd)) if (pc_checkskill(sd, RG_STEALCOIN) > 0) {
+				if ((status_get_sp(bl) >= status_get_max_sp(bl) / 2) && (status_get_hp(bl) > status_get_max_hp(bl) / 3)) {
+					if (!(((targetmd->state.steal_coin_flag == UCHAR_MAX) || (targetmd->sc.data[SC_STONE]) || targetmd->sc.data[SC_FREEZE])))
+					{
+						unit_skilluse_ifable(&sd->bl, foundtargetID, RG_STEALCOIN, pc_checkskill(sd, RG_STEALCOIN));
 					}
 				}
 			}
