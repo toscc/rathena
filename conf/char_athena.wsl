@@ -5,14 +5,14 @@
 // only as information/reference.
 
 // Server Communication username and password.
-userid: seraserver
-passwd: s1234
+userid: wslserver
+passwd: w1234
 
 // Server name, use alternative character such as ASCII 160 for spaces.
 // NOTE: Do not use spaces or any of these characters which are not allowed in
 //       Windows filenames \/:*?"<>|
 //       ... or else guild emblems won't work client-side!
-server_name: SeraRO
+server_name: WSL_RO
 
 // Wisp name for server: used to send wisp from server to players (between 4 to 23 characters)
 wisp_server_name: Server
@@ -29,7 +29,7 @@ wisp_server_name: Server
 //bind_ip: 127.0.0.1
 
 // Login Server Port
-login_port: 6900
+login_port: 6901
 
 // Character Server IP
 // The IP address which clients will use to connect.
@@ -37,7 +37,7 @@ login_port: 6900
 //char_ip: 127.0.0.1
 
 // Character Server Port
-char_port: 6121
+char_port: 6122
 
 //Time-stamp format which will be printed before all messages.
 //Can at most be 20 characters long.
@@ -236,7 +236,7 @@ pincode_allow_sequential: no
 // NOTE: Requires client 2011-09-28aragexeRE or newer.
 // Allows users to move their characters between slots.
 // Default: yes
-char_move_enabled: no
+char_move_enabled: yes
 
 // Allow users to move a character to a used slot?
 // If enabled the characters are exchanged.
@@ -244,7 +244,7 @@ char_move_enabled: no
 char_movetoused: yes
 
 // Allow users to move characters as often as they like?
-char_moves_unlimited: yes
+char_moves_unlimited: no
 
 // Character renaming
 // Allow users to rename a character while being in a party?
@@ -284,3 +284,4 @@ mail_return_days: 15
 // Default: 15
 mail_delete_days: 15
 
+//import: conf/import/char_conf.txt

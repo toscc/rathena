@@ -1,6 +1,3 @@
-// Login Server Port
-login_port: 6900
-
 //Makes server output more silent by omitting certain types of messages:
 //1: Hide Information messages
 //2: Hide Status messages
