@@ -151,7 +151,7 @@ Armor:
 WeaponLv1:
   StatsPerLevel: 200
   RandomBonusStartLevel: 8
-  RandomBonusValue: 300
+  RandomBonusValue: 150
   Costs:
     - Type: REFINE_COST_NORMAL
       Price: 50
@@ -249,7 +249,7 @@ WeaponLv1:
 WeaponLv2:
   StatsPerLevel: 300
   RandomBonusStartLevel: 7
-  RandomBonusValue: 500
+  RandomBonusValue: 200
   Costs:
     - Type: REFINE_COST_NORMAL
       Price: 200
@@ -353,7 +353,7 @@ WeaponLv2:
 WeaponLv3:
   StatsPerLevel: 500
   RandomBonusStartLevel: 6
-  RandomBonusValue: 800
+  RandomBonusValue: 300
   Costs:
     - Type: REFINE_COST_NORMAL
       Price: 5000
@@ -469,7 +469,7 @@ WeaponLv3:
 WeaponLv4:
   StatsPerLevel: 700
   RandomBonusStartLevel: 5
-  RandomBonusValue: 1400
+  RandomBonusValue: 500
   Costs:
     - Type: REFINE_COST_NORMAL
       Price: 20000

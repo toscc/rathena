@@ -15,7 +15,7 @@
 //= 1.9 Migrate/Integrate to Global Functions Platinum Skills. [mazvi]
 //============================================================
 
-prontera,153,193,6	script	Job Master	123,{
+prontera,142,179,6	script	Job Master	123,{
 function Get_Job_Equip;
 // Checks if the Player has the required level.
 // closes if not, returns if yes
@@ -302,6 +302,7 @@ function	Job_Menu	{
 function	Job_Change	{
 	.@to_cls = getarg(0);
 	next;
+	delitem 31906,1;
 	mes .NPCName$;
 	mes "You are now " + callfunc("F_InsertArticle", jobname(.@to_cls)) + "!";
 	if (.@to_cls == Job_Novice_High && .LastJob)
@@ -331,6 +332,15 @@ function	Confirm_Change	{
 		mes "Unknown Class Error.";
 		close;
 	}
+	
+	if (countitem(31906) < 1) { 
+		mes .NPCName$;
+		mes "You need a blank certificate I can fill to officially change your job.";
+		mes "You don't want to look like some shady person who pretends to have qualifications, right?";
+		mes "Return after you obtained a Proof of Membership Certificate!";
+		close;
+	}
+	
 	mes "Do you want to change into ^0055FF"+jobname(.@class)+"^000000 class?";
 	.@job_option$ = " ~ Change into ^0055FF"+jobname(.@class)+"^000000 class";
 	if( .@class == Job_Novice_High)

@@ -473,7 +473,7 @@
 4352  // B_Ygnizem_Card
 4353  // Removal_Card
 4354  // Gemini_Card
-4355	//Gremlin_Card
+4355  // Gremlin_Card
 4356  // Beholder_Card
 4357	//B_Seyren_Card
 4358  // Seyren_Card

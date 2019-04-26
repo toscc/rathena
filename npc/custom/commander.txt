@@ -1,0 +1,135 @@
+prontera,147,187,6	script	GMAura#GM_Aura	18000,{
+
+	set @n$,"[^484848[GM]Aura^000000]";
+	set @reset$,"^000000";
+	set @disabled$,"^BE1C1C";
+	set @enabled$,"^0DB40D";
+
+UserMenu:
+	mes @n$;
+	mes "I can help make your life more convenient!";
+	mes "Do you want me to set commands for you automatically when you log on to this account?";
+	next;
+	if (#set_autoloot == 0) set @st_autoloot$,@disabled$+"Off"+@reset$;
+	if (#set_autoloot > 0) set @st_autoloot$,@enabled$+#set_autoloot+"%"+@reset$;
+	if (#set_showdelay == 0) set @st_showdelay$,@disabled$+"Off"+@reset$;
+	if (#set_showdelay > 0) set @st_showdelay$,@enabled$+"On"+@reset$;
+	if (#set_showexp == 0) set @st_showexp$,@disabled$+"Off"+@reset$;
+	if (#set_showexp > 0) set @st_showexp$,@enabled$+"On"+@reset$;
+	if (#set_showzeny == 0) set @st_showzeny$,@disabled$+"Off"+@reset$;
+	if (#set_showzeny > 0) set @st_showzeny$,@enabled$+"On"+@reset$;
+	if (#set_uptime == 0) set @st_uptime$,@disabled$+"Off"+@reset$;
+	if (#set_uptime > 0) set @st_uptime$,@enabled$+"On"+@reset$;
+	if (#set_rates == 0) set @st_rates$,@disabled$+"Off"+@reset$;
+	if (#set_rates > 0) set @st_rates$,@enabled$+"On"+@reset$;
+	menu	"Auto Loot ["+@st_autoloot$+"]",e_autoloot,"Show Delay ["+@st_showdelay$+"]",e_showdelay,"Show Exp ["+@st_showexp$+"]",e_showexp,"Show Zeny ["+@st_showzeny$+"]",e_showzeny,"Uptime on login ["+@st_uptime$+"]",e_uptime,"Rates on login ["+@st_rates$+"]",e_rates;
+	close;
+
+e_autoloot:
+	mes @n$;
+	mes "Auto Loot is currently "+@st_autoloot$;
+	mes "Desc: Auto loot adds items to your inventory automatically.";
+	next;
+	menu "Toggle",-,"Back",UserMenu;
+	mes @n$;
+	mes "Auto Loot is currently "+@st_autoloot$;
+	mes "Enter the minimum rate an item must drop at before it it looted, 100 will loot all items, 99 will only loot cards, 0 disables it.";
+	next;
+	input @rate;
+	if ((@rate >= 0) && (@rate <= 100)) set #set_autoloot,@rate;
+	goto UserMenu;
+
+e_showdelay:
+	mes @n$;
+	mes "Show Delay is currently "+@st_showdelay$;
+	mes "Desc: When a skill fails because of delay, it will be hidden.";
+	next;
+	menu "Toggle",-,"Back",UserMenu;
+	if (#set_showdelay == 0) {
+		set #set_showdelay,1;
+		goto UserMenu;
+	}
+	if (#set_showdelay == 1) {
+		set #set_showdelay,0;
+		goto UserMenu;
+	}
+	set #set_showdelay,1; mes "unknown error"; next; goto UserMenu;
+
+e_rates:
+	mes @n$;
+	mes "Rates on login is currently "+@st_rates$;
+	mes "Desc: Displays the current server rates on login.";
+	next;
+	menu "Toggle",-,"Back",UserMenu;
+	if (#set_rates == 0) {
+		set #set_rates,1;
+		goto UserMenu;
+	}
+	if (#set_rates == 1) {
+		set #set_rates,0;
+		goto UserMenu;
+	}
+	set #set_rates,1; mes "unknown error"; next; goto UserMenu;
+
+e_showexp:
+	mes @n$;
+	mes "Show Exp is currently "+@st_showexp$;
+	mes "Desc: When you gain exp, it will be displaied.";
+	next;
+	menu "Toggle",-,"Back",UserMenu;
+	if (#set_showexp == 0) {
+		set #set_showexp,1;
+		goto UserMenu;
+	}
+	if (#set_showexp == 1) {
+		set #set_showexp,0;
+		goto UserMenu;
+	}
+	set #set_showexp,1; mes "unknown error"; next; goto UserMenu;
+
+e_showzeny:
+	mes @n$;
+	mes "Show Zeny is currently "+@st_showzeny$;
+	mes "Desc: When you gain zeny, it will be displaied.";
+	next;
+	menu "Toggle",-,"Back",UserMenu;
+	if (#set_showzeny == 0) {
+		set #set_showzeny,1;
+		goto UserMenu;
+	}
+	if (#set_showzeny == 1) {
+		set #set_showzeny,0;
+		goto UserMenu;
+	}
+	set #set_showzeny,1; mes "unknown error"; next; goto UserMenu;
+
+e_uptime:
+	mes @n$;
+	mes "Uptime on login is currently "+@st_uptime$;
+	mes "Desc: When you log in, server uptime will be displaied.";
+	next;
+	menu "Toggle",-,"Back",UserMenu;
+	if (#set_uptime == 0) {
+		set #set_uptime,1;
+		goto UserMenu;
+	}
+	if (#set_uptime == 1) {
+		set #set_uptime,0;
+		goto UserMenu;
+	}
+	set #set_uptime,1; mes "unknown error"; next; goto UserMenu;
+close;
+
+
+OnPCLoginEvent:
+sleep2 1000;
+if (#set_autoloot > 0)	atcommand "@autoloot " + #set_autoloot;
+if (#set_showdelay == 1)	atcommand "@showdelay";
+if (#set_showexp == 1)	atcommand "@showexp";
+if (#set_showzeny == 1)	atcommand "@showzeny";
+if (#set_rates == 1)	atcommand "@rates";
+if (#set_uptime == 1)	atcommand "@uptime";
+atcommand "@main on";
+end;
+
+}

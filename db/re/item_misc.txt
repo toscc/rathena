@@ -1938,8 +1938,22 @@ IG_GoodHeadgear,5389,1
 IG_GoodCostume,5390,1
 IG_GoodHeadgear,5393,1
 IG_GoodHeadgear,5398,1
-
-
+IG_GoodHeadgear,5402,1
+IG_GoodHeadgear,5404,1
+IG_GoodHeadgear,5406,1
+IG_GoodHeadgear,5407,1
+IG_GoodHeadgear,5409,1
+IG_GoodHeadgear,5414,1
+IG_GoodHeadgear,5416,1
+IG_GoodHeadgear,5430,1
+IG_GoodHeadgear,5435,1
+IG_GoodHeadgear,5436,1
+IG_GoodHeadgear,5446,1
+IG_GoodHeadgear,5451,1
+IG_GoodHeadgear,5452,1
+IG_GoodHeadgear,5453,1
+IG_GoodHeadgear,5455,1
+IG_GoodHeadgear,5456,1
 
 
 //
