@@ -4790,6 +4790,97 @@ int arrowchange(map_session_data * sd, mob_data *targetmd)
 
 }
 
+int grenchange(map_session_data * sd, mob_data *targetmd)
+{
+	unsigned short arrows[] = {
+		13203,13204,13205,13206,13207,
+		13223,13224,13225,13226,13227
+	};
+	unsigned short arrowelem[] = {
+		ELE_FIRE, ELE_WIND, ELE_POISON, ELE_DARK, ELE_WATER,
+		ELE_FIRE, ELE_WIND, ELE_POISON, ELE_DARK, ELE_WATER
+	};
+	unsigned short arrowatk[] = {
+		50,50,50,50,50,50,50,50,50,50
+	};
+
+	if (DIFF_TICK(sd->canequip_tick, gettick()) > 0) return 0;
+
+	int16 index = -1;
+	int i, j;
+	int best = -1; int bestprio = -1;
+
+	for (i = 0; i < ARRAYLENGTH(arrows); i++) {
+		if ((index = pc_search_inventory(sd, arrows[i])) >= 0) {
+			j = arrowatk[i];
+			if (elemstrong(targetmd, arrowelem[i])) j += 500;
+			if (elemallowed(targetmd, arrowelem[i])) if (j > bestprio) {
+				bestprio = j; best = index;
+			}
+		}
+	}
+	if (best > -1) {
+		pc_equipitem(sd, best, EQP_AMMO);
+		return 1;
+	}
+	else {
+		char* msg = "I have no grenades to shoot my target!";
+		saythis(sd, msg, 50);
+		return 0;
+	}
+
+}
+
+int ammochange(map_session_data * sd, mob_data *targetmd)
+{
+	unsigned short arrows[] = {
+		13200, 13201, 13215, 13216, 13217,
+		13218, 13219, 13220, 13221, 13228,
+		13229, 13230, 13231, 13232
+	};
+	unsigned short arrowelem[] = {
+		ELE_NEUTRAL, ELE_HOLY, ELE_NEUTRAL, ELE_FIRE, ELE_WATER,
+		ELE_WIND, ELE_EARTH, ELE_HOLY, ELE_HOLY, ELE_FIRE,
+		ELE_WIND, ELE_WATER, ELE_POISON, ELE_DARK
+	};
+	unsigned short arrowatk[] = {
+		25,15,50,40,40,
+		40,40,40,15,20,
+		20,20,20,20
+	};
+	unsigned short arrowlvl[] = {
+		1,1,100,100,100,
+		100,100,100,1,1,
+		1,1,1,1
+	};
+
+	if (DIFF_TICK(sd->canequip_tick, gettick()) > 0) return 0;
+
+	int16 index = -1;
+	int i, j;
+	int best = -1; int bestprio = -1;
+
+	for (i = 0; i < ARRAYLENGTH(arrows); i++) {
+		if ((index = pc_search_inventory(sd, arrows[i])) >= 0) {
+			j = arrowatk[i];
+			if (elemstrong(targetmd, arrowelem[i])) j += 500;
+			if (elemallowed(targetmd, arrowelem[i])) if (j > bestprio) if (sd->status.base_level >= arrowlvl[i])  {
+				bestprio = j; best = index;
+			}
+		}
+	}
+	if (best > -1) {
+		pc_equipitem(sd, best, EQP_AMMO);
+		return 1;
+	}
+	else {
+		char* msg = "I have no bullets to shoot my target!";
+		saythis(sd, msg, 50);
+		return 0;
+	}
+
+}
+
 int kunaichange(map_session_data * sd, mob_data *targetmd)
 {
 	unsigned short arrows[] = {
@@ -4871,6 +4962,15 @@ void recoversp(map_session_data *sd, int goal)
 
 }
 
+int ammochange2(map_session_data * sd, mob_data *targetmd) {
+	if (sd->status.weapon == W_REVOLVER) { return ammochange(sd, targetmd); }
+	if (sd->status.weapon == W_RIFLE) { return ammochange(sd, targetmd); }
+	if (sd->status.weapon == W_GATLING) { return ammochange(sd, targetmd); }
+	if (sd->status.weapon == W_SHOTGUN) { return ammochange(sd, targetmd); }
+	if (sd->status.weapon == W_GRENADE) { return grenchange(sd, targetmd); }
+	return 0;
+}
+
 
 void skillwhenidle(struct map_session_data *sd) {
 
@@ -4891,6 +4991,24 @@ void skillwhenidle(struct map_session_data *sd) {
 		if (4 + radra>sd->spiritball) {
 			unit_skilluse_ifable(&sd->bl, SELF, CH_SOULCOLLECT, pc_checkskill(sd, CH_SOULCOLLECT));
 		}
+	}
+
+	// Flip Coin
+	if ((pc_checkskill(sd, GS_GLITTERING) > 4)) {
+		if ((sd->spiritball < 10)) {
+				unit_skilluse_ifable(&sd->bl, SELF, GS_GLITTERING, pc_checkskill(sd, GS_GLITTERING));
+			}
+	}
+
+	// Magical Bullet
+	if ((pc_checkskill(sd, GS_MAGICALBULLET) > 0)) {
+		if (!(sd->sc.data[SC_MAGICALBULLET]))
+			// Must have high ASPD and INT
+			if (sd->battle_status.agi>=0.6*sd->status.base_level)
+			if (sd->battle_status.matk_min >= 1.2*sd->status.base_level)
+			if ((sd->spiritball >= 10)) {
+				unit_skilluse_ifable(&sd->bl, SELF, GS_MAGICALBULLET, pc_checkskill(sd, GS_MAGICALBULLET));
+			}
 	}
 
 	// Summon Spirit Sphere
@@ -4974,6 +5092,13 @@ void skillwhenidle(struct map_session_data *sd) {
 		}
 	}
 
+	// Guns - Increase Accuracy
+	if (pc_checkskill(sd, GS_INCREASING) > 0) if (sd->spiritball >= 4) {
+		if (!(sd->sc.data[SC_INCREASING])) {
+			unit_skilluse_ifable(&sd->bl, SELF, GS_INCREASING, pc_checkskill(sd, GS_INCREASING));
+		}
+	}
+	
 	// Ninja Aura
 	if (pc_checkskill(sd, NJ_NEN) > 0) {
 		if (!(sd->sc.data[SC_NEN])) {
@@ -5025,6 +5150,15 @@ void aspdpotion(struct map_session_data *sd)
 
 }
 
+bool hasgun(struct map_session_data *sd)
+{
+	if (sd->status.weapon == W_REVOLVER) { return true; }
+	if (sd->status.weapon == W_RIFLE) { return true; }
+	if (sd->status.weapon == W_GATLING) { return true; }
+	if (sd->status.weapon == W_SHOTGUN) { return true; }
+	if (sd->status.weapon == W_GRENADE) { return true; }
+	return false;
+}
 
 void usehpitem(struct map_session_data *sd, int hppercentage)
 {
@@ -5784,6 +5918,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			}
 			}
 		}
+
 		// Double Strafe
 		if (canskill(sd)) if ((pc_checkskill(sd, AC_DOUBLE) > 0)) if (sd->state.autopilotmode != 3) {
 			resettargets();
@@ -5795,6 +5930,28 @@ TIMER_FUNC(unit_autopilot_timer)
 				unit_skilluse_ifable(&sd->bl, foundtargetID, AC_DOUBLE, pc_checkskill(sd, AC_DOUBLE));
 			}
 		}
+
+		// Bull's Eye
+		if (canskill(sd)) if ((pc_checkskill(sd, GS_BULLSEYE) > 0)) if (sd->state.autopilotmode != 3) {
+			resettargets();
+			map_foreachinrange(targetnearestusingranged, &sd->bl, 14, BL_MOB, sd);
+			if (foundtargetID > -1) if (hasgun(sd)) if (sd->spiritball >= 1)
+				if ((targetmd->status.race==RC_DEMIHUMAN) || (targetmd->status.race == RC_BRUTE)) {
+					ammochange2(sd, targetmd);
+					unit_skilluse_ifable(&sd->bl, foundtargetID, GS_BULLSEYE, pc_checkskill(sd, GS_BULLSEYE));
+				}
+		}
+
+		// Triple Action
+		if (canskill(sd)) if ((pc_checkskill(sd, GS_TRIPLEACTION) > 0)) if (sd->state.autopilotmode != 3) {
+			resettargets();
+			map_foreachinrange(targetnearestusingranged, &sd->bl, 14, BL_MOB, sd);
+			if (foundtargetID > -1) if (hasgun(sd)) if (sd->spiritball >= 1) {
+				ammochange2(sd, targetmd);
+				unit_skilluse_ifable(&sd->bl, foundtargetID, GS_TRIPLEACTION, pc_checkskill(sd, GS_TRIPLEACTION));
+				}
+		}
+
 
 		// Defending Aura
 		// Activate if being targeted by a ranged enemy	
@@ -5944,6 +6101,17 @@ TIMER_FUNC(unit_autopilot_timer)
 								if (!((status_get_class_(dangerbl) == CLASS_BOSS)))
 									unit_skilluse_ifable(&sd->bl, founddangerID, MG_FROSTDIVER, pc_checkskill(sd, MG_FROSTDIVER));
 							}
+					}
+				}
+			}
+			/// Cracker
+			if (canskill(sd)) if (pc_checkskill(sd, GS_CRACKER) > 0) {
+				if (sd->spiritball >= 1)
+					if (Dangerdistance <= 2) {
+					if (elemallowed(dangermd, skill_get_ele(GS_CRACKER, pc_checkskill(sd, GS_CRACKER)))) {
+						if (!isdisabled(dangermd))
+								if (!((status_get_class_(dangerbl) == CLASS_BOSS)))
+									unit_skilluse_ifable(&sd->bl, founddangerID, GS_CRACKER, pc_checkskill(sd, GS_CRACKER));
 					}
 				}
 			}
@@ -6547,6 +6715,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			// Do normal attack if not using skill and being an archer
 			if ((sd->battle_status.rhw.range >= 6) && (sd->state.autopilotmode > 1)) {
 				if (sd->status.weapon == W_BOW) { arrowchange(sd, targetRAmd); }
+				ammochange2(sd, targetRAmd);
 				aspdpotion(sd);
 				clif_parse_ActionRequest_sub(sd, 7, foundtargetRA, gettick());
 			}
