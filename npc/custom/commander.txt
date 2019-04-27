@@ -33,7 +33,7 @@ e_autoloot:
 	menu "Toggle",-,"Back",UserMenu;
 	mes @n$;
 	mes "Auto Loot is currently "+@st_autoloot$;
-	mes "Enter the minimum rate an item must drop at before it it looted, 100 will loot all items, 99 will only loot cards, 0 disables it.";
+	mes "Enter the minimum rate an item must drop at before it it looted, 100 will loot all items, 0 disables it.";
 	next;
 	input @rate;
 	if ((@rate >= 0) && (@rate <= 100)) set #set_autoloot,@rate;
@@ -74,7 +74,7 @@ e_rates:
 e_showexp:
 	mes @n$;
 	mes "Show Exp is currently "+@st_showexp$;
-	mes "Desc: When you gain exp, it will be displaied.";
+	mes "Desc: When you gain exp, it will be displayed.";
 	next;
 	menu "Toggle",-,"Back",UserMenu;
 	if (#set_showexp == 0) {
@@ -90,7 +90,7 @@ e_showexp:
 e_showzeny:
 	mes @n$;
 	mes "Show Zeny is currently "+@st_showzeny$;
-	mes "Desc: When you gain zeny, it will be displaied.";
+	mes "Desc: When you gain zeny, it will be displayed.";
 	next;
 	menu "Toggle",-,"Back",UserMenu;
 	if (#set_showzeny == 0) {
@@ -106,7 +106,7 @@ e_showzeny:
 e_uptime:
 	mes @n$;
 	mes "Uptime on login is currently "+@st_uptime$;
-	mes "Desc: When you log in, server uptime will be displaied.";
+	mes "Desc: When you log in, server uptime will be displayed.";
 	next;
 	menu "Toggle",-,"Back",UserMenu;
 	if (#set_uptime == 0) {
