@@ -3610,6 +3610,28 @@ int targetnearest(block_list * bl, va_list ap)
 
 }
 
+// Get Hp of enemy in range
+int counthp(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd2;
+
+	struct mob_data *md;
+
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+
+	struct walkpath_data wpd1;
+
+	if (path_search_long(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, CELL_CHKWALL)) {
+		targetdistance += md->status.hp;
+		return 1;
+	}
+	else return 0;
+
+}
+
 int targetnearestusingranged(block_list * bl, va_list ap)
 {
 	
@@ -4790,6 +4812,7 @@ int arrowchange(map_session_data * sd, mob_data *targetmd)
 
 }
 
+/* These are no longer a thing it seems
 int grenchange(map_session_data * sd, mob_data *targetmd)
 {
 	unsigned short arrows[] = {
@@ -4829,7 +4852,7 @@ int grenchange(map_session_data * sd, mob_data *targetmd)
 		return 0;
 	}
 
-}
+} */
 
 int ammochange(map_session_data * sd, mob_data *targetmd)
 {
@@ -4967,7 +4990,8 @@ int ammochange2(map_session_data * sd, mob_data *targetmd) {
 	if (sd->status.weapon == W_RIFLE) { return ammochange(sd, targetmd); }
 	if (sd->status.weapon == W_GATLING) { return ammochange(sd, targetmd); }
 	if (sd->status.weapon == W_SHOTGUN) { return ammochange(sd, targetmd); }
-	if (sd->status.weapon == W_GRENADE) { return grenchange(sd, targetmd); }
+	if (sd->status.weapon == W_GRENADE) { return ammochange(sd, targetmd); }
+	// if (sd->status.weapon == W_GRENADE) { return grenchange(sd, targetmd); }
 	return 0;
 }
 
@@ -5106,7 +5130,10 @@ void skillwhenidle(struct map_session_data *sd) {
 		}
 	}
 
-		return;
+	// Turn off Gatling Fever if stopped fighting
+	if (pc_checkskill(sd, GS_GATLINGFEVER) > 0) if (sd->sc.data[SC_GATLINGFEVER]) unit_skilluse_ifable(&sd->bl, SELF, GS_GATLINGFEVER, pc_checkskill(sd, GS_GATLINGFEVER));
+
+	return;
 }
 
 // Reduce lag - do not try using skills if already decided to use one and started it
@@ -5246,9 +5273,12 @@ TIMER_FUNC(unit_autopilot_timer)
 	block_list * leaderbl;
 	int leaderID, leaderdistance;
 	struct map_session_data *leadersd;
+	int partycount = 1;
 
 	party_id = sd->status.party_id;
 	p = party_search(party_id);
+
+	if (p) partycount = p->party.count;
 
 	if (p) //Search leader
 		for (i = 0; i < MAX_PARTY && !p->party.member[i].leader; i++);
@@ -5908,8 +5938,15 @@ TIMER_FUNC(unit_autopilot_timer)
 		if (Dangerdistance<900)	if (canskill(sd)) if ((pc_checkskill(sd, CR_DEFENDER)>0) && (dangermd->status.rhw.range > 3) &&
 				!(sd->sc.data[SC_DEFENDER]))
 			{			
-					unit_skilluse_ifablexy(&sd->bl, sd->bl.id, MG_SAFETYWALL, pc_checkskill(sd, MG_SAFETYWALL));
+					unit_skilluse_ifablexy(&sd->bl, sd->bl.id, CR_DEFENDER, pc_checkskill(sd, CR_DEFENDER));
 			}
+
+		// Gunslinger Adjustment
+		if (Dangerdistance < 900) if (canskill(sd)) if ((pc_checkskill(sd, GS_ADJUSTMENT) > 0) && (dangermd->status.rhw.range > 3))
+			if (!sd->sc.data[SC_MADNESSCANCEL]) if (!sd->sc.data[SC_ADJUSTMENT]) if (sd->spiritball >= 2)
+		{
+			unit_skilluse_ifablexy(&sd->bl, sd->bl.id, GS_ADJUSTMENT, pc_checkskill(sd, GS_ADJUSTMENT));
+		}
 
 		///////////////////////////////////////////////////////////////////////////////////////////////
 		/// Emergency spells to use when in danger of being attacked (mostly useful for mage classes)
@@ -6111,6 +6148,18 @@ TIMER_FUNC(unit_autopilot_timer)
 				unit_skilluse_ifable(&sd->bl, SELF, AL_CRUCIS, pc_checkskill(sd, AL_CRUCIS));
 			}
 		}
+		// Last Stand, Gatling Fever
+		if (canskill(sd)) if ((pc_checkskill(sd, GS_GATLINGFEVER) > 0) || (pc_checkskill(sd, GS_MADNESSCANCEL) > 0)) {
+		targetdistance = 0;
+		map_foreachinrange(counthp, &sd->bl, 9, BL_MOB, sd);
+		// Use this if nearby enemies are expected to take a while to beat.
+		// This assumes damage output of characters are not too different from the gunslinger and party members are actually participating in the battle.
+		if (targetdistance > pc_rightside_atk(sd) * 10 * partycount) {
+			if (pc_checkskill(sd, GS_GATLINGFEVER) > 0) if (sd->status.weapon == W_GATLING) if (!sd->sc.data[SC_GATLINGFEVER]) unit_skilluse_ifable(&sd->bl, SELF, GS_GATLINGFEVER, pc_checkskill(sd, GS_GATLINGFEVER));
+			if (pc_checkskill(sd, GS_MADNESSCANCEL) > 0) if (!sd->sc.data[SC_MADNESSCANCEL]) if (!sd->sc.data[SC_ADJUSTMENT]) if (sd->spiritball >= 4) unit_skilluse_ifable(&sd->bl, SELF, GS_MADNESSCANCEL, pc_checkskill(sd, GS_MADNESSCANCEL));
+		}
+		}
+
 		///////////////////////////////////////////////////////////////////////////////////////////////
 		/// Skills to prioritize based on elemental weakness
 		///////////////////////////////////////////////////////////////////////////////////////////////
@@ -6253,14 +6302,30 @@ TIMER_FUNC(unit_autopilot_timer)
 								}
 							}
 
+							// Spread Attack
+							// This is special - it targets a monster despite having AOE, not a ground skill
+							if (canskill(sd)) if ((pc_checkskill(sd, GS_SPREADATTACK) > 0))
+								if ((sd->status.weapon == W_SHOTGUN) || (sd->status.weapon == W_GRENADE)) {
+								foundtargetID = -1; targetdistance = 999;
+								map_foreachinrange(targetnearest, targetbl2, 9 + pc_checkskill(sd, GS_SNAKEEYE), BL_MOB, sd);
+								int area = 1;
+								if (pc_checkskill(sd, GS_SPREADATTACK) >= 4) area++;
+								if (pc_checkskill(sd, GS_SPREADATTACK) >= 7) area++;
+								if (pc_checkskill(sd, GS_SPREADATTACK) >= 10) area++;
+								priority = map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(GS_SPREADATTACK, pc_checkskill(sd, GS_SPREADATTACK)));
+								if (((priority >= 6) && (priority > bestpriority)) && (distance_bl(targetbl, &sd->bl) <= 9 + pc_checkskill(sd, GS_SNAKEEYE))) {
+									spelltocast = GS_SPREADATTACK; bestpriority = priority; IDtarget = foundtargetID;
+								}
+							}
+
 							// Arrow Shower
 							if (canskill(sd)) if ((pc_checkskill(sd, AC_SHOWER) > 0)) {
 								foundtargetID = -1; targetdistance = 999;
 								map_foreachinrange(targetnearest, targetbl2, 9 + pc_checkskill(sd, AC_VULTURE), BL_MOB, sd);
-								int area = 2;
+								int area = 1; if (pc_checkskill(sd, AC_SHOWER) >= 6) area++;
 								arrowchange(sd, targetmd);
 								priority = map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(AC_SHOWER, pc_checkskill(sd, AC_SHOWER)));
-								if (((priority >= 6) && (priority > bestpriority)) && (distance_bl(targetbl, &sd->bl) <= 9)) {
+								if (((priority >= 6) && (priority > bestpriority)) && (distance_bl(targetbl, &sd->bl) <= 9 + pc_checkskill(sd, AC_VULTURE))) {
 									spelltocast = AC_SHOWER; bestpriority = priority; IDtarget = foundtargetID;
 								}
 							}
@@ -6308,18 +6373,6 @@ TIMER_FUNC(unit_autopilot_timer)
 									spelltocast = WZ_HEAVENDRIVE; bestpriority = priority; IDtarget = foundtargetID2;
 								}
 							}
-							// Spread Attack
-							if (canskill(sd)) if ((pc_checkskill(sd, GS_SPREADATTACK) > 0))
-								if ((sd->status.weapon == W_SHOTGUN) || (sd->status.weapon == W_GRENADE)) {
-								int area = 1;
-								if (pc_checkskill(sd, GS_SPREADATTACK) >= 4) area++;
-								if (pc_checkskill(sd, GS_SPREADATTACK) >= 7) area++;
-								if (pc_checkskill(sd, GS_SPREADATTACK) >= 10) area++;
-								priority = map_foreachinrange(AOEPriority, targetbl2, area, BL_MOB, skill_get_ele(GS_SPREADATTACK, pc_checkskill(sd, GS_SPREADATTACK)));
-								if ((priority >= 6) && (priority > bestpriority)) {
-									spelltocast = GS_SPREADATTACK; bestpriority = priority; IDtarget = foundtargetID2;
-								}
-							}
 
 						}
 					}
@@ -6348,7 +6401,7 @@ TIMER_FUNC(unit_autopilot_timer)
 
 					// Desperado - always centered on user
 					if (canskill(sd)) if (pc_checkskill(sd, GS_DESPERADO) > 0) if (sd->status.weapon == W_REVOLVER) {
-						int area = 2;
+						int area = 3;
 						// Ammo? But is AOE we don't have a target to pick an element
 						// Let's assume we already have some ammo equipped I guess, from using other skills
 						// In worst case it fails and the AI uses the other skills anyway.
@@ -6371,6 +6424,7 @@ TIMER_FUNC(unit_autopilot_timer)
 							|| (spelltocast == NJ_BAKUENRYU)
 							|| (spelltocast == NJ_KAMAITACHI)
 							|| (spelltocast == AC_SHOWER)
+							|| (spelltocast == GS_SPREADATTACK)
 							) unit_skilluse_ifable(&sd->bl, IDtarget, spelltocast, pc_checkskill(sd, spelltocast));
 						else
 							unit_skilluse_ifablexy(&sd->bl, IDtarget, spelltocast, pc_checkskill(sd, spelltocast));
@@ -6519,7 +6573,7 @@ TIMER_FUNC(unit_autopilot_timer)
 
 			// Tracking
 			if (foundtargetRA > -1) if (canskill(sd)) if ((pc_checkskill(sd, GS_TRACKING) > 0)) if (sd->state.autopilotmode != 3) {
-				if (rangeddist <= 9) if (((sd->status.weapon == W_REVOLVER) && (pc_checkskill(sd, GS_RAPIDSHOWER) <= pc_checkskill(sd, GS_TRACKING))) || (sd->status.weapon == W_RIFLE)) {
+				if (rangeddist <= 9) if (((sd->status.weapon == W_REVOLVER) && (pc_checkskill(sd, GS_RAPIDSHOWER)*2 <= pc_checkskill(sd, GS_TRACKING))) || (sd->status.weapon == W_RIFLE)) {
 					ammochange2(sd, targetRAmd);
 					unit_skilluse_ifable(&sd->bl, foundtargetRA, GS_TRACKING, pc_checkskill(sd, GS_TRACKING));
 				}
@@ -6537,12 +6591,14 @@ TIMER_FUNC(unit_autopilot_timer)
 			// Higher range than tracking so useful for very distant enemies when using a Rifle.
 			// Otherwise don't bother, damage is way too low
 			// Would be useful for armor piercing maybe but under typical uses I don't think monsters ever have that much armor to make it worth doing.
-			if (foundtargetRA > -1) if (canskill(sd)) if ((pc_checkskill(sd, GS_PIERCINGSHOT) > 0)) if (sd->state.autopilotmode != 3) {
+			// Actually do not use. multiple normal attacks will be more effective and will aggro the monster so it comes into range of higher damage skills.
+			// Normal attacks do benefit from the extra range this skill gets, afterall.
+			/*if (foundtargetRA > -1) if (canskill(sd)) if ((pc_checkskill(sd, GS_PIERCINGSHOT) > 0)) if (sd->state.autopilotmode != 3) {
 				if (rangeddist <= 9 + pc_checkskill(sd, GS_SNAKEEYE)) if (rangeddist>15) if ((sd->status.weapon == W_RIFLE)) {
 					ammochange2(sd, targetRAmd);
 					unit_skilluse_ifable(&sd->bl, foundtargetRA, GS_PIERCINGSHOT, pc_checkskill(sd, GS_PIERCINGSHOT));
 				}
-			}
+			}*/
 
 			// Rapid Shower
 			if (foundtargetRA > -1) if (canskill(sd)) if ((pc_checkskill(sd, GS_RAPIDSHOWER) > 0)) if (sd->state.autopilotmode != 3) {
