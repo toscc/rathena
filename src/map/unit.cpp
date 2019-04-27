@@ -4181,6 +4181,15 @@ int targetangelus(block_list * bl, va_list ap)
 	return 0;
 }
 
+int targetwindwalk(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
+	if (!sd->sc.data[SC_WINDWALK]) { targetbl = bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
 int targetadrenaline(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
@@ -5656,7 +5665,14 @@ TIMER_FUNC(unit_autopilot_timer)
 			}
 		}
 
-		
+		/// Wind Walking
+		if (canskill(sd)) if (pc_checkskill(sd, SN_WINDWALK) > 0) {
+			resettargets();
+			map_foreachinrange(targetwindwalk, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, SELF, SN_WINDWALK, pc_checkskill(sd, SN_WINDWALK));
+			}
+		}
 
 		/// Inc Agi
 		if (canskill(sd)) if (pc_checkskill(sd, AL_INCAGI)>0) {
@@ -5853,6 +5869,14 @@ TIMER_FUNC(unit_autopilot_timer)
 				unit_skilluse_ifable(&sd->bl, SELF, AC_CONCENTRATION, pc_checkskill(sd, AC_CONCENTRATION));
 			}
 		}
+
+		// True Sight
+		if (pc_checkskill(sd, SN_SIGHT) > 0) {
+			if (!(sd->sc.data[SC_TRUESIGHT])) {
+				unit_skilluse_ifable(&sd->bl, SELF, SN_SIGHT, pc_checkskill(sd, SN_SIGHT));
+			}
+		}
+
 		// Crazy Uproar
 		if (pc_checkskill(sd, MC_LOUD) > 0) {
 			if (!(sd->sc.data[SC_LOUD])) {
