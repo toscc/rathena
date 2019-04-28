@@ -1954,6 +1954,16 @@ IG_GoodHeadgear,5452,1
 IG_GoodHeadgear,5453,1
 IG_GoodHeadgear,5455,1
 IG_GoodHeadgear,5456,1
+IG_GoodHeadgear,5457,1
+IG_Ultimate,5464,1
+IG_GoodHeadgear,5465,1
+IG_GoodHeadgear,5467,1
+IG_GoodHeadgear,5468,1
+IG_GoodHeadgear,5469,1
+IG_GoodHeadgear,5471,1
+IG_Ultimate,5479,1
+IG_GoodHeadgear,5483,1
+IG_Ultimate,5497,1
 
 
 //

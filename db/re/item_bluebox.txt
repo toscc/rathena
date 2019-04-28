@@ -1025,3 +1025,7 @@ IG_BlueBox,13206,1	// Blind Sphere
 IG_BlueBox,13207,1	// Freezing Sphere
 IG_BlueBox,13304,1	// Huuma Calm Mind
 IG_BlueBox,31800,1	// Costume Ticket
+IG_BlueBox,5475,1	// Gozarian Hat
+IG_BlueBox,5478,1	// Classic Hat
+IG_BlueBox,5492,1	// Student Hat
+IG_BlueBox,5499,1	// Pizza Hat

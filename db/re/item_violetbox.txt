@@ -937,4 +937,10 @@ IG_VioletBox,31855,1	// Boxes
 IG_VioletBox,31856,1	// Boxes
 IG_VioletBox,31857,1	// Boxes
 IG_VioletBox,31906,20	// Job Change Ticket
+IG_VioletBox,5458,1	// Pinwheel Hat
+IG_VioletBox,5465,1	// Hat of Fortune
+IG_VioletBox,5466,1	// Wind Milestone
+IG_VioletBox,5469,1	// Musketeer Hat
+IG_VioletBox,5475,1	// Gozarian Hat
+IG_VioletBox,5478,1	// Classic Hat
 
