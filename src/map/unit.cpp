@@ -6308,10 +6308,12 @@ TIMER_FUNC(unit_autopilot_timer)
 									   // it's a 1x1 AOE. Priority is higher than Jolt. 
 										foundtargetID = -1; targetdistance = 999;
 										map_foreachinrange(targetnearest, targetbl2, 9, BL_MOB, sd); // Nearest to the tank, not us!
-										int area = 1;
-										priority = 2*map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(NJ_KAMAITACHI, pc_checkskill(sd, NJ_KAMAITACHI)));
-										if (((priority >= 12) && (priority > bestpriority)) && (distance_bl(targetbl, &sd->bl) <= 9)) {
-											spelltocast = NJ_KAMAITACHI; bestpriority = priority; IDtarget = foundtargetID;
+										if (foundtargetID > -1) {
+											int area = 1;
+											priority = 2 * map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(NJ_KAMAITACHI, pc_checkskill(sd, NJ_KAMAITACHI)));
+											if (((priority >= 12) && (priority > bestpriority)) && (distance_bl(targetbl, &sd->bl) <= 9)) {
+												spelltocast = NJ_KAMAITACHI; bestpriority = priority; IDtarget = foundtargetID;
+											}
 										}
 									}
 							// Fireball
@@ -6319,10 +6321,12 @@ TIMER_FUNC(unit_autopilot_timer)
 							if (canskill(sd)) if ((pc_checkskill(sd, MG_FIREBALL) > 0)) {
 								foundtargetID = -1; targetdistance = 999;
 								map_foreachinrange(targetnearest, targetbl2, 9, BL_MOB, sd);
-								int area = 2;
-								priority = map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(MG_FIREBALL, pc_checkskill(sd, MG_FIREBALL)));
-								if (((priority >= 6) && (priority > bestpriority)) && (distance_bl(targetbl,&sd->bl)<=9)) {
-									spelltocast = MG_FIREBALL; bestpriority = priority; IDtarget = foundtargetID;
+								if (foundtargetID > -1) {
+									int area = 2;
+									priority = map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(MG_FIREBALL, pc_checkskill(sd, MG_FIREBALL)));
+									if (((priority >= 6) && (priority > bestpriority)) && (distance_bl(targetbl, &sd->bl) <= 9)) {
+										spelltocast = MG_FIREBALL; bestpriority = priority; IDtarget = foundtargetID;
+									}
 								}
 							}
 
@@ -6332,6 +6336,7 @@ TIMER_FUNC(unit_autopilot_timer)
 								if ((sd->status.weapon == W_SHOTGUN) || (sd->status.weapon == W_GRENADE)) {
 								foundtargetID = -1; targetdistance = 999;
 								map_foreachinrange(targetnearest, targetbl2, 9 + pc_checkskill(sd, GS_SNAKEEYE), BL_MOB, sd);
+								if (foundtargetID > -1) {
 								int area = 1;
 								if (pc_checkskill(sd, GS_SPREADATTACK) >= 4) area++;
 								if (pc_checkskill(sd, GS_SPREADATTACK) >= 7) area++;
@@ -6340,17 +6345,20 @@ TIMER_FUNC(unit_autopilot_timer)
 								if (((priority >= 6) && (priority > bestpriority)) && (distance_bl(targetbl, &sd->bl) <= 9 + pc_checkskill(sd, GS_SNAKEEYE))) {
 									spelltocast = GS_SPREADATTACK; bestpriority = priority; IDtarget = foundtargetID;
 								}
+								}
 							}
 
 							// Arrow Shower
 							if (canskill(sd)) if ((pc_checkskill(sd, AC_SHOWER) > 0)) {
 								foundtargetID = -1; targetdistance = 999;
 								map_foreachinrange(targetnearest, targetbl2, 9 + pc_checkskill(sd, AC_VULTURE), BL_MOB, sd);
-								int area = 1; if (pc_checkskill(sd, AC_SHOWER) >= 6) area++;
-								arrowchange(sd, targetmd);
-								priority = map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(AC_SHOWER, pc_checkskill(sd, AC_SHOWER)));
-								if (((priority >= 6) && (priority > bestpriority)) && (distance_bl(targetbl, &sd->bl) <= 9 + pc_checkskill(sd, AC_VULTURE))) {
-									spelltocast = AC_SHOWER; bestpriority = priority; IDtarget = foundtargetID;
+								if (foundtargetID > -1) {
+									int area = 1; if (pc_checkskill(sd, AC_SHOWER) >= 6) area++;
+									arrowchange(sd, targetmd);
+									priority = map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(AC_SHOWER, pc_checkskill(sd, AC_SHOWER)));
+									if (((priority >= 6) && (priority > bestpriority)) && (distance_bl(targetbl, &sd->bl) <= 9 + pc_checkskill(sd, AC_VULTURE))) {
+										spelltocast = AC_SHOWER; bestpriority = priority; IDtarget = foundtargetID;
+									}
 								}
 							}
 
@@ -6362,10 +6370,12 @@ TIMER_FUNC(unit_autopilot_timer)
 								if (pc_rightside_atk(sd) < sd->battle_status.matk_min) { 
 									foundtargetID = -1; targetdistance = 999;
 									map_foreachinrange(targetnearest, targetbl2, 9, BL_MOB, sd);
-									int area = 2;
-									priority = 2 * map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(NJ_BAKUENRYU, pc_checkskill(sd, NJ_BAKUENRYU)));
-									if (((priority >= 12) && (priority > bestpriority)) && (distance_bl(targetbl, &sd->bl) <= 9)) {
-										spelltocast = NJ_BAKUENRYU; bestpriority = priority; IDtarget = foundtargetID;
+									if (foundtargetID > -1) {
+										int area = 2;
+										priority = 2 * map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(NJ_BAKUENRYU, pc_checkskill(sd, NJ_BAKUENRYU)));
+										if (((priority >= 12) && (priority > bestpriority)) && (distance_bl(targetbl, &sd->bl) <= 9)) {
+											spelltocast = NJ_BAKUENRYU; bestpriority = priority; IDtarget = foundtargetID;
+										}
 									}
 								}
 							}
@@ -6375,10 +6385,12 @@ TIMER_FUNC(unit_autopilot_timer)
 								if (sd->status.weapon == W_HUUMA) {
 								foundtargetID = -1; targetdistance = 999;
 								map_foreachinrange(targetnearest, targetbl2, 9, BL_MOB, sd);
+								if (foundtargetID > -1) {
 								int area = 2;
 								priority = 2 * map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(NJ_HUUMA, pc_checkskill(sd, NJ_HUUMA)));
 								if (((priority >= 12) && (priority > bestpriority)) && (distance_bl(targetbl, &sd->bl) <= 9)) {
 									spelltocast = NJ_HUUMA; bestpriority = priority; IDtarget = foundtargetID;
+								}
 								}
 							}
 
@@ -6856,7 +6868,9 @@ TIMER_FUNC(unit_autopilot_timer)
 				}
 
 		// Do normal attack if ranged
-		if (foundtargetRA > -1) if ((sd->battle_status.rhw.range >= 5) && (sd->state.autopilotmode > 1) && (sd->battle_status.rhw.range >= rangeddist)) {
+		if (foundtargetRA > -1) if ((sd->battle_status.rhw.range >= 5) && (sd->state.autopilotmode > 1) && (sd->battle_status.rhw.range >= rangeddist))
+			// If leader is running away, stop and follow them instead!
+			if (leaderdistance<12) {
 				if (sd->status.weapon == W_BOW) { arrowchange(sd, targetRAmd); }
 				ammochange2(sd, targetRAmd);
 				aspdpotion(sd);
@@ -7140,9 +7154,6 @@ TIMER_FUNC(unit_autopilot_timer)
 					}
 			}
 
-
-			if (sd->status.weapon == W_BOW) { arrowchange(sd, targetmd); }
-		 
 			// Correct code
 			if ((sd->battle_status.rhw.range >= targetdistance) && (targetdistance<3)) {
 				aspdpotion(sd);
