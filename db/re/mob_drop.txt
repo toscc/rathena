@@ -126,4 +126,8 @@
 1086,31906,40
 1630,31906,50
 1251,31906,50
-
+1071,5501,1
+1112,5532,20
+1272,5653,40,RDMOPTG_Minor_Enchant // Darkness Helm
+1112,5759,50,RDMOPTG_Minor_Enchant // Noah's Hat
+1688,5759,50,RDMOPTG_Minor_Enchant // Noah's Hat

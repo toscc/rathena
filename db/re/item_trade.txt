@@ -334,7 +334,6 @@
 2792,507,100	// Ring_Of_Flame_Lord_I
 2793,507,100	// Ring_Of_Resonance_I
 2794,507,100	// Magic_Stone_Ring
-2795,499,100	// Green_Apple_Ring
 2796,507,100	// Magical_Stone
 2797,507,100	// Magical_Stone_
 2798,499,100	// Will_Of_Exhausted_Angel
@@ -469,19 +468,6 @@
 5604,475,100	// RTC_Second_Best
 5605,475,100	// RTC_Third_Best
 5668,499,100	// Weird_Pumpkin_Hat
-5746,467,100	// Rune_Circlet
-5747,467,100	// Mitra
-5748,467,100	// Sniper_Goggle
-5749,467,100	// Driver_Band
-5750,467,100	// Shadow_Handicraft
-5751,467,100	// Minstrel_Song_Hat
-5752,467,100	// Midas_Whisper
-5753,467,100	// Magic_Stone_Hat
-5754,467,100	// Blazing_Soul
-5755,467,100	// Silent_Executer
-5756,467,100	// Wind_Whisper
-5757,467,100	// Schmidt_Helm
-5758,467,100	// Dying_Swan
 5760,467,100	// Driver_Band_
 5786,475,100	// Ancient_Elven_Ear
 5788,475,100	// 3D_Glasses

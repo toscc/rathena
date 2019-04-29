@@ -715,7 +715,6 @@ spl_in02,80,108,5	script	Guild Master#Warlock	465,{
 		jobchange roclass(eaclass()|EAJL_THIRD);
 		completequest 11112;
 		getitem 5753,1; //Magic_Stone_Hat
-		getitem 2795,1; //Green_Apple_Ring
 		close;
 	} else if (job_wl > 9) {
 		mes "[Master Egnoloria]";

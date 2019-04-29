@@ -3682,7 +3682,6 @@ job3_guil01,148,53,3	script	Bercasell#3rdgc16	467,{
 									set job_3rd_gc, 28;
 									erasequest 7099;
 								}
-								getitem 2795,1; //Green_Apple_Ring
 								getitem 5755,1; //Silent_Executer
 								next;
 								mes "[Bercasell]";

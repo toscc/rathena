@@ -371,7 +371,6 @@ gef_tower,113,161,5	script	Karacas	754,{
 		mes "Congratulations, [" + strcharinfo(0) + "]";
 		jobchange roclass(eaclass()|EAJL_THIRD);
 		getitem 5756,1; //Wind_Whisper
-		getitem 2795,1; //Green_Apple_Ring
 		next;
 		mes "[Karacas]";
 		mes "I hope that you gain more communion with spirits from now on.";

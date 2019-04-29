@@ -363,7 +363,6 @@ function	Get_Job_Equip	{
 	.@eac = eaclass();
 	if( .@eac&EAJL_THIRD ) {
 		// Third Class Items
-		getitem 2795,1;	//	Green Apple Ring for every 3rd Class
 		switch(BaseJob) {
 			// BaseJob of Third Cls
 			// For Normal Third, Baby Third and Transcended Third Cls

@@ -1604,7 +1604,6 @@ s_atelier,70,66,4	script	Dumk#sc13_lgh	481,{
 				getitem 6121,1; //Makeover_Brush
 				getitem 6122,1; //Paint_Brush
 				set job_sha,32;
-				getitem 2795,1; //Green_Apple_Ring
 				getitem 5750,1; //Shadow_Handicraft
 				next;
 				mes "[Dumk]";

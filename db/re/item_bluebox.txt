@@ -1029,3 +1029,7 @@ IG_BlueBox,5475,1	// Gozarian Hat
 IG_BlueBox,5478,1	// Classic Hat
 IG_BlueBox,5492,1	// Student Hat
 IG_BlueBox,5499,1	// Pizza Hat
+IG_BlueBox,5504,1	// Wedding Veil
+IG_BlueBox,5524,1	// Sakura Milk tea Hat
+IG_BlueBox,5594,1	// Donut
+IG_BlueBox,5775,1	// Donut 2

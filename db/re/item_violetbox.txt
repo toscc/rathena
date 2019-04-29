@@ -943,4 +943,11 @@ IG_VioletBox,5466,1	// Wind Milestone
 IG_VioletBox,5469,1	// Musketeer Hat
 IG_VioletBox,5475,1	// Gozarian Hat
 IG_VioletBox,5478,1	// Classic Hat
+IG_VioletBox,5510,1	// Shower Hat
+IG_VioletBox,5530,1	// Raven Cap
+IG_VioletBox,5533,1	// Emperor Wreath
+IG_VioletBox,5548,1	// Crimson Rose
+IG_VioletBox,5555,1	// Leaf Cat Hat
+IG_VioletBox,5560,1	// Horned Helm
+IG_VioletBox,5737,1	// Cactus Hat
 

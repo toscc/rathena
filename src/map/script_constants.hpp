@@ -4243,7 +4243,8 @@
 	/* Item Random Option Group */
 	export_constant(RDMOPTG_None);
 	export_constant(RDMOPTG_Crimson_Weapon);
-
+	export_constant(RDMOPTG_Minor_Enchant);
+	
 	/* random option attributes */
 	export_constant(ROA_ID);
 	export_constant(ROA_VALUE);

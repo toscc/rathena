@@ -883,6 +883,7 @@ struct s_random_opt_data
 enum Random_Option_Group {
 	RDMOPTG_None = 0,
 	RDMOPTG_Crimson_Weapon,
+	RDMOPTG_Minor_Enchant
 };
 
 /// Struct for random option group entry
