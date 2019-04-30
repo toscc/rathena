@@ -1984,6 +1984,32 @@ IG_GoodHeadgear,5667,1
 IG_GoodHeadgear,5673,1
 IG_GoodHeadgear,5690,1
 IG_GoodHeadgear,5763,1
+IG_GoodHeadgear,5864,1
+IG_GoodCostume,5914,1
+IG_GoodShoes,5920,1
+IG_GoodHeadgear,5972,1
+IG_GoodHeadgear,5985,1
+IG_Ultimate,7073,1
+IG_Ultimate,7074,1
+IG_Ultimate,7075,1
+IG_Ultimate,7076,1
+IG_Ultimate,7077,1
+IG_Ultimate,7078,1
+IG_Ultimate,7079,1
+IG_Ultimate,7080,1
+IG_Ultimate,7081,1
+IG_Ultimate,7082,1
+IG_Ultimate,7083,1
+IG_Ultimate,7084,1
+IG_Ultimate,7085,1
+IG_Ultimate,7086,1
+IG_Ultimate,7087,1
+IG_Ultimate,7087,1
+IG_Ultimate,7088,1
+IG_Ultimate,7089,1
+IG_Ultimate,7090,1
+IG_Ultimate,7091,1
+IG_Ultimate,7092,1
 
 
 //

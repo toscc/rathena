@@ -1033,3 +1033,6 @@ IG_BlueBox,5504,1	// Wedding Veil
 IG_BlueBox,5524,1	// Sakura Milk tea Hat
 IG_BlueBox,5594,1	// Donut
 IG_BlueBox,5775,1	// Donut 2
+IG_BlueBox,5777,1	// Remover Hat
+IG_BlueBox,5782,1	// Hoplite Hat
+IG_BlueBox,5792,1	// Fish Hairpin

@@ -950,4 +950,5 @@ IG_VioletBox,5548,1	// Crimson Rose
 IG_VioletBox,5555,1	// Leaf Cat Hat
 IG_VioletBox,5560,1	// Horned Helm
 IG_VioletBox,5737,1	// Cactus Hat
-
+IG_VioletBox,5776,1	// Blazing Sun
+IG_VioletBox,5780,1	// Tendrillion Hat
