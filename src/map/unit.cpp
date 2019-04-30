@@ -6541,7 +6541,7 @@ TIMER_FUNC(unit_autopilot_timer)
 				}
 			}
 			// Cold Bolt on vulnerable enemy
-			if (canskill(sd)) if (pc_checkskill(sd, MG_COLDBOLT) > 0) {
+		if (foundtargetID2 > -1) if (canskill(sd)) if (pc_checkskill(sd, MG_COLDBOLT) > 0) {
 				if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
 					if (elemstrong(targetmd, skill_get_ele(MG_COLDBOLT, pc_checkskill(sd, MG_COLDBOLT)))) {
 						unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_COLDBOLT, pc_checkskill(sd, MG_COLDBOLT));
@@ -6840,7 +6840,7 @@ TIMER_FUNC(unit_autopilot_timer)
 				// However use at lowest level for maximal freezing efficiency and faster cast time - damage isn't going to be good anyway
 				if (!((targetmd->status.def_ele == ELE_HOLY) || (targetmd->status.def_ele < 4)))
 				if (canskill(sd)) if ((pc_checkskill(sd, WZ_STORMGUST) > 0) && ((Dangerdistance > 900) && (!duplicateskill(p, WZ_STORMGUST)))) {
-					if ((!(dangermd->status.def_ele == ELE_UNDEAD)) && (!((status_get_class_(dangerbl) == CLASS_BOSS))))
+					if ((!(targetmd->status.def_ele == ELE_UNDEAD)) && (!((status_get_class_(targetbl) == CLASS_BOSS))))
 					unit_skilluse_ifablexy(&sd->bl, foundtargetID2, WZ_STORMGUST, 1);
 					else // Immune to freezing, use highest level!
 						unit_skilluse_ifablexy(&sd->bl, foundtargetID2, WZ_STORMGUST, pc_checkskill(sd, WZ_STORMGUST));
