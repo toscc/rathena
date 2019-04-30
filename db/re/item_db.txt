@@ -4080,7 +4080,7 @@
 5978,Syringe_Toy,Toy Syringe,4,0,,100,,3,,0,0xFFFFFFFF,63,2,1,,70,0,842,{ bonus bMdef,3; bonus2 bAddItemHealRate,545,150; bonus2 bAddItemHealRate,546,150; bonus2 bAddItemHealRate,547,150; },{},{}
 5979,C_Angel_Fluttering,C Angel Fluttering,4,0,,0,,,,0,0xFFFFFFFF,63,2,4096,,1,0,1380,{ hateffect HAT_EF_ANGEL_FLUTTERING,true; },{},{ hateffect HAT_EF_ANGEL_FLUTTERING,false; }
 5980,C_Classical_Fhat,C Classical Fhat,4,0,,0,,,,0,0xFFFFFFFF,63,2,1024,,1,0,1381,{},{},{}
-5985,Noble_Mask,Noble Mask,4,0,,200,,,,0,0xFFFFFFFF,63,2,512,,30,1,1409,{ bonus2 bSkillAtk,"PA_SACRIFICE",50; } },{},{}
+5985,Noble_Mask,Noble Mask,4,0,,200,,,,0,0xFFFFFFFF,63,2,512,,30,1,1409,{ bonus2 bSkillAtk,"PA_SACRIFICE",50;},{},{}
 //===================================================================
 // More Etc Items
 //===================================================================
