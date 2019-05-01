@@ -2017,3 +2017,7 @@ IG_Ultimate,31843,1
 IG_Ultimate,31902,1
 IG_Ultimate,31903,1
 IG_GoodHeadgear,31905,1
+// Token of Siegfried
+IG_Token_Of_Siegfried,6293,1	// F_Token_Of_Siegfried
+IG_Token_Of_Siegfried,6316,1	// E_Token_Of_Siegfried
+IG_Token_Of_Siegfried,7621,1	// Token_Of_Siegfried
