@@ -202,14 +202,14 @@ nguild_pay	mapflag	nosave	SavePoint
 nguild_prt	mapflag	nosave	SavePoint
 
 //Guild Dungeons ==============================
-gld_dun01	mapflag	nosave	SavePoint
-gld_dun02	mapflag	nosave	SavePoint
-gld_dun03	mapflag	nosave	SavePoint
-gld_dun04	mapflag	nosave	SavePoint
+//gld_dun01	mapflag	nosave	SavePoint
+//gld_dun02	mapflag	nosave	SavePoint
+//gld_dun03	mapflag	nosave	SavePoint
+//gld_dun04	mapflag	nosave	SavePoint
 
 //Normal Maps =================================
-yggdrasil01	mapflag	nosave	SavePoint
-thana_boss	mapflag	nosave	SavePoint
+//yggdrasil01	mapflag	nosave	SavePoint
+//thana_boss	mapflag	nosave	SavePoint
 
 //Aldebaran Turbo Track
 turbo_n_1	mapflag	nosave	SavePoint

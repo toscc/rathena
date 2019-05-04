@@ -12820,7 +12820,7 @@ struct skill_unit_group *skill_unitsetting(struct block_list *src, uint16 skill_
 		break;
 
 	case AL_WARP:
-		val1=skill_lv+6;
+		val1=12;
 		if(!(flag&1))
 			limit=2000;
 		else // previous implementation (not used anymore)
