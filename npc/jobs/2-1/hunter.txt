@@ -274,7 +274,7 @@ hu_in01,386,373,4	script	Hunter Guildsman#hnt	727,{
 			mes "[Hunter Sherin]";
 			mes "You are an Archer, and you don't know where you should go to hunt. What do you do?";
 			next;
-			switch( select( "Scream out loud asking where you should go.", "Quietly ask a person passing by.", "Wander around alone and search for a place." ) ) {
+			switch( select( "Scream out loud asking where you should go.", "Check your map.", "Wander around alone and search for a place." ) ) {
 			case 2:
 			case 3:
 				.@hunter_t += 10;
@@ -288,9 +288,8 @@ hu_in01,386,373,4	script	Hunter Guildsman#hnt	727,{
 			mes "But you are in Payon!!";
 			mes "How do you go to the desert?";
 			next;
-			switch( select( "Ask a Priest to open a free warp portal.", "Use the Kafra service.", "Walk with a friend." ) ) {
+			switch( select( "Ask a Priest to open a free warp portal.", "Use the Kafra service.", "Board a boat or airship." ) ) {
 			case 2:
-			case 3:
 				.@hunter_t += 10;
 			default:
 				break;
@@ -318,22 +317,22 @@ hu_in01,386,373,4	script	Hunter Guildsman#hnt	727,{
 			mes "solution to this";
 			mes "situation?";
 			next;
-			if (select( "Attack a Hode from the top of a hill.", "Go back to town.", "Attack someone else's Hode." ) == 2)
+			if (select( "Attack a Hode from the top of a hill.", "Bring more party members.", "Give up and hunt an easier monster." ) == 2)
 				.@hunter_t += 10;
 			mes "[Hunter Sherin]";
-			mes "Let's say you were having too much trouble hunting Hodes and returned to town. Now you are out of HP and a Priest happens to be around. How would you ask for a Heal?";
+			mes "Let's say you were having too much trouble hunting Hodes and returned to town. Now you are out of HP, what do you do?";
 			next;
-			if (select( "Would it be possible to get a Heal, please?", "Heal, please.", "Heal me." ) == 1)
+			if (select( "Sell some loot and buy potions.", "Wait until I recover naturally.", "Send my Falcon out to look for some herbs." ) == 1)
 				.@hunter_t += 10;
 			mes "[Hunter Sherin]";
-			mes "This time, you found a rare item while you were going through your inventory. You go out to sell the item, and there are many people with stores and chatrooms open.";
+			mes "This time, you found a rare item while you were going through your inventory. ";
 			next;
 			mes "[Hunter Sherin]";
 			mes "What is the";
 			mes "best way to";
 			mes "sell your item?";
 			next;
-			switch( select( "Scream out loud to everyone in sight.", "Open a chatroom and wait.", "Look to see if anyone already wants it." ) ) {
+			switch( select( "Ask a Rogue to sell it.", "Ask an Alchemist to sell it.", "Keep it. It might be useful later!" ) ) {
 			case 2:
 			case 3:
 				.@hunter_t += 10;
@@ -341,19 +340,19 @@ hu_in01,386,373,4	script	Hunter Guildsman#hnt	727,{
 				break;
 			}
 			mes "[Hunter Sherin]";
-			mes "While you are waiting, someone is begging for items and Zeny. What should you do?";
+			mes "While you are waiting, you notice an unoccupied castle. What should you do?";
 			next;
-			if (select("Give some of my items and Zeny.", "Ignore and walk away.", "Tell the person about a good place to hunt.") == 1)
+			if (select("Claim it for yourself immediately.", "Organize a team-there might be monsters.", "It's none of my bussiness.") == 2)
 				.@hunter_t += 10;
 			mes "[Hunter Sherin]";
 			mes "By now, you decide to go to the Maze by yourself.";
 			next;
 			mes "[Hunter Sherin]";
 			mes "But on your way, you run";
-			mes "into someone that is lost.";
+			mes "into strong, rare monsters.";
 			mes "What should you do?";
 			next;
-			switch( select( "Tell them which way to go.", "Guide them to their destination.", "Ignore." ) ) {
+			switch( select( "Use traps.", "Keep your distance and attack, aiming carefully.", "Use a Butterfly Wing immediately." ) ) {
 			case 1:
 			case 2:
 				.@hunter_t += 10;
@@ -361,12 +360,12 @@ hu_in01,386,373,4	script	Hunter Guildsman#hnt	727,{
 				break;
 			}
 			mes "[Hunter Sherin]";
-			mes "After meeting this lost person, you decide to get back to hunting. Just then, you find that someone is attacking a boss!";
+			mes "After the rare monster, Baphomet shows up but you're still alone!";
 			next;
 			mes "[Hunter Sherin]";
 			mes "What should you do?";
 			next;
-			if (select( "Watch, then attack when asked for help.", "Attack and see what happens.", "Just go back to town." ) == 1)
+			if (select( "Use a Fly Wing.", "Attack and see what happens.", "Run for my life." ) == 1)
 				.@hunter_t += 10;
 			mes "[Hunter Sherin]";
 			mes "You are now very exhausted after your day of hunting. It's time to go back to town.";
@@ -374,9 +373,9 @@ hu_in01,386,373,4	script	Hunter Guildsman#hnt	727,{
 			mes "[Hunter Sherin]";
 			mes "But what's this!? You find an expensive item lying on the floor! What should you do with it?";
 			next;
-			switch( select( "Pick it up and keep it.", "Try to find the owner.", "Just walk by." ) ) {
+			switch( select( "Pick it up and keep it.", "Make sure I have Autoloot turned on.", "Just walk by." ) ) {
+			case 1:
 			case 2:
-			case 3:
 				.@hunter_t += 10;
 			default:
 				break;
@@ -406,13 +405,8 @@ hu_in01,386,373,4	script	Hunter Guildsman#hnt	727,{
 			}
 			HNTR_Q = 1;
 			mes "[Hunter Sherin]";
-			mes "Hmm... I don't think this'll work out. You can't become a Hunter without knowing basic etiquette.";
+			mes "Hmm... I don't think this'll work out. You don't have a Hunter's mindset. Maybe you should try dance or music instead?";
 			next;
-			mes "[Hunter Sherin]";
-			mes "Think about how you answered the questions one more time. In order to value nature, you must first value your relationship with others.";
-			next;
-			mes "[Hunter Sherin]";
-			mes "Then, you'll be more in tune with nature and with other people. It's this kind of harmony that makes the best Hunters.";
 			close;
 		}
 		else if (HNTR_Q > 2 && HNTR_Q < 10) {

@@ -4249,6 +4249,9 @@
 	export_constant(RDMOPTG_None);
 	export_constant(RDMOPTG_Crimson_Weapon);
 	export_constant(RDMOPTG_Minor_Enchant);
+	export_constant(RDMOPTG_Minor_Enchant2);
+	export_constant(RDMOPTG_Minor_Enchant3);
+	export_constant(RDMOPTG_Minor_Enchant4);
 	
 	/* random option attributes */
 	export_constant(ROA_ID);
