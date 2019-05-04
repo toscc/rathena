@@ -3507,6 +3507,18 @@ struct block_list * dangerbl;
 struct mob_data * dangermd;
 int dangercount;
 int warpx, warpy;
+struct party_data *p;
+
+bool ispartymember(struct map_session_data *sd)
+{
+	if (!p) return false;
+
+	int i;
+	for (i = 0; i < MAX_PARTY && !(p->party.member[i].char_id == sd->status.char_id); i++);
+
+	if (!p || (i == MAX_PARTY)) { return false; }
+	return true;
+}
 
 // nearest monster or other object the player can walk to
 int targetnearestwarp(block_list * bl, va_list ap)
@@ -3516,6 +3528,7 @@ int targetnearestwarp(block_list * bl, va_list ap)
 	struct npc_data *nd;
 	nd = (TBL_NPC*)bl;
 
+	if (nd->vd->class_!=45) // looks like a warp then it's a warp even if it's not type warp. Some warps are NPCTYPE_SCRIPT instead!
 	if (nd->subtype != NPCTYPE_WARP)
 		return 0; //Not a warp
 //	ShowError("WarpDetected");
@@ -3541,6 +3554,55 @@ void resettargets2()
 	targetdistance = 0;  foundtargetID = -1;
 
 }
+
+int nofreachabletargets,nofshootabletargets;
+int64 reachabletargets[32768];
+int64 shootabletargets[32768];
+
+int isreachable(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd2;
+
+	struct mob_data *md;
+
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+	if (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS))
+	{
+		reachabletargets[nofreachabletargets] = bl->id;
+		nofreachabletargets++;
+	}
+	if (path_search_long(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, CELL_CHKWALL)) {
+		shootabletargets[nofshootabletargets] = bl->id;
+		nofshootabletargets++;
+	}
+	}
+
+bool isshootabletarget(int64 ID)
+{
+	for (int i = 0; i < nofshootabletargets; i++) {
+		if (shootabletargets[i] == ID) return true;
+	}
+	return false;
+}
+
+bool isreachabletarget(int64 ID)
+{
+	for (int i = 0; i < nofshootabletargets; i++) {
+		if (reachabletargets[i] == ID) return true;
+	}
+	return false;
+}
+
+void getreachabletargets(struct map_session_data * sd)
+{
+	nofreachabletargets = 0; nofshootabletargets = 0;
+	map_foreachinrange(isreachable, &sd->bl, 19, BL_MOB, sd);
+}
+
+
 
 // Use this to pick a target to walk to/tank/engage in melee.
 int targetnearestwalkto(block_list * bl, va_list ap)
@@ -3585,7 +3647,7 @@ int targetnearest(block_list * bl, va_list ap)
 	int dist= distance_bl(&sd2->bl, bl);
 	int dist2 = dist + 12;
 	if ((status_get_class_(bl) == CLASS_BOSS)) dist2 = dist2 - 12; // Always hit the boss in a crowd of nearby enemies
-	if (dist2 < targetdistanceb) if (path_search_long(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, CELL_CHKWALL)) {
+	if (dist2 < targetdistanceb) if (isshootabletarget(bl->id)) {
 		 targetdistance = dist; targetdistanceb = dist2; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; 
 		return 1;
 	}
@@ -3709,7 +3771,7 @@ int targethighestlevel(block_list * bl, va_list ap)
 	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
 
 	int dist = distance_bl(&sd2->bl, bl);
-	if ((md->level > targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS))) { targetdistance = md->level; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
+	if ((md->level > targetdistance) && (isreachabletarget(bl->id))) { targetdistance = md->level; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
 
 	return 1;
 }
@@ -3729,7 +3791,7 @@ int asuratarget(block_list * bl, va_list ap)
 	if (!(status_get_class_(bl) == CLASS_BOSS)) return 0; // Boss monsters only
 	if (md->status.hp < 600 * sd2->status.base_level) return 0; // Must be strong enough monster
 	if (targetdistance > md->status.hp) return 0; // target strongest first
-	if (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS)) { targetdistance = md->status.hp; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
+	if (isreachabletarget(bl->id)) { targetdistance = md->status.hp; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
 
 	return 1;
 }
@@ -3752,7 +3814,7 @@ int finaltarget(block_list * bl, va_list ap)
 	if (md->status.def_ele == ELE_GHOST) return 0;  // Ghosts are immune
 	if (md->status.hp < 0.6 * damage) return 0; // Must be strong enough monster
 	if (targetdistance < md->status.hp) return 0; // target weakest first if it's strong enough
-	if (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS)) { targetdistance = md->status.hp; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
+	if (isreachabletarget(bl->id)) { targetdistance = md->status.hp; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
 
 	return 1;
 }
@@ -3773,7 +3835,7 @@ int targetturnundead(block_list * bl, va_list ap)
 
 	// target the highest hp, not the nearest enemy
 	int dist = md->status.hp;
-	if ((dist > targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS))) { targetdistance = dist; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
+	if ((dist > targetdistance) && (isreachabletarget(bl->id))) { targetdistance = dist; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
 
 	return 1;
 }
@@ -3793,7 +3855,7 @@ int targetdispel(block_list * bl, va_list ap)
 	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
 
 	
-	if (!(path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS))) return 0;
+	if (!(isreachabletarget(bl->id))) return 0;
 	
 	if (
 //		(md->sc.data[SC_ASSUMPTIO])
@@ -4166,6 +4228,7 @@ int targetincagi(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
 	if (!sd->sc.data[SC_INCREASEAGI]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
@@ -4175,6 +4238,7 @@ int targetbless(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
 	if (!sd->sc.data[SC_BLESSING]) { targetbl = bl; foundtargetID = sd->bl.id; };
 	if (sd->sc.data[SC_CURSE]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
@@ -4185,6 +4249,7 @@ int targetangelus(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
 	if (!sd->sc.data[SC_ANGELUS]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
@@ -4194,6 +4259,7 @@ int targetwindwalk(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
 	if (!sd->sc.data[SC_WINDWALK]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
@@ -4203,6 +4269,7 @@ int targetadrenaline(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
 	if (!(((sd->status.weapon == W_MACE) || (sd->status.weapon == W_1HAXE) || (sd->status.weapon == W_2HAXE)))) return 0;
 	if ((!sd->sc.data[SC_ADRENALINE]) && (!sd->sc.data[SC_ADRENALINE2])) { targetbl = bl; foundtargetID = sd->bl.id; };
 
@@ -4213,6 +4280,7 @@ int targetadrenaline2(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
 	if (!sd->sc.data[SC_ADRENALINE2]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
@@ -4222,6 +4290,7 @@ int targetwperfect(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
 	if (!sd->sc.data[SC_WEAPONPERFECTION]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
@@ -4231,6 +4300,7 @@ int targetovert(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
 	if ((!sd->sc.data[SC_OVERTHRUST]) && (!sd->sc.data[SC_MAXOVERTHRUST])){ targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
@@ -4240,6 +4310,7 @@ int targetmagnificat(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
 	if (!sd->sc.data[SC_MAGNIFICAT]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
@@ -4249,6 +4320,7 @@ int targetgloria(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
 	if (!sd->sc.data[SC_GLORIA]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
@@ -4258,6 +4330,7 @@ int targetassumptio(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
 	if (!sd->sc.data[SC_ASSUMPTIO]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
@@ -4267,6 +4340,7 @@ int targetkyrie(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
 	if ((!sd->sc.data[SC_KYRIE]) && (!sd->sc.data[SC_ASSUMPTIO])) { targetbl = bl; foundtargetID = sd->bl.id; };
 	return 0;
 }
@@ -4276,6 +4350,7 @@ int targetendow(block_list * bl, va_list ap)
 	// Not already endowed, and is a physical attack class (base atk high enough)
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
 	if ((!sd->sc.data[SC_ASPERSIO]) && (!sd->sc.data[SC_FIREWEAPON])
 		&& (!sd->sc.data[SC_WATERWEAPON]) && (!sd->sc.data[SC_WINDWEAPON]) && (!sd->sc.data[SC_EARTHWEAPON])
 		&& (!sd->sc.data[SC_ENCPOISON])
@@ -4298,6 +4373,7 @@ int targetmanus(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
 	if ((!sd->sc.data[SC_IMPOSITIO]) && ((sd->battle_status.batk>sd->status.base_level) || (sd->battle_status.batk>120))) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
@@ -5227,6 +5303,14 @@ void usehpitem(struct map_session_data *sd, int hppercentage)
 
 }
 
+//===============================================================================
+//===============================================================================
+//===============================================================================
+// Main autopilot function starts here
+//===============================================================================
+//===============================================================================
+//===============================================================================
+
 // @autopilot timer
 TIMER_FUNC(unit_autopilot_timer)
 //int unit_autopilot_timer(int tid, unsigned int tick, int id, intptr_t data)
@@ -5261,7 +5345,6 @@ TIMER_FUNC(unit_autopilot_timer)
 	if pc_cant_act(sd) { return 0; }
 
 	int party_id, type = 0, i = 0;
-	struct party_data *p;
 	block_list * leaderbl;
 	int leaderID, leaderdistance;
 	struct map_session_data *leadersd;
@@ -5296,6 +5379,8 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 
 	}
+
+	getreachabletargets(sd);
 
 	// Find Warp to enter
 	warpx = -9999; warpy = -9999;
@@ -5954,6 +6039,9 @@ TIMER_FUNC(unit_autopilot_timer)
 		{
 			unit_skilluse_ifablexy(&sd->bl, sd->bl.id, GS_ADJUSTMENT, pc_checkskill(sd, GS_ADJUSTMENT));
 		}
+
+		// No matter which mode if we are too far from leader, prioritize returning!
+		if (p) if (leaderID > -1) if (leaderdistance >= 20) goto followleader;
 
 		///////////////////////////////////////////////////////////////////////////////////////////////
 		/// Emergency spells to use when in danger of being attacked (mostly useful for mage classes)
@@ -7163,6 +7251,10 @@ TIMER_FUNC(unit_autopilot_timer)
 					return 0;
 				}
 			} 
+
+			// If we can't move this ends here
+			if (sd->state.block_action & PCBLOCK_MOVE) return 0;
+
 			// If there is a leader and we haven't found a target in their area, stay near them.
 			// Note : maxwalkpath needs to be very high otherwise we fail to follow!
 			if ((leaderID > -1) && (leaderID != sd->bl.id)) {
@@ -7211,7 +7303,10 @@ TIMER_FUNC(unit_autopilot_timer)
 	else { 
 		// Skills to use when doing nothing important
 		if (canskill(sd)) skillwhenidle(sd);
-		
+
+		// If we can't move this ends here
+		if (sd->state.block_action & PCBLOCK_MOVE) return 0;
+
 		// Follow the leader
 		if (leaderID > -1) { 
 			
@@ -7256,7 +7351,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		else if (p) {
 			resettargets();
 			// target nearest NPC. Hopefully it's the warp the leader entered.
-			map_foreachinmap(targetnearestwarp, sd->bl.m, BL_NPC, sd);
+			map_foreachinrange(targetnearestwarp, &sd->bl, MAX_WALKPATH, BL_NPC, sd);
 			if (foundtargetID > -1) {
 				newwalk(&sd->bl, targetbl->x, targetbl->y, 8);
 			}
