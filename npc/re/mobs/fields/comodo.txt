@@ -55,8 +55,15 @@ cmd_fild04,0,0	monster	Crab	1073,20,5000
 cmd_fild04,0,0	monster	Aster	1266,10,5000
 
 //==================================================
-// cmd_fild05 - Disabled on Renewal
+// cmd_fild05 - Restored
 //==================================================
+cmd_fild05,0,0	monster	Galapago	1391,120,5000
+cmd_fild05,0,0	monster	Kukre	1070,10,5000
+cmd_fild05,0,0	monster	Thara Frog	1034,65,5000
+cmd_fild05,0,0	monster	Elusive Thara Frog	2635,2,5000
+cmd_fild05,0,0	monster	Roda Frog Ringleader	2678,2,5000
+cmd_fild05,0,0	monster	Poisonous Toad	1402,10,5000
+cmd_fild05,0,0	monster	Toad	1089,2,500000
 
 //==================================================
 // cmd_fild06 - Fortress Saint Darmain (West)

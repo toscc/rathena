@@ -111,5 +111,5 @@ ra_fild12,0,0	monster	Red Plant	1078,5,10000
 //==================================================
 // ra_fild13 - Restored
 //==================================================
-ve_fild13,0,0	monster	Galion	1783,60,5000
+ra_fild13,0,0	monster	Galion	1783,60,5000
 ra_fild13,0,0	monster	Roween	1782,80,5000
