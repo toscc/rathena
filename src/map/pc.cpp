@@ -4866,6 +4866,7 @@ char pc_additem(struct map_session_data *sd,struct item *item,int amount,e_log_p
 		i = pc_search_inventory(sd,0);
 		if( i < 0 )
 			return ADDITEM_OVERITEM;
+		int j;
 
 		memcpy(&sd->inventory.u.items_inventory[i], item, sizeof(sd->inventory.u.items_inventory[0]));
 		// clear equip and favorite fields first, just in case
@@ -4876,9 +4877,10 @@ char pc_additem(struct map_session_data *sd,struct item *item,int amount,e_log_p
 		if( item->equipSwitch )
 			sd->inventory.u.items_inventory[i].equipSwitch = 0;
 
-		for (j = 0; j < MAX_FAVORITES; j++) {
-			if (sd->status.favs[j] == item->nameid) sd->inventory.u.items_inventory[i].favorite = 1;
-		}
+		if (battle_config.persistent_favorites)
+			for (j = 0; j < MAX_FAVORITES; j++) {
+				if (sd->status.favs[j] == item->nameid) sd->inventory.u.items_inventory[i].favorite = 1;
+			}
 
 		sd->inventory.u.items_inventory[i].amount = amount;
 		sd->inventory_data[i] = id;
@@ -5467,7 +5469,7 @@ void pc_putitemtocart(struct map_session_data *sd,int idx,int amount)
 
 	item_data = &sd->inventory.u.items_inventory[idx];
 
-	if( item_data->nameid == 0 || amount < 1 || item_data->amount < amount || sd->state.vending )
+	if( item_data->nameid == 0 || amount < 1 || item_data->amount < amount || sd->state.vending || sd->state.prevend )
 		return;
 
 	if( item_data->equipSwitch ){
@@ -5507,21 +5509,25 @@ int pc_cartitem_amount(struct map_session_data* sd, int idx, int amount)
  *------------------------------------------*/
 void pc_getitemfromcart(struct map_session_data *sd,int idx,int amount)
 {
-	struct item *item_data;
-	unsigned char flag = 0;
-
 	nullpo_retv(sd);
 
 	if (idx < 0 || idx >= MAX_CART) //Invalid index check [Skotlex]
 		return;
 
-	item_data=&sd->cart.u.items_cart[idx];
+	item* item_data=&sd->cart.u.items_cart[idx];
 
-	if(item_data->nameid == 0 || amount < 1 || item_data->amount < amount || sd->state.vending )
+	if (item_data->nameid == 0 || amount < 1 || item_data->amount < amount || sd->state.vending || sd->state.prevend)
 		return;
-	if((flag = pc_additem(sd,item_data,amount,LOG_TYPE_NONE)) == 0)
-		pc_cart_delitem(sd,idx,amount,0,LOG_TYPE_NONE);
-	else {
+
+	if (pc_checkadditem(sd, item_data->nameid, amount) == CHKADDITEM_OVERAMOUNT) {
+		return;
+	}
+
+	item item_copy = *item_data;
+
+	pc_cart_delitem(sd, idx, amount, 0, LOG_TYPE_NONE);
+	char flag = pc_additem(sd, &item_copy, amount, LOG_TYPE_NONE);
+	if(flag != ADDITEM_SUCCESS) {
 		clif_dropitem(sd,idx,0);
 		clif_additem(sd,0,0,flag);
 	}
