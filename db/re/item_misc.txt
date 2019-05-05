@@ -2010,6 +2010,10 @@ IG_Ultimate,7089,1
 IG_Ultimate,7090,1
 IG_Ultimate,7091,1
 IG_Ultimate,7092,1
+IG_GoodWeapon,13002,1
+IG_GoodWeapon,13034,1
+IG_GoodWeapon,13035,1
+
 
 
 //
