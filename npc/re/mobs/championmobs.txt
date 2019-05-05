@@ -213,7 +213,7 @@ moc_fild17,0,0	monster	Furious Hode	2802,2,300000
 ra_fild04,0,0	monster	Elusive Hill Wind	2803,2,300000
 ra_fild03,0,0	monster	Swift Hill Wind	2804,2,300000
 alde_dun02,0,0	monster	Solid High Orc	2805,2,300000
-yuno_fild04,0,0	monster	Harpy Ringleader	2806,2,300000
+yuno_fild07,0,0	monster	Harpy Ringleader	2806,2,300000
 yuno_fild03,0,0	monster	Furious Harpy	2807,2,300000
 cmd_fild01,0,0	monster	Elusive Grove	2808,2,300000
 pay_fild10,0,0	monster	Swift Greatest General	2809,2,300000

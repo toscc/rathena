@@ -24,57 +24,68 @@
 //============================================================
 
 //==================================================
-// ein_fild01 - Spawns disabled on Renewal
+// ein_fild01 - Restored mobs
+// The Demon Pungus field
 //==================================================
+ein_fild05,0,0	monster	Demon Pungus	1378,250,5000
 
 //==================================================
-// ein_fild02 - Disabled on Renewal
+// ein_fild02 - Restored
+// The pitman mixed field
 //==================================================
+ein_fild02,0,0	monster	Pitman	1616,110,5000
+ein_fild02,0,0	monster	Geographer	1368,80,5000
+ein_fild02,0,0	monster	Demon Pungus	1378,60,5000
+ein_fild02,0,0	monster	Ungoliant	1618,1,86400000,86000000
 
 //==================================================
 // ein_fild03 - Einbroch Field
+// Teddy bears
 //==================================================
-ein_fild03,0,0	monster	Teddy Bear	1622,100,5000
-ein_fild03,0,0	monster	Venomous	1621,20,5000
-ein_fild03,0,0	monster	Noxious	1620,20,5000
-ein_fild03,0,0	monster	Pitman	1616,20,5000
-ein_fild03,0,0	monster	Yellow Plant	1081,15,60000,30000
-ein_fild03,0,0	monster	Green Plant	1080,15,60000,30000
+ein_fild03,0,0	monster	Teddy Bear	1622,200,5000
+ein_fild03,0,0	monster	Venomous	1621,40,5000
+ein_fild03,0,0	monster	Noxious	1620,40,5000
+ein_fild03,0,0	monster	Pitman	1616,40,5000
+ein_fild03,0,0	monster	Yellow Plant	1081,30,60000,30000
+ein_fild03,0,0	monster	Green Plant	1080,30,60000,30000
 
 //==================================================
 // ein_fild04 - Einbroch Field
+// The nonaggressive mobs field
 //==================================================
-ein_fild04,0,0	monster	Venomous	1621,100,5000
-ein_fild04,0,0	monster	Noxious	1620,30,5000
-ein_fild04,0,0	monster	Teddy Bear	1622,20,5000
-ein_fild04,0,0	monster	Demon Pungus	1378,15,5000
-ein_fild04,0,0	monster	Pitman	1616,10,5000
+ein_fild04,0,0	monster	Porcellio	1619,50,5000
+ein_fild04,0,0	monster	Geographer	1368,90,5000
+ein_fild04,0,0	monster	Metaling	1613,40,5000
+ein_fild04,0,0	monster	Pitman	1616,30,5000
 ein_fild04,0,0	monster	Red Plant	1078,10,60000,30000
 ein_fild04,0,0	monster	Yellow Plant	1081,10,60000,30000
 ein_fild04,0,0	monster	Green Plant	1080,10,60000,30000
 
 //==================================================
 // ein_fild05 - Einbroch Field
+// The crowded/noxious field
 //==================================================
-ein_fild05,0,0	monster	Noxious	1620,100,5000
-ein_fild05,0,0	monster	Venomous	1621,30,5000
-ein_fild05,0,0	monster	Teddy Bear	1622,20,5000
-ein_fild05,0,0	monster	Demon Pungus	1378,15,5000
-ein_fild05,0,0	monster	Pitman	1616,10,5000
+ein_fild05,0,0	monster	Noxious	1620,300,5000
+ein_fild05,0,0	monster	Venomous	1621,120,5000
+ein_fild05,0,0	monster	Teddy Bear	1622,60,5000
+ein_fild05,0,0	monster	Demon Pungus	1378,30,5000
+ein_fild05,0,0	monster	Pitman	1616,30,5000
 
 //==================================================
 // ein_fild06 - Einbroch Field
+// Holden field
 //==================================================
-ein_fild06,0,0	monster	Holden	1628,100,5000
-ein_fild06,0,0	monster	Metaling	1613,30,5000
-ein_fild06,0,0	monster	Red Plant	1078,10,120000,60000
-ein_fild06,0,0	monster	Yellow Plant	1081,10,120000,60000
-ein_fild06,0,0	monster	Black Mushroom	1084,5,120000,60000
+ein_fild06,0,0	monster	Holden	1628,300,5000
+ein_fild06,0,0	monster	Metaling	1613,90,5000
+ein_fild06,0,0	monster	Red Plant	1078,30,120000,60000
+ein_fild06,0,0	monster	Yellow Plant	1081,30,120000,60000
+ein_fild06,0,0	monster	Black Mushroom	1084,15,120000,60000
 
 //==================================================
 // ein_fild07 - Einbroch Field
+// Metalings
 //==================================================
-ein_fild07,0,0	monster	Metaling	1613,90,5000
+ein_fild07,0,0	monster	Metaling	1613,150,5000
 ein_fild07,0,0	monster	Porcellio	1619,30,5000
 ein_fild07,0,0	monster	Holden	1628,10,5000
 ein_fild07,0,0	monster	Ungoliant	1618,1,86400000,86000000
@@ -84,9 +95,10 @@ ein_fild07,0,0	monster	Red Mushroom	1085,10,120000,60000
 
 //==================================================
 // ein_fild08 - Einbroch Field
+// Porcellio
 //==================================================
-ein_fild08,0,0	monster	Metaling	1613,100,5000
-ein_fild08,0,0	monster	Porcellio	1619,30,5000
+ein_fild08,0,0	monster	Metaling	1613,80,5000
+ein_fild08,0,0	monster	Porcellio	1619,120,5000
 ein_fild08,0,0	monster	Red Plant	1078,10,120000,60000
 ein_fild08,0,0	monster	Yellow Plant	1081,10,120000,60000
 ein_fild08,0,0	monster	Red Mushroom	1085,10,120000,60000
@@ -101,5 +113,9 @@ ein_fild09,0,0	monster	Yellow Plant	1081,10,120000,60000
 ein_fild09,0,0	monster	Red Mushroom	1085,10,120000,60000
 
 //==================================================
-// ein_fild10 - Disabled on Renewal
+// ein_fild10 - Readded monsters
+// the blue herb field
 //==================================================
+ein_fild10,0,0	monster	Blue Plant	1079,40,120000,60000
+ein_fild10,0,0	monster	Holden	1628,10,5000
+ein_fild10,0,0	monster	Metaling	1613,50,5000

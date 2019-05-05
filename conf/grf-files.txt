@@ -10,3 +10,9 @@
 // Use the base folder, not the data\ path.
 //-----------------------------------------
 //data_dir: C:\Program Files\Gravity\RO\
+grf: C:\Ragnarok\Client\advanced_maps_project.grf
+grf: C:\Ragnarok\Client\rathena_resources.grf
+grf: C:\Ragnarok\Client\rathena_RENEWAL_2018.grf
+grf: C:\Ragnarok\Client\rdata.grf
+grf: C:\Ragnarok\Client\data.grf
+data_dit:C:\Ragnarok\Client\

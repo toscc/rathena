@@ -41,20 +41,23 @@ yuno_fild01,0,0	monster	Green Plant	1080,20,1800000,900000
 
 //==================================================
 // yuno_fild02 - Kiel Hyre's Cottage
+// Sleepers High
 //==================================================
-yuno_fild02,0,0	monster	Sleeper	1386,130,5000
+yuno_fild02,0,0	monster	Sleeper	1386,210,5000
+yuno_fild02,0,0	monster	Geographer	1368,45,5000
 yuno_fild02,0,0	monster	Grand Peco	1369,35,5000
-yuno_fild02,0,0	monster	Harpy	1376,35,5000
 yuno_fild02,0,0	monster	Red Plant	1078,10,1800000,900000
 yuno_fild02,0,0	monster	Yellow Plant	1081,10,1800000,900000
 yuno_fild02,0,0	monster	Green Plant	1080,10,1800000,900000
 
 //==================================================
 // yuno_fild03 - El Mes Plateau
+// Entrance to Magma Dungeon
 //==================================================
-yuno_fild03,0,0	monster	Harpy	1376,130,5000
+yuno_fild03,0,0	monster	Harpy	1376,5,5000
 yuno_fild03,0,0	monster	Goat	1372,35,5000
-yuno_fild03,0,0	monster	Sleeper	1386,35,5000
+yuno_fild03,0,0	monster	Grand Peco	1369,35,5000
+yuno_fild03,0,0	monster	Sleeper	1386,70,5000
 yuno_fild03,0,0	monster	Deviling	1582,1,3600000,1800000
 yuno_fild03,0,0	monster	Angeling	1096,1,3600000,1800000
 yuno_fild03,0,0	monster	Red Plant	1078,15,1800000,900000
@@ -65,9 +68,9 @@ yuno_fild03,358,215,10,10	monster	Blue Plant	1079,4,1800000,900000
 
 //==================================================
 // yuno_fild04 - El Mes Plateau
+// Goats, Entry to Yuno
 //==================================================
-yuno_fild04,0,0	monster	Harpy	1376,130,5000
-yuno_fild04,0,0	monster	Goat	1372,35,5000
+yuno_fild04,0,0	monster	Goat	1372,110,5000
 yuno_fild04,0,0	monster	Geographer	1368,35,5000
 yuno_fild04,0,0	monster	Arc Angeling	1388,1,3600000,180000
 yuno_fild04,0,0	monster	Mastering	1090,1,3600000,1800000
@@ -76,11 +79,21 @@ yuno_fild04,0,0	monster	Yellow Plant	1081,10,1800000,900000
 yuno_fild04,0,0	monster	Green Plant	1080,10,1800000,900000
 
 //==================================================
-// yuno_fild05 - Disabled on Renewal
+// yuno_fild05 - Restored
+// The "hellish" field, mix of difficult mobs
 //==================================================
+yuno_fild05,0,0	monster	Demon Pungus	1378,180,5000
+yuno_fild05,0,0	monster	Teddy Bear	1622,30,5000
+yuno_fild05,0,0	monster	Sleeper	1386,130,5000
+yuno_fild05,0,0	monster	Venomous Ringleader	2624,2,300000
+yuno_fild05,0,0	monster	Harpy	1376,60,5000
+yuno_fild05,0,0	monster	Harpy Ringleader	2806,2,300000
+yuno_fild05,0,0	monster	Furious Harpy	2807,2,300000
+yuno_fild05,0,0	monster	Swift Teddy Bear	2636,1,300000
 
 //==================================================
 // yuno_fild06 - El Mes Plateau
+// Sleepers, medium
 //==================================================
 yuno_fild06,0,0	monster	Sleeper	1386,80,5000
 yuno_fild06,0,0	monster	Geographer	1368,20,5000
@@ -90,9 +103,10 @@ yuno_fild06,0,0	monster	Green Plant	1080,10,10000
 
 //==================================================
 // yuno_fild07 - El Mes Gorge (Valley of Abyss)
+// Harpies
 //==================================================
-yuno_fild07,0,0	monster	Goat	1372,90,5000
-yuno_fild07,0,0	monster	Harpy	1376,50,5000
+yuno_fild07,0,0	monster	Goat	1372,50,5000
+yuno_fild07,0,0	monster	Harpy	1376,140,5000
 yuno_fild07,0,0	monster	Grand Peco	1369,30,5000
 yuno_fild07,0,0	monster	Red Plant	1078,10,180000,90000
 yuno_fild07,0,0	monster	Green Plant	1080,10,180000,90000
@@ -100,6 +114,7 @@ yuno_fild07,0,0	monster	Yellow Plant	1081,10,180000,90000
 
 //==================================================
 // yuno_fild08 - Kiel Hyre's Academy
+// Grand Pecos
 //==================================================
 yuno_fild08,0,0	monster	Grand Peco	1369,130,5000
 yuno_fild08,0,0	monster	Goat	1372,30,5000
@@ -110,6 +125,7 @@ yuno_fild08,0,0	monster	Yellow Plant	1081,10,180000,90000
 
 //==================================================
 // yuno_fild09 - Schwaltzvalt Guards Camp 
+// Grand pecos
 //==================================================
 yuno_fild09,0,0	monster	Grand Peco	1369,130,5000
 yuno_fild09,0,0	monster	Sleeper	1386,30,5000
@@ -119,14 +135,15 @@ yuno_fild09,0,0	monster	Green Plant	1080,10,180000,90000
 yuno_fild09,0,0	monster	Yellow Plant	1081,10,180000,90000
 
 //==================================================
-// yuno_fild10 - Disabled on Renewal
+// yuno_fild10 - Restored
 //==================================================
 
 //==================================================
 // yuno_fild11 - Juno Field
+// The geographer field (with goats)
 //==================================================
-yuno_fild11,0,0	monster	Goat	1372,100,5000
-yuno_fild11,0,0	monster	Geographer	1368,40,5000
+yuno_fild11,0,0	monster	Goat	1372,80,5000
+yuno_fild11,0,0	monster	Geographer	1368,120,5000
 yuno_fild11,0,0	monster	Red Plant	1078,10,180000,90000
 yuno_fild11,0,0	monster	Green Plant	1080,10,180000,90000
 yuno_fild11,0,0	monster	Yellow Plant	1081,10,180000,90000
@@ -134,5 +151,5 @@ yuno_fild11,0,0	monster	Yellow Plant	1081,10,180000,90000
 //==================================================
 // yuno_fild12 - Border Checkpoint
 //==================================================
-yuno_fild12,0,0	monster	Geographer	1368,60,5000
-yuno_fild12,0,0	monster	Mantis	1139,30,5000
+yuno_fild12,0,0	monster	Geographer	1368,90,5000
+yuno_fild12,0,0	monster	Mantis	1139,50,5000
