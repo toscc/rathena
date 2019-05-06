@@ -155,6 +155,7 @@ void unit_stop_stepaction(struct block_list *bl);
 
 // Time for @autopilot
 TIMER_FUNC(unit_autopilot_timer); //(int tid, unsigned int tick, int id, intptr_t data);
+TIMER_FUNC(unit_autopilot_homunculus_timer); //(int tid, unsigned int tick, int id, intptr_t data);
 
 // Cancel unit cast
 int unit_skillcastcancel(struct block_list *bl, char type);

@@ -42,6 +42,28 @@ if (!strcmp(message,"Support")) {sd->state.autopilotmode = 3; clif_displaymessag
 return 0; 
 }
 
+ACMD_FUNC(autopilothom)
+{
+if (!sd->hd) {clif_displaymessage(fd, "Homunculus is required"); return 0;}
+if (!message || !*message) { clif_displaymessage(fd, "please specify type : Tank,Skill,Support, Off"); 
+clif_displaymessage(fd, "Tank : Homunculus engages enemy in melee combat and uses melee skills and support skills."); 
+clif_displaymessage(fd, "Skill : Homunculus will use long range attacks, long range DPS skills and support skills."); 
+clif_displaymessage(fd, "Support : Homunculus uses support skills only and will not attack enemies."); 
+}
+else {
+sd->state.autopilotmode = 0; clif_displaymessage(fd, message);
+
+if (!strcmp(message,"Tank")) {sd->hd->autopilotmode = 1; clif_displaymessage(fd, "Homunculus Tanking..."); };
+if (!strcmp(message,"Skill")) {sd->hd->autopilotmode = 2; clif_displaymessage(fd, "Homunculus Skilling..."); };
+if (!strcmp(message,"Support")) {sd->hd->autopilotmode = 3; clif_displaymessage(fd, "Homunculus Supporting..."); };
+
+}
+return 0; 
+}
+
+
+
+
 ACMD_FUNC(autopilotsp)
 {
 if (!message || !*message) { clif_displaymessage(fd, "please specify amount : 0-100"); }
