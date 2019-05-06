@@ -12431,8 +12431,6 @@ int status_change_end_(struct block_list* bl, enum sc_type type, int tid, const 
 			if (tid == INVALID_TIMER)
 		 		break;
 			// "lose almost all their HP and SP" on natural expiration.
-			status_set_hp(bl, 10, 0);
-			status_set_sp(bl, 10, 0);
 			break;
 		case SC_AUTOTRADE:
 			if (tid == INVALID_TIMER)
