@@ -24,6 +24,7 @@
 #include "party.hpp"
 #include "pc.hpp"
 #include "trade.hpp"
+#include "unit.hpp"
 
 struct s_homunculus_db homunculus_db[MAX_HOMUNCULUS_CLASS];	//[orn]
 struct homun_skill_tree_entry hskill_tree[MAX_HOMUNCULUS_CLASS][MAX_HOM_SKILL_TREE];
@@ -1059,6 +1060,7 @@ void hom_init_timers(struct homun_data * hd)
 		hd->hungry_timer = add_timer(gettick()+hd->homunculusDB->hungryDelay,hom_hungry,hd->master->bl.id,0);
 	hd->regen.state.block = 0; //Restore HP/SP block.
 	hd->masterteleport_timer = INVALID_TIMER;
+	add_timer_interval(gettick() + 100, unit_autopilot_homunculus_timer, hd->bl.id, 0, 100);
 }
 
 /**
