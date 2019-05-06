@@ -4463,7 +4463,7 @@ int finddanger2(block_list * bl, va_list ap)
 	nullpo_ret(bl);
 	nullpo_ret(md = (struct mob_data *)bl);
 
-	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+	sd2 = va_arg(ap, struct map_session_data *); 
 
 	struct status_change *sc;
 	sc = status_get_sc(bl);
@@ -5287,6 +5287,123 @@ void usehpitem(struct map_session_data *sd, int hppercentage)
 
 }
 
+// Homunculus autopilot timer
+// @autopilot timer
+TIMER_FUNC(unit_autopilot_homunculus_timer)
+{
+	struct block_list *bl;
+	struct unit_data *ud;
+
+	bl = map_id2bl(id);
+
+	if (!bl)
+		return 0;
+
+	ud = unit_bl2ud(bl);
+
+	if (!ud)
+		return 0;
+
+	struct map_session_data *sd = (struct map_session_data*)bl;
+
+	struct homun_data *hd = (struct homun_data *)bl;
+
+	if (hd->autopilotmode == 0) { return 0; }
+
+	int party_id, type = 0, i = 0;
+	block_list * leaderbl;
+	int leaderID, leaderdistance;
+	struct map_session_data *leadersd;
+
+	struct map_session_data *mastersd = unit_get_master(bl);
+
+	party_id = mastersd->status.party_id;
+	p = party_search(party_id);
+
+	if (p) //Search leader
+		for (i = 0; i < MAX_PARTY && !p->party.member[i].leader; i++);
+
+	if (!p || i == MAX_PARTY) { //leader not found
+		// Follow the master if there is no party
+		leadersd = mastersd; leaderID = mastersd->bl.id; leaderbl = &mastersd->bl;
+		if (leaderID > -1) { leaderdistance = distance_bl(leaderbl, bl); }
+	}
+	else {
+		targetthis = p->party.member[i].char_id;
+		resettargets(); leaderdistance = 999; leaderID = -1;
+		map_foreachinmap(targetthischar, sd->bl.m, BL_PC, sd);
+		leaderID = foundtargetID;  leaderbl = targetbl;
+		leadersd = (struct map_session_data*)targetbl;
+		if (leaderID > -1) { leaderdistance = distance_bl(leaderbl, bl); }
+	}
+
+	getreachabletargets(sd);
+	// leadersd is the person we position ourselves to : the party leader, or lacking one, the owner of the homunculus.
+
+		// 1 - Tanking mode
+	if (hd->autopilotmode == 1) {
+		resettargets();
+		map_foreachinrange(targetnearest, &sd->bl, 9, BL_MOB, sd);
+
+		if (foundtargetID > -1) {
+			// Use tanking mode skills
+
+
+			// Use normal melee attack
+			if (targetdistance <= 1) {
+				unit_attack(&sd->bl, foundtargetID, 1);
+			}
+			else
+			{
+				struct walkpath_data wpd1;
+				if (path_search(&wpd1, sd->bl.m, bl->x, bl->y, targetbl->x, targetbl->y, 0, CELL_CHKNOPASS))
+					newwalk(&sd->bl, bl->x + dirx[wpd1.path[0]], bl->y + diry[wpd1.path[0]], 8);
+				return 0;
+			}
+		}
+		else {
+			// If there is a leader and we haven't found a target in their area, stay near them.
+			if ((leaderID > -1) && (leaderID != sd->bl.id)) {
+				int tankdestinationx = leaderbl->x + 2 * dirx[leadersd->ud.dir];
+				int tankdestinationy = leaderbl->y + 2 * diry[leadersd->ud.dir];
+				if ((abs(tankdestinationx - sd->bl.x) >= 2) || (abs(tankdestinationy - sd->bl.y) >= 2)) {
+					newwalk(&sd->bl, tankdestinationx + rand() % 3 - 1, tankdestinationy + rand() % 3 - 1, 8);
+				}
+			}
+		}
+	}
+	// Not tanking mode
+	else {
+		int Dangerdistance = inDangerLeader(leadersd);
+
+		// If party leader not under attack, get in range of 2
+		if (Dangerdistance >= 900) {
+			if ((abs(sd->bl.x - leaderbl->x) > 2) || abs(sd->bl.y - leaderbl->y) > 2) {
+				newwalk(&sd->bl, leaderbl->x + rand() % 5 - 2, leaderbl->y + rand() % 5 - 2, 8);
+				return 0;
+			}
+		}
+		// but if they are under attack, as we are not in tanking mode, maintain a distance of 6 by taking only 1 step at a time closer
+		else
+		{
+			// If either leader or nearest monster attacking them is not directly shootable, go closer
+			// This is necessary to avoid the party stuck behind a corner, unable to attack 
+			if ((abs(sd->bl.x - leaderbl->x) > 6) || (abs(sd->bl.y - leaderbl->y) > 6)
+				|| !(path_search_long(NULL, leadersd->bl.m, bl->x, bl->y, leaderbl->x, leaderbl->y, CELL_CHKNOPASS))
+				|| !(path_search_long(NULL, leadersd->bl.m, bl->x, bl->y, dangerbl->x, dangerbl->y, CELL_CHKNOPASS))
+				) {
+
+				struct walkpath_data wpd1;
+				if (path_search(&wpd1, leadersd->bl.m, bl->x, bl->y, leaderbl->x, leaderbl->y, 0, CELL_CHKNOPASS))
+					newwalk(&sd->bl, bl->x + dirx[wpd1.path[0]], bl->y + diry[wpd1.path[0]], 8);
+				return 0;
+			}
+
+		}
+	}
+}
+
+
 //===============================================================================
 //===============================================================================
 //===============================================================================
@@ -5975,6 +6092,15 @@ TIMER_FUNC(unit_autopilot_timer)
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, CR_PROVIDENCE, pc_checkskill(sd, CR_PROVIDENCE));
 			}
+		}
+
+		// Homunculus
+		if (canskill(sd)) if (pc_checkskill(sd, AM_RESURRECTHOMUN) > 0)
+			if (sd->status.hom_id) {
+				if (!sd->hd) intif_homunculus_requestload(sd->status.account_id, sd->status.hom_id); else
+				{
+					if (status_isdead(&sd->hd->bl)) unit_skilluse_ifable(&sd->bl, SELF, AM_RESURRECTHOMUN, pc_checkskill(sd, AM_RESURRECTHOMUN));
+				}
 		}
 
 		//
@@ -7242,17 +7368,18 @@ TIMER_FUNC(unit_autopilot_timer)
 			// If there is a leader and we haven't found a target in their area, stay near them.
 			// Note : maxwalkpath needs to be very high otherwise we fail to follow!
 			if ((leaderID > -1) && (leaderID != sd->bl.id)) {
-				if (sd->state.autopilotmode != 1) {
+				// We are in the tanking branch, this isn't possible
+				/*				if (sd->state.autopilotmode != 1) {
 					if (leaderdistance >= 2) {
 						newwalk(&sd->bl, leaderbl->x + rand() % 3 - 1, leaderbl->y + rand() % 3 - 1, 8);
 					}
 				} // If tanking mode, try to get slightly ahead of leader
-				else {
+				else {*/
 					int tankdestinationx = leaderbl->x + 2* dirx[leadersd->ud.dir];
 					int tankdestinationy = leaderbl->y + 2* diry[leadersd->ud.dir];
 					if ((abs(tankdestinationx - sd->bl.x) >= 2) || (abs(tankdestinationy - sd->bl.y) >= 2)) {
 						newwalk(&sd->bl, tankdestinationx + rand() % 3 - 1, tankdestinationy + rand() % 3 - 1, 8);
-					}
+					//}
 				}
 			}
 				else if ((p) && (leaderID != sd->bl.id)) {
@@ -7360,6 +7487,7 @@ void do_init_unit(void){
 	add_timer_func_list(unit_step_timer,"unit_step_timer");
 	
 	add_timer_func_list(unit_autopilot_timer, "unit_autopilot_timer");
+	add_timer_func_list(unit_autopilot_homunculus_timer, "unit_autopilot_homunculus_timer");
 
 }
 

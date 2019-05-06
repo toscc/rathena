@@ -14880,8 +14880,11 @@ void clif_parse_HomMoveTo(int fd, struct map_session_data *sd){
 
 	if( sd->md && sd->md->bl.id == id )
 		bl = &sd->md->bl; // Moving Mercenary
-	else if( hom_is_active(sd->hd) && sd->hd->bl.id == id )
+	else if (hom_is_active(sd->hd) && sd->hd->bl.id == id)
+	{
 		bl = &sd->hd->bl; // Moving Homunculus
+		if (sd->hd->autopilotmode > 0) return; // ignore movement commands from client side AI or human player if server side AI is on
+	}
 	else
 		return;
 
@@ -14901,8 +14904,11 @@ void clif_parse_HomAttack(int fd,struct map_session_data *sd)
 	int target_id = RFIFOL(fd,info->pos[1]);
 	int action_type = RFIFOB(fd,info->pos[2]);
 
-	if( hom_is_active(sd->hd) && sd->hd->bl.id == id )
+	if (hom_is_active(sd->hd) && sd->hd->bl.id == id)
+	{
 		bl = &sd->hd->bl;
+		if (sd->hd->autopilotmode > 0) return; // ignore commands from client side AI or human player if server side AI is on
+	}
 	else if( sd->md && sd->md->bl.id == id )
 		bl = &sd->md->bl;
 	else return;
