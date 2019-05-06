@@ -5304,6 +5304,43 @@ void usehpitem(struct map_session_data *sd, int hppercentage)
 
 }
 
+static void homu_skilluse_ifable(struct block_list *src, int target_id, uint16 skill_id, uint16 skill_lv)
+{
+	struct unit_data *ud;
+	unsigned int tick = gettick();
+	ud = unit_bl2ud(src);
+
+	if (!ud)
+		return;
+
+	struct map_session_data *sd = (struct map_session_data*)src;
+
+	struct homun_data *hd = (struct homun_data *)src;
+	if (!hd)
+		return;
+	if (skill_isNotOk_hom(hd, skill_id, skill_lv)) {
+		clif_emotion(&hd->bl, ET_THINK);
+		return;
+	}
+	if (hd->bl.id != target_id && skill_get_inf(skill_id)&INF_SELF_SKILL)
+		target_id = hd->bl.id;
+	if (hd->ud.skilltimer != INVALID_TIMER) {
+		if (skill_id != SA_CASTCANCEL && skill_id != SO_SPELLFIST) return;
+	}
+	else if (DIFF_TICK(tick, hd->ud.canact_tick) < 0) {
+		clif_emotion(&hd->bl, ET_THINK);
+		if (hd->master)
+			clif_skill_fail(hd->master, skill_id, USESKILL_FAIL_SKILLINTERVAL, 0);
+		return;
+	}
+
+	int lv = hom_checkskill(hd, skill_id);
+	if (skill_lv > lv)
+		skill_lv = lv;
+	if (skill_lv)
+		unit_skilluse_id(&hd->bl, target_id, skill_id, skill_lv);
+}
+
 // Homunculus autopilot timer
 // @autopilot timer
 TIMER_FUNC(unit_autopilot_homunculus_timer)
@@ -5356,6 +5393,43 @@ TIMER_FUNC(unit_autopilot_homunculus_timer)
 
 	getreachabletargets(sd);
 	// leadersd is the person we position ourselves to : the party leader, or lacking one, the owner of the homunculus.
+
+	resettargets();
+	map_foreachinrange(targetnearest, &sd->bl, 9, BL_MOB, sd);
+	// Lif - Urgent Escape
+	if (canskill(sd)) if (hom_checkskill(hd, HLIF_AVOID) > 0) if (leaderdistance <= 2) // seems to have limited range? Not sure how much?
+		if (!(sd->sc.data[SC_AVOID])) {
+			homu_skilluse_ifable(&sd->bl, SELF, HLIF_AVOID, hom_checkskill(hd, HLIF_AVOID));
+		}
+	// Amistr - Bulwark
+	if (canskill(sd)) if (hom_checkskill(hd, HAMI_DEFENCE) > 0) if (leaderdistance <= 2)
+		if (!(sd->sc.data[SC_DEFENCE])) {
+			homu_skilluse_ifable(&sd->bl, SELF, HAMI_DEFENCE, hom_checkskill(hd, HAMI_DEFENCE));
+		}
+	// Amistr - Bloodlust
+	// It won't be activated unless an enemy is nearby - due to the cooldown that would be wasteful.
+	if (foundtargetID > -1) if (canskill(sd)) if (hom_checkskill(hd, HAMI_BLOODLUST) > 0)
+		if (!(sd->sc.data[SC_BLOODLUST])) {
+			homu_skilluse_ifable(&sd->bl, SELF, HAMI_BLOODLUST, hom_checkskill(hd, HAMI_BLOODLUST));
+		}
+
+	// Lif - Mental Change
+	// Note : I modded this skill to not reduce hp/sp when it ends.
+	// You might want to disable it for the AI and activate it manually instead.
+	// Also it won't be activated unless an enemy is nearby - due to the cooldown that would be wasteful.
+	if (foundtargetID>-1) if (canskill(sd)) if (hom_checkskill(hd, HLIF_CHANGE) > 0)
+		if (!(sd->sc.data[SC_CHANGE])) {
+			homu_skilluse_ifable(&sd->bl, SELF, HLIF_CHANGE, hom_checkskill(hd, HLIF_CHANGE));
+		}
+
+	// Lif - Healing Hands
+	if (canskill(sd)) if (hom_checkskill(hd, HLIF_HEAL)>0)
+		if ((leadersd->battle_status.hp < leadersd->battle_status.max_hp*0.4))
+			if (pc_search_inventory(leadersd, 545) >= 0) {
+				homu_skilluse_ifable(&sd->bl, leadersd->bl.id, HLIF_HEAL, hom_checkskill(hd, HLIF_HEAL));
+
+	}
+
 
 		// 1 - Tanking mode
 	if (hd->autopilotmode == 1) {
@@ -6112,7 +6186,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 
 		// Homunculus
-		if (canskill(sd)) if (pc_checkskill(sd, AM_RESURRECTHOMUN) > 0)
+		if (canskill(sd)) if (Dangerdistance >=900) if (pc_checkskill(sd, AM_RESURRECTHOMUN) > 0)
 			if (sd->status.hom_id) {
 				if (!sd->hd) intif_homunculus_requestload(sd->status.account_id, sd->status.hom_id); else
 				{
