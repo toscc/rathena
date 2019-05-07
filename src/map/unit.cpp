@@ -410,7 +410,8 @@ static TIMER_FUNC(unit_walktoxy_timer){
 	ud->walktimer = INVALID_TIMER;
 
 	// When stopped walking, immediately execute AI. This is required to ensure there is no time lost between walks waiting for the AI to trigger
-	add_timer(gettick() + 1, unit_autopilot_timer, id, 0);
+	if (bl->type == BL_PC) add_timer(gettick() + 1, unit_autopilot_timer, id, 0);
+	else if (bl->type == BL_HOM) add_timer(gettick() + 1, unit_autopilot_homunculus_timer, id, 0);
 
 	if (bl->x == ud->to_x && bl->y == ud->to_y) {
 		if (ud->walk_done_event[0]){
@@ -5304,41 +5305,45 @@ void usehpitem(struct map_session_data *sd, int hppercentage)
 
 }
 
-static void homu_skilluse_ifable(struct block_list *src, int target_id, uint16 skill_id, uint16 skill_lv)
+int homu_skilluse_ifable(struct block_list *src, int target_id, uint16 skill_id, uint16 skill_lv)
 {
 	struct unit_data *ud;
 	unsigned int tick = gettick();
 	ud = unit_bl2ud(src);
 
 	if (!ud)
-		return;
+		return 0;
 
 	struct map_session_data *sd = (struct map_session_data*)src;
 
 	struct homun_data *hd = (struct homun_data *)src;
+
 	if (!hd)
-		return;
+		return 0;
+
+	if (skill_get_sp(skill_id, skill_lv) > hd->battle_status.sp) return 0;
+
 	if (skill_isNotOk_hom(hd, skill_id, skill_lv)) {
 		clif_emotion(&hd->bl, ET_THINK);
-		return;
+		return 0;
 	}
 	if (hd->bl.id != target_id && skill_get_inf(skill_id)&INF_SELF_SKILL)
 		target_id = hd->bl.id;
 	if (hd->ud.skilltimer != INVALID_TIMER) {
-		if (skill_id != SA_CASTCANCEL && skill_id != SO_SPELLFIST) return;
+		if (skill_id != SA_CASTCANCEL && skill_id != SO_SPELLFIST) return 0;
 	}
 	else if (DIFF_TICK(tick, hd->ud.canact_tick) < 0) {
 		clif_emotion(&hd->bl, ET_THINK);
 		if (hd->master)
 			clif_skill_fail(hd->master, skill_id, USESKILL_FAIL_SKILLINTERVAL, 0);
-		return;
+		return 0;
 	}
 
 	int lv = hom_checkskill(hd, skill_id);
 	if (skill_lv > lv)
 		skill_lv = lv;
 	if (skill_lv)
-		unit_skilluse_id(&hd->bl, target_id, skill_id, skill_lv);
+		return unit_skilluse_id(&hd->bl, target_id, skill_id, skill_lv);
 }
 
 // Homunculus autopilot timer
@@ -5421,6 +5426,16 @@ TIMER_FUNC(unit_autopilot_homunculus_timer)
 		if (!(sd->sc.data[SC_CHANGE])) {
 			homu_skilluse_ifable(&sd->bl, SELF, HLIF_CHANGE, hom_checkskill(hd, HLIF_CHANGE));
 		}
+	// Filir Flitting
+	if (foundtargetID > -1) if (canskill(sd)) if (hom_checkskill(hd, HFLI_FLEET) > 0)
+		if (!(sd->sc.data[SC_FLEET])) {
+			homu_skilluse_ifable(&sd->bl, SELF, HFLI_FLEET, hom_checkskill(hd, HFLI_FLEET));
+		}
+	// Filir Accelerated Flight
+	if (foundtargetID > -1) if (canskill(sd)) if (hom_checkskill(hd, HFLI_SPEED) > 0)
+		if (!(sd->sc.data[SC_SPEED])) {
+			homu_skilluse_ifable(&sd->bl, SELF, HFLI_SPEED, hom_checkskill(hd, HFLI_SPEED));
+		}
 
 	// Lif - Healing Hands
 	if (canskill(sd)) if (hom_checkskill(hd, HLIF_HEAL)>0)
@@ -5430,18 +5445,34 @@ TIMER_FUNC(unit_autopilot_homunculus_timer)
 
 	}
 
+	// Vanil Caprice
+	if (hd->autopilotmode!=3) if (canskill(sd))
+		if (hom_checkskill(hd, HVAN_CAPRICE) > 0)
+			homu_skilluse_ifable(&sd->bl, foundtargetID, HVAN_CAPRICE, hom_checkskill(hd, HVAN_CAPRICE));
+
+	// Vanil Chaotic Blessings
+	// No enemies nearby so heal is 50-50% to be self or owner
+	// Must use at level 5 otherwise healing target selection is bad
+	if (foundtargetID == -1) if (canskill(sd)) if (hom_checkskill(hd, HVAN_CHAOTIC) >= 5)
+		// owner's hp low or own hp very low
+		if ((leadersd->battle_status.hp < leadersd->battle_status.max_hp*0.5) ||
+			(sd->battle_status.hp < sd->battle_status.max_hp*0.32)) {
+				homu_skilluse_ifable(&sd->bl, leadersd->bl.id, HVAN_CHAOTIC, hom_checkskill(hd, HVAN_CHAOTIC));
+			}
+
 
 		// 1 - Tanking mode
 	if (hd->autopilotmode == 1) {
 		resettargets();
-		map_foreachinrange(targetnearest, &sd->bl, 9, BL_MOB, sd);
+		// Target in leader's range, not ours to avoid going too far
+		map_foreachinrange(targetnearestwalkto, leaderbl, 14, BL_MOB, sd);
 
 		if (foundtargetID > -1) {
-			// Use tanking mode skills
-
-
 			// Use normal melee attack
 			if (targetdistance <= 1) {
+				// Use tanking mode skills
+				// Filir Moonlight
+				if (canskill(sd)) if (hom_checkskill(hd, HFLI_MOON) > 0) homu_skilluse_ifable(&sd->bl, foundtargetID, HFLI_MOON, hom_checkskill(hd, HFLI_MOON));
 				unit_attack(&sd->bl, foundtargetID, 1);
 			}
 			else
@@ -5492,6 +5523,7 @@ TIMER_FUNC(unit_autopilot_homunculus_timer)
 
 		}
 	}
+	return 0;
 }
 
 
@@ -7206,6 +7238,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		else if (leaderID>-1) {
 			map_foreachinrange(targetnearestwalkto, leaderbl, 14, BL_MOB, sd);
 			// have to walk too many tiles means the target is probably behind some wall. Don't try to engage it, even if maxpath allows.
+			// should be obsolete, now targeting checks for walking distance
 			if (targetdistance > 29) { foundtargetID = -1; }
 		}
 		
