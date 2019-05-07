@@ -21,17 +21,17 @@
 //==================================================
 // moc_fild01 - Sograt Desert 
 //==================================================
-moc_fild01,0,0	monster	Peco Peco	1019,130,5000
-moc_fild01,0,0	monster	Muka	1055,50,5000
+moc_fild01,0,0	monster	Peco Peco	1019,50,5000
+moc_fild01,0,0	monster	Muka	1055,160,5000
 moc_fild01,0,0	monster	Peco Peco Egg	1047,20,5000
 moc_fild01,194,51,10,10	monster	Yellow Plant	1081,10,900000,450000
 
 //==================================================
 // moc_fild02 - Sograt Desert 
 //==================================================
-moc_fild02,0,0	monster	Muka	1055,130,5000
-moc_fild02,0,0	monster	Peco Peco	1019,60,5000
-moc_fild02,0,0	monster	Peco Peco Egg	1047,10,5000
+moc_fild02,0,0	monster	Muka	1055,10,5000
+moc_fild02,0,0	monster	Peco Peco	1019,210,5000
+moc_fild02,0,0	monster	Peco Peco Egg	1047,40,5000
 moc_fild02,89,315	monster	Yellow Plant	1081,1,180000,90000
 moc_fild02,99,261	monster	Yellow Plant	1081,1,180000,90000
 moc_fild02,94,195	monster	Yellow Plant	1081,1,180000,90000
@@ -119,7 +119,6 @@ moc_fild13,0,0	monster	Steel Chonchon	1042,140,5000
 moc_fild13,0,0	monster	Wolf	1013,15,5000
 moc_fild13,0,0	monster	Argos	1100,15,5000
 moc_fild13,0,0	monster	Metaller	1058,15,5000
-moc_fild13,0,0	monster	Magnolia	1138,15,5000
 moc_fild13,280,99	monster	Red Mushroom	1085,1,180000,90000
 moc_fild13,264,64	monster	Red Mushroom	1085,1,180000,90000
 moc_fild13,305,91	monster	Red Mushroom	1085,1,180000,90000
