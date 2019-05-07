@@ -3520,7 +3520,7 @@ int targetnearestwarp(block_list * bl, va_list ap)
 	struct npc_data *nd;
 	nd = (TBL_NPC*)bl;
 
-	if (nd->vd->class_!=45) // looks like a warp then it's a warp even if it's not type warp. Some warps are NPCTYPE_SCRIPT instead!
+	if ((nd->vd) && (nd->vd->class_!=45)) // looks like a warp then it's a warp even if it's not type warp. Some warps are NPCTYPE_SCRIPT instead!
 	if (nd->subtype != NPCTYPE_WARP)
 		return 0; //Not a warp
 //	ShowError("WarpDetected");
