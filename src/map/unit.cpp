@@ -5384,15 +5384,19 @@ TIMER_FUNC(unit_autopilot_homunculus_timer)
 	if (!p || i == MAX_PARTY) { //leader not found
 		// Follow the master if there is no party
 		leadersd = mastersd; leaderID = mastersd->bl.id; leaderbl = &mastersd->bl;
-		if (leaderID > -1) { leaderdistance = distance_bl(leaderbl, bl); }
+		leaderdistance = distance_bl(leaderbl, bl); 
 	}
 	else {
 		targetthis = p->party.member[i].char_id;
 		resettargets(); leaderdistance = 999; leaderID = -1;
 		map_foreachinmap(targetthischar, sd->bl.m, BL_PC, sd);
-		leaderID = foundtargetID;  leaderbl = targetbl;
-		leadersd = (struct map_session_data*)targetbl;
-		if (leaderID > -1) { leaderdistance = distance_bl(leaderbl, bl); }
+		leaderID = foundtargetID;  
+		if (leaderID > -1) { leaderdistance = distance_bl(leaderbl, bl); leaderbl = targetbl; leadersd = (struct map_session_data*)targetbl; }
+		else {
+			// Follow the master if party leader is absent
+			leadersd = mastersd; leaderID = mastersd->bl.id; leaderbl = &mastersd->bl;
+			leaderdistance = distance_bl(leaderbl, bl);
+		}
 	}
 
 	getreachabletargets(sd);
@@ -7550,7 +7554,10 @@ TIMER_FUNC(unit_autopilot_timer)
 			// If party leader not under attack, get in range of 2
 			if (Dangerdistance >= 900) {
 				if ((abs(sd->bl.x - leaderbl->x) > 2) || abs(sd->bl.y - leaderbl->y) > 2) {
+					if (!leadersd->ud.walktimer)
 					newwalk(&sd->bl, leaderbl->x + rand() % 5 - 2, leaderbl->y + rand() % 5 - 2, 8);
+					else newwalk(&sd->bl, leaderbl->x, leaderbl->y, 8); // ignore the random area if leader is still moving!
+					// This is necessary because going diagonally is slower so if the random is included the AI will follow slower and gets left behind!
 					return 0;
 				}
 			}
