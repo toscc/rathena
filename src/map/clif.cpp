@@ -14827,8 +14827,11 @@ void clif_parse_HomMoveToMaster(int fd, struct map_session_data *sd){
 
 	if( sd->md && sd->md->bl.id == id )
 		bl = &sd->md->bl;
-	else if( hom_is_active(sd->hd) && sd->hd->bl.id == id )
+	else if (hom_is_active(sd->hd) && sd->hd->bl.id == id)
+	{
 		bl = &sd->hd->bl; // Moving Homunculus
+		if (sd->hd->autopilotmode > 0) return;
+	}
 	else
 		return;
 
