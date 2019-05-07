@@ -3790,6 +3790,7 @@ static int battle_calc_attack_skill_ratio(struct Damage* wd, struct block_list *
 			break;
 		case HFLI_SBR44: //[orn]
 			skillratio += 100 * (skill_lv - 1);
+			skillratio *=2;
 			break;
 		case NPC_VAMPIRE_GIFT:
 			skillratio += ((skill_lv - 1) % 5 + 1) * 100;
