@@ -5369,6 +5369,8 @@ TIMER_FUNC(unit_autopilot_homunculus_timer)
 
 	if (hd->autopilotmode == 0) { return 0; }
 
+	if (hd->battle_status.hp == 0) { return 0; }
+
 	int party_id, type = 0, i = 0;
 	block_list * leaderbl;
 	int leaderID, leaderdistance;
