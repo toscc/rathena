@@ -605,7 +605,7 @@ char storage_guild_storageopen(struct map_session_data* sd)
 
 	if((gstor = guild2storage2(sd->status.guild_id)) == nullptr
 #ifdef OFFICIAL_GUILD_STORAGE
-		|| (gstor->max_amount != guild_checkskill(sd->guild, GD_GUILD_STORAGE) * 300)
+		|| (gstor->max_amount != 400+ guild_checkskill(sd->guild, GD_GUILD_STORAGE) * 80)
 #endif
 	) {
 		intif_request_guild_storage(sd->status.account_id,sd->status.guild_id);

@@ -544,7 +544,7 @@ uint16 inter_guild_storagemax(int guild_id)
 
 	max = guild_checkskill(g, GD_GUILD_STORAGE);
 	if (max)
-		max *= 300;
+		max = 400+80*max;
 
 	return max;
 #else
