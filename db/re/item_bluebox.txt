@@ -1037,3 +1037,4 @@ IG_BlueBox,5777,1	// Remover Hat
 IG_BlueBox,5782,1	// Hoplite Hat
 IG_BlueBox,5792,1	// Fish Hairpin
 IG_BlueBox,15088,3	// School Uniform
+IG_BlueBox,18547,1	// Capus Festival Hat

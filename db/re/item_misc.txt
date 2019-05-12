@@ -2097,6 +2097,10 @@ IG_GoodHeadgear,18528,1
 IG_GoodHeadgear,18532,1
 IG_GoodHeadgear,18533,1
 IG_GoodHeadgear,18536,1
+IG_GoodHeadgear,18537,1
+IG_GoodHeadgear,18538,1
+IG_GoodHeadgear,18542,1
+IG_GoodHeadgear,18543,1
 
 
 
