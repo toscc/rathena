@@ -75,10 +75,10 @@
 1670:2968,{ bonus bMatkRate,getequiprefinerycnt(EQI_HAND_R)*5; }
 1670:2968:2969,{ bonus bMatkRate,-(getequiprefinerycnt(EQI_HAND_R)*5); }
 1670:2969,{ bonus bMatkRate,getequiprefinerycnt(EQI_HAND_R)*5; }
-1718:1774,{ bonus bLongAtkRate,50; }
+1718:1774,{ bonus bLongAtkRate,33; }
 1723:2718,{ bonus bDex,1; bonus bMaxSP,50; bonus bSPrecovRate,10; }
 1724:5467,{ bonus bAspd,1; bonus bFlee2,3; }
-1726:1774,{ bonus bLongAtkRate,50; }
+1726:1774,{ bonus bLongAtkRate,33; }
 1730:1752,{ bonus bLongAtkRate,25; }
 1730:1752:19048,{ bonus bLongAtkRate,20; bonus2 bSubEle,Ele_Fire,-10; if (getequiprefinerycnt(EQI_HAND_R) >= 10) bonus bAspd,1; }
 1730:19019,{ bonus bLongAtkRate,45; }
@@ -91,9 +91,9 @@
 1733:1755,{ bonus bLongAtkRate,25; bonus3 bAutoSpell,"NJ_HUUJIN",5,(readparam(bInt)>39) ? 300 : 100; }
 1733:1755:19048,{ bonus bLongAtkRate,20; bonus3 bAutoSpell,"NJ_HUUJIN",5,(readparam(bInt)>39) ? -300 : -100; if (getequiprefinerycnt(EQI_HAND_R) >= 10) bonus bAspd,1; }
 1733:19019,{ bonus bLongAtkRate,45; }
-1734:1753,{ bonus bLongAtkRate,50; }
+1734:1753,{ bonus bLongAtkRate,33; }
 1741:2748,{ bonus bBaseAtk,25; bonus3 bAddEff,Eff_Curse,200,ATF_WEAPON|ATF_LONG|ATF_TARGET; }
-1746:1773,{ bonus bLongAtkRate,50; }
+1746:1773,{ bonus bLongAtkRate,33; }
 1774:18174,{ bonus bLongAtkRate,50; }
 1775:18114,{ bonus bLongAtkRate,70; }
 1776:18114,{ bonus bLongAtkRate,40; }
@@ -574,6 +574,7 @@
 15377:22196,{ bonus bAspdRate,5; }
 15377:22197,{ bonus bMatkRate,5; }
 16065:20838,{ bonus bAspdRate,10; .@eq = getequiprefinerycnt(EQI_GARMENT); .@weapon = getequiprefinerycnt(EQI_HAND_R); if (.@eq >= 7 && .@weapon >= 7) { bonus2 bSkillAtk,"AB_DUPLELIGHT_MELEE",25; bonus2 bSkillAtk,"AB_DUPLELIGHT_MAGIC",25; } if ((.@eq + .@weapon) >= 18) { bonus bCritical,15; if ((.@eq + .@weapon) >= 22) { bonus bCritAtkRate,20; } } }
+18115:1753,{ bonus bLongAtkRate,33; }
 18137:1752,{ bonus bLongAtkRate,25; }
 18137:1752:19048,{ bonus bLongAtkRate,20; bonus2 bSubEle,Ele_Fire,-10; if (getequiprefinerycnt(EQI_HAND_R) >= 10) bonus bAspd,1; }
 18137:19019,{ bonus bLongAtkRate,45; }

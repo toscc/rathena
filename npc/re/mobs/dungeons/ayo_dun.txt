@@ -17,9 +17,9 @@
 //==================================================
 // ayo_dun01 - Ancient Shrine Maze
 //==================================================
-ayo_dun01,0,0	monster	Leaf Cat	1586,65,5000
-ayo_dun01,0,0	monster	Ghoul	1036,30,5000
-ayo_dun01,0,0	monster	Whisper	1179,10,5000
+ayo_dun01,0,0	monster	Leaf Cat	1586,80,5000
+ayo_dun01,0,0	monster	Ghoul	1036,50,5000
+ayo_dun01,0,0	monster	Whisper	1179,30,5000
 ayo_dun01,0,0	monster	Kraben	1587,5,5000
 
 //==================================================

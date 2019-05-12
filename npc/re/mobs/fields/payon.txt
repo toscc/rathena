@@ -126,6 +126,9 @@ pay_fild10,281,307,10,10	monster	Blue Plant	1079,1,360000,180000
 pay_fild10,66,332,10,10	monster	Blue Plant	1079,1,360000,180000
 
 //==================================================
-// pay_fild11 - Disabled on Renewal
+// pay_fild11 - Restored
 // Old Eddga Map
 //==================================================
+pay_fild11,0,0	monster	Nine Tail	1180,90,5000
+pay_fild11,0,0,0,0	boss_monster	Eddga	1115,1,7200000,600000,1
+pay_fild11,0,0	monster	Horong	1129,30,5000

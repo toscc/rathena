@@ -1036,3 +1036,4 @@ IG_BlueBox,5775,1	// Donut 2
 IG_BlueBox,5777,1	// Remover Hat
 IG_BlueBox,5782,1	// Hoplite Hat
 IG_BlueBox,5792,1	// Fish Hairpin
+IG_BlueBox,15088,3	// School Uniform

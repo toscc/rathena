@@ -32,4 +32,4 @@ mjo_dun03,0,0	monster	Skeleton Worker	1169,70,5000
 mjo_dun03,0,0	monster	Myst	1151,35,5000
 mjo_dun03,0,0	monster	Giearth	1121,5,5000
 mjo_dun03,0,0	monster	Martin	1145,5,5000
-mjo_dun03,0,0	monster	Cramp	1209,3,5000
+//mjo_dun03,0,0	monster	Cramp	1209,3,5000

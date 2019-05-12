@@ -2815,7 +2815,7 @@
 15063,499,100	// TE_Woe_Chain_Mail
 15064,499,100	// TE_Woe_Mage_Coat
 15067,507,100	// Rune_Suit
-15116,467,100	// Armor_Of_Airship
+15116,467,100	// Airship_Armor
 15141,467,100	// Rift_Ancient_Armor
 16002,507,100	// Stunner_C
 16004,499,100	// P_Mace1
