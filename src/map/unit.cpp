@@ -5492,7 +5492,9 @@ TIMER_FUNC(unit_autopilot_homunculus_timer)
 		// If party leader not under attack, get in range of 2
 		if (Dangerdistance >= 900) {
 			if ((abs(sd->bl.x - leaderbl->x) > 2) || abs(sd->bl.y - leaderbl->y) > 2) {
+				if (!leadersd->ud.walktimer)
 				newwalk(&sd->bl, leaderbl->x + rand() % 5 - 2, leaderbl->y + rand() % 5 - 2, 8);
+				else newwalk(&sd->bl, leaderbl->x, leaderbl->y, 8);
 				return 0;
 			}
 		}
