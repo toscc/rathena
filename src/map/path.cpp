@@ -389,9 +389,6 @@ bool path_search(struct walkpath_data *wpd, int16 m, int16 x0, int16 y0, int16 x
 			x      = current->x;
 			y      = current->y;
 
-			if (abs(x - x0) > maxdist) continue;
-			if (abs(y - y0) > maxdist) continue;
-
 			g_cost = current->g_cost;
 
 			current->flag = SET_CLOSED; // Add current node to 'closed' set
@@ -399,6 +396,9 @@ bool path_search(struct walkpath_data *wpd, int16 m, int16 x0, int16 y0, int16 x
 			if (x == x1 && y == y1) {
 				break;
 			}
+
+			if (abs(x - x0) > maxdist) continue;
+			if (abs(y - y0) > maxdist) continue;
 
 			if (y < ys && !map_getcellp(mapdata, x, y+1, cell)) allowed_dirs |= PATH_DIR_NORTH;
 			if (y >  0 && !map_getcellp(mapdata, x, y-1, cell)) allowed_dirs |= PATH_DIR_SOUTH;
