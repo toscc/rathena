@@ -80,7 +80,7 @@ ra_fild06,0,0	monster	Kobold Leader	1296,1,1800000,1200000
 // ra_fild08 - The Plain of Ida
 // Anacondaq
 //==================================================
-ra_fild08,0,0	monster	Anacondaq	1030,100,5000
+ra_fild08,0,0	monster	Anacondaq	1030,150,5000
 ra_fild08,0,0	monster	Roween	1782,50,5000
 ra_fild08,0,0	monster	Hill Wind	1680,20,5000
 ra_fild08,0,0	monster	Baby Desert Wolf	1107,10,5000
@@ -102,8 +102,8 @@ ra_fild08,0,0	monster	Anopheles	1627,10,5000
 // ra_fild12 - The Plain of Ida
 // Roween
 //==================================================
-ra_fild12,0,0	monster	Roween	1782,130,5000
-ra_fild12,0,0	monster	Anopheles	1627,30,5000
+ra_fild12,0,0	monster	Roween	1782,200,5000
+ra_fild12,0,0	monster	Anopheles	1627,45,5000
 ra_fild12,0,0	monster	Baby Desert Wolf	1107,15,5000
 ra_fild12,0,0	monster	Yellow Plant	1081,15,10000
 ra_fild12,0,0	monster	Red Plant	1078,5,10000
@@ -111,5 +111,5 @@ ra_fild12,0,0	monster	Red Plant	1078,5,10000
 //==================================================
 // ra_fild13 - Restored
 //==================================================
-ra_fild13,0,0	monster	Galion	1783,60,5000
-ra_fild13,0,0	monster	Roween	1782,80,5000
+ra_fild13,0,0	monster	Galion	1783,55,5000
+ra_fild13,0,0	monster	Roween	1782,40,5000
