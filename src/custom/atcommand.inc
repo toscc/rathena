@@ -51,7 +51,7 @@ clif_displaymessage(fd, "Skill : Homunculus will use long range attacks, long ra
 clif_displaymessage(fd, "Support : Homunculus uses support skills only and will not attack enemies."); 
 }
 else {
-sd->state.autopilotmode = 0; clif_displaymessage(fd, message);
+sd->hd->autopilotmode = 0; clif_displaymessage(fd, message);
 
 if (!strcmp(message,"Tank")) {sd->hd->autopilotmode = 1; clif_displaymessage(fd, "Homunculus Tanking..."); };
 if (!strcmp(message,"Skill")) {sd->hd->autopilotmode = 2; clif_displaymessage(fd, "Homunculus Skilling..."); };
