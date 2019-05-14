@@ -4456,7 +4456,7 @@ int finddanger(block_list * bl, va_list ap)
 
 	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
 
-	if (!md->target_id == sd2->bl.id) return 0; // Monster isn't targeting us, skip rest to save CPU 
+	if (md->target_id != sd2->bl.id) return 0; // Monster isn't targeting us, skip rest to save CPU 
 	// Will assume the monster can reach us and is actual danger if it managed to pick us as target
 	// So no path checking is done.
 
@@ -4498,7 +4498,7 @@ int finddanger2(block_list * bl, va_list ap)
 
 	sd2 = va_arg(ap, struct map_session_data *); 
 
-	if (!md->target_id == sd2->bl.id) return 0; // Monster isn't targeting us, skip rest to save CPU 
+	if (md->target_id != sd2->bl.id) return 0; // Monster isn't targeting us, skip rest to save CPU 
 
 	struct status_change *sc;
 	sc = status_get_sc(bl);
@@ -5252,12 +5252,12 @@ void sitdown(struct map_session_data *sd) {
 void aspdpotion(struct map_session_data *sd)
 {	int index;
 	// Berserk potion
-	if ((index = pc_search_inventory(sd, 647)) >= 0)
+	if ((index = pc_search_inventory(sd, 657)) >= 0)
 	if (!(sd->sc.data[SC_ASPDPOTION0])) if (!(sd->sc.data[SC_ASPDPOTION1])) if (!(sd->sc.data[SC_ASPDPOTION2])) {
 		if (pc_isUseitem(sd, index)) pc_useitem(sd, index);
 	}
 	// Awakening Potion potion
-	if ((index = pc_search_inventory(sd, 646)) >= 0)
+	if ((index = pc_search_inventory(sd, 656)) >= 0)
 		if (!(sd->sc.data[SC_ASPDPOTION0])) if (!(sd->sc.data[SC_ASPDPOTION1])) if (!(sd->sc.data[SC_ASPDPOTION2])) {
 			if (pc_isUseitem(sd, index)) pc_useitem(sd, index);
 		}
