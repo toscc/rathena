@@ -927,6 +927,7 @@ IG_VioletBox,13205,1	// Poison Sphere
 IG_VioletBox,13206,1	// Blind Sphere
 IG_VioletBox,13207,1	// Freezing Sphere
 IG_VioletBox,13304,1	// Huuma Calm Mind
+IG_VioletBox,18558,1	// Sinsucho Hat (Plant EXP bonus)
 IG_VioletBox,31800,3	// Costume Ticket
 IG_VioletBox,31850,1	// Boxes
 IG_VioletBox,31851,1	// Boxes

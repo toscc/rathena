@@ -27,7 +27,7 @@
 // ein_fild01 - Restored mobs
 // The Demon Pungus field
 //==================================================
-ein_fild05,0,0	monster	Demon Pungus	1378,250,5000
+ein_fild01,0,0	monster	Demon Pungus	1378,250,5000
 
 //==================================================
 // ein_fild02 - Restored
@@ -66,7 +66,7 @@ ein_fild04,0,0	monster	Green Plant	1080,10,60000,30000
 // The crowded/noxious field
 //==================================================
 ein_fild05,0,0	monster	Noxious	1620,300,5000
-ein_fild05,0,0	monster	Venomous	1621,120,5000
+ein_fild05,0,0	monster	Venomous	1621,90,5000
 ein_fild05,0,0	monster	Teddy Bear	1622,60,5000
 ein_fild05,0,0	monster	Demon Pungus	1378,30,5000
 ein_fild05,0,0	monster	Pitman	1616,30,5000

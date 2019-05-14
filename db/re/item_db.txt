@@ -9672,10 +9672,10 @@
 18552,Proba_Angel_Blessing,Proba Angel Blessing,4,20,,1200,,0,,1,0xFFFFFFFF,63,2,256,,10,1,444,{ bonus bLuk,2; },{},{}
 18553,Mini_Tree,Mini Tree,4,20,,50,,5,,0,0xFFFFFFFF,63,2,256,,0,1,727,{ bonus2 bResEff,Eff_Stun,20; bonus2 bResEff,Eff_Curse,20; bonus2 bResEff,Eff_Blind,20; bonus2 bResEff,Eff_Confusion,20; bonus2 bAddMonsterDropItem,529,300; bonus2 bAddMonsterDropItem,529,644; },{},{}
 18554,King_Prawn_Hat,King Prawn Hat,4,20,,1000,,8,,0,0xFFFFFFFF,63,2,256,,0,0,728,{ bonus2 bAddItemGroupHealRate,IG_Fish,100; },{},{}
-18555,General_Helmet,General Helmet,4,20,,200,,3,,1,0xFFFFFFFF,63,2,256,,10,1,729,{ bonus bMdef,3; bonus2 bAddRace,RC_Dragon,5; bonus2 bMagicAddRace,RC_Dragon,5; bonus2 bSubRace,RC_Dragon,5; bonus3 bAddMonsterDropItem,7444,RC_Dragon,2; },{},{}
+18555,General_Helmet,General Helmet,4,20,,200,,5,,1,0xFFFFFFFF,63,2,256,,10,1,729,{ bonus bMdef,5; bonus2 bAddRace,RC_Dragon,5; bonus2 bMagicAddRace,RC_Dragon,5; bonus2 bSubRace,RC_Dragon,5; bonus3 bAddMonsterDropItem,7444,RC_Dragon,2; },{},{}
 18556,Angel_Helmet,Angel Helmet,4,0,,0,,0,,0,0xFFFFFFFF,63,2,512,,0,0,3,{ bonus3 bAddMonsterIdDropItem,6464,2220,310; },{},{}
 18557,Devil_Helmet,Devil Helmet,4,0,,0,,0,,0,0xFFFFFFFF,63,2,512,,0,0,12,{ bonus3 bAddMonsterIdDropItem,6345,1812,310; },{},{}
-18558,Sinsuncho_Hat,Sinsuncho Hat,4,20,,1000,,0,,0,0xFFFFFFFF,63,2,256,,10,0,730,{ bonus2 bExpAddRace,RC_Plant,5; bonus2 bSubRace,RC_Plant,-10; },{},{}
+18558,Sinsuncho_Hat,Sinsuncho Hat,4,30000,,1000,,0,,0,0xFFFFFFFF,63,2,256,,10,0,730,{ bonus2 bExpAddRace,RC_Plant,15; bonus2 bSubRace,RC_Plant,-33; },{},{}
 18559,Fafnir_Skin,Fafnir Skin,4,20,,100,,3,,0,0xFFFFFFFF,63,2,512,,50,0,152,{ bonus bCritical,3; bonus bHPrecovRate,-100; },{},{}
 18560,Fafnir_Mask,Fafnir Mask,4,20,,300,,2,,0,0xFFFFFFFF,63,2,1,,50,0,180,{ bonus bCritical,2; },{},{}
 18561,B_Feather_Beret,B Feather Beret,4,20,,300,,5,,1,0xFFFFFFFF,63,2,256,,40,1,731,{ bonus bVit,2; bonus bMdef,3; bonus2 bSubRace,RC_DemiHuman,10; bonus2 bSubRace,RC_Player,10; },{},{}
