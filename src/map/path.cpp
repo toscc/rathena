@@ -126,10 +126,16 @@ int path_blownpos(int16 m,int16 x0,int16 y0,int16 dx,int16 dy,int count)
 	return (x0<<16)|y0; //TODO: use 'struct point' here instead?
 }
 
+bool path_search_long(struct shootpath_data *spd, int16 m, int16 x0, int16 y0, int16 x1, int16 y1, cell_chk cell)
+{
+	return (spd, m, x0, y0, x1, y1, cell, MAX_WALKPATH);
+}
+
+
 /*==========================================
  * is ranged attack from (x0,y0) to (x1,y1) possible?
  *------------------------------------------*/
-bool path_search_long(struct shootpath_data *spd,int16 m,int16 x0,int16 y0,int16 x1,int16 y1,cell_chk cell)
+bool path_search_long(struct shootpath_data *spd,int16 m,int16 x0,int16 y0,int16 x1,int16 y1,cell_chk cell, int maxdist)
 {
 	int dx, dy;
 	int wx = 0, wy = 0;
@@ -179,7 +185,7 @@ bool path_search_long(struct shootpath_data *spd,int16 m,int16 x0,int16 y0,int16
 			wy += weight;
 			y0--;
 		}
-		if( spd->len<MAX_WALKPATH )
+		if( spd->len<maxdist )
 		{
 			spd->x[spd->len] = x0;
 			spd->y[spd->len] = y0;
@@ -259,6 +265,12 @@ static int add_path(struct node_heap *heap, struct path_node *tp, int16 x, int16
 }
 ///@}
 
+bool path_search(struct walkpath_data *wpd, int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int flag, cell_chk cell)
+{
+	return path_search(wpd, m, x0, y0, x1, y1, flag, cell, MAX_WALKPATH);
+}
+
+
 /*==========================================
  * path search (x0,y0)->(x1,y1)
  * wpd: path info will be written here
@@ -268,14 +280,14 @@ static int add_path(struct node_heap *heap, struct path_node *tp, int16 x, int16
  *
  * Note: uses global g_open_set, therefore this method can't be called in parallel or recursivly.
  *------------------------------------------*/
-bool path_search(struct walkpath_data *wpd, int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int flag, cell_chk cell)
+bool path_search(struct walkpath_data *wpd, int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int flag, cell_chk cell, int maxdist)
 {
 	register int i, x, y, dx = 0, dy = 0;
 	struct map_data *mapdata = map_getmapdata(m);
 	struct walkpath_data s_wpd;
 
 	if (flag&2)
-		return path_search_long(NULL, m, x0, y0, x1, y1, cell);
+		return path_search_long(NULL, m, x0, y0, x1, y1, cell, maxdist);
 
 	if (wpd == NULL)
 		wpd = &s_wpd; // use dummy output variable
@@ -376,6 +388,10 @@ bool path_search(struct walkpath_data *wpd, int16 m, int16 x0, int16 y0, int16 x
 
 			x      = current->x;
 			y      = current->y;
+
+			if (abs(x - x0) > maxdist) continue;
+			if (abs(y - y0) > maxdist) continue;
+
 			g_cost = current->g_cost;
 
 			current->flag = SET_CLOSED; // Add current node to 'closed' set

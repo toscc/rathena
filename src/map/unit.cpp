@@ -45,6 +45,8 @@
 const short dirx[DIR_MAX]={0,-1,-1,-1,0,1,1,1}; ///lookup to know where will move to x according dir
 const short diry[DIR_MAX]={1,1,0,-1,-1,-1,0,1}; ///lookup to know where will move to y according dir
 
+#define AUTOPILOT_RANGE_CAP 14 // Max distance the @autopilot is allowed to attack at using single target skills.
+
 //early declaration
 static TIMER_FUNC(unit_attack_timer);
 static TIMER_FUNC(unit_walktoxy_timer);
@@ -3558,8 +3560,9 @@ void resettargets2()
 }
 
 int nofreachabletargets,nofshootabletargets;
-int64 reachabletargets[32768];
-int64 shootabletargets[32768];
+int64 reachabletargets[32767];
+int64 reachabletargetspathlen[32767];
+int64 shootabletargets[32767];
 
 int isreachable(block_list * bl, va_list ap)
 {
@@ -3570,13 +3573,16 @@ int isreachable(block_list * bl, va_list ap)
 	nullpo_ret(bl);
 	nullpo_ret(md = (struct mob_data *)bl);
 
+	struct walkpath_data wpd1;
+
 	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
-	if (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS))
+	if (path_search(&wpd1, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS, AUTOPILOT_RANGE_CAP))
 	{
 		reachabletargets[nofreachabletargets] = bl->id;
+		reachabletargetspathlen[nofreachabletargets] = wpd1.path_len;
 		nofreachabletargets++;
 	}
-	if (path_search_long(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, CELL_CHKWALL)) {
+	if (path_search_long(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, CELL_CHKWALL, AUTOPILOT_RANGE_CAP)) {
 		shootabletargets[nofshootabletargets] = bl->id;
 		nofshootabletargets++;
 	}
@@ -3598,10 +3604,23 @@ bool isreachabletarget(int64 ID)
 	return false;
 }
 
+int reachabletargetpathlength(int64 ID)
+{
+	for (int i = 0; i < nofshootabletargets; i++) {
+		if (reachabletargets[i] == ID) return reachabletargetspathlen[i];
+	}
+	return 999;
+}
+
+int rcap(int range) {
+	if (range > AUTOPILOT_RANGE_CAP) return AUTOPILOT_RANGE_CAP;
+	return range;
+}
+
 void getreachabletargets(struct map_session_data * sd)
 {
 	nofreachabletargets = 0; nofshootabletargets = 0;
-	map_foreachinrange(isreachable, &sd->bl, 19, BL_MOB, sd);
+	map_foreachinrange(isreachable, &sd->bl, AUTOPILOT_RANGE_CAP, BL_MOB, sd);
 }
 
 
@@ -3621,8 +3640,8 @@ int targetnearestwalkto(block_list * bl, va_list ap)
 	struct walkpath_data wpd1;
 
 	int dist; 
-	if (path_search(&wpd1, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS)) {
-		dist = wpd1.path_len;
+	if (isreachabletarget(bl->id)) {
+		dist = reachabletargetpathlength(bl->id);
 		int dist2 = dist + 12;
 		if ((status_get_class_(bl) == CLASS_BOSS)) dist2 = dist2 - 12; // Always hit the boss in a crowd of nearby enemies
 		if ((dist2 < targetdistanceb)) { targetdistance = dist; targetdistanceb = dist2; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
@@ -3671,7 +3690,7 @@ int counthp(block_list * bl, va_list ap)
 
 	struct walkpath_data wpd1;
 
-	if (path_search_long(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, CELL_CHKWALL)) {
+	if (isshootabletarget(bl->id)) {
 		targetdistance += md->status.hp;
 		return 1;
 	}
@@ -3707,7 +3726,7 @@ int targetsoulexchange(block_list * bl, va_list ap)
 
 	int dist = min(sd2->battle_status.sp,sd->battle_status.max_sp) - sd->battle_status.sp;
 	if (sd->state.asurapreparation) dist = 500;
-	if ((dist > targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS))) { targetdistance = dist; foundtargetID = bl->id; targetbl = bl; };
+	if ((dist > targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS,9))) { targetdistance = dist; foundtargetID = bl->id; targetbl = bl; };
 
 	return 1;
 }
@@ -3727,7 +3746,7 @@ for (i = 0; i < MAX_SKILLUNITGROUP && ud2->skillunit[i]; i++) {
 	{
 		int dist = distance_bl(&sd2->bl, bl);
 		if (dist<16)
-			if (path_search_long(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, ud2->skillunit[i]->unit->bl.x, ud2->skillunit[i]->unit->bl.y, CELL_CHKWALL)) {
+			if (path_search_long(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, ud2->skillunit[i]->unit->bl.x, ud2->skillunit[i]->unit->bl.y, CELL_CHKWALL,16)) {
 				warpx = ud2->skillunit[i]->unit->bl.x;
 				warpy = ud2->skillunit[i]->unit->bl.y;
 				return 1;
@@ -3756,7 +3775,7 @@ int targetbluepitcher(block_list * bl, va_list ap)
 
 	int dist = min(sd2->battle_status.sp, sd->battle_status.max_sp) - sd->battle_status.sp;
 	if (sd->state.asurapreparation) dist = 500;
-	if ((dist > targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS))) { targetdistance = dist; foundtargetID = bl->id; targetbl = bl; };
+	if ((dist > targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS,9))) { targetdistance = dist; foundtargetID = bl->id; targetbl = bl; };
 
 	return 1;
 }
@@ -4437,6 +4456,10 @@ int finddanger(block_list * bl, va_list ap)
 
 	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
 
+	if (!md->target_id == sd2->bl.id) return 0; // Monster isn't targeting us, skip rest to save CPU 
+	// Will assume the monster can reach us and is actual danger if it managed to pick us as target
+	// So no path checking is done.
+
 	// Already protected from this monster by pneuma or safety wall? ignore!
 	struct status_change *sc;
 	sc = status_get_sc(bl);
@@ -4455,8 +4478,7 @@ int finddanger(block_list * bl, va_list ap)
 	}
 
 	int dist = distance_bl(&sd2->bl, bl) - md->status.rhw.range;
-	if ((dist < dangerdistancebest) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS))
-		&&(md->target_id==sd2->bl.id)) { 
+	if ((dist < dangerdistancebest)) { 
 		dangerdistancebest = dist; founddangerID = bl->id; dangerbl = &md->bl; dangermd = md; 
 		return 1;
 	};
@@ -4476,12 +4498,13 @@ int finddanger2(block_list * bl, va_list ap)
 
 	sd2 = va_arg(ap, struct map_session_data *); 
 
+	if (!md->target_id == sd2->bl.id) return 0; // Monster isn't targeting us, skip rest to save CPU 
+
 	struct status_change *sc;
 	sc = status_get_sc(bl);
 
 	int dist = distance_bl(&sd2->bl, bl) - md->status.rhw.range;
-	if ((dist < dangerdistancebest) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS))
-		&& (md->target_id == sd2->bl.id)) {
+	if ((dist < dangerdistancebest)) {
 		dangerdistancebest = dist; founddangerID = bl->id; dangerbl = &md->bl; dangermd = md;
 		return 1;
 	};
@@ -4496,7 +4519,7 @@ int inDanger(struct map_session_data * sd)
 	if (sd->sc.data[SC_KYRIE]) return 999;
 
 	founddangerID = -1; dangerdistancebest = 999;
-	dangercount=map_foreachinrange(finddanger, &sd->bl, 20, BL_MOB, sd);
+	dangercount=map_foreachinrange(finddanger, &sd->bl, 14, BL_MOB, sd);
 	return dangerdistancebest;
 }
 
@@ -4504,7 +4527,7 @@ int inDanger(struct map_session_data * sd)
 int inDangerLeader(struct map_session_data * sd)
 {
 	founddangerID = -1; dangerdistancebest = 999;
-	dangercount = map_foreachinrange(finddanger2, &sd->bl, 20, BL_MOB, sd);
+	dangercount = map_foreachinrange(finddanger2, &sd->bl, 14, BL_MOB, sd);
 	return dangerdistancebest;
 }
 
@@ -4538,7 +4561,7 @@ int provokethis(block_list * bl, va_list ap)
 
 	// want nearest anyway
 	int dist = distance_bl(&sd2->bl, bl);
-	if ((dist < targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS))) { targetdistance = dist; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
+	if ((dist < targetdistance) && (path_search(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS,14))) { targetdistance = dist; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
 
 	return 0;
 }
@@ -5406,8 +5429,7 @@ TIMER_FUNC(unit_autopilot_homunculus_timer)
 	getreachabletargets(sd);
 	// leadersd is the person we position ourselves to : the party leader, or lacking one, the owner of the homunculus.
 
-	resettargets();
-	map_foreachinrange(targetnearest, &sd->bl, 9, BL_MOB, sd);
+	// Support skills
 	// Lif - Urgent Escape
 	if (canskill(sd)) if (hom_checkskill(hd, HLIF_AVOID) > 0) if (leaderdistance <= 2) // seems to have limited range? Not sure how much?
 		if (!(sd->sc.data[SC_AVOID])) {
@@ -5424,7 +5446,6 @@ TIMER_FUNC(unit_autopilot_homunculus_timer)
 		if (!(sd->sc.data[SC_BLOODLUST])) {
 			homu_skilluse_ifable(&sd->bl, SELF, HAMI_BLOODLUST, hom_checkskill(hd, HAMI_BLOODLUST));
 		}
-
 	// Lif - Mental Change
 	// Note : I modded this skill to not reduce hp/sp when it ends.
 	// You might want to disable it for the AI and activate it manually instead.
@@ -5451,7 +5472,10 @@ TIMER_FUNC(unit_autopilot_homunculus_timer)
 				homu_skilluse_ifable(&sd->bl, leadersd->bl.id, HLIF_HEAL, hom_checkskill(hd, HLIF_HEAL));
 
 	}
-
+	// Attack skills
+	// and other skills requiring an enemy target check
+	resettargets();
+	map_foreachinrange(targetnearest, &sd->bl, 9, BL_MOB, sd);
 	// Vanil Caprice
 	if (hd->autopilotmode!=3) if (canskill(sd))
 		if (hom_checkskill(hd, HVAN_CAPRICE) > 0)
@@ -5472,7 +5496,7 @@ TIMER_FUNC(unit_autopilot_homunculus_timer)
 	if (hd->autopilotmode == 1) {
 		resettargets();
 		// Target in leader's range, not ours to avoid going too far
-		map_foreachinrange(targetnearestwalkto, leaderbl, 14, BL_MOB, sd);
+		map_foreachinrange(targetnearestwalkto, leaderbl, AUTOPILOT_RANGE_CAP, BL_MOB, sd);
 
 		if (foundtargetID > -1) {
 			// Use normal melee attack
@@ -5485,7 +5509,7 @@ TIMER_FUNC(unit_autopilot_homunculus_timer)
 			else
 			{
 				struct walkpath_data wpd1;
-				if (path_search(&wpd1, sd->bl.m, bl->x, bl->y, targetbl->x, targetbl->y, 0, CELL_CHKNOPASS))
+				if (path_search(&wpd1, sd->bl.m, bl->x, bl->y, targetbl->x, targetbl->y, 0, CELL_CHKNOPASS, AUTOPILOT_RANGE_CAP))
 					newwalk(&sd->bl, bl->x + dirx[wpd1.path[0]], bl->y + diry[wpd1.path[0]], 8);
 				return 0;
 			}
@@ -5520,8 +5544,8 @@ TIMER_FUNC(unit_autopilot_homunculus_timer)
 			// If either leader or nearest monster attacking them is not directly shootable, go closer
 			// This is necessary to avoid the party stuck behind a corner, unable to attack 
 			if ((abs(sd->bl.x - leaderbl->x) > 6) || (abs(sd->bl.y - leaderbl->y) > 6)
-				|| !(path_search_long(NULL, leadersd->bl.m, bl->x, bl->y, leaderbl->x, leaderbl->y, CELL_CHKNOPASS))
-				|| !(path_search_long(NULL, leadersd->bl.m, bl->x, bl->y, dangerbl->x, dangerbl->y, CELL_CHKNOPASS))
+				|| !(path_search_long(NULL, leadersd->bl.m, bl->x, bl->y, leaderbl->x, leaderbl->y, CELL_CHKNOPASS,7))
+				|| !(path_search_long(NULL, leadersd->bl.m, bl->x, bl->y, dangerbl->x, dangerbl->y, CELL_CHKNOPASS,7))
 				) {
 
 				struct walkpath_data wpd1;
@@ -6488,7 +6512,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		// Last Stand, Gatling Fever
 		if (canskill(sd)) if ((pc_checkskill(sd, GS_GATLINGFEVER) > 0) || (pc_checkskill(sd, GS_MADNESSCANCEL) > 0)) {
 		targetdistance = 0;
-		map_foreachinrange(counthp, &sd->bl, 9, BL_MOB, sd);
+		map_foreachinrange(counthp, &sd->bl, AUTOPILOT_RANGE_CAP, BL_MOB, sd);
 		// Use this if nearby enemies are expected to take a while to beat.
 		// This assumes damage output of characters are not too different from the gunslinger and party members are actually participating in the battle.
 		if (targetdistance > pc_rightside_atk(sd) * 10 * partycount) {
@@ -6525,7 +6549,7 @@ TIMER_FUNC(unit_autopilot_timer)
 					targetbl = map_id2bl(p->party.member[j].account_id);
 					if (targetbl) {
 						if (distance_bl(&sd->bl, targetbl) <= 9) // No more than 9 range and must be shootable to target
-							if (path_search_long(NULL, sd->bl.m, sd->bl.x, sd->bl.y, targetbl->x, targetbl->y, CELL_CHKWALL)) { foundtargetID = p->party.member[j].account_id; }
+							if (path_search_long(NULL, sd->bl.m, sd->bl.x, sd->bl.y, targetbl->x, targetbl->y, CELL_CHKWALL,9)) { foundtargetID = p->party.member[j].account_id; }
 					}
 
 					if (foundtargetID > -1) {
@@ -6664,12 +6688,13 @@ TIMER_FUNC(unit_autopilot_timer)
 							// Arrow Shower
 							if (canskill(sd)) if ((pc_checkskill(sd, AC_SHOWER) > 0)) {
 								foundtargetID = -1; targetdistance = 999;
-								map_foreachinrange(targetnearest, targetbl2, 9 + pc_checkskill(sd, AC_VULTURE), BL_MOB, sd);
-								if (foundtargetID > -1) {
+								map_foreachinrange(targetnearest, targetbl2,9 + pc_checkskill(sd, AC_VULTURE), BL_MOB, sd);
+								// knockback might hit monster outside range if further than this
+								if (foundtargetID > -1) if (distance_bl(targetbl, &sd->bl) <= 10 ) {
 									int area = 1; if (pc_checkskill(sd, AC_SHOWER) >= 6) area++;
 									arrowchange(sd, targetmd);
 									priority = map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(AC_SHOWER, pc_checkskill(sd, AC_SHOWER)));
-									if (((priority >= 6) && (priority > bestpriority)) && (distance_bl(targetbl, &sd->bl) <= 9 + pc_checkskill(sd, AC_VULTURE))) {
+									if (((priority >= 6) && (priority > bestpriority))) {
 										spelltocast = AC_SHOWER; bestpriority = priority; IDtarget = foundtargetID;
 									}
 								}
@@ -6804,7 +6829,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		// probably could do better but targeting too many times causes lags as it includes finding paths.
 		/// Also fetch target for skills blocked by Pneuma separately
 		resettargets();
-		map_foreachinrange(targetnearestusingranged, &sd->bl, 19, BL_MOB, sd);
+		map_foreachinrange(targetnearestusingranged, &sd->bl, AUTOPILOT_RANGE_CAP, BL_MOB, sd);
 		int foundtargetRA = foundtargetID;
 		struct block_list * targetRAbl = targetbl;
 		struct mob_data * targetRAmd = targetmd;
@@ -7240,12 +7265,12 @@ TIMER_FUNC(unit_autopilot_timer)
 		// No leader then closest to ourselves we can see
 		//if (leaderID == -1) {
 		if ((!p) || (leaderID == sd->bl.id)) {
-			map_foreachinrange(targetnearestwalkto, &sd->bl, 12, BL_MOB, sd);
+			map_foreachinrange(targetnearestwalkto, &sd->bl, AUTOPILOT_RANGE_CAP-2, BL_MOB, sd);
 		}
 		// but if leader exists, then still closest to us but in leader's range
 		// If leader does not exist, we are not leader, and we are in party, then leader is on another map. Do not attack things, follow them.
 		else if (leaderID>-1) {
-			map_foreachinrange(targetnearestwalkto, leaderbl, 14, BL_MOB, sd);
+			map_foreachinrange(targetnearestwalkto, leaderbl, AUTOPILOT_RANGE_CAP, BL_MOB, sd);
 			// have to walk too many tiles means the target is probably behind some wall. Don't try to engage it, even if maxpath allows.
 			// should be obsolete, now targeting checks for walking distance
 			if (targetdistance > 29) { foundtargetID = -1; }
@@ -7474,7 +7499,7 @@ TIMER_FUNC(unit_autopilot_timer)
 				unit_attack(&sd->bl, foundtargetID, 1);
 			} else
 			{	struct walkpath_data wpd1;
-				if (path_search(&wpd1, sd->bl.m, bl->x, bl->y, targetbl->x, targetbl->y, 0, CELL_CHKNOPASS))
+				if (path_search(&wpd1, sd->bl.m, bl->x, bl->y, targetbl->x, targetbl->y, 0, CELL_CHKNOPASS, AUTOPILOT_RANGE_CAP))
 					newwalk(&sd->bl, bl->x + dirx[wpd1.path[0]], bl->y + diry[wpd1.path[0]], 8);
 				return 0;
 			}
@@ -7573,8 +7598,8 @@ TIMER_FUNC(unit_autopilot_timer)
 					// If either leader or nearest monster attacking them is not directly shootable, go closer
 					// This is necessary to avoid the party stuck behind a corner, unable to attack 
 					if ((abs(sd->bl.x - leaderbl->x) > 6) || (abs(sd->bl.y - leaderbl->y) > 6) 
-						|| !(path_search_long(NULL, leadersd->bl.m, bl->x, bl->y, leaderbl->x, leaderbl->y, CELL_CHKNOPASS))
-						|| !(path_search_long(NULL, leadersd->bl.m, bl->x, bl->y, dangerbl->x, dangerbl->y, CELL_CHKNOPASS))
+						|| !(path_search_long(NULL, leadersd->bl.m, bl->x, bl->y, leaderbl->x, leaderbl->y, CELL_CHKNOPASS,7))
+						|| !(path_search_long(NULL, leadersd->bl.m, bl->x, bl->y, dangerbl->x, dangerbl->y, CELL_CHKNOPASS,7))
 						) {
 
 						struct walkpath_data wpd1; 
