@@ -12552,8 +12552,15 @@ void clif_parse_ProduceMix(int fd,struct map_session_data *sd){
 		clif_menuskill_clear(sd);
 		return;
 	}
-	if( (produce_idx = skill_can_produce_mix(sd,nameid,sd->menuskill_val, 1)) )
-		skill_produce_mix(sd,0,nameid,slot1,slot2,slot3,1,produce_idx-1);
+	if (pc_checkskill(sd, AM_TWILIGHT1)>0) {
+		while (produce_idx = skill_can_produce_mix(sd, nameid, sd->menuskill_val, 1)) {
+			skill_produce_mix(sd, 0, nameid, slot1, slot2, slot3, 1, produce_idx - 1);
+		};
+	}
+	else if (produce_idx = skill_can_produce_mix(sd, nameid, sd->menuskill_val, 1)) {
+		skill_produce_mix(sd, 0, nameid, slot1, slot2, slot3, 1, produce_idx - 1);
+	};
+
 	clif_menuskill_clear(sd);
 }
 
