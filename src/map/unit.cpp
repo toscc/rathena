@@ -6258,6 +6258,16 @@ TIMER_FUNC(unit_autopilot_timer)
 					if (status_isdead(&sd->hd->bl)) unit_skilluse_ifable(&sd->bl, SELF, AM_RESURRECTHOMUN, pc_checkskill(sd, AM_RESURRECTHOMUN));
 				}
 		}
+		if (canskill(sd)) if (Dangerdistance >= 900) if (pc_checkskill(sd, AM_CALLHOMUN) > 0)
+			if (sd->status.hom_id && sd->hd && sd->hd->homunculus.vaporize) {
+				if (!sd->hd) intif_homunculus_requestload(sd->status.account_id, sd->status.hom_id); else
+				{
+					if (status_isdead(&sd->hd->bl)) unit_skilluse_ifable(&sd->bl, SELF, AM_CALLHOMUN, pc_checkskill(sd, AM_CALLHOMUN));
+				}
+			}
+
+		
+
 
 		//
 		// Songs
