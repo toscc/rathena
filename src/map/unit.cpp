@@ -4378,17 +4378,22 @@ int targetkyrie(block_list * bl, va_list ap)
 	return 0;
 }
 
+bool canendow(map_session_data *sd) {
+	return ((!sd->sc.data[SC_ASPERSIO]) && (!sd->sc.data[SC_FIREWEAPON])
+		&& (!sd->sc.data[SC_WATERWEAPON]) && (!sd->sc.data[SC_WINDWEAPON]) && (!sd->sc.data[SC_EARTHWEAPON])
+		&& (!sd->sc.data[SC_ENCPOISON]) && (!sd->sc.data[SC_SEVENWIND]) && (!sd->sc.data[SC_GHOSTWEAPON]) && (!sd->sc.data[SC_SHADOWWEAPON])
+		&& ((sd->battle_status.batk > sd->status.base_level) || (sd->battle_status.batk > 120)));
+}
+
 int targetendow(block_list * bl, va_list ap)
 {
 	// Not already endowed, and is a physical attack class (base atk high enough)
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
 	if (!ispartymember(sd)) return 0;
-	if ((!sd->sc.data[SC_ASPERSIO]) && (!sd->sc.data[SC_FIREWEAPON])
-		&& (!sd->sc.data[SC_WATERWEAPON]) && (!sd->sc.data[SC_WINDWEAPON]) && (!sd->sc.data[SC_EARTHWEAPON])
-		&& (!sd->sc.data[SC_ENCPOISON])
-		&& ((sd->battle_status.batk>sd->status.base_level) || (sd->battle_status.batk>120))) {
+	if (canendow(sd)) {
 		targetbl = bl; foundtargetID = sd->bl.id;
+		return 1;
 	};
 
 	return 0;
@@ -5228,6 +5233,15 @@ void skillwhenidle(struct map_session_data *sd) {
 		}
 	}
 
+	// Taekwon Sprint
+	if (pc_checkskill(sd, TK_RUN) >= 7) {
+		if ((sd->status.weapon == W_FIST))
+			if (!(sd->sc.data[SC_SPURT]))
+		{
+			unit_skilluse_ifable(&sd->bl, SELF, TK_RUN, pc_checkskill(sd, TK_RUN));
+		}
+	}
+
 	// Turn off Gatling Fever if stopped fighting
 	if (pc_checkskill(sd, GS_GATLINGFEVER) > 0) if (sd->sc.data[SC_GATLINGFEVER]) unit_skilluse_ifable(&sd->bl, SELF, GS_GATLINGFEVER, pc_checkskill(sd, GS_GATLINGFEVER));
 
@@ -5672,12 +5686,15 @@ TIMER_FUNC(unit_autopilot_timer)
 		char* msg = "Omg, I'm not wearing armor, that's dangerous!";
 		saythis(sd, msg, 100);
 	}
-	if (pc_checkequip(sd, EQP_HAND_R) == -1)
+
+	if (sd->class_ != MAPID_TAEKWON)
+		if (pc_checkequip(sd, EQP_HAND_R) == -1)
 	{
 		char* msg = "I need a weapon to fight!";
 		saythis(sd, msg, 100);
 	}
 
+	if (sd->class_ != MAPID_TAEKWON)
 	if (pc_checkequip(sd, EQP_HAND_L) == -1)
 	{
 		char* msg = "Using a shield might be a good idea?";
@@ -5987,6 +6004,45 @@ TIMER_FUNC(unit_autopilot_timer)
 			}
 		}
 
+		// Tumbling
+		if (pc_checkskill(sd, TK_DODGE) > 0) { // Do not use in tanking mode, due to moving back it's bad
+			if (!(sd->sc.data[SC_DODGE])) {
+				unit_skilluse_ifable(&sd->bl, SELF, TK_DODGE, pc_checkskill(sd, TK_DODGE));
+			}
+		}
+
+		// Taekwon Stances
+		if (sd->class_ != MAPID_SOUL_LINKER) {
+			if (pc_checkskill(sd, TK_READYSTORM) > 0) {
+				if (!(sd->sc.data[SC_READYSTORM]))
+				{
+					unit_skilluse_ifable(&sd->bl, SELF, TK_READYSTORM, pc_checkskill(sd, TK_READYSTORM));
+				}
+			}
+
+			if (pc_checkskill(sd, TK_READYDOWN) > 0) {
+				if (!(sd->sc.data[SC_READYDOWN]))
+				{
+					unit_skilluse_ifable(&sd->bl, SELF, TK_READYDOWN, pc_checkskill(sd, TK_READYDOWN));
+				}
+			}
+
+			if (pc_checkskill(sd, TK_READYTURN) > 0) {
+				if (!(sd->sc.data[SC_READYTURN]))
+				{
+					unit_skilluse_ifable(&sd->bl, SELF, TK_READYTURN, pc_checkskill(sd, TK_READYTURN));
+				}
+			}
+
+			if (pc_checkskill(sd, TK_READYCOUNTER) > 0) {
+				if (!(sd->sc.data[SC_READYCOUNTER]))
+				{
+					unit_skilluse_ifable(&sd->bl, SELF, TK_READYCOUNTER, pc_checkskill(sd, TK_READYCOUNTER));
+				}
+			}
+
+		}
+
 		/// Angelus
 		if (canskill(sd)) if (pc_checkskill(sd, AL_ANGELUS)>0) {
 			resettargets();
@@ -6119,6 +6175,51 @@ TIMER_FUNC(unit_autopilot_timer)
 				}
 			}
 		}
+		//
+		// Mild Wind
+		//
+		if (canskill(sd)) if (pc_checkskill(sd, TK_SEVENWIND) > 0) {
+			resettargets();
+			if (map_foreachinmap(endowneed, sd->bl.m, BL_MOB, ELE_EARTH) > 0) if (canendow(sd)) {
+			unit_skilluse_ifable(&sd->bl, SELF, TK_SEVENWIND, 1);
+			}
+		}
+		if (canskill(sd)) if (pc_checkskill(sd, TK_SEVENWIND) > 1) {
+			resettargets();
+			if (map_foreachinmap(endowneed, sd->bl.m, BL_MOB, ELE_WIND) > 0) if (canendow(sd)) {
+				unit_skilluse_ifable(&sd->bl, SELF, TK_SEVENWIND, 2);
+			}
+		}
+		if (canskill(sd)) if (pc_checkskill(sd, TK_SEVENWIND) > 2) {
+			resettargets();
+			if (map_foreachinmap(endowneed, sd->bl.m, BL_MOB, ELE_WATER) > 0) if (canendow(sd)) {
+				unit_skilluse_ifable(&sd->bl, SELF, TK_SEVENWIND, 3);
+			}
+		}
+		if (canskill(sd)) if (pc_checkskill(sd, TK_SEVENWIND) > 3) {
+			resettargets();
+			if (map_foreachinmap(endowneed, sd->bl.m, BL_MOB, ELE_FIRE) > 0) if (canendow(sd)) {
+				unit_skilluse_ifable(&sd->bl, SELF, TK_SEVENWIND, 4);
+			}
+		}
+		if (canskill(sd)) if (pc_checkskill(sd, TK_SEVENWIND) > 4) {
+			resettargets();
+			if (map_foreachinmap(endowneed, sd->bl.m, BL_MOB, ELE_GHOST) > 0) if (canendow(sd)) {
+				unit_skilluse_ifable(&sd->bl, SELF, TK_SEVENWIND, 5);
+			}
+		}
+		if (canskill(sd)) if (pc_checkskill(sd, TK_SEVENWIND) > 5) {
+			resettargets();
+			if (map_foreachinmap(endowneed, sd->bl.m, BL_MOB, ELE_DARK) > 0) if (canendow(sd)) {
+				unit_skilluse_ifable(&sd->bl, SELF, TK_SEVENWIND, 6);
+			}
+		}
+		if (canskill(sd)) if (pc_checkskill(sd, TK_SEVENWIND) > 6) {
+			resettargets();
+			if (map_foreachinmap(endowneed, sd->bl.m, BL_MOB, ELE_HOLY) > 0) if (canendow(sd)) {
+				unit_skilluse_ifable(&sd->bl, SELF, TK_SEVENWIND, 7);
+			}
+		}
 
 		/// Assumptio
 		if (canskill(sd)) if ((pc_checkskill(sd, HP_ASSUMPTIO)>0) && ((Dangerdistance >900) || (sd->special_state.no_castcancel))) {
@@ -6187,7 +6288,8 @@ TIMER_FUNC(unit_autopilot_timer)
 		// Spear quicken
 		// Only in tanking mode. There is no point in ASPD if not using normal attacks.
 		if (pc_checkskill(sd, CR_SPEARQUICKEN) > 0) {
-			if (sd->state.autopilotmode == 1)
+			if ((sd->status.weapon == W_2HSPEAR) || (sd->status.weapon == W_1HSPEAR))
+				if (sd->state.autopilotmode == 1)
 				if (!(sd->sc.data[SC_SPEARQUICKEN])) {
 					unit_skilluse_ifable(&sd->bl, SELF, CR_SPEARQUICKEN, pc_checkskill(sd, CR_SPEARQUICKEN));
 				}
@@ -6852,6 +6954,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		resettargets();
 		map_foreachinrange(targetnearest, &sd->bl, 9, BL_MOB, sd);
 		int foundtargetID2 = foundtargetID;
+		int targetdistance2 = targetdistance;
 			// Jupitel Thunder on vulnerable enemy
 		if (foundtargetID2 > -1) if (canskill(sd)) if (pc_checkskill(sd, WZ_JUPITEL) > 0) {
 				if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
@@ -7024,6 +7127,15 @@ TIMER_FUNC(unit_autopilot_timer)
 				// If enemy has less than 2x ATK health left, more economic to use Shurikens.
 				if (rangeddist <= 9) if (targetRAmd->status.hp>2* pc_rightside_atk(sd)) {
 				if (kunaichange(sd, targetRAmd)==1) unit_skilluse_ifable(&sd->bl, foundtargetRA, NJ_KUNAI, pc_checkskill(sd, NJ_KUNAI));
+			}
+
+			// Flying Kick
+			if (sd->class_ != MAPID_SOUL_LINKER) if (foundtargetID2 > -1) if (canskill(sd)) if ((pc_checkskill(sd, TK_JUMPKICK) > 0)) {
+				// only use in tanking mode, if enemy is not already near!
+				if (targetdistance2>2)
+				if ((sd->state.autopilotmode == 1)) {
+					unit_skilluse_ifable(&sd->bl, foundtargetID2, TK_JUMPKICK, pc_checkskill(sd, TK_JUMPKICK));
+				}
 			}
 
 
@@ -7418,6 +7530,34 @@ TIMER_FUNC(unit_autopilot_timer)
 			if (canskill(sd)) if (pc_checkskill(sd, CH_CHAINCRUSH) > 0) if (sd->spiritball>1) {
 				if (sd->sc.data[SC_COMBO] && ((sd->sc.data[SC_COMBO]->val1 == MO_COMBOFINISH) || (sd->sc.data[SC_COMBO]->val1 == CH_TIGERFIST))) {
 					unit_skilluse_ifable(&sd->bl, SELF, CH_CHAINCRUSH, pc_checkskill(sd, CH_CHAINCRUSH));
+				}
+			}
+
+			// Tornado Kick
+			if (canskill(sd)) if (pc_checkskill(sd, TK_STORMKICK) > 0) {
+				if (sd->sc.data[SC_COMBO] && ((sd->sc.data[SC_COMBO]->val1 == TK_STORMKICK))) {
+					unit_skilluse_ifable(&sd->bl, SELF, TK_STORMKICK, pc_checkskill(sd, TK_STORMKICK));
+				}
+			}
+
+			// Heel drop
+			if (canskill(sd)) if (pc_checkskill(sd, TK_DOWNKICK) > 0) {
+				if (sd->sc.data[SC_COMBO] && ((sd->sc.data[SC_COMBO]->val1 == TK_DOWNKICK))) {
+					unit_skilluse_ifable(&sd->bl, SELF, TK_DOWNKICK, pc_checkskill(sd, TK_DOWNKICK));
+				}
+			}
+
+			// Roundhouse Kick
+			if (canskill(sd)) if (pc_checkskill(sd, TK_TURNKICK) > 0) {
+				if (sd->sc.data[SC_COMBO] && ((sd->sc.data[SC_COMBO]->val1 == TK_TURNKICK))) {
+					unit_skilluse_ifable(&sd->bl, SELF, TK_TURNKICK, pc_checkskill(sd, TK_TURNKICK));
+				}
+			}
+
+			// Roundhouse Kick
+			if (canskill(sd)) if (pc_checkskill(sd, TK_COUNTER) > 0) {
+				if (sd->sc.data[SC_COMBO] && ((sd->sc.data[SC_COMBO]->val1 == TK_COUNTER))) {
+					unit_skilluse_ifable(&sd->bl, SELF, TK_COUNTER, pc_checkskill(sd, TK_COUNTER));
 				}
 			}
 
