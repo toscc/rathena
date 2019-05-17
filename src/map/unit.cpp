@@ -623,13 +623,13 @@ TIMER_FUNC(unit_delay_walktobl_timer){
 
 
 // do unit_walktoxy if and only if not already going towards that generic area, otherwise keep current movement order
-int newwalk(struct block_list *bl, short x, short y, unsigned char flag)
+void newwalk(struct block_list *bl, short x, short y, unsigned char flag)
 {
 	struct unit_data* ud = NULL;
 	ud = unit_bl2ud(bl);
 
 	if (ud == NULL)
-		return 0;
+		return;
 
 	// We aren't yet walking or are walking to somewhere at least 3 tiles away from the intended destination, start a new walk
 	if ((abs(x - ud->to_x) > 2) || (abs(y - ud->to_y) > 2) || (ud->walktimer == INVALID_TIMER)) {
@@ -3576,17 +3576,35 @@ int isreachable(block_list * bl, va_list ap)
 	struct walkpath_data wpd1;
 
 	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
-	if (path_search(&wpd1, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS, AUTOPILOT_RANGE_CAP))
+	if (path_search(&wpd1, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, 0, CELL_CHKNOPASS, MAX_WALKPATH))
 	{
 		reachabletargets[nofreachabletargets] = bl->id;
 		reachabletargetspathlen[nofreachabletargets] = wpd1.path_len;
 		nofreachabletargets++;
+		return 1;
 	}
+	return 0;
+	}
+
+int isshootable(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd2;
+
+	struct mob_data *md;
+
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+
 	if (path_search_long(NULL, sd2->bl.m, sd2->bl.x, sd2->bl.y, bl->x, bl->y, CELL_CHKWALL, AUTOPILOT_RANGE_CAP)) {
 		shootabletargets[nofshootabletargets] = bl->id;
 		nofshootabletargets++;
+		return 1;
 	}
-	}
+	return 0;
+}
+
 
 bool isshootabletarget(int64 ID)
 {
@@ -3598,7 +3616,7 @@ bool isshootabletarget(int64 ID)
 
 bool isreachabletarget(int64 ID)
 {
-	for (int i = 0; i < nofshootabletargets; i++) {
+	for (int i = 0; i < nofreachabletargets; i++) {
 		if (reachabletargets[i] == ID) return true;
 	}
 	return false;
@@ -3606,7 +3624,7 @@ bool isreachabletarget(int64 ID)
 
 int reachabletargetpathlength(int64 ID)
 {
-	for (int i = 0; i < nofshootabletargets; i++) {
+	for (int i = 0; i < nofreachabletargets; i++) {
 		if (reachabletargets[i] == ID) return reachabletargetspathlen[i];
 	}
 	return 999;
@@ -3620,7 +3638,8 @@ int rcap(int range) {
 void getreachabletargets(struct map_session_data * sd)
 {
 	nofreachabletargets = 0; nofshootabletargets = 0;
-	map_foreachinrange(isreachable, &sd->bl, AUTOPILOT_RANGE_CAP, BL_MOB, sd);
+	map_foreachinrange(isreachable, &sd->bl, MAX_WALKPATH, BL_MOB, sd);
+	map_foreachinrange(isshootable, &sd->bl, AUTOPILOT_RANGE_CAP, BL_MOB, sd);
 }
 
 
@@ -3668,11 +3687,12 @@ int targetnearest(block_list * bl, va_list ap)
 	int dist= distance_bl(&sd2->bl, bl);
 	int dist2 = dist + 12;
 	if ((status_get_class_(bl) == CLASS_BOSS)) dist2 = dist2 - 12; // Always hit the boss in a crowd of nearby enemies
-	if (dist2 < targetdistanceb) if (isshootabletarget(bl->id)) {
-		 targetdistance = dist; targetdistanceb = dist2; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; 
+	if (dist2 < targetdistanceb) {
+		if (isshootabletarget(bl->id)) {
+			targetdistance = dist; targetdistanceb = dist2; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md;
+		}
 		return 1;
-	}
-	else return 0;
+	} else return 0;
 
 }
 
@@ -3955,6 +3975,7 @@ bool elemstrong(struct mob_data *md, int ele)
 	if (ele == ELE_NEUTRAL) {
 		return 0;
 	}
+	return 0;
 }
 
 
@@ -4033,11 +4054,11 @@ bool elemallowed(struct mob_data *md, int ele)
 
 	}
 	if (ele == ELE_NEUTRAL) {
-		if ((md->status.def_ele == ELE_GHOST) && (md->status.ele_lv >= 2)) return 1;
+		if ((md->status.def_ele == ELE_GHOST) && (md->status.ele_lv >= 2)) return 0;
 		return 1;
 
 	}
-
+	return 1;
 
 }
 
@@ -5344,7 +5365,7 @@ int homu_skilluse_ifable(struct block_list *src, int target_id, uint16 skill_id,
 	if (!hd)
 		return 0;
 
-	if (skill_get_sp(skill_id, skill_lv) > hd->battle_status.sp) return 0;
+	if (skill_get_sp(skill_id, skill_lv) >= hd->battle_status.sp) return 0;
 
 	if (skill_isNotOk_hom(hd, skill_id, skill_lv)) {
 		clif_emotion(&hd->bl, ET_THINK);
@@ -5366,7 +5387,7 @@ int homu_skilluse_ifable(struct block_list *src, int target_id, uint16 skill_id,
 	if (skill_lv > lv)
 		skill_lv = lv;
 	if (skill_lv)
-		return unit_skilluse_id(&hd->bl, target_id, skill_id, skill_lv);
+		return unit_skilluse_id(&hd->bl, target_id, skill_id, skill_lv); else return 0;
 }
 
 // Homunculus autopilot timer
@@ -5509,7 +5530,7 @@ TIMER_FUNC(unit_autopilot_homunculus_timer)
 			else
 			{
 				struct walkpath_data wpd1;
-				if (path_search(&wpd1, sd->bl.m, bl->x, bl->y, targetbl->x, targetbl->y, 0, CELL_CHKNOPASS, AUTOPILOT_RANGE_CAP))
+				if (path_search(&wpd1, sd->bl.m, bl->x, bl->y, targetbl->x, targetbl->y, 0, CELL_CHKNOPASS, MAX_WALKPATH))
 					newwalk(&sd->bl, bl->x + dirx[wpd1.path[0]], bl->y + diry[wpd1.path[0]], 8);
 				return 0;
 			}
@@ -7275,7 +7296,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		// No leader then closest to ourselves we can see
 		//if (leaderID == -1) {
 		if ((!p) || (leaderID == sd->bl.id)) {
-			map_foreachinrange(targetnearestwalkto, &sd->bl, AUTOPILOT_RANGE_CAP-2, BL_MOB, sd);
+			map_foreachinrange(targetnearestwalkto, &sd->bl, MAX_WALKPATH, BL_MOB, sd);
 		}
 		// but if leader exists, then still closest to us but in leader's range
 		// If leader does not exist, we are not leader, and we are in party, then leader is on another map. Do not attack things, follow them.
@@ -7509,7 +7530,7 @@ TIMER_FUNC(unit_autopilot_timer)
 				unit_attack(&sd->bl, foundtargetID, 1);
 			} else
 			{	struct walkpath_data wpd1;
-				if (path_search(&wpd1, sd->bl.m, bl->x, bl->y, targetbl->x, targetbl->y, 0, CELL_CHKNOPASS, AUTOPILOT_RANGE_CAP))
+				if (path_search(&wpd1, sd->bl.m, bl->x, bl->y, targetbl->x, targetbl->y, 0, CELL_CHKNOPASS, MAX_WALKPATH))
 					newwalk(&sd->bl, bl->x + dirx[wpd1.path[0]], bl->y + diry[wpd1.path[0]], 8);
 				return 0;
 			}
