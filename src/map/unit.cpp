@@ -5803,6 +5803,10 @@ TIMER_FUNC(unit_autopilot_timer)
 
 		}
 
+		bool havepriest = false;
+		if (p) for (i = 0; i < MAX_PARTY; i++) {
+			if (pc_checkskill(p->data[i].sd, ALL_RESURRECTION) >= 4) havepriest = true;
+		}
 		// Final Strike
 		// base damage = currenthp + ((atk * currenthp * skill level) / maxhp)
 		// final damage = base damage + ((mirror image count + 1) / 5 * base damage) - (edef + sdef)
@@ -5816,11 +5820,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			map_foreachinrange(finaltarget, &sd->bl, 12, BL_MOB, sd);
 			if (foundtargetID > -1) 
 			{
-				bool havepriest = false;
-				if (p) for (i = 0; i < MAX_PARTY; i++) {
-					if (pc_checkskill(p->data[i].sd, ALL_RESURRECTION) >= 4) havepriest=true;
-				}
-				if (havepriest) {
+					if (havepriest) {
 					// Ninja Aura to enable Mirror Image
 					if (pc_checkskill(sd, NJ_NEN) > 0)
 						if (pc_checkskill(sd, NJ_BUNSINJYUTSU) > 0)
@@ -6019,6 +6019,29 @@ TIMER_FUNC(unit_autopilot_timer)
 			if (!(sd->sc.data[SC_UTSUSEMI])) {
 				unit_skilluse_ifable(&sd->bl, SELF, NJ_UTSUSEMI, pc_checkskill(sd, NJ_UTSUSEMI));
 			}
+		}
+
+		// Star Gladiator Protections
+		if (pc_checkskill(sd, SG_SUN_COMFORT) > 0) {
+			i = SG_SUN_COMFORT - SG_SUN_COMFORT;
+			if ((sd->bl.m == sd->feel_map[i].m) || (sd->sc.data[SC_MIRACLE])) 
+				if (!(sd->sc.data[SC_SUN_COMFORT])) {
+					unit_skilluse_ifable(&sd->bl, SELF, SG_SUN_COMFORT, pc_checkskill(sd, SG_SUN_COMFORT));
+				}
+		}
+		if (pc_checkskill(sd, SG_MOON_COMFORT) > 0) {
+			i = SG_MOON_COMFORT - SG_SUN_COMFORT;
+			if ((sd->bl.m == sd->feel_map[i].m) || (sd->sc.data[SC_MIRACLE]))
+				if (!(sd->sc.data[SC_MOON_COMFORT])) {
+					unit_skilluse_ifable(&sd->bl, SELF, SG_MOON_COMFORT, pc_checkskill(sd, SG_MOON_COMFORT));
+				}
+		}
+		if (pc_checkskill(sd, SG_STAR_COMFORT) > 0) {
+			i = SG_STAR_COMFORT - SG_SUN_COMFORT;
+			if ((sd->bl.m == sd->feel_map[i].m) || (sd->sc.data[SC_MIRACLE]))
+				if (!(sd->sc.data[SC_STAR_COMFORT])) {
+					unit_skilluse_ifable(&sd->bl, SELF, SG_STAR_COMFORT, pc_checkskill(sd, SG_STAR_COMFORT));
+				}
 		}
 
 		// Tumbling
@@ -7333,101 +7356,135 @@ TIMER_FUNC(unit_autopilot_timer)
 					unit_skilluse_ifable(&sd->bl, foundtargetID2, WZ_JUPITEL, pc_checkskill(sd, WZ_JUPITEL));
 				}
 				// If we are under attack, we have to cast something faster...
-				if (canskill(sd)) if ((pc_checkskill(sd, HW_MAGICCRASHER) > 0) && (elemallowed(targetmd,sd->battle_status.rhw.ele))) {
-					unit_skilluse_ifable(&sd->bl, foundtargetID2, HW_MAGICCRASHER, pc_checkskill(sd, HW_MAGICCRASHER));
-				}
-				// Not everyone is a high wizard
-				if (!((targetmd->status.def_ele == ELE_HOLY) || (targetmd->status.def_ele < 4)))
-					if (canskill(sd)) if ((pc_checkskill(sd, MG_SOULSTRIKE) > 0)) {
-					unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_SOULSTRIKE, pc_checkskill(sd, MG_SOULSTRIKE));
-				}
+if (canskill(sd)) if ((pc_checkskill(sd, HW_MAGICCRASHER) > 0) && (elemallowed(targetmd, sd->battle_status.rhw.ele))) {
+	unit_skilluse_ifable(&sd->bl, foundtargetID2, HW_MAGICCRASHER, pc_checkskill(sd, HW_MAGICCRASHER));
+}
+// Not everyone is a high wizard
+if (!((targetmd->status.def_ele == ELE_HOLY) || (targetmd->status.def_ele < 4)))
+	if (canskill(sd)) if ((pc_checkskill(sd, MG_SOULSTRIKE) > 0)) {
+		unit_skilluse_ifable(&sd->bl, foundtargetID2, MG_SOULSTRIKE, pc_checkskill(sd, MG_SOULSTRIKE));
+	}
 			};
 
 			// Throw Shuriken
 			if (foundtargetRA > -1) if (canskill(sd)) if ((pc_checkskill(sd, NJ_SYURIKEN) > 0)) if (rangeddist <= 9) {
-					shurikenchange(sd, targetRAmd);
-					unit_skilluse_ifable(&sd->bl, foundtargetRA, NJ_SYURIKEN, pc_checkskill(sd, NJ_SYURIKEN));
-				}
-
-		// Do normal attack if ranged
-		if (foundtargetRA > -1) if ((sd->battle_status.rhw.range >= 5) && (sd->state.autopilotmode > 1) && (sd->battle_status.rhw.range >= rangeddist))
-			// If leader is running away, stop and follow them instead!
-			if (leaderdistance<12) {
-				if (sd->status.weapon == W_BOW) { arrowchange(sd, targetRAmd); }
-				ammochange2(sd, targetRAmd);
-				aspdpotion(sd);
-				clif_parse_ActionRequest_sub(sd, 7, foundtargetRA, gettick());
-		}
-
-	// Tanking mode is set
-	if (sd->state.autopilotmode == 1) 	{
-
-		/////////////////////////////////////////////////////////////////////
-		// Tanking mode skills that actually help to tank
-		/////////////////////////////////////////////////////////////////////
-		// Ninja Aura to enable Mirror Image
-		if (pc_checkskill(sd, NJ_NEN) > 0) 
-		if (pc_checkskill(sd, NJ_BUNSINJYUTSU) > 0)
-			if ((sd->special_state.no_castcancel) || (Dangerdistance > 900)) {
-				if (!(sd->sc.data[SC_NEN])) {
-					unit_skilluse_ifable(&sd->bl, SELF, NJ_NEN, pc_checkskill(sd, NJ_NEN));
-				}
+				shurikenchange(sd, targetRAmd);
+				unit_skilluse_ifable(&sd->bl, foundtargetRA, NJ_SYURIKEN, pc_checkskill(sd, NJ_SYURIKEN));
 			}
 
-		// Mirror Image
-		// Use this for tanking instead of cicada because no backwards movement.
-		// Interruptable though so need Phen or equipvalent while actually tanking a monster.
-		if (pc_checkskill(sd, NJ_BUNSINJYUTSU) > 0)
-			if (pc_search_inventory(sd, 7524) >= 0) // requires Shadow Orb
-				if ((sd->special_state.no_castcancel) || (Dangerdistance > 900)) {
-					if (!(sd->sc.data[SC_BUNSINJYUTSU])) {
-						unit_skilluse_ifable(&sd->bl, SELF, NJ_BUNSINJYUTSU, pc_checkskill(sd, NJ_BUNSINJYUTSU));
+			// Do normal attack if ranged
+			if (foundtargetRA > -1) if ((sd->battle_status.rhw.range >= 5) && (sd->state.autopilotmode > 1) && (sd->battle_status.rhw.range >= rangeddist))
+				// If leader is running away, stop and follow them instead!
+				if (leaderdistance < 12) {
+					if (sd->status.weapon == W_BOW) { arrowchange(sd, targetRAmd); }
+					ammochange2(sd, targetRAmd);
+					aspdpotion(sd);
+					clif_parse_ActionRequest_sub(sd, 7, foundtargetRA, gettick());
+				}
+
+			// Tanking mode is set
+			if (sd->state.autopilotmode == 1) {
+
+				/////////////////////////////////////////////////////////////////////
+				// Tanking mode skills that actually help to tank
+				/////////////////////////////////////////////////////////////////////
+				// Ninja Aura to enable Mirror Image
+				if (pc_checkskill(sd, NJ_NEN) > 0)
+					if (pc_checkskill(sd, NJ_BUNSINJYUTSU) > 0)
+						if ((sd->special_state.no_castcancel) || (Dangerdistance > 900)) {
+							if (!(sd->sc.data[SC_NEN])) {
+								unit_skilluse_ifable(&sd->bl, SELF, NJ_NEN, pc_checkskill(sd, NJ_NEN));
+							}
+						}
+
+				// Mirror Image
+				// Use this for tanking instead of cicada because no backwards movement.
+				// Interruptable though so need Phen or equipvalent while actually tanking a monster.
+				if (pc_checkskill(sd, NJ_BUNSINJYUTSU) > 0)
+					if (pc_search_inventory(sd, 7524) >= 0) // requires Shadow Orb
+						if ((sd->special_state.no_castcancel) || (Dangerdistance > 900)) {
+							if (!(sd->sc.data[SC_BUNSINJYUTSU])) {
+								unit_skilluse_ifable(&sd->bl, SELF, NJ_BUNSINJYUTSU, pc_checkskill(sd, NJ_BUNSINJYUTSU));
+							}
+						}
+				/////////////////////////////////////////////////////////////////////
+				// Skills that can be used while tanking only, for supporting others
+				/////////////////////////////////////////////////////////////////////
+				// Provoke
+				if (pc_checkskill(sd, SM_PROVOKE) > 0) {
+					resettargets();
+					map_foreachinrange(provokethis, &sd->bl, 9, BL_MOB, sd);
+					if (foundtargetID > -1) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID, SM_PROVOKE, pc_checkskill(sd, SM_PROVOKE));
 					}
 				}
-		/////////////////////////////////////////////////////////////////////
-		// Skills that can be used while tanking only, for supporting others
-		/////////////////////////////////////////////////////////////////////
-		// Provoke
-		if (pc_checkskill(sd, SM_PROVOKE) > 0) {
-			resettargets();
-			map_foreachinrange(provokethis, &sd->bl, 9, BL_MOB, sd);
-			if (foundtargetID > -1) {
-				unit_skilluse_ifable(&sd->bl, foundtargetID, SM_PROVOKE, pc_checkskill(sd, SM_PROVOKE));
-			}
-		}
-		// Throw Stone
-		if (pc_checkskill(sd, TF_THROWSTONE) > 0) {
-			resettargets();
-			map_foreachinrange(provokethis, &sd->bl, 9, BL_MOB, sd);
-			if (foundtargetID > -1) {
-				unit_skilluse_ifable(&sd->bl, foundtargetID, TF_THROWSTONE, pc_checkskill(sd, TF_THROWSTONE));
-			}
-		}
+				// Throw Stone
+				if (pc_checkskill(sd, TF_THROWSTONE) > 0) {
+					resettargets();
+					map_foreachinrange(provokethis, &sd->bl, 9, BL_MOB, sd);
+					if (foundtargetID > -1) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID, TF_THROWSTONE, pc_checkskill(sd, TF_THROWSTONE));
+					}
+				}
 
-		// Find nearest enemy
-		resettargets();
-		// No leader then closest to ourselves we can see
-		//if (leaderID == -1) {
-		if ((!p) || (leaderID == sd->bl.id)) {
-			map_foreachinrange(targetnearestwalkto, &sd->bl, MAX_WALKPATH, BL_MOB, sd);
-		}
-		// but if leader exists, then still closest to us but in leader's range
-		// If leader does not exist, we are not leader, and we are in party, then leader is on another map. Do not attack things, follow them.
-		else if (leaderID>-1) {
-			map_foreachinrange(targetnearestwalkto, leaderbl, AUTOPILOT_RANGE_CAP, BL_MOB, sd);
-			// have to walk too many tiles means the target is probably behind some wall. Don't try to engage it, even if maxpath allows.
-			// should be obsolete, now targeting checks for walking distance
-			if (targetdistance > 29) { foundtargetID = -1; }
-		}
-		
-		// attack nearest thing in range if available
-		if (foundtargetID>-1) {
-		//if ((foundtargetID > -1) && ((leaderdistance<=14) || (leaderID==-1))) {
+				// Find nearest enemy
+				resettargets();
+				// No leader then closest to ourselves we can see
+				//if (leaderID == -1) {
+				if ((!p) || (leaderID == sd->bl.id)) {
+					map_foreachinrange(targetnearestwalkto, &sd->bl, MAX_WALKPATH, BL_MOB, sd);
+				}
+				// but if leader exists, then still closest to us but in leader's range
+				// If leader does not exist, we are not leader, and we are in party, then leader is on another map. Do not attack things, follow them.
+				else if (leaderID > -1) {
+					map_foreachinrange(targetnearestwalkto, leaderbl, AUTOPILOT_RANGE_CAP, BL_MOB, sd);
+					// have to walk too many tiles means the target is probably behind some wall. Don't try to engage it, even if maxpath allows.
+					// should be obsolete, now targeting checks for walking distance
+					if (targetdistance > 29) { foundtargetID = -1; }
+				}
 
-			/////////////////////////////////////////////////////////////////////
-			// Skills that can be used while tanking only, on tanked enemy 
-			/////////////////////////////////////////////////////////////////////
-			// Sacrifice
+				// attack nearest thing in range if available
+				if (foundtargetID > -1) {
+					//if ((foundtargetID > -1) && ((leaderdistance<=14) || (leaderID==-1))) {
+
+						/////////////////////////////////////////////////////////////////////
+						// Skills that can be used while tanking only, on tanked enemy 
+						/////////////////////////////////////////////////////////////////////
+
+						//
+						// Star Gladiator Heat
+						//
+					bool isbosstarget = (status_get_class_(targetbl) == CLASS_BOSS);
+					if (canskill(sd)) if ((pc_checkskill(sd, SG_SUN_WARM) > 0)) {
+						i = SG_SUN_WARM - SG_SUN_WARM;
+						// Need Sun Map or Miracle
+						if ((sd->bl.m == sd->feel_map[i].m) || (sd->sc.data[SC_MIRACLE])) {
+							if ((!(sd->sc.data[SC_WARM]) && isbosstarget))
+								unit_skilluse_ifable(&sd->bl, SELF, SG_SUN_WARM, pc_checkskill(sd, SG_SUN_WARM));
+					}
+					}
+					if (canskill(sd)) if ((pc_checkskill(sd, SG_MOON_WARM) > 0)) {
+						i = SG_MOON_WARM - SG_SUN_WARM;
+						// Need Sun Map or Miracle
+						if ((sd->bl.m == sd->feel_map[i].m) || (sd->sc.data[SC_MIRACLE])) {
+							if ((!(sd->sc.data[SC_WARM]) && isbosstarget))
+								unit_skilluse_ifable(&sd->bl, SELF, SG_MOON_WARM, pc_checkskill(sd, SG_MOON_WARM));
+						}
+					}
+					if (canskill(sd)) if ((pc_checkskill(sd, SG_STAR_WARM) > 0)) {
+						i = SG_STAR_WARM - SG_SUN_WARM;
+						// Need Sun Map or Miracle
+						if ((sd->bl.m == sd->feel_map[i].m) || (sd->sc.data[SC_MIRACLE])) {
+							if ((!(sd->sc.data[SC_WARM]) && isbosstarget))
+								unit_skilluse_ifable(&sd->bl, SELF, SG_STAR_WARM, pc_checkskill(sd, SG_STAR_WARM));
+						}
+					}
+					if (canskill(sd)) if ((pc_checkskill(sd, SG_FUSION) > 0)) if (havepriest) {
+						if (!(sd->sc.data[SC_FUSION])) {
+							unit_skilluse_ifable(&sd->bl, SELF, SC_FUSION, pc_checkskill(sd, SC_FUSION));
+						}
+					}
+						// Sacrifice
 			// At least 90% HP and must be allowed to use neutral element on target
 			// Also don't do it if it won't actually kill at least one enemy
 			if (canskill(sd)) if ((pc_checkskill(sd, PA_SACRIFICE) > 0)) {
