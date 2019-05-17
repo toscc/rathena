@@ -23,7 +23,7 @@ prontera,169,179,6	script	Stylist#custom_stylist	122,{
 		LOOK_CLOTHES_COLOR,
 		LOOK_HAIR,
 		LOOK_HAIR_COLOR;
-	set .@s, select(" ~ Cloth color: ~ Hairstyle: ~ Hair color: ~ Dress Room");
+	set .@s, select(" ~ Cloth color: ~ Hairstyle: ~ Hair color: ~ Alternate Outfit");
 	if(.@s == 4){
 		callfunc "F_DRESSROOM";
 		close;
