@@ -4617,12 +4617,12 @@ void status_calc_regen(struct block_list *bl, struct status_data *status, struct
 		if( (skill=pc_checkskill(sd,MO_SPIRITSRECOVERY)) > 0 )
 			val += skill*4 + skill*status->max_hp/500;
 
-		if( (skill=pc_checkskill(sd,TK_HPTIME)) > 0 && sd->state.rest )
+		if( (skill=pc_checkskill(sd,TK_HPTIME)) > 0)
 			val += skill*30 + skill*status->max_hp/500;
 		sregen->hp = cap_value(val, 0, SHRT_MAX);
 
 		val = 0;
-		if( (skill=pc_checkskill(sd,TK_SPTIME)) > 0 && sd->state.rest ) {
+		if( (skill=pc_checkskill(sd,TK_SPTIME)) > 0) {
 			val += skill*3 + skill*status->max_sp/500;
 			if ((skill=pc_checkskill(sd,SL_KAINA)) > 0) // Power up Enjoyable Rest
 				val += (30+10*skill)*val/100;
