@@ -5429,6 +5429,7 @@ TIMER_FUNC(unit_autopilot_homunculus_timer)
 	if (hd->autopilotmode == 0) { return 0; }
 
 	if (hd->battle_status.hp == 0) { return 0; }
+	if (hd->homunculus.vaporize) { return 0; }
 
 	int party_id, type = 0, i = 0;
 	block_list * leaderbl;
@@ -6300,6 +6301,9 @@ TIMER_FUNC(unit_autopilot_timer)
 			}
 		}
 		// Maximize Power
+		// Note : I have changed this skill to not disable SP regen.
+		// If you did not, you should probably restrict usage to high SP levels and make the AI turn it off below a certain amount.
+		// Or disable entirely, don't think this effect is worth losing SP regen unless you have a way to refill it.
 		if (pc_checkskill(sd, BS_MAXIMIZE) > 0) {
 			if (!(sd->sc.data[SC_MAXIMIZEPOWER])) {
 				unit_skilluse_ifable(&sd->bl, SELF, BS_MAXIMIZE, pc_checkskill(sd, BS_MAXIMIZE));
@@ -6406,10 +6410,11 @@ TIMER_FUNC(unit_autopilot_timer)
 				}
 		}
 		if (canskill(sd)) if (Dangerdistance >= 900) if (pc_checkskill(sd, AM_CALLHOMUN) > 0)
-			if (sd->status.hom_id && sd->hd && sd->hd->homunculus.vaporize) {
-				if (!sd->hd) intif_homunculus_requestload(sd->status.account_id, sd->status.hom_id); else
+			if (sd->status.hom_id) {
+				if (!sd->hd) intif_homunculus_requestload(sd->status.account_id, sd->status.hom_id);
+				 else
 				{
-					if (status_isdead(&sd->hd->bl)) unit_skilluse_ifable(&sd->bl, SELF, AM_CALLHOMUN, pc_checkskill(sd, AM_CALLHOMUN));
+					if (sd->hd && sd->hd->homunculus.vaporize) unit_skilluse_ifable(&sd->bl, SELF, AM_CALLHOMUN, pc_checkskill(sd, AM_CALLHOMUN));
 				}
 			}
 
