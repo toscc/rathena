@@ -4266,6 +4266,59 @@ int targetpneuma(block_list * bl, va_list ap)
 	targetbl = tgtbl;
 	return 0;
 }
+
+int64 targetsoullink;
+
+int targetlinks(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
+	struct map_session_data *sd2;
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+
+	if (!ispartymember(sd)) return 0;
+	if (sd->sc.data[SC_SPIRIT]) return 0; // Already has link
+
+	targetsoullink = -1;
+	if (pc_checkskill(sd2, SL_ALCHEMIST) > 0) if ((sd->class_ & MAPID_UPPERMASK) == MAPID_ALCHEMIST)
+		targetsoullink = SL_ALCHEMIST;
+	if (pc_checkskill(sd2, SL_MONK) > 0) if ((sd->class_ & MAPID_UPPERMASK) == MAPID_MONK)
+		targetsoullink = SL_MONK;
+	if (pc_checkskill(sd2, SL_STAR) > 0) if ((sd->class_ & MAPID_UPPERMASK) == MAPID_STAR_GLADIATOR)
+		targetsoullink = SL_STAR;
+	if (pc_checkskill(sd2, SL_SAGE) > 0) if ((sd->class_ & MAPID_UPPERMASK) == MAPID_SAGE)
+		targetsoullink = SL_SAGE;
+	if (pc_checkskill(sd2, SL_CRUSADER) > 0) if ((sd->class_ & MAPID_UPPERMASK) == MAPID_CRUSADER)
+		targetsoullink = SL_CRUSADER;
+	if (pc_checkskill(sd2, SL_SUPERNOVICE) > 0) if ((sd->class_ & MAPID_UPPERMASK) == MAPID_SUPER_NOVICE)
+		targetsoullink = SL_SUPERNOVICE;
+	if (pc_checkskill(sd2, SL_KNIGHT) > 0) if ((sd->class_ & MAPID_UPPERMASK) == MAPID_KNIGHT)
+		targetsoullink = SL_KNIGHT;
+	if (pc_checkskill(sd2, SL_WIZARD) > 0) if ((sd->class_ & MAPID_UPPERMASK) == MAPID_WIZARD)
+		targetsoullink = SL_WIZARD;
+	if (pc_checkskill(sd2, SL_PRIEST) > 0) if ((sd->class_ & MAPID_UPPERMASK) == MAPID_PRIEST)
+		targetsoullink = SL_PRIEST;
+	if (pc_checkskill(sd2, SL_BARDDANCER) > 0) if ((sd->class_ & MAPID_UPPERMASK) == MAPID_BARDDANCER)
+		targetsoullink = SL_BARDDANCER;
+	if (pc_checkskill(sd2, SL_ROGUE) > 0) if ((sd->class_ & MAPID_UPPERMASK) == MAPID_ROGUE)
+		targetsoullink = SL_ROGUE;
+	if (pc_checkskill(sd2, SL_ASSASIN) > 0) if ((sd->class_ & MAPID_UPPERMASK) == MAPID_ASSASSIN)
+		targetsoullink = SL_ASSASIN;
+	if (pc_checkskill(sd2, SL_BLACKSMITH) > 0) if ((sd->class_ & MAPID_UPPERMASK) == MAPID_BLACKSMITH)
+		targetsoullink = SL_BLACKSMITH;
+	if (pc_checkskill(sd2, SL_HUNTER) > 0) if ((sd->class_ & MAPID_UPPERMASK) == MAPID_HUNTER)
+		targetsoullink = SL_HUNTER;
+	if (pc_checkskill(sd2, SL_SOULLINKER) > 0) if ((sd->class_ & MAPID_UPPERMASK) == MAPID_SOUL_LINKER)
+		targetsoullink = SL_SOULLINKER;
+
+	if (targetsoullink > 0) {
+		targetbl = bl; foundtargetID = sd->bl.id;
+		return 1;
+	}
+
+	return 0;
+}
+
 int targetincagi(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
@@ -5305,6 +5358,17 @@ void aspdpotion(struct map_session_data *sd)
 
 }
 
+// used by Berserk Pitcher
+int targetberserkpotion(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
+	if (sd->status.base_level >= 85) if (!sd->sc.data[SC_ASPDPOTION2]) { targetbl = bl; foundtargetID = sd->bl.id; return 1; };
+	return 0;
+}
+
+
 bool hasgun(struct map_session_data *sd)
 {
 	if (sd->status.weapon == W_REVOLVER) { return true; }
@@ -6052,7 +6116,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 
 		// Taekwon Stances
-		if (sd->class_ != MAPID_SOUL_LINKER) {
+		if ((sd->class_ & MAPID_UPPERMASK) != MAPID_SOUL_LINKER) {
 			if (pc_checkskill(sd, TK_READYSTORM) > 0) {
 				if (!(sd->sc.data[SC_READYSTORM]))
 				{
@@ -6149,6 +6213,24 @@ TIMER_FUNC(unit_autopilot_timer)
 				unit_skilluse_ifable(&sd->bl, foundtargetID, AL_BLESSING, pc_checkskill(sd, AL_BLESSING));
 			}
 		}
+		/// Berserk Pitcher
+		if (canskill(sd)) if (pc_checkskill(sd, AM_BERSERKPITCHER) > 0) if (pc_inventory_count(sd, 657)>=2) {
+			resettargets();
+			map_foreachinrange(targetberserkpotion, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, AM_BERSERKPITCHER, pc_checkskill(sd, AM_BERSERKPITCHER));
+			}
+		}
+		/// Soul Link
+		if (canskill(sd)) if ((sd->class_ & MAPID_UPPERMASK)== MAPID_SOUL_LINKER) {
+			resettargets();
+			map_foreachinrange(targetlinks, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, targetsoullink, pc_checkskill(sd, targetsoullink));
+			}
+		}
+
+
 		/// Aspersio
 		if (canskill(sd)) if (pc_checkskill(sd, PR_ASPERSIO)>0) if (pc_search_inventory(sd, ITEMID_HOLY_WATER)>=0) {
 			resettargets();
@@ -7174,7 +7256,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			}
 
 			// Flying Kick
-			if (sd->class_ != MAPID_SOUL_LINKER) if (foundtargetID2 > -1) if (canskill(sd)) if ((pc_checkskill(sd, TK_JUMPKICK) > 0)) {
+			if ((sd->class_ & MAPID_UPPERMASK)!= MAPID_SOUL_LINKER) if (foundtargetID2 > -1) if (canskill(sd)) if ((pc_checkskill(sd, TK_JUMPKICK) > 0)) {
 				// only use in tanking mode, if enemy is not already near!
 				if (targetdistance2>2)
 				if ((sd->state.autopilotmode == 1)) {
