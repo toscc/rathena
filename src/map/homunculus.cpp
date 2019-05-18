@@ -1048,6 +1048,8 @@ void hom_alloc(struct map_session_data *sd, struct s_homunculus *hom)
 
 	hd->hungry_timer = INVALID_TIMER;
 	hd->masterteleport_timer = INVALID_TIMER;
+	add_timer_interval(gettick() + 100, unit_autopilot_homunculus_timer, hd->bl.id, 0, 100);
+
 }
 
 /**
@@ -1060,7 +1062,6 @@ void hom_init_timers(struct homun_data * hd)
 		hd->hungry_timer = add_timer(gettick()+hd->homunculusDB->hungryDelay,hom_hungry,hd->master->bl.id,0);
 	hd->regen.state.block = 0; //Restore HP/SP block.
 	hd->masterteleport_timer = INVALID_TIMER;
-	add_timer_interval(gettick() + 100, unit_autopilot_homunculus_timer, hd->bl.id, 0, 100);
 }
 
 /**
