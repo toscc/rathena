@@ -4269,6 +4269,7 @@ int targetlinks(block_list * bl, va_list ap)
 
 	if (!ispartymember(sd)) return 0;
 	if (sd->sc.data[SC_SPIRIT]) return 0; // Already has link
+	if (sd->bl.id == sd2->bl.id) return 0; // Can't link self
 
 	targetsoullink = -1;
 	if (pc_checkskill(sd2, SL_ALCHEMIST) > 0) if ((sd->class_ & MAPID_UPPERMASK) == MAPID_ALCHEMIST)
@@ -4331,6 +4332,19 @@ int targetbless(block_list * bl, va_list ap)
 	return 0;
 }
 
+int targetkaahi(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd2;
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
+	if (((sd->class_ & MAPID_UPPERMASK) != MAPID_SOUL_LINKER) && (!sd2->sc.data[SC_SPIRIT])) return 0;  // Must be linker or linked
+	if (!sd->sc.data[SC_KAAHI]) { targetbl = bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
 int targetangelus(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
@@ -4367,7 +4381,8 @@ int targetadrenaline2(block_list * bl, va_list ap)
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
 	if (!ispartymember(sd)) return 0;
-	if (!sd->sc.data[SC_ADRENALINE2]) { targetbl = bl; foundtargetID = sd->bl.id; };
+	if (sd->status.weapon == W_BOW) return 0;
+	if ((!sd->sc.data[SC_ADRENALINE]) && (!sd->sc.data[SC_ADRENALINE2])) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
 }
@@ -6142,7 +6157,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		/// Advanced Adrenaline Rush
 		if (canskill(sd)) if (pc_checkskill(sd, BS_ADRENALINE2)>0) {
 			resettargets();
-			map_foreachinrange(targetadrenaline, &sd->bl, 9, BL_PC, sd);
+			map_foreachinrange(targetadrenaline2, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, SELF, BS_ADRENALINE2, pc_checkskill(sd, BS_ADRENALINE2));
 			}
@@ -6211,6 +6226,14 @@ TIMER_FUNC(unit_autopilot_timer)
 			map_foreachinrange(targetlinks, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, targetsoullink, pc_checkskill(sd, targetsoullink));
+			}
+		}
+		/// Kaahi
+		if (canskill(sd)) if (pc_checkskill(sd, SL_KAAHI) > 0) {
+			resettargets();
+			map_foreachinrange(targetkaahi, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, SL_KAAHI, pc_checkskill(sd, SL_KAAHI));
 			}
 		}
 
@@ -7551,7 +7574,7 @@ if (!((targetmd->status.def_ele == ELE_HOLY) || (targetmd->status.def_ele < 4)))
 					}
 					if (canskill(sd)) if ((pc_checkskill(sd, SG_FUSION) > 0)) if (havepriest) {
 						if (!(sd->sc.data[SC_FUSION])) {
-							unit_skilluse_ifable(&sd->bl, SELF, SC_FUSION, pc_checkskill(sd, SC_FUSION));
+							unit_skilluse_ifable(&sd->bl, SELF, SG_FUSION, pc_checkskill(sd, SG_FUSION));
 						}
 					}
 						// Sacrifice
