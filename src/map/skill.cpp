@@ -1245,6 +1245,17 @@ int skill_additional_effect(struct block_list* src, struct block_list *bl, uint1
 						else
 							clif_skill_fail(sd,RG_SNATCHER,USESKILL_FAIL_LEVEL,0);
 					}
+					// Rogue Spirit enables Gank to steal coin
+					if (sc && sc->data[SC_SPIRIT] && sc->data[SC_SPIRIT]->val2 == SL_ROGUE)
+					if (dstmd && sd->status.weapon != W_BOW &&
+						(skill = pc_checkskill(sd, RG_SNATCHER)) > 0 &&
+						(skill * 15 + 55) + pc_checkskill(sd, RG_STEALCOIN) * 10 > rnd() % 1000) {
+						if (pc_steal_coin(sd, bl))
+							clif_skill_nodamage(src, bl, RG_STEALCOIN, skill, 1);
+						else
+							clif_skill_fail(sd, RG_SNATCHER, USESKILL_FAIL_LEVEL, 0);
+					}
+
 					if(sc && sc->data[SC_PYROCLASTIC] && ((rnd()%100)<=sc->data[SC_PYROCLASTIC]->val3) )
 						skill_castend_pos2(src, bl->x, bl->y, BS_HAMMERFALL,sc->data[SC_PYROCLASTIC]->val1, tick, 0);
 				}
