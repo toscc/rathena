@@ -9534,6 +9534,8 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 				break;
 			case SC_JOINTBEAT:
 				val2 |= sce->val2; // Stackable ailments
+			case SC_SEVENWIND:
+				break;
 			default:
 				if(sce->val1 > val1)
 					return 1; // Return true to not mess up skill animations. [Skotlex]
