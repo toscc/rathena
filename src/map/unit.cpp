@@ -3872,6 +3872,33 @@ int targetturnundead(block_list * bl, va_list ap)
 	return 1;
 }
 
+int targeteska(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd2;
+
+	struct mob_data *md;
+
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+
+	// MDEF has to be above 75 to care. Reduced ASPD and movement is nice but if it increases MDEf vs a magic reliant party that's bad. If it lowers it that's awesome though!
+	if (md->status.mdef2<=90) return 0;
+	// Already affected, skip!
+	if (md->sc.data[SC_SKA]) return 0;
+	// Must be a significant enough monster to care
+	if (md->status.max_hp < sd2->battle_status.matk_min * 40) return 0;
+
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+
+	// target the highest mdeF!
+	int dist = md->status.mdef2;
+	if ((dist > targetdistance) && (isreachabletarget(bl->id))) { targetdistance = dist; foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
+
+	return 1;
+}
+
 int targetdispel(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd2;
@@ -5867,8 +5894,13 @@ TIMER_FUNC(unit_autopilot_timer)
 		}
 
 		bool havepriest = false;
-		if (p) for (i = 0; i < MAX_PARTY; i++) {
+		int64 partymagicratio = 0;
+		if (p) for (i = 0; i < MAX_PARTY; i++) if (p->data[i].sd) {
 			if (pc_checkskill(p->data[i].sd, ALL_RESURRECTION) >= 4) havepriest = true;
+			if (p->data[i].sd->state.autopilotmode != 3) { // add matk, subtract atk. Might not be exact but should give a rough impression on which type of damage the party relies on most. 
+				partymagicratio += p->data[i].sd->battle_status.matk_min
+					- p->data[i].sd->battle_status.rhw.atk - p->data[i].sd->battle_status.batk;
+			}
 		}
 		// Final Strike
 		// base damage = currenthp + ((atk * currenthp * skill level) / maxhp)
@@ -7074,6 +7106,18 @@ TIMER_FUNC(unit_autopilot_timer)
 				unit_skilluse_ifable(&sd->bl, foundtargetID, PR_TURNUNDEAD, pc_checkskill(sd, PR_TURNUNDEAD));
 			}
 		}
+
+		// Eska
+		// Don't use if party relies on physical atk more than magical
+		if (canskill(sd)) if (pc_checkskill(sd, SL_SKA) > 0) if (partymagicratio>0) {
+			resettargets(); targetdistance = 0;
+			map_foreachinrange(targeteska, &sd->bl, 9, BL_MOB, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, SL_SKA, pc_checkskill(sd, SL_SKA));
+			}
+		}
+		
+
 
 		// get target for single target spells only once - pick best skill to use on nearest enemy, not pick best enemy for best skill.
 		// probably could do better but targeting too many times causes lags as it includes finding paths.
