@@ -4346,6 +4346,9 @@ int targetlinks(block_list * bl, va_list ap)
 		targetsoullink = SL_HUNTER;
 	if (pc_checkskill(sd2, SL_SOULLINKER) > 0) if ((sd->class_ & MAPID_UPPERMASK) == MAPID_SOUL_LINKER)
 		targetsoullink = SL_SOULLINKER;
+	if (pc_checkskill(sd2, SL_HIGH) > 0) if ((sd && (sd->class_&JOBL_UPPER) && !(sd->class_&JOBL_2) && sd->status.base_level < 70)) 
+		targetsoullink = SL_HIGH;
+
 
 	if (targetsoullink > 0) {
 		targetbl = bl; foundtargetID = sd->bl.id;
@@ -4385,6 +4388,32 @@ int targetkaahi(block_list * bl, va_list ap)
 	if (!ispartymember(sd)) return 0;
 	if (((sd->class_ & MAPID_UPPERMASK) != MAPID_SOUL_LINKER) && (!sd2->sc.data[SC_SPIRIT])) return 0;  // Must be linker or linked
 	if (!sd->sc.data[SC_KAAHI]) { targetbl = bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
+int targetkaizel(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd2;
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
+	if (((sd->class_ & MAPID_UPPERMASK) != MAPID_SOUL_LINKER) && (!sd2->sc.data[SC_SPIRIT])) return 0;  // Must be linker or linked
+	if (!sd->sc.data[SC_KAIZEL]) { targetbl = bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
+int targetkaupe(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd2;
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
+	if (((sd->class_ & MAPID_UPPERMASK) != MAPID_SOUL_LINKER) && (!sd2->sc.data[SC_SPIRIT])) return 0;  // Must be linker or linked
+	if (!sd->sc.data[SC_KAUPE]) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
 }
@@ -5912,7 +5941,7 @@ TIMER_FUNC(unit_autopilot_timer)
 
 		bool havepriest = false;
 		int64 partymagicratio = 0;
-		if (p) for (i = 0; i < MAX_PARTY; i++) if (p->data[i].sd) {
+		if (p) for (i = 0; i < MAX_PARTY; i++) if (p->data[i].sd) if (!status_isdead(&p->data[i].sd->bl)) {
 			if (pc_checkskill(p->data[i].sd, ALL_RESURRECTION) >= 4) havepriest = true;
 			if (p->data[i].sd->state.autopilotmode != 3) { // add matk, subtract atk. Might not be exact but should give a rough impression on which type of damage the party relies on most. 
 				partymagicratio += p->data[i].sd->battle_status.matk_min
@@ -6277,12 +6306,31 @@ TIMER_FUNC(unit_autopilot_timer)
 				unit_skilluse_ifable(&sd->bl, foundtargetID, targetsoullink, pc_checkskill(sd, targetsoullink));
 			}
 		}
+
+		/// Kaizel
+		if (canskill(sd)) if (pc_checkskill(sd, SL_KAIZEL) > 0) {
+			resettargets();
+			map_foreachinrange(targetkaizel, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, SL_KAIZEL, pc_checkskill(sd, SL_KAIZEL));
+			}
+		}
+
 		/// Kaahi
 		if (canskill(sd)) if (pc_checkskill(sd, SL_KAAHI) > 0) {
 			resettargets();
 			map_foreachinrange(targetkaahi, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, SL_KAAHI, pc_checkskill(sd, SL_KAAHI));
+			}
+		}
+
+		/// Kaupe
+		if (canskill(sd)) if (pc_checkskill(sd, SL_KAUPE) > 0) {
+			resettargets();
+			map_foreachinrange(targetkaupe, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, SL_KAUPE, pc_checkskill(sd, SL_KAUPE));
 			}
 		}
 
@@ -7133,8 +7181,6 @@ TIMER_FUNC(unit_autopilot_timer)
 				unit_skilluse_ifable(&sd->bl, foundtargetID, SL_SKA, pc_checkskill(sd, SL_SKA));
 			}
 		}
-		
-
 
 		// get target for single target spells only once - pick best skill to use on nearest enemy, not pick best enemy for best skill.
 		// probably could do better but targeting too many times causes lags as it includes finding paths.
@@ -7149,7 +7195,31 @@ TIMER_FUNC(unit_autopilot_timer)
 		map_foreachinrange(targetnearest, &sd->bl, 9, BL_MOB, sd);
 		int foundtargetID2 = foundtargetID;
 		int targetdistance2 = targetdistance;
-			// Jupitel Thunder on vulnerable enemy
+
+		// Estin, Estun, Esma on vulnerable enemy
+		int windelem = 0;
+		if (sd->sc.data[SC_SEVENWIND]) windelem= skill_get_ele(TK_SEVENWIND, sd->sc.data[SC_SEVENWIND]->val1);
+		if (foundtargetID2 > -1) if (canskill(sd))
+			if (elemstrong(targetmd, windelem)) {
+
+				if (sd->sc.data[SC_SMA]) if (pc_checkskill(sd, SL_SMA) > 0) {
+					if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, SL_SMA, pc_checkskill(sd, SL_SMA));
+					}
+				}
+				if (pc_checkskill(sd, SL_STIN) > 0) if (targetmd->status.size == SZ_SMALL) {
+					if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, SL_STIN, pc_checkskill(sd, SL_STIN));
+					}
+				}
+				if (pc_checkskill(sd, SL_STUN) > 0) {
+					if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, SL_STUN, pc_checkskill(sd, SL_STUN));
+					}
+				}
+			}
+
+		// Jupitel Thunder on vulnerable enemy
 		if (foundtargetID2 > -1) if (canskill(sd)) if (pc_checkskill(sd, WZ_JUPITEL) > 0) {
 				if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
 					if (elemstrong(targetmd, skill_get_ele(WZ_JUPITEL, pc_checkskill(sd, WZ_JUPITEL)))) {
@@ -7374,6 +7444,29 @@ TIMER_FUNC(unit_autopilot_timer)
 						unit_skilluse_ifable(&sd->bl, foundtargetRA, LK_SPIRALPIERCE, pc_checkskill(sd, LK_SPIRALPIERCE));
 					}
 			}
+
+			// Estin, Estun, Esma
+			windelem = 0;
+			if (sd->sc.data[SC_SEVENWIND]) windelem = skill_get_ele(TK_SEVENWIND, sd->sc.data[SC_SEVENWIND]->val1);
+			if (foundtargetID2 > -1) if (canskill(sd))
+				if (elemallowed(targetmd, windelem)) {
+
+					if (sd->sc.data[SC_SMA]) if (pc_checkskill(sd, SL_SMA) > 0) {
+						if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
+							unit_skilluse_ifable(&sd->bl, foundtargetID2, SL_SMA, pc_checkskill(sd, SL_SMA));
+						}
+					}
+					if (pc_checkskill(sd, SL_STIN) > 0) if (targetmd->status.size == SZ_SMALL) {
+						if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
+							unit_skilluse_ifable(&sd->bl, foundtargetID2, SL_STIN, pc_checkskill(sd, SL_STIN));
+						}
+					}
+					if (pc_checkskill(sd, SL_STUN) > 0) {
+						if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
+							unit_skilluse_ifable(&sd->bl, foundtargetID2, SL_STUN, pc_checkskill(sd, SL_STUN));
+						}
+					}
+				}
 
 			// Jupitel Thunder
 			if (foundtargetID2 > -1) if (canskill(sd)) if ((pc_checkskill(sd, WZ_JUPITEL) > 0)) {
