@@ -2836,7 +2836,7 @@ static int skill_magic_reflect(struct block_list* src, struct block_list* bl, in
 		return 0;
 
 	// Kaite reflection - Does not bypass Boss check
-	if( sc->data[SC_KAITE] && (src->type == BL_PC || status_get_lv(src) <= 80)
+	if( sc->data[SC_KAITE] && (src->type == BL_PC)
 #ifdef RENEWAL
 		&& type // Does not reflect AoE
 #endif
