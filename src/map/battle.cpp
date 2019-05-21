@@ -4684,7 +4684,7 @@ static void battle_calc_defense_reduction(struct Damage* wd, struct block_list *
 
 		i = min(i,100); //cap it to 100 for 0 def min
 		def1 = (def1*(100-i))/100;
-		def2 = (def2*(100-i))/100;
+		//def2 = (def2*(100-i))/100;
 	}
 
 	if (tsc) {
