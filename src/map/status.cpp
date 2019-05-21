@@ -6924,9 +6924,9 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
 
 		// !FIXME: official items use a single bonus for this [ultramage]
 		if( sc->data[SC_SPEEDUP0] ) // Temporary item-based speedup
-			val = max( val, sc->data[SC_SPEEDUP0]->val1 );
+			val += sc->data[SC_SPEEDUP0]->val1 ;
 		if( sd && sd->bonus.speed_rate + sd->bonus.speed_add_rate < 0 ) // Permanent item-based speedup
-			val = max( val, -(sd->bonus.speed_rate + sd->bonus.speed_add_rate) );
+			val += -(sd->bonus.speed_rate + sd->bonus.speed_add_rate);
 
 		speed_rate -= val;
 
