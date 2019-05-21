@@ -4241,6 +4241,19 @@ int targetlexdivina(block_list * bl, va_list ap)
 	return 0;
 }
 
+int epiclesispriority(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd2;
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 4;
+	int abc = 0;
+	if ((sd->battle_status.hp < sd->battle_status.max_hp*0.55)) abc++;
+	if ((sd->battle_status.sp < sd->battle_status.max_sp*0.55)) abc++;
+	return abc;
+
+}
+
 
 int targethealing(block_list * bl, va_list ap)
 {
@@ -4264,8 +4277,9 @@ int targethealing(block_list * bl, va_list ap)
 			targetdistance = 100 * sd->battle_status.hp / sd->battle_status.max_hp;
 			targetbl = bl; foundtargetID = sd->bl.id;
 		}
+		return 1;
 	}
-	return 1;
+	return 0;
 }
 
 int targetpneuma(block_list * bl, va_list ap)
@@ -4355,18 +4369,30 @@ int targetincagi(block_list * bl, va_list ap)
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
 	if (!ispartymember(sd)) return 0;
-	if (!sd->sc.data[SC_INCREASEAGI]) { targetbl = bl; foundtargetID = sd->bl.id; };
+	if (!sd->sc.data[SC_INCREASEAGI]) { targetbl = bl; foundtargetID = sd->bl.id; return 1; };
 
 	return 0;
 }
+
+int targetexpiatio(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
+	if (sd->state.autopilotmode == 3) return 0;
+	if (!sd->sc.data[SC_EXPIATIO]) { targetbl = bl; foundtargetID = sd->bl.id; return 1; };
+
+	return 0;
+}
+
 
 int targetbless(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
 	if (!ispartymember(sd)) return 0;
-	if (!sd->sc.data[SC_BLESSING]) { targetbl = bl; foundtargetID = sd->bl.id; };
-	if (sd->sc.data[SC_CURSE]) { targetbl = bl; foundtargetID = sd->bl.id; };
+	if (!sd->sc.data[SC_BLESSING]) { targetbl = bl; foundtargetID = sd->bl.id; return 1; };
+	if (sd->sc.data[SC_CURSE]) { targetbl = bl; foundtargetID = sd->bl.id; return 1; };
 
 	return 0;
 }
@@ -4482,12 +4508,54 @@ int targetmagnificat(block_list * bl, va_list ap)
 	return 0;
 }
 
+int targetrenovatio(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
+	if (!sd->sc.data[SC_RENOVATIO]) { targetbl = bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
 int targetgloria(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
 	if (!ispartymember(sd)) return 0;
 	if (!sd->sc.data[SC_GLORIA]) { targetbl = bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
+int targetlauda1(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
+	if (!sd->sc.data[SC_LAUDAAGNUS]) { targetbl = bl; foundtargetID = sd->bl.id; return 1; };
+	if (sd->sc.data[SC_LAUDAAGNUS]) if (sd->sc.data[SC_LAUDAAGNUS]->timer<=2000) { targetbl = bl; foundtargetID = sd->bl.id; return 1; };
+	if (sd->sc.data[SC_FREEZE]) { targetbl = bl; foundtargetID = sd->bl.id;  return 1;	};
+	if (sd->sc.data[SC_FREEZING]) { targetbl = bl; foundtargetID = sd->bl.id;  return 1; };
+	if (sd->sc.data[SC_STONE]) { targetbl = bl; foundtargetID = sd->bl.id;  return 1;	};
+	if (sd->sc.data[SC_BURNING]) { targetbl = bl; foundtargetID = sd->bl.id;  return 1; };
+	if (sd->sc.data[SC_CRYSTALIZE]) { targetbl = bl; foundtargetID = sd->bl.id;  return 1; };
+
+	return 0;
+}
+
+int targetlauda2(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
+	if (!sd->sc.data[SC_LAUDARAMUS]) { targetbl = bl; foundtargetID = sd->bl.id; return 1; };
+	if (sd->sc.data[SC_STUN]) { targetbl = bl; foundtargetID = sd->bl.id;  return 1; };
+	if (sd->sc.data[SC_SLEEP]) { targetbl = bl; foundtargetID = sd->bl.id;  return 1; };
+	if (sd->sc.data[SC_SILENCE]) { targetbl = bl; foundtargetID = sd->bl.id;  return 1; };
+	if (sd->sc.data[SC_DEEPSLEEP]) { targetbl = bl; foundtargetID = sd->bl.id;  return 1; };
+	if (sd->sc.data[SC_FEAR]) { targetbl = bl; foundtargetID = sd->bl.id;  return 1; };
+
 
 	return 0;
 }
@@ -4507,7 +4575,16 @@ int targetkyrie(block_list * bl, va_list ap)
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
 	if (!ispartymember(sd)) return 0;
-	if ((!sd->sc.data[SC_KYRIE]) && (!sd->sc.data[SC_ASSUMPTIO])) { targetbl = bl; foundtargetID = sd->bl.id; };
+	if ((!sd->sc.data[SC_KYRIE]) && (!sd->sc.data[SC_ASSUMPTIO])) { targetbl = bl; foundtargetID = sd->bl.id; return 1; };
+	return 0;
+}
+
+int targetsacrament(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
+	if ((!sd->sc.data[SC_SECRAMENT])) { targetbl = bl; foundtargetID = sd->bl.id; return 1; };
 	return 0;
 }
 
@@ -4545,6 +4622,7 @@ int targetmanus(block_list * bl, va_list ap)
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
 	if (!ispartymember(sd)) return 0;
+	if (sd->state.autopilotmode == 3) return 0;
 	if ((!sd->sc.data[SC_IMPOSITIO]) && ((sd->battle_status.batk>sd->status.base_level) || (sd->battle_status.batk>120))) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;
@@ -5195,6 +5273,14 @@ void recoversp(map_session_data *sd, int goal)
 	if (sd->sc.data[SC_EXTREMITYFIST2]) return;
 	if (sd->sc.data[SC_NORECOVER_STATE]) return;
 
+	int16 index = -1;
+
+	// Ancilla is special, always use it even if not set to use sp items
+	if ((index = pc_search_inventory(sd,12333)) >= 0)
+		if ((sd->battle_status.sp < (goal*sd->battle_status.max_sp) / 100)
+			|| (sd->battle_status.sp < (25*sd->battle_status.max_sp) / 100))
+		pc_useitem(sd, index);
+
 	if (sd->battle_status.sp <  (goal*sd->battle_status.max_sp) / 100) {
 		//ShowError("Need to heal");
 
@@ -5211,7 +5297,7 @@ void recoversp(map_session_data *sd, int goal)
 
 		};
 
-		int16 index = -1;
+		index = -1;
 		int i;
 
 		for (i = 0; i < ARRAYLENGTH(spotions); i++) {
@@ -5382,6 +5468,20 @@ void skillwhenidle(struct map_session_data *sd) {
 		}
 	}
 
+	// Duple Light
+	if (pc_checkskill(sd, AB_DUPLELIGHT) > 0) if (sd->state.autopilotmode == 1) {
+		if (!(sd->sc.data[SC_DUPLELIGHT])) {
+			unit_skilluse_ifable(&sd->bl, SELF, AB_DUPLELIGHT, pc_checkskill(sd, AB_DUPLELIGHT));
+		}
+	}
+
+	// Ancilla - create when high on sp and idle
+	if (pc_checkskill(sd, AB_ANCILLA) > 0) 
+		if (pc_inventory_count(sd, ITEMID_BLUE_GEMSTONE) >= 12)
+		if (pc_inventory_count(sd, 12333) <3)
+			if (sd->battle_status.sp >= 0.9*sd->battle_status.max_sp)
+				unit_skilluse_ifable(&sd->bl, SELF, AB_ANCILLA, pc_checkskill(sd, AB_ANCILLA));
+	
 	// Turn off Gatling Fever if stopped fighting
 	if (pc_checkskill(sd, GS_GATLINGFEVER) > 0) if (sd->sc.data[SC_GATLINGFEVER]) unit_skilluse_ifable(&sd->bl, SELF, GS_GATLINGFEVER, pc_checkskill(sd, GS_GATLINGFEVER));
 
@@ -6059,6 +6159,29 @@ TIMER_FUNC(unit_autopilot_timer)
 				if (!duplicateskill(p, PR_REDEMPTIO)) unit_skilluse_ifable(&sd->bl, foundtargetID, PR_REDEMPTIO, pc_checkskill(sd, PR_REDEMPTIO));
 			}
 		}
+
+		/// Epiclesis
+		if (canskill(sd)) if (pc_checkskill(sd, AB_EPICLESIS) > 0) if ((Dangerdistance > 900) || (sd->special_state.no_castcancel))
+			if (pc_inventory_count(sd, 12333) > 0)
+				if (pc_inventory_count(sd, 523) > 0) {
+					int epictargetid = -1;
+					int tid2;
+					int j;
+					if (p) //Search leader
+						for (j = 0; j < MAX_PARTY; j++) {
+
+							resettargets();
+							targetbl = map_id2bl(p->party.member[j].account_id);
+							tid2 = foundtargetID;
+							if (targetbl) if (distance_bl(bl, targetbl) < 9) {
+								resettargets();
+								if (map_foreachinrange(epiclesispriority, &sd->bl, 6, BL_PC, sd) >= 8)
+									epictargetid = tid2;
+							}
+						}
+				if (epictargetid>0)	unit_skilluse_ifablexy(&sd->bl, epictargetid, AB_EPICLESIS, pc_checkskill(sd, AB_EPICLESIS));
+				}
+
 		/// If Resurrection known, warn when low on gems!
 		if ((pc_checkskill(sd, ALL_RESURRECTION)>0)) if (pc_inventory_count(sd, ITEMID_BLUE_GEMSTONE) < 8)
 			saythis(sd, "I'm low on Blue Gemstones!", 600); // Once per minute
@@ -6073,6 +6196,25 @@ TIMER_FUNC(unit_autopilot_timer)
 				else saythis(sd, "I'm out of Blue Gemstones!",5); // Twice per second
 			}
 		}
+
+		/// Coluceo Heal
+		if (canskill(sd)) if ((pc_checkskill(sd, AB_CHEAL) > 0) && ((Dangerdistance > 900) || (sd->special_state.no_castcancel))) {
+			resettargets();
+			// is a waste to cast on fewer than 4 people
+			if (map_foreachinrange(targethealing, &sd->bl, 7, BL_PC, sd) >= 4) {
+				unit_skilluse_ifable(&sd->bl, SELF, AB_CHEAL, pc_checkskill(sd, AB_CHEAL));
+			}
+		}
+
+		/// Highness Heal
+		if (canskill(sd)) if (pc_checkskill(sd, AB_HIGHNESSHEAL) > 0) {
+			resettargets();
+			map_foreachinrange(targethealing, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, AB_HIGHNESSHEAL, pc_checkskill(sd, AB_HIGHNESSHEAL));
+			}
+		}
+
 		/// Heal
 		if (canskill(sd)) if (pc_checkskill(sd, AL_HEAL)>0) {
 			resettargets();
@@ -6145,12 +6287,22 @@ TIMER_FUNC(unit_autopilot_timer)
 				unit_skilluse_ifable(&sd->bl, foundtargetID, PR_SLOWPOISON, pc_checkskill(sd, PR_SLOWPOISON));
 			}
 		}
+
 		/// MAGNIFICAT
 		if (canskill(sd)) if ((pc_checkskill(sd, PR_MAGNIFICAT)>0) && ((Dangerdistance >900) || (sd->special_state.no_castcancel))) {
 			resettargets();
 			map_foreachinrange(targetmagnificat, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				if (!duplicateskill(p, PR_MAGNIFICAT)) unit_skilluse_ifable(&sd->bl, SELF, PR_MAGNIFICAT, pc_checkskill(sd, PR_MAGNIFICAT));
+			}
+		}
+
+		/// Renovatio
+		if (canskill(sd)) if ((pc_checkskill(sd, AB_RENOVATIO) > 0) && ((Dangerdistance > 900) || (sd->special_state.no_castcancel))) {
+			resettargets();
+			map_foreachinrange(targetrenovatio, &sd->bl, 11, BL_PC, sd);
+			if (foundtargetID > -1) {
+				if (!duplicateskill(p, AB_RENOVATIO)) unit_skilluse_ifable(&sd->bl, SELF, AB_RENOVATIO, pc_checkskill(sd, AB_RENOVATIO));
 			}
 		}
 
@@ -6272,6 +6424,13 @@ TIMER_FUNC(unit_autopilot_timer)
 				unit_skilluse_ifable(&sd->bl, SELF, SN_WINDWALK, pc_checkskill(sd, SN_WINDWALK));
 			}
 		}
+		/// Canto Candidus
+		if (canskill(sd)) if (pc_checkskill(sd, AB_CANTO) > 0) {
+			resettargets();
+			if (map_foreachinrange(targetincagi, &sd->bl, 9, BL_PC, sd) >= 4) {
+				if (!duplicateskill(p, AB_CANTO)) if (!duplicateskill(p, AL_INCAGI)) unit_skilluse_ifable(&sd->bl, SELF, AB_CANTO, pc_checkskill(sd, AB_CANTO));
+			}
+		}
 
 		/// Inc Agi
 		if (canskill(sd)) if (pc_checkskill(sd, AL_INCAGI)>0) {
@@ -6279,6 +6438,13 @@ TIMER_FUNC(unit_autopilot_timer)
 			map_foreachinrange(targetincagi, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				if (!duplicateskill(p, AL_INCAGI)) unit_skilluse_ifable(&sd->bl, foundtargetID, AL_INCAGI, pc_checkskill(sd, AL_INCAGI));
+			}
+		}
+		/// Clementia
+		if (canskill(sd)) if (pc_checkskill(sd, AB_CLEMENTIA) > 0) {
+			resettargets();
+			if (map_foreachinrange(targetbless, &sd->bl, 9, BL_PC, sd) >= 4) {
+				if (!duplicateskill(p, AB_CLEMENTIA)) unit_skilluse_ifable(&sd->bl, foundtargetID, AB_CLEMENTIA, pc_checkskill(sd, AB_CLEMENTIA));
 			}
 		}
 		/// Blessing
@@ -6454,6 +6620,15 @@ TIMER_FUNC(unit_autopilot_timer)
 				if (!duplicateskill(p, HP_ASSUMPTIO)) unit_skilluse_ifable(&sd->bl, foundtargetID, HP_ASSUMPTIO, pc_checkskill(sd, HP_ASSUMPTIO));
 			}
 		}
+		/// Praefatio
+		if (canskill(sd)) if ((pc_checkskill(sd, AB_PRAEFATIO) > 0) && ((Dangerdistance > 900) || (sd->special_state.no_castcancel))) {
+			resettargets();
+			if (map_foreachinrange(targetkyrie, &sd->bl, 9, BL_PC, sd) >=4 ) {
+				if (!duplicateskill(p, AB_PRAEFATIO)) unit_skilluse_ifable(&sd->bl, SELF, AB_PRAEFATIO, pc_checkskill(sd, AB_PRAEFATIO));
+			}
+		}
+
+
 		/// Kyrie Elison
 		if (canskill(sd)) if ((pc_checkskill(sd, PR_KYRIE)>0) && ((Dangerdistance >900) || (sd->special_state.no_castcancel))) {
 			resettargets();
@@ -6462,6 +6637,23 @@ TIMER_FUNC(unit_autopilot_timer)
 				if (!duplicateskill(p, PR_KYRIE)) unit_skilluse_ifable(&sd->bl, foundtargetID, PR_KYRIE, pc_checkskill(sd, PR_KYRIE));
 			}
 		}
+		/// Lauda Agnus
+		if (canskill(sd)) if (pc_checkskill(sd, AB_LAUDAAGNUS) > 0) {
+			resettargets();
+			map_foreachinrange(targetlauda1, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, SELF, AB_LAUDAAGNUS, pc_checkskill(sd, AB_LAUDAAGNUS));
+			}
+		}
+		/// Lauda Ramus
+		if (canskill(sd)) if (pc_checkskill(sd, AB_LAUDARAMUS) > 0) {
+			resettargets();
+			map_foreachinrange(targetlauda2, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, SELF, AB_LAUDARAMUS, pc_checkskill(sd, AB_LAUDARAMUS));
+			}
+		}
+
 		/// GLORIA
 		if (canskill(sd)) if (pc_checkskill(sd, PR_GLORIA)>0) {
 			resettargets();
@@ -6476,6 +6668,22 @@ TIMER_FUNC(unit_autopilot_timer)
 			map_foreachinrange(targetmanus, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
 				unit_skilluse_ifable(&sd->bl, foundtargetID, PR_IMPOSITIO, pc_checkskill(sd, PR_IMPOSITIO));
+			}
+		}
+		/// Sacrament
+		if (canskill(sd)) if ((pc_checkskill(sd, AB_SECRAMENT) > 0) && ((Dangerdistance > 900) || (sd->special_state.no_castcancel))) {
+			resettargets();
+			map_foreachinrange(targetsacrament, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				if (!duplicateskill(p, AB_SECRAMENT)) unit_skilluse_ifable(&sd->bl, foundtargetID, AB_SECRAMENT, pc_checkskill(sd, AB_SECRAMENT));
+			}
+		}
+		/// Expiatio
+		if (canskill(sd)) if ((pc_checkskill(sd, AB_EXPIATIO) > 0) && ((Dangerdistance > 900) || (sd->special_state.no_castcancel))) {
+			resettargets();
+			map_foreachinrange(targetexpiatio, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, AB_EXPIATIO, pc_checkskill(sd, AB_EXPIATIO));
 			}
 		}
 		// Aura Blade
@@ -7013,6 +7221,37 @@ TIMER_FUNC(unit_autopilot_timer)
 								}
 							}
 
+							// Judex
+							// This is special - it targets a monster despite having AOE, not a ground skill
+							if (canskill(sd)) if ((pc_checkskill(sd, AB_JUDEX) > 0) && (Dangerdistance > 900)) {
+								foundtargetID = -1; targetdistance = 999;
+								map_foreachinrange(targetnearest, targetbl2, 9, BL_MOB, sd);
+								if (foundtargetID > -1) {
+									int area = 1;
+									priority = map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(AB_JUDEX, pc_checkskill(sd, AB_JUDEX)));
+									if (((priority >= 6) && (priority > bestpriority)) && (distance_bl(targetbl, &sd->bl) <= 9)) {
+										spelltocast = AB_JUDEX; bestpriority = priority; IDtarget = foundtargetID;
+									}
+								}
+							}
+
+							// Adoramus
+							// This is special - it targets a monster despite having AOE, not a ground skill
+							if (canskill(sd)) if ((pc_checkskill(sd, AB_ADORAMUS) > 0) && (Dangerdistance > 900))
+								// save some gems for resurrection and whatever
+								if (pc_inventory_count(sd, ITEMID_BLUE_GEMSTONE) > 10) {
+								foundtargetID = -1; targetdistance = 999;
+								map_foreachinrange(targetnearest, targetbl2, 9, BL_MOB, sd);
+								if (foundtargetID > -1) {
+									int area = 1; if (pc_checkskill(sd, AB_ADORAMUS) >= 7) area++;
+									priority = 2*map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(AB_ADORAMUS, pc_checkskill(sd, AB_ADORAMUS)));
+									if (((priority >= 6) && (priority > bestpriority)) && (distance_bl(targetbl, &sd->bl) <= 9)) {
+										spelltocast = AB_ADORAMUS; bestpriority = priority; IDtarget = foundtargetID;
+									}
+								}
+							}
+
+
 							// Spread Attack
 							// This is special - it targets a monster despite having AOE, not a ground skill
 							if (canskill(sd)) if ((pc_checkskill(sd, GS_SPREADATTACK) > 0))
@@ -7144,6 +7383,8 @@ TIMER_FUNC(unit_autopilot_timer)
 							|| (spelltocast == NJ_BAKUENRYU)
 							|| (spelltocast == NJ_KAMAITACHI)
 							|| (spelltocast == AC_SHOWER)
+							|| (spelltocast == AB_JUDEX)
+							|| (spelltocast == AB_ADORAMUS)
 							|| (spelltocast == GS_SPREADATTACK)
 							) unit_skilluse_ifable(&sd->bl, IDtarget, spelltocast, pc_checkskill(sd, spelltocast));
 						else
