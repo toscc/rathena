@@ -8364,7 +8364,7 @@ void do_init_unit(void){
 	add_timer_func_list(unit_step_timer,"unit_step_timer");
 	
 	add_timer_func_list(unit_autopilot_timer, "unit_autopilot_timer");
-	add_timer_func_list(unit_autopilot_homunculus_timer, "unit_autopilot_homunculus_timer");
+//	add_timer_func_list(unit_autopilot_homunculus_timer, "unit_autopilot_homunculus_timer");
 
 }
 
