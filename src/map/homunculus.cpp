@@ -920,6 +920,12 @@ int hom_hungry_timer_delete(struct homun_data *hd)
 		delete_timer(hd->hungry_timer,hom_hungry);
 		hd->hungry_timer = INVALID_TIMER;
 	}
+
+	if (hd->autopilottimer != INVALID_TIMER) {
+		delete_timer(hd->autopilottimer, unit_autopilot_homunculus_timer);
+		hd->autopilottimer = INVALID_TIMER;
+	}
+
 	return 1;
 }
 
@@ -1048,7 +1054,7 @@ void hom_alloc(struct map_session_data *sd, struct s_homunculus *hom)
 
 	hd->hungry_timer = INVALID_TIMER;
 	hd->masterteleport_timer = INVALID_TIMER;
-	add_timer_interval(gettick() + 100, unit_autopilot_homunculus_timer, hd->bl.id, 0, 100);
+	hd->autopilottimer = INVALID_TIMER;
 
 }
 
@@ -1060,6 +1066,10 @@ void hom_init_timers(struct homun_data * hd)
 {
 	if (hd->hungry_timer == INVALID_TIMER)
 		hd->hungry_timer = add_timer(gettick()+hd->homunculusDB->hungryDelay,hom_hungry,hd->master->bl.id,0);
+
+	if (hd->autopilottimer == INVALID_TIMER)
+		hd->autopilottimer = add_timer_interval(gettick() + 100, unit_autopilot_homunculus_timer, hd->bl.id, 0, 100);
+
 	hd->regen.state.block = 0; //Restore HP/SP block.
 	hd->masterteleport_timer = INVALID_TIMER;
 }
@@ -1645,6 +1655,7 @@ void do_init_homunculus(void){
 
 	// Add homunc timer function to timer func list [Toms]
 	add_timer_func_list(hom_hungry, "hom_hungry");
+	add_timer_func_list(unit_autopilot_homunculus_timer, "unit_autopilot_homunculus_timer");
 
 	//Stock view data for homuncs
 	memset(&hom_viewdb, 0, sizeof(hom_viewdb));

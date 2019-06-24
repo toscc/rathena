@@ -66,6 +66,7 @@ struct homun_data {
 	int masterteleport_timer;
 	struct map_session_data *master; //pointer back to its master
 	int hungry_timer;	//[orn]
+	int autopilottimer;
 	unsigned int exp_next;
 	char blockskill[MAX_SKILL];	// [orn]
 };
