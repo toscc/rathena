@@ -6883,7 +6883,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		// Steel Body
 		// Tanking mode only, against very powerful enemies
 		if ((Dangerdistance <= 10) || sd->state.specialtanking) {
-			if (canskill(sd)) if ((pc_checkskill(sd, MO_STEELBODY)>0) && ((dangermd->status.rhw.atk2>sd->battle_status.hp / 5) || sd->state.specialtanking) && (!sd->sc.data[SC_STEELBODY]))
+			if (canskill(sd)) if ((pc_checkskill(sd, MO_STEELBODY)>0) && (sd->state.specialtanking || (dangermd->status.rhw.atk2>sd->battle_status.hp / 5)) && (!sd->sc.data[SC_STEELBODY]))
 				if ((sd->spiritball >= 5) && (sd->state.autopilotmode == 1)) {
 					unit_skilluse_ifable(&sd->bl, SELF, MO_STEELBODY, pc_checkskill(sd, MO_STEELBODY));
 				}
