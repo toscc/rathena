@@ -3631,7 +3631,7 @@ void pc_bonus2(struct map_session_data *sd,int type,int type2,int val)
 
 		pc_bonus_itembonus(sd->add_mdef, type2, val, false);
 		break;
-	case SP_HP_DRAIN_RATE: // bonus2 bHPDrainRate,x,n;
+	case SP_HP_DRAIN_RATE: // bonus2 bHPDrainRate,x,n; //***BUG
 		if(!sd->state.lr_flag) {
 			sd->right_weapon.hp_drain_rate.rate += type2;
 			sd->right_weapon.hp_drain_rate.per += val;
@@ -3641,7 +3641,7 @@ void pc_bonus2(struct map_session_data *sd,int type,int type2,int val)
 			sd->left_weapon.hp_drain_rate.per += val;
 		}
 		break;
-	case SP_SP_DRAIN_RATE: // bonus2 bSPDrainRate,x,n;
+	case SP_SP_DRAIN_RATE: // bonus2 bSPDrainRate,x,n; //***BUG
 		if(!sd->state.lr_flag) {
 			sd->right_weapon.sp_drain_rate.rate += type2;
 			sd->right_weapon.sp_drain_rate.per += val;

@@ -161,20 +161,22 @@
 					mes "You have chosen average B class.";
 					mes "So, what kind of armor do you have?";
 					next;
-					switch(select("Skull Ring:High Heels"))
+					switch(select("Skull Ring:High Heels:Dark Blinder"))
 					{
 						case 1: callfunc "Func_Socket2",2609,2715,40,61,300,999,5;
 						case 2: callfunc "Func_Socket2",2409,2432,40,61,300,999,5;
+						case 3: callfunc "Func_Socket2",5104,18609,40,61,300,999,5;
 					}
 				case 3:
 					mes "[Leablem]";
 					mes "A class? You seem to want little too much. But, no problem.";
 					mes "So, what kind of armor do you have?";
 					next;
-					switch(select("Pirate Bandana:Black Leather Boots"))
+					switch(select("Pirate Bandana:Black Leather Boots:Magni Cap"))
 					{
 						case 1: callfunc "Func_Socket2",2287,5350,50,61,500,985,1; // 50,61 - it's not a typo
 						case 2: callfunc "Func_Socket2",2425,2434,40,51,500,985,1;
+						case 3: callfunc "Func_Socket2",5122,18594,40,51,500,985,1; //Success rate is rolling D100 between arg2 and arg3
 						//case 3: callfunc "Func_Socket2",15053,15056,x,x,x,x,x;	// Special Ninja Suit (Needs more info)
 					}
 				case 4:
@@ -182,13 +184,14 @@
 					mes "Huh, S Class?! Oh my god, are you serious?*Tremble*";
 					mes "So...which S class armor would you like to make a slot?!";
 					next;
-					switch(select("Mage Coat:Holy Robe:Sacred Mission:Undershirt:Pantie"))
+					switch(select("Mage Coat:Holy Robe:Sacred Mission:Undershirt:Pantie:Feather Beret"))
 					{
 						case 1: callfunc "Func_Socket2",2334,2372,40,51,1000,985,1; // Mage Coat has 10% success chance
 						case 2: callfunc "Func_Socket2",2327,2373,45,51,1000,985,1; // the rest has 5%
 						case 3: callfunc "Func_Socket2",2111,2128,45,51,1000,985,1;
 						case 4: callfunc "Func_Socket2",2522,2523,45,51,1000,985,1;
 						case 5: callfunc "Func_Socket2",2339,2371,45,51,1000,985,1;
+						case 6: callfunc "Func_Socket2",5170,18755,40,51,1000,985,1; // 10% chance
 					}
 			}
 		case 3:

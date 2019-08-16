@@ -13,7 +13,7 @@
 	mes "Why can't guild members share a storage? We started off with that simple question.";
 	next;
 	mes "[Warehouse Manager]";
-	mes "You can open the warehouse for 1000 Zeny or look up the usage history of the guild.";
+	mes "You can open the warehouse or look up the usage history of the guild.";
 	mes "How can I help you?";
 	next;
 	if( select( "Open guild warehouse:View warehouse usage history" ) == 1 ){
@@ -32,24 +32,11 @@
 			close;
 		}
 
-		if( Zeny < 1000 ){
-			mes "[Warehouse Manager]";
-			mes "I am afraid you do not have enough money to settle the fee.";
-			mes "The fee is 1000 Zeny.";
-			close;
-		}
-
 		mes "[Warehouse Manager]";
 		mes "I will open the guild storage for you then. Have a memorable time!";
 		close2;
 
-		if( Zeny < 1000 ){
-			// Cheat prevention
-			end;
-		}
-
 		if( guildopenstorage() == GSTORAGE_OPEN ){
-			Zeny -= 1000;
 			end;
 		}else{
 			mes "[Warehouse Manager]";

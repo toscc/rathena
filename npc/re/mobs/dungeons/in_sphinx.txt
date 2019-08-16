@@ -40,7 +40,7 @@ in_sphinx3,0,0	monster	Matyr	1146,10,5000
 // in_sphinx4 - Sphinx
 //==================================================
 in_sphinx4,0,0	monster	Zerom	1178,30,5000
-in_sphinx4,0,0	monster	Pasana	1154,90,5000
+in_sphinx4,0,0	monster	Pasana	1154,120,5000
 in_sphinx4,0,0	monster	Anubis	1098,1,5000
 in_sphinx4,0,0	monster	Mimic	1191,4,5000
 

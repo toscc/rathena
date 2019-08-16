@@ -116,6 +116,7 @@
 2109:2239:2717,{ bonus bHPrecovRate,15; bonus bSPrecovRate,15; bonus bMatkRate,7; }
 2109:2971:5135,{ bonus bHPrecovRate,15; bonus bSPrecovRate,15; bonus bMatkRate,7; }
 2109:2971:18874,{ bonus bHPrecovRate,15; bonus bSPrecovRate,15; bonus bMatkRate,7; }
+2114:2353:18594,{ bonus bStr,2; bonus bDef,5; bonus bMdef,5; if(BaseClass==Job_Swordman) bonus bDef,6; }
 2114:2353:5122,{ bonus bStr,2; bonus bDef,5; bonus bMdef,5; if(BaseClass==Job_Swordman) bonus bDef,6; }
 2115:2353:5124,{ bonus bDef,2-getequiprefinerycnt(EQI_HAND_L)-getequiprefinerycnt(EQI_HEAD_TOP); bonus bMdef,5+getequiprefinerycnt(EQI_HAND_L)+getequiprefinerycnt(EQI_HEAD_TOP); }
 2116:2355:2420:2521:5125,{ bonus bMaxHP,900; bonus bMaxSP,100; bonus3 bAutoSpellWhenHit,"HP_ASSUMPTIO",1,30; }
@@ -531,7 +532,7 @@
 5043:18656,{ bonus bFlee,10; bonus2 bAddEff,Eff_Stun,1000; }
 5048:18538,{ bonus2 bSubRace,RC_Demon,9; }
 5068:5653,{ bonus bStr,3; }
-5070:18576,{ bonus2 bSkillAtk,"MO_TRIPLEATTACK",5; bonus2 bSkillAtk,"MO_COMBOFINISH",5; bonus2 bSkillAtk,"CH_TIGERFIST",3; bonus2 bSkillAtk,"CH_CHAINCRUSH",3; if( getequiprefinerycnt(EQI_HEAD_TOP) < 10 ) bonus bUseSPrate, getequiprefinerycnt(EQI_HEAD_TOP); }
+5070:18576,{ bonus2 bSkillAtk,"MO_TRIPLEATTACK",5; bonus2 bSkillAtk,"MO_COMBOFINISH",5; bonus2 bSkillAtk,"CH_TIGERFIST",3; bonus2 bSkillAtk,"CH_CHAINCRUSH",3; }
 5073:5574,{ bonus bDex,2; bonus bDef,2; }
 5074:5653,{ bonus bInt,3; }
 5074:18827,{ autobonus "{ bonus2 bHPLossRate,30,1000; bonus bHit,-10; bonus bSplashRange,1; }",10+getequiprefinerycnt(EQI_HEAD_TOP),5000,BF_WEAPON,"{ transform 1765,5000; }"; }

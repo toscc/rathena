@@ -2104,6 +2104,46 @@ IG_GoodHeadgear,18543,1
 IG_GoodHeadgear,18555,1
 IG_Ultimate,18570,1
 IG_GoodHeadgear,18571,1
+IG_GoodHeadgear,18573,1
+IG_GoodHeadgear,18575,1
+IG_GoodHeadgear,18576,1
+IG_GoodCostume,18579,1
+IG_GoodCostume,18593,1
+IG_GoodHeadgear,18594,1
+IG_GoodHeadgear,18596,1
+IG_GoodHeadgear,18606,1
+IG_GoodHeadgear,18614,1
+IG_GoodHeadgear,18615,1
+IG_GoodHeadgear,18619,1
+IG_GoodHeadgear,18630,1
+IG_GoodHeadgear,18631,1
+IG_GoodHeadgear,18641,1
+IG_GoodHeadgear,18645,1
+IG_GoodHeadgear,18655,1
+IG_GoodHeadgear,18657,1
+IG_GoodHeadgear,18661,1
+IG_GoodHeadgear,18666,1
+IG_GoodHeadgear,18667,1
+IG_GoodHeadgear,18668,1
+IG_GoodHeadgear,18669,1
+IG_GoodHeadgear,18673,1
+IG_GoodHeadgear,18694,1
+IG_GoodHeadgear,18718,1
+IG_GoodHeadgear,18737,1
+IG_GoodCostume,18740,1
+IG_GoodCostume,18741,1
+IG_GoodCostume,18742,1
+IG_GoodCostume,18743,1
+IG_GoodCostume,18744,1
+IG_GoodHeadgear,18752,1
+IG_GoodHeadgear,18755,1
+IG_GoodHeadgear,18782,1
+IG_GoodHeadgear,18786,1
+IG_GoodCostume,18791,1
+IG_GoodHeadgear,18793,1
+IG_GoodHeadgear,18803,1
+IG_Ultimate,18827,1 
+IG_GoodHeadgear,18842,1
 
 
 
