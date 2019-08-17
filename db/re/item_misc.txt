@@ -2144,6 +2144,18 @@ IG_GoodHeadgear,18793,1
 IG_GoodHeadgear,18803,1
 IG_Ultimate,18827,1 
 IG_GoodHeadgear,18842,1
+IG_GoodHeadgear,18845,1
+IG_GoodHeadgear,18846,1
+IG_Ultimate,18848,1 
+IG_GoodHeadgear,18874,1
+IG_GoodHeadgear,18894,1
+IG_GoodHeadgear,18895,1
+IG_GoodHeadgear,18896,1
+IG_GoodHeadgear,18897,1
+IG_GoodCostume,18901,1
+IG_GoodCostume,18917,1
+IG_GoodHeadgear,18938,1
+IG_GoodHeadgear,19109,1
 
 
 
