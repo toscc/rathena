@@ -106,3 +106,4 @@
 31904,GOD_FAVOR,Favor of Gods,3,750000,,,,,,,0xFFFFFFFF,63,2,,,,,,{},{},{}
 31905,Angel_Guidance,Angel Guidance,4,0,,0,,0,,0,0xFFFFFFFF,63,2,256,,1,0,1188,{ bonus bAllStats,1; },{},{}
 31906,JOB_TICKET,Proof of Membership Certificate,3,200000,,10,,,,,,,,,,,,,{},{},{}
+31907,Aggroco_Card,Aggroco Card,6,20,,10,,,,,,,,769,,,,,{ bonus bStr,4; bonus bInt,-5; },{},{}

@@ -954,3 +954,6 @@ IG_VioletBox,5737,1	// Cactus Hat
 IG_VioletBox,5776,1	// Blazing Sun
 IG_VioletBox,5780,1	// Tendrillion Hat
 IG_VioletBox,18759,1 // Wood Goblin Nose
+IG_VioletBox,20084,1 // Costume
+IG_VioletBox,20085,1 // Costume
+IG_VioletBox,20437,1 // Costume

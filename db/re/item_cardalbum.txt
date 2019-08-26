@@ -413,6 +413,7 @@ IG_CardAlbum,4530,1		// Siorava Card
 IG_CardAlbum,4531,2		// Red Eruma Card
 IG_CardAlbum,4532,1		// Wild Rider Card
 IG_CardAlbum,4533,2		// Octopus Card
+IG_CardAlbum,31907,3		// Aggroco Card
 // Magic Card Album
 IG_MagicCardAlbum,4047,1	// Ghostring Card
 IG_MagicCardAlbum,4054,1	// Angeling Card

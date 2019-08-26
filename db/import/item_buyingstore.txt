@@ -8,3 +8,4 @@
 //  Items are in same order as data\buyingstoreitemlist.txt, which
 //  must be edited as well for the client to accept added items.
 
+31907  // Aggroco_Card

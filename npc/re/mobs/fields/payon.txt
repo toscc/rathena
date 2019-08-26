@@ -71,8 +71,9 @@ pay_fild04,346,335,5,5	monster	Shining Plant	1083,1,1800000,900000
 pay_fild04,254,193,10,10	monster	Green Plant	1080,5,360000,180000
 
 //==================================================
-// pay_fild05 - Disabled on Renewal
+// pay_fild05 - Restored : Aggroco
 //==================================================
+pay_fild05,0,0	monster	Aggroco	29180,210,5000
 
 //==================================================
 // pay_fild06 - Payon Forest
