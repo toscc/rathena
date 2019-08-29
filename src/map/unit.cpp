@@ -7753,6 +7753,15 @@ TIMER_FUNC(unit_autopilot_timer)
 					}
 				}
 			}
+			// Earth Spike, prefer over bolts if no weakess/strength applies
+			// As it's 200% DMG per hit so less affected by MDEF
+			if (foundtargetID2 > -1) if (canskill(sd)) if (pc_checkskill(sd, WZ_EARTHSPIKE) >= 5) {
+				if (((sd->state.autopilotmode == 2)) && (Dangerdistance > 900)) {
+					if (elemallowed(targetmd, skill_get_ele(WZ_EARTHSPIKE, pc_checkskill(sd, WZ_EARTHSPIKE)))) {
+						unit_skilluse_ifable(&sd->bl, foundtargetID2, WZ_EARTHSPIKE, pc_checkskill(sd, WZ_EARTHSPIKE));
+					}
+				}
+			}
 			// bolts, use highest level
 			if (foundtargetID2 > -1) if (canskill(sd)) if ((pc_checkskill(sd, MG_FIREBOLT) > 0) && (pc_checkskill(sd, MG_FIREBOLT) >= pc_checkskill(sd, MG_COLDBOLT))
 				&& (pc_checkskill(sd, MG_FIREBOLT) >= pc_checkskill(sd, MG_LIGHTNINGBOLT))) {
