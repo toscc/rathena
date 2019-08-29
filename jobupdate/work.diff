@@ -107,12 +107,6 @@ index b872350dae..1f5d1fbce2 100644
  
  
 @@ -256,10 +256,10 @@
- 152,0,100,0,5000,20000,0,0
- 
- //-- MC_LOUD
--155,0,0,0,300000,0,0,0
-+155,1000,0,0,300000,0,30000,300
- 
  //-- AL_HOLYLIGHT
 -156,1600,0,0,0,0,0,400
 +156,800,0,0,0,0,0,200
@@ -437,14 +431,6 @@ index 72742754ec..808b9d5fcd 100644
  86,9,8,1,1,0,0,5,1,yes,0,0x2000,0,magic,0,0x0,		WZ_WATERBALL,Water Ball
  87,9,6,2,1,0x1,0,10,1,yes,0,0,0,magic,0,0x0,		WZ_ICEWALL,Ice Wall
  88,0,6,4,1,0x2,3,10,1,yes,0,0x2000,0,magic,0,0x0,	WZ_FROSTNOVA,Frost Nova
-@@ -271,7 +271,7 @@
- 152,7,6,1,0,0x40,0,1,1,no,0,0x1,0,misc,0,0x0,	TF_THROWSTONE,Stone Fling
- 153,1,6,1,-1,0x2,1,1,1,no,0,0x40001,0,weapon,2,0x4000,	MC_CARTREVOLUTION,Cart Revolution
- 154,0,6,4,0,0x1,0,1,1,no,0,0x1,0,none,0,0x4000,		MC_CHANGECART,Change Cart
--155,0,6,4,0,0x1,0,1,1,no,0,0x1,0,weapon,0,0x4000,	MC_LOUD,Crazy Uproar
-+155,0,6,4,0,0x3,-1,1,1,no,0,0x1,0,weapon,0,0x4000,	MC_LOUD,Crazy Uproar
- 156,9,6,1,6,0,0,1,1,yes,0,0x1,0,magic,0,0x0,		AL_HOLYLIGHT,Holy Light
- 157,0,6,4,0,0x1,0,1,1,yes,0,0x1,0,magic,0,0x0,	MG_ENERGYCOAT,Energy Coat
  
 @@ -336,7 +336,7 @@
  211,1,6,1,0,0x1,0,10,1,no,0,0,0,weapon,0,0x0,	RG_STEALCOIN,Mug
@@ -2113,16 +2099,6 @@ index 1c417d9466..5bdd0b0727 100755
  	case LK_BERSERK:
  	case MS_BERSERK:
  	case KN_TWOHANDQUICKEN:
-@@ -6723,7 +6894,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
- 	case CR_REFLECTSHIELD:
- 	case MS_REFLECTSHIELD:
- 	case AS_POISONREACT:
-+#ifndef RENEWAL
- 	case MC_LOUD:
-+#endif
- 	case MG_ENERGYCOAT:
- 	case MO_EXPLOSIONSPIRITS:
- 	case MO_STEELBODY:
 @@ -6732,6 +6905,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
  	case LK_PARRYING:
  	case MS_PARRYING:
@@ -2137,10 +2113,9 @@ index 1c417d9466..5bdd0b0727 100755
  		break;
  
  	case AL_ANGELUS:
-+#ifdef RENEWAL
-+	case MC_LOUD:
+#ifdef RENEWAL
 +	case PR_SUFFRAGIUM:
-+#endif
+#endif
  	case PR_MAGNIFICAT:
  	case PR_GLORIA:
  	case SN_WINDWALK:
@@ -2842,20 +2817,6 @@ index c19a6deeac..fbcd8ef90a 100644
  	set_sc( BS_WEAPONPERFECT	, SC_WEAPONPERFECTION	, EFST_WEAPONPERFECT, SCB_NONE );
  	set_sc( BS_OVERTHRUST		, SC_OVERTHRUST		, EFST_OVERTHRUST		, SCB_NONE );
  	set_sc( BS_MAXIMIZE		, SC_MAXIMIZEPOWER	, EFST_MAXIMIZE, SCB_REGEN );
-@@ -307,7 +422,12 @@ void initChangeTables(void)
- 	set_sc( SM_AUTOBERSERK		, SC_AUTOBERSERK	, EFST_AUTOBERSERK	, SCB_NONE );
- 	add_sc( TF_SPRINKLESAND		, SC_BLIND		);
- 	add_sc( TF_THROWSTONE		, SC_STUN		);
--	set_sc( MC_LOUD			, SC_LOUD		, EFST_SHOUT, SCB_STR );
-+	set_sc( MC_LOUD			, SC_LOUD		, EFST_SHOUT, SCB_STR
-+#ifdef RENEWAL
-+		|SCB_BATK );
-+#else
-+		);
-+#endif
- 	set_sc( MG_ENERGYCOAT		, SC_ENERGYCOAT		, EFST_ENERGYCOAT		, SCB_NONE );
- 	set_sc( NPC_EMOTION		, SC_MODECHANGE		, EFST_BLANK		, SCB_MODE );
- 	add_sc( NPC_EMOTION_ON		, SC_MODECHANGE		);
 @@ -368,15 +488,43 @@ void initChangeTables(void)
  #endif
  	set_sc( SA_MAGICROD		, SC_MAGICROD	, EFST_MAGICROD	, SCB_NONE );
@@ -3271,12 +3232,12 @@ index c19a6deeac..fbcd8ef90a 100644
  		batk += sc->data[SC_QUEST_BUFF3]->val1;
  	if (sc->data[SC_SHRIMP])
  		batk += batk * sc->data[SC_SHRIMP]->val2 / 100;
-+#ifdef RENEWAL
-+	if (sc->data[SC_LOUD])
-+		batk += 30;
+	#ifdef RENEWAL
+	if (sc->data[SC_LOUD])
+		batk += 30;
 +	if (sc->data[SC_NIBELUNGEN] && sc->data[SC_NIBELUNGEN]->val2 == RINGNBL_ATKRATE)
 +		batk += batk * 20 / 100;
-+#endif
+	#endif
  
  	return (unsigned short)cap_value(batk,0,USHRT_MAX);
  }

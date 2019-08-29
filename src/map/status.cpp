@@ -400,7 +400,12 @@ void initChangeTables(void)
 	set_sc( SM_AUTOBERSERK		, SC_AUTOBERSERK	, EFST_AUTOBERSERK	, SCB_NONE );
 	add_sc( TF_SPRINKLESAND		, SC_BLIND		);
 	add_sc( TF_THROWSTONE		, SC_STUN		);
-	set_sc( MC_LOUD			, SC_LOUD		, EFST_SHOUT, SCB_STR );
+	set_sc(MC_LOUD, SC_LOUD, EFST_SHOUT, SCB_STR
+	 #ifdef RENEWAL
+	 | SCB_BATK);
+	#else
+	 );
+	#endif
 	set_sc( MG_ENERGYCOAT		, SC_ENERGYCOAT		, EFST_ENERGYCOAT		, SCB_NONE );
 	set_sc( NPC_EMOTION		, SC_MODECHANGE		, EFST_BLANK		, SCB_MODE );
 	add_sc( NPC_EMOTION_ON		, SC_MODECHANGE		);
@@ -6138,6 +6143,10 @@ static unsigned short status_calc_batk(struct block_list *bl, struct status_chan
 		batk += sc->data[SC_QUEST_BUFF3]->val1;
 	if (sc->data[SC_SHRIMP])
 		batk += batk * sc->data[SC_SHRIMP]->val2 / 100;
+	#ifdef RENEWAL
+	if (sc->data[SC_LOUD])
+		batk += 20;
+	#endif
 
 	return (unsigned short)cap_value(batk,0,USHRT_MAX);
 }

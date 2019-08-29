@@ -271,7 +271,7 @@
 152,7,6,1,0,0x40,0,1,1,no,0,0x1,0,misc,0,0x0,	TF_THROWSTONE,Stone Fling
 153,1,6,1,-1,0x2,1,1,1,no,0,0x40001,0,weapon,2,0x4000,	MC_CARTREVOLUTION,Cart Revolution
 154,0,6,4,0,0x1,0,1,1,no,0,0x1,0,none,0,0x4000,		MC_CHANGECART,Change Cart
-155,0,6,4,0,0x1,0,1,1,no,0,0x1,0,weapon,0,0x4000,	MC_LOUD,Crazy Uproar
+155,0,6,4,0,0x3,-1,1,1,no,0,0x1,0,weapon,0,0x4000,	MC_LOUD,Crazy Uproar
 156,9,6,1,6,0,0,1,1,yes,0,0x1,0,magic,0,0x0,		AL_HOLYLIGHT,Holy Light
 157,0,6,4,0,0x1,0,1,1,yes,0,0x1,0,magic,0,0x0,	MG_ENERGYCOAT,Energy Coat
 
