@@ -38,14 +38,6 @@ index b872350dae..1f5d1fbce2 100644
 +79,4000,1000,0,4000:5000:6000:7000:8000:9000:10000:11000:12000:13000,0,6000,1000
  
  //==========================================
- 
-@@ -160,21 +160,21 @@
- //-- WZ_HEAVENDRIVE
--91,640:1280:1920:2560:3200,1000,0,100,0,0,160:320:480:640:800
-+91,640:1280:1920:2560:1900,1000:1000:1000:1000:500,0,100,0,0,160:320:480:640:800
- //-- WZ_QUAGMIRE
- 92,0,1000,0,5000:10000:15000:20000:25000,5000:10000:15000:20000:25000,0,0
- //==========================================
 @@ -200,7 +200,7 @@
  //-- HT_SKIDTRAP
  115,0,0,0,300000:240000:180000:120000:60000,3000,0,0
@@ -1212,16 +1204,6 @@ index de8167f4a0..58c201f9a2 100644
  					case SL_STIN: //Target size must be small (0) for full damage
  						skillratio += (tstatus->size != SZ_SMALL ? -99 : 10 * skill_lv);
 @@ -5950,22 +6065,38 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list
- 						break;
- #ifdef RENEWAL
- 					case WZ_HEAVENDRIVE:
-+						skillratio += -100 + skill_lv * 100 + skill_lv * 25;
-+						break;
- 					case WZ_METEOR:
- 						skillratio += 25;
- 						break;
- 					case WZ_VERMILION:
-
 ...
  							skillratio += 20 * skill_lv - 20; //Monsters use old formula
 -						}

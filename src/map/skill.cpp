@@ -17614,7 +17614,7 @@ static int skill_cell_overlap(struct block_list *bl, va_list ap)
 				case SA_DELUGE:
 				case NJ_SUITON:
 					//Consumes deluge/suiton
-					skill_delunit(unit);
+					//skill_delunit(unit);
 					return 1;
 			}
 			break;
