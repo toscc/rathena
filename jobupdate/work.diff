@@ -106,13 +106,6 @@ index b872350dae..1f5d1fbce2 100644
  //==========================================
  
  
-@@ -256,10 +256,10 @@
- //-- AL_HOLYLIGHT
--156,1600,0,0,0,0,0,400
-+156,800,0,0,0,0,0,200
- 
- //-- MG_ENERGYCOAT
- 157,0,0,0,300000,0,0,5000
 @@ -322,7 +322,7 @@
  
  //===== Rogue ==============================
@@ -2757,29 +2750,8 @@ index c19a6deeac..fbcd8ef90a 100644
  	add_sc( MG_STONECURSE		, SC_STONE		);
  	add_sc( AL_RUWACH		, SC_RUWACH		);
  	add_sc( AL_PNEUMA		, SC_PNEUMA		);
--	set_sc( AL_INCAGI		, SC_INCREASEAGI	, EFST_INC_AGI, SCB_AGI|SCB_SPEED );
-+	set_sc( AL_INCAGI		, SC_INCREASEAGI	, EFST_INC_AGI, SCB_AGI|SCB_SPEED
-+#ifdef RENEWAL
-+		|SCB_ASPD );
-+#else
-+		);
-+#endif
  	set_sc( AL_DECAGI		, SC_DECREASEAGI	, EFST_DEC_AGI, SCB_AGI|SCB_SPEED );
  	set_sc( AL_CRUCIS		, SC_SIGNUMCRUCIS	, EFST_CRUCIS, SCB_DEF );
--	set_sc( AL_ANGELUS		, SC_ANGELUS		, EFST_ANGELUS		, SCB_DEF2 );
--	set_sc( AL_BLESSING		, SC_BLESSING		, EFST_BLESSING		, SCB_STR|SCB_INT|SCB_DEX );
-+	set_sc( AL_ANGELUS		, SC_ANGELUS		, EFST_ANGELUS		, SCB_DEF2
-+#ifdef RENEWAL
-+		|SCB_MAXHP );
-+#else
-+		);
-+#endif
-+	set_sc( AL_BLESSING		, SC_BLESSING		, EFST_BLESSING		, SCB_STR|SCB_INT|SCB_DEX
-+#ifdef RENEWAL
-+		|SCB_HIT );
-+#else
-+		);
-+#endif
  	set_sc( AC_CONCENTRATION	, SC_CONCENTRATE	, EFST_CONCENTRATION, SCB_AGI|SCB_DEX );
  	set_sc( TF_HIDING		, SC_HIDING		, EFST_HIDING		, SCB_SPEED );
  	add_sc( TF_POISON		, SC_POISON		);
@@ -3038,17 +3010,6 @@ index c19a6deeac..fbcd8ef90a 100644
  	amotion = ((int)(temp_aspd + ((float)(status_calc_aspd(&sd->bl, &sd->sc, true) + val) * status->agi / 200)) - min(amotion, 200));
  #else
  	// Angra Manyu disregards aspd_base and similar
-@@ -3094,6 +3278,10 @@ static int status_get_hpbonus(struct block_list *bl, enum e_status_bonus type) {
- 				bonus += 30;
- 			if(sc->data[SC_GLASTHEIM_HPSP])
- 				bonus += sc->data[SC_GLASTHEIM_HPSP]->val1;
-+#ifdef RENEWAL
-+			if (sc->data[SC_ANGELUS])
-+				bonus += sc->data[SC_ANGELUS]->val1 * 50;
-+#endif
- 		}
- 	} else if (type == STATUS_BONUS_RATE) {
- 		struct status_change *sc = status_get_sc(bl);
 @@ -3144,6 +3332,10 @@ static int status_get_hpbonus(struct block_list *bl, enum e_status_bonus type) {
  				bonus += sc->data[SC_UPHEAVAL_OPTION]->val2;
  			if(sc->data[SC_LAUDAAGNUS])
@@ -3291,8 +3252,6 @@ index c19a6deeac..fbcd8ef90a 100644
  	if (sc->data[SC_MTF_ASPD])
  		hit += sc->data[SC_MTF_ASPD]->val2;
 +#ifdef RENEWAL
-+	if (sc->data[SC_BLESSING])
-+		hit += sc->data[SC_BLESSING]->val1 * 2;
 +	if (sc->data[SC_TWOHANDQUICKEN])
 +		hit += sc->data[SC_TWOHANDQUICKEN]->val1 * 2;
 +	if (sc->data[SC_ADRENALINE])
@@ -3368,8 +3327,6 @@ index c19a6deeac..fbcd8ef90a 100644
  			bonus += 3 * sc->data[SC_STAR_COMFORT]->val1;
  		if (sc->data[SC_WIND_INSIGNIA] && sc->data[SC_WIND_INSIGNIA]->val1 == 2)
  			bonus += 10;
-+		if (sc->data[SC_INCREASEAGI])
-+			bonus += sc->data[SC_INCREASEAGI]->val1;
 +		if (sc->data[SC_NIBELUNGEN] && sc->data[SC_NIBELUNGEN]->val2 == RINGNBL_ASPDRATE)
 +			bonus += 20;
 +
