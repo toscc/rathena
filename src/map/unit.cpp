@@ -5341,7 +5341,7 @@ void skillwhenidle(struct map_session_data *sd) {
 	// Fury
 	// Use if tanking mode only, otherwise unlikely to be normal attacking so crit doesn't matter.
 	// For Asura preparation, it is used in the asura strike logic instead
-	// Note : I modded this to not reduce SP regen. If it reduces SP regen, it might be better if the AI never uses it.
+	// **Note** : I modded this to not reduce SP regen. If it reduces SP regen, it might be better if the AI never uses it.
 		if ((pc_checkskill(sd, MO_EXPLOSIONSPIRITS) > 0) ){
 		if (!(sd->sc.data[SC_EXPLOSIONSPIRITS]))
 		if ((sd->spiritball>=5) && (sd->state.autopilotmode==1)) {
@@ -5729,7 +5729,7 @@ TIMER_FUNC(unit_autopilot_homunculus_timer)
 			homu_skilluse_ifable(&sd->bl, SELF, HAMI_BLOODLUST, hom_checkskill(hd, HAMI_BLOODLUST));
 		}
 	// Lif - Mental Change
-	// Note : I modded this skill to not reduce hp/sp when it ends.
+	// **Note** : I modded this skill to not reduce hp/sp when it ends.
 	// You might want to disable it for the AI and activate it manually instead.
 	// Also it won't be activated unless an enemy is nearby - due to the cooldown that would be wasteful.
 	if (foundtargetID>-1) if (canskill(sd)) if (hom_checkskill(hd, HLIF_CHANGE) > 0)
@@ -6149,7 +6149,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			} 
 		}
 		/// Flip Tatami
-		// Note : I modded this skill to have a skill reuse cooldown instead of global delay.
+		// **Note** : I modded this skill to have a skill reuse cooldown instead of global delay.
 		// Without that mod it's better to remove this and never allow the AI to use it.
 		if (canskill(sd)) if (pc_checkskill(sd, NJ_TATAMIGAESHI) > 0) {
 			struct status_change *sc;
@@ -6704,7 +6704,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			}
 		}
 		// Maximize Power
-		// Note : I have changed this skill to not disable SP regen.
+		// **Note** : I have changed this skill to not disable SP regen.
 		// If you did not, you should probably restrict usage to high SP levels and make the AI turn it off below a certain amount.
 		// Or disable entirely, don't think this effect is worth losing SP regen unless you have a way to refill it.
 		if (pc_checkskill(sd, BS_MAXIMIZE) > 0) {
@@ -6976,7 +6976,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		// Don't bother with these suboptimal spells if casting is uninterruptable (note, they can be still cast as a damage spell, but not as an emergency reaction when fast cast time is needed)
 		if (!(sd->special_state.no_castcancel)) {
 			/// Napalm Beat
-			// Note : This has been modded to be uninterruptable and faster to use. Unmodded the AI probably shouldn't ever cast it, it's that bad.
+			// **Note** : This has been modded to be uninterruptable and faster to use. Unmodded the AI probably shouldn't ever cast it, it's that bad.
 			// It is the spell to use in the worst emergencies only, when enemy is at most 2 steps from hitting us.
 			if (Dangerdistance <= 2) {
 				if (canskill(sd)) if ((pc_checkskill(sd, MG_NAPALMBEAT)>0) && (dangermd->status.hp < sd->battle_status.matk_max * 4)) {
@@ -6986,7 +6986,7 @@ TIMER_FUNC(unit_autopilot_timer)
 				}
 			}
 			// Soul Strike
-			// Note : This has been modded to be uninterruptable, but due to low cast time same logic should be fine anyway
+			// **Note** : This has been modded to be uninterruptable, but due to low cast time same logic should be fine anyway
 			// Don't bother with this at low levels. Don't use if unlikely to kill target.
 			if (canskill(sd)) if (pc_checkskill(sd, MG_SOULSTRIKE) > 5) {
 				if ((Dangerdistance <= 4)) {
@@ -7042,7 +7042,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			}
 			/// Stone Curse
 			// we can use a gem to petrify it too if the moster is really that dangerous and not in range for safety wall
-			// Note : this skill was modded to have higher range and deal more percentage damage as well as cast faster. 
+			// **Note** : this skill was modded to have higher range and deal more percentage damage as well as cast faster. 
 			// Otherwise it might be best to avoid using it by the AI altogether, it's just too useless?
 			if (canskill(sd)) if (pc_checkskill(sd, MG_STONECURSE) > 0) {
 				if (Dangerdistance <= 6) {
@@ -7360,7 +7360,7 @@ TIMER_FUNC(unit_autopilot_timer)
 
 					// NIN Ice Meteor - always centered on user
 					if (canskill(sd)) if ((pc_checkskill(sd, NJ_HYOUSYOURAKU) >= 4)
-						//					 &&	((Dangerdistance > 900) || (sd->special_state.no_castcancel)) // Note : I modded this skill to be uninterruptable - a self targeted crowd control AOE is useless if it is interrupted. If yours is not modded, uncomment this line!
+						//					 &&	((Dangerdistance > 900) || (sd->special_state.no_castcancel)) // **Note** : I modded this skill to be uninterruptable - a self targeted crowd control AOE is useless if it is interrupted. If yours is not modded, uncomment this line!
 						) {
 						if (pc_search_inventory(sd, 7522) >= 0) {
 							int area = 2;
@@ -7448,6 +7448,22 @@ TIMER_FUNC(unit_autopilot_timer)
 		map_foreachinrange(targetnearest, &sd->bl, 9, BL_MOB, sd);
 		int foundtargetID2 = foundtargetID;
 		int targetdistance2 = targetdistance;
+
+		/// Charge Arrow
+		/// Repel extremely close enemy
+		/// Avoid if not in danger of getting hit due to high delay
+		/// **Note** : this skill was customized to have no cast time and high delay
+		if (canskill(sd)) if (pc_checkskill(sd, AC_CHARGEARROW) > 0) {
+			if (Dangerdistance <= 2) 
+				if (!isdisabled(dangermd))
+					if (rangeddist <= 9 + pc_checkskill(sd, AC_VULTURE)) {
+						if (sd->status.weapon == W_BOW)
+							if (!((status_get_class_(dangerbl) == CLASS_BOSS))) {
+								arrowchange(sd, targetRAmd);
+								unit_skilluse_ifable(&sd->bl, founddangerID, AC_CHARGEARROW, pc_checkskill(sd, AC_CHARGEARROW));
+							}
+					}
+			}
 
 		// Estin, Estun, Esma on vulnerable enemy
 		int windelem = 0;
