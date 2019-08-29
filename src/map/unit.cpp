@@ -5883,7 +5883,7 @@ TIMER_FUNC(unit_autopilot_timer)
 
 	if (!p || i == MAX_PARTY) { //leader not found
 		//ShowError("No party leader to follow!");
-		leaderID = -1;
+		leaderID = -1; leaderdistance = 0;
 	}
 	else {
 		targetthis = p->party.member[i].char_id;
