@@ -53,8 +53,6 @@ static struct {
 	struct refine_cost cost[REFINE_COST_MAX];
 } refine_info[REFINE_TYPE_MAX];
 
-static int atkmods[SZ_ALL][MAX_WEAPON_TYPE];	/// ATK weapon modification for size (size_fix.txt)
-
 static struct eri *sc_data_ers; /// For sc_data entries
 static struct status_data dummy_status;
 
@@ -114,6 +112,101 @@ static int status_get_sc_interval(enum sc_type type);
 
 static bool status_change_isDisabledOnMap_(sc_type type, bool mapIsVS, bool mapIsPVP, bool mapIsGVG, bool mapIsBG, unsigned int mapZone, bool mapIsTE);
 #define status_change_isDisabledOnMap(type, m) ( status_change_isDisabledOnMap_((type), mapdata_flag_vs2((m)), m->flag[MF_PVP] != 0, mapdata_flag_gvg2_no_te((m)), m->flag[MF_BATTLEGROUND] != 0, (m->zone << 3) != 0, mapdata_flag_gvg2_te((m))) )
+
+const std::string SizeFixDatabase::getDefaultLocation() {
+	return std::string(db_path) + "/size_fix.yml";
+}
+
+/**
+ * Reads and parses an entry from size_fix.
+ * @param node: YAML node containing the entry.
+ * @return count of successfully parsed rows
+ */
+uint64 SizeFixDatabase::parseBodyNode(const YAML::Node &node) {
+	std::string weapon_name;
+
+	if (!this->asString(node, "Weapon", weapon_name))
+		return 0;
+
+	int weapon_id;
+
+	if (!script_get_constant(weapon_name.c_str(), &weapon_id)) {
+		this->invalidWarning(node, "Size Fix unknown weapon %s, skipping.\n", weapon_name.c_str());
+		return 0;
+	}
+
+	if (weapon_id < W_FIST || weapon_id > W_2HSTAFF) {
+		this->invalidWarning(node, "Size Fix weapon %s (%d) is an invalid weapon, skipping.\n", weapon_name.c_str(), weapon_id);
+		return 0;
+	}
+
+	std::shared_ptr<s_sizefix_db> size = this->find(weapon_id);
+	bool exists = size != nullptr;
+
+	if (!exists)
+		size = std::make_shared<s_sizefix_db>();
+
+	if (this->nodeExists(node, "Small")) {
+		uint16 small;
+
+		if (!this->asUInt16(node, "Small", small))
+			return 0;
+
+		if (small > 100) {
+			this->invalidWarning(node, "Small Size Fix %d for weapon %d is out of bounds, defaulting to 100.\n", small, weapon_id);
+			small = 100;
+		}
+
+		size->small = small;
+	}
+	else {
+		if (!exists)
+			size->small = 100;
+	}
+
+	if (this->nodeExists(node, "Medium")) {
+		uint16 medium;
+
+		if (!this->asUInt16(node, "Medium", medium))
+			return 0;
+
+		if (medium > 100) {
+			this->invalidWarning(node, "Medium Size Fix %d for weapon %d is out of bounds, defaulting to 100.\n", medium, weapon_id);
+			medium = 100;
+		}
+
+		size->medium = medium;
+	}
+	else {
+		if (!exists)
+			size->medium = 100;
+	}
+
+	if (this->nodeExists(node, "Large")) {
+		uint16 large;
+
+		if (!this->asUInt16(node, "Large", large))
+			return 0;
+
+		if (large > 100) {
+			this->invalidWarning(node, "Large Size Fix %d for weapon %d is out of bounds, defaulting to 100.\n", large, weapon_id);
+			large = 100;
+		}
+
+		size->large = large;
+	}
+	else {
+		if (!exists)
+			size->large = 100;
+	}
+
+	if (!exists)
+		this->put(weapon_id, size);
+
+	return 1;
+}
+
+SizeFixDatabase size_fix_db;
 
 /**
  * Returns the status change associated with a skill.
@@ -3843,13 +3936,15 @@ int status_calc_pc_sub(struct map_session_data* sd, enum e_status_calc_opt opt)
 	sd->bonus.splash_range += sd->bonus.splash_add_range;
 
 	// Damage modifiers from weapon type
-	sd->right_weapon.atkmods[SZ_SMALL] = atkmods[SZ_SMALL][sd->weapontype1];
-	sd->right_weapon.atkmods[SZ_MEDIUM] = atkmods[SZ_MEDIUM][sd->weapontype1];
-	sd->right_weapon.atkmods[SZ_BIG] = atkmods[SZ_BIG][sd->weapontype1];
-	sd->left_weapon.atkmods[SZ_SMALL] = atkmods[SZ_SMALL][sd->weapontype2];
-	sd->left_weapon.atkmods[SZ_MEDIUM] = atkmods[SZ_MEDIUM][sd->weapontype2];
-	sd->left_weapon.atkmods[SZ_BIG] = atkmods[SZ_BIG][sd->weapontype2];
-
+	std::shared_ptr<s_sizefix_db> right_weapon = size_fix_db.find(sd->weapontype1);
+	std::shared_ptr<s_sizefix_db> left_weapon = size_fix_db.find(sd->weapontype2);
+	
+	sd->right_weapon.atkmods[SZ_SMALL] = right_weapon->small;
+	sd->right_weapon.atkmods[SZ_MEDIUM] = right_weapon->medium;
+	sd->right_weapon.atkmods[SZ_BIG] = right_weapon->large;
+	sd->left_weapon.atkmods[SZ_SMALL] = left_weapon->small;
+	sd->left_weapon.atkmods[SZ_MEDIUM] = left_weapon->medium;
+	sd->left_weapon.atkmods[SZ_BIG] = left_weapon->large;
 	if((pc_isriding(sd) || pc_isridingdragon(sd)) &&
 		(sd->status.weapon==W_1HSPEAR || sd->status.weapon==W_2HSPEAR))
 	{	// When Riding with spear, damage modifier to mid-class becomes
@@ -14559,23 +14654,6 @@ static bool status_readdb_status_disabled(char **str, int columns, int current)
 }
 
 /**
- * Read sizefix database for attack calculations
- * @param fields: Fields passed from sv_readdb
- * @param columns: Columns passed from sv_readdb function call
- * @param current: Current row being read into atkmods array
- * @return True
- */
-static bool status_readdb_sizefix(char* fields[], int columns, int current)
-{
-	unsigned int i;
-
-	for(i = 0; i < MAX_WEAPON_TYPE; i++)
-		atkmods[current][i] = atoi(fields[i]);
-
-	return true;
-}
-
-/**
  * Reads and parses an entry from the refine_db
  * @param node: The YAML node containing the entry
  * @param refine_info_index: The sequential index of the current entry
@@ -14748,7 +14826,7 @@ static bool status_readdb_attrfix(const char *basedir,bool silent)
  * previous functions above, separating information by delimiter
  * DBs being read:
  *	attr_fix.txt: Attribute adjustment table for attacks
- *	size_fix.txt: Size adjustment table for weapons
+ *	size_fix.yml: Size adjustment table for weapons
  *	refine_db.txt: Refining data table
  * @return 0
  */
@@ -14763,10 +14841,6 @@ int status_readdb(void)
 	// Initialize databases to default
 
 	memset(SCDisabled, 0, sizeof(SCDisabled));
-	// size_fix.txt
-	for(i=0;i<ARRAYLENGTH(atkmods);i++)
-		for(j=0;j<MAX_WEAPON_TYPE;j++)
-			atkmods[i][j]=100;
 	// refine_db.yml
 	for(i=0;i<ARRAYLENGTH(refine_info);i++)
 	{
@@ -14804,12 +14878,14 @@ int status_readdb(void)
 
 		status_readdb_attrfix(dbsubpath2,i > 0); // !TODO use sv_readdb ?
 		sv_readdb(dbsubpath1, "status_disabled.txt", ',', 2, 2, -1, &status_readdb_status_disabled, i > 0);
-		sv_readdb(dbsubpath1, "size_fix.txt",',',MAX_WEAPON_TYPE,MAX_WEAPON_TYPE,ARRAYLENGTH(atkmods),&status_readdb_sizefix, i > 0);
 
 		status_yaml_readdb_refine(dbsubpath2, "refine_db.yml");
 		aFree(dbsubpath1);
 		aFree(dbsubpath2);
 	}
+
+	size_fix_db.load();
+
 	return 0;
 }
 
