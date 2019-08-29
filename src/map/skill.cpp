@@ -3256,9 +3256,11 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 	if (tsc && tsc->data[SC_TRICKDEAD])
 		return 0;
 
+#ifndef RENEWAL
 	//When Gravitational Field is active, damage can only be dealt by Gravitational Field and Autospells
 	if(sd && sc && sc->data[SC_GRAVITATION] && sc->data[SC_GRAVITATION]->val3 == BCT_SELF && skill_id != HW_GRAVITATION && !sd->state.autocast)
 		return 0;
+#endif
 
 	dmg = battle_calc_attack(attack_type,src,bl,skill_id,skill_lv,flag&0xFFF);
 
@@ -3596,7 +3598,11 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 
 	// Instant damage
 	if( !dmg.amotion ) {
-		if( (!tsc || (!tsc->data[SC_DEVOTION] && skill_id != CR_REFLECTSHIELD && !tsc->data[SC_WATER_SCREEN_OPTION]) || skill_id == HW_GRAVITATION || skill_id == NPC_EVILLAND) && !shadow_flag )
+		if ((!tsc || (!tsc->data[SC_DEVOTION] && skill_id != CR_REFLECTSHIELD && !tsc->data[SC_WATER_SCREEN_OPTION])
+			#ifndef RENEWAL
+			|| skill_id == HW_GRAVITATION
+			#endif
+			|| skill_id == NPC_EVILLAND) && !shadow_flag)
 			status_fix_damage(src,bl,damage,dmg.dmotion); //Deal damage before knockback to allow stuff like firewall+storm gust combo.
 		if( !status_isdead(bl) && additional_effects )
 			skill_additional_effect(src,bl,skill_id,skill_lv,dmg.flag,dmg.dmg_lv,tick);
@@ -3619,7 +3625,11 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
 			battle_delay_damage(tick, dmg.amotion,src,bl,dmg.flag,skill_id,skill_lv,damage,dmg.dmg_lv,dmg.dmotion, additional_effects, false);
 	}
 
-	if (tsc && skill_id != PA_PRESSURE && skill_id != HW_GRAVITATION && skill_id != NPC_EVILLAND) {
+	if (tsc  && skill_id != NPC_EVILLAND
+		#ifndef RENEWAL
+		&& skill_id != PA_PRESSURE && skill_id != HW_GRAVITATION
+		#endif
+		) {
 		if (tsc->data[SC_DEVOTION]) {
 			struct status_change_entry *sce = tsc->data[SC_DEVOTION];
 			struct block_list *d_bl = map_id2bl(sce->val1);
@@ -11863,6 +11873,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, uint16 skill_id, ui
 	case NJ_RAIGEKISAI:
 	case NJ_KAMAITACHI:
 #ifdef RENEWAL
+	case HW_GRAVITATION:
 	case NJ_HUUMA:
 #endif
 	case NPC_EVILLAND:
@@ -12103,12 +12114,14 @@ int skill_castend_pos2(struct block_list* src, int x, int y, uint16 skill_id, ui
 			return 1;
 		}
 		break;
+	#ifndef RENEWAL
 
 	case HW_GRAVITATION:
 		if ((sg = skill_unitsetting(src,skill_id,skill_lv,x,y,0)))
 			sc_start4(src,src,type,100,skill_lv,0,BCT_SELF,sg->group_id,skill_get_time(skill_id,skill_lv));
 		flag|=1;
 		break;
+	#endif
 
 	// Plant Cultivation [Celest]
 	case CR_CULTIVATION:
@@ -13152,10 +13165,12 @@ struct skill_unit_group *skill_unitsetting(struct block_list *src, uint16 skill_
 			pc_delspiritcharm(sd,sd->spiritcharm,sd->spiritcharm_type);
 		}
 		break;
+#ifndef RENEWAL
 	case HW_GRAVITATION:
 		if(sc && sc->data[SC_GRAVITATION] && sc->data[SC_GRAVITATION]->val3 == BCT_SELF)
 			link_group_id = sc->data[SC_GRAVITATION]->val4;
 		break;
+#endif
 	case SO_VACUUM_EXTREME:
 		// Coordinates
 		val1 = x;
@@ -14517,7 +14532,9 @@ int skill_unit_onleft(uint16 skill_id, struct block_list *bl, t_tick tick)
 		case SA_DELUGE:
 		case SA_VIOLENTGALE:
 		case CG_HERMODE:
+#ifndef RENEWAL
 		case HW_GRAVITATION:
+#endif
 		case HP_BASILICA:
 		case NJ_SUITON:
 		case SC_MAELSTROM:
@@ -17620,7 +17637,9 @@ static int skill_cell_overlap(struct block_list *bl, va_list ap)
 			break;
 		case WZ_ICEWALL:
 		case HP_BASILICA:
+#ifndef RENEWAL
 		case HW_GRAVITATION:
+#endif
 			//These can't be placed on top of themselves (duration can't be refreshed)
 			if (unit->group->skill_id == skill_id)
 			{

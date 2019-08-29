@@ -1514,7 +1514,9 @@ void initChangeTables(void)
 	StatusChangeStateTable[SC_TINDER_BREAKER]		|= SCS_NOMOVE;
 	StatusChangeStateTable[SC_TINDER_BREAKER2]		|= SCS_NOMOVE;
 	StatusChangeStateTable[SC_MADNESSCANCEL]		|= SCS_NOMOVE;
+	#ifndef RENEWAL
 	StatusChangeStateTable[SC_GRAVITATION]			|= SCS_NOMOVE|SCS_NOMOVECOND;
+	#endif
 	StatusChangeStateTable[SC_WHITEIMPRISON]		|= SCS_NOMOVE;
 	StatusChangeStateTable[SC_DEEPSLEEP]			|= SCS_NOMOVE;
 	StatusChangeStateTable[SC_ELECTRICSHOCKER]		|= SCS_NOMOVE;
@@ -1827,6 +1829,7 @@ int status_damage(struct block_list *src,struct block_list *target,int64 dhp, in
 				if (src && src->type != BL_PC && !map_flag_gvg2(target->m) && !map_getmapflag(target->m, MF_BATTLEGROUND) && --(sce->val2) <= 0)
 					status_change_end(target, SC_ENDURE, INVALID_TIMER);
 			}
+#ifndef RENEWAL
 			if ((sce=sc->data[SC_GRAVITATION]) && sce->val3 == BCT_SELF) {
 				struct skill_unit_group* sg = skill_id2group(sce->val4);
 				if (sg) {
@@ -1835,6 +1838,7 @@ int status_damage(struct block_list *src,struct block_list *target,int64 dhp, in
 					status_change_end(target, SC_GRAVITATION, INVALID_TIMER);
 				}
 			}
+#endif
 			if(sc->data[SC_DANCING] && (unsigned int)hp > status->max_hp>>2)
 				status_change_end(target, SC_DANCING, INVALID_TIMER);
 			if(sc->data[SC_CLOAKINGEXCEED] && --(sc->data[SC_CLOAKINGEXCEED]->val2) <= 0)
@@ -4907,7 +4911,9 @@ void status_calc_state( struct block_list *bl, struct status_change *sc, enum sc
 		else if(
 				     (sc->data[SC_GOSPEL] && sc->data[SC_GOSPEL]->val4 == BCT_SELF)	// cannot move while gospel is in effect
 				  || (sc->data[SC_BASILICA] && sc->data[SC_BASILICA]->val4 == bl->id) // Basilica caster cannot move
+#ifndef RENEWAL
 				  || (sc->data[SC_GRAVITATION] && sc->data[SC_GRAVITATION]->val3 == BCT_SELF)
+#endif
 				  || (sc->data[SC_CAMOUFLAGE] && sc->data[SC_CAMOUFLAGE]->val1 < 3)
 				)
 			sc->cant.move += ( start ? 1 : ((sc->cant.move)? -1:0) );

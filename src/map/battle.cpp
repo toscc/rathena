@@ -5893,7 +5893,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						break;
 		#endif
 					case HW_NAPALMVULCAN:
-						skillratio += 25;
+						skillratio += 40;
 						break;
 					case SL_STIN: //Target size must be small (0) for full damage
 						skillratio += (tstatus->size != SZ_SMALL ? -99 : 10 * skill_lv);
@@ -5962,6 +5962,10 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 						break;
 					case WZ_METEOR:
 						skillratio += 25;
+						break;
+					case HW_GRAVITATION:
+						skillratio += 70;
+						// RE_LVL_DMOD(100);
 						break;
 					case WZ_VERMILION:
 						if(sd) {
@@ -6541,10 +6545,8 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 			nk |= NK_IGNORE_FLEE|NK_NO_ELEFIX; //These two are not properties of the weapon based part.
 #endif
 			break;
+#ifndef RENEWAL
 		case HW_GRAVITATION:
-#ifdef RENEWAL
-			md.damage = 500 + 100 * skill_lv;
-#else
 			md.damage = 200 + 200 * skill_lv;
 #endif
 			md.dmotion = 0; //No flinch animation

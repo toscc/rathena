@@ -296,11 +296,7 @@ index b872350dae..1f5d1fbce2 100644
  398,0,500,0,0,120000,0,0
  //-- LK_JOINTBEAT
  399,0,800:800:800:800:1000,0,0,30000,0,0
- 
- //-- HW_NAPALMVULCAN
--400,800,1000,0,0,20000,0,200
-+400,800,500,0,0,20000,1000,200
- 
+  
  //-- CH_SOULCOLLECT
 -401,0,0,0,600000,0,0,2000
 +401,0,0,0,600000,0,0,1000
@@ -322,14 +318,6 @@ index b872350dae..1f5d1fbce2 100644
  407,0,5000,0,0,0,0,0
  //==========================================
 @@ -790,15 +792,15 @@
- //-- HW_GANBANTEIN
- 483,0,5000,0,0,0,0,3000
- //-- HW_GRAVITATION
--484,0,2000,0,5000:6000:7000:8000:9000,0,0,5000
-+484,5000,1000,0,5000:6000:7000:8000:9000,0,5000,1000
- 
- //-- WS_CARTTERMINATION
- 485,0,0,0,0,5000,0,0
  //-- WS_OVERTHRUSTMAX
  486,0,0,0,180000,0,0,0
  
@@ -467,14 +455,7 @@ index 72742754ec..808b9d5fcd 100644
 +367,9,8,1,6,0,0,5,1,no,0,0,0,magic,0,0x0,		PA_PRESSURE,Gloria Domini
  368,0,6,4,0,0x69,0,5,1,yes,0,0,0,weapon,0,0x300000,	PA_SACRIFICE, Martyr's Reckoning
  369,0,6,4,0,0x41,0,10,1,yes,0,0,0,misc,0,0x0,	PA_GOSPEL,Battle Chant
- 
-@@ -594,7 +594,7 @@
- 
- //****
- // High Wizard
--400,9,8,1,8,0x6,1,5,1:2:3:4:5,yes,0,0x40000,0,magic,0,0x0,	HW_NAPALMVULCAN,Napalm Vulcan
-+400,9,8,1,8,0x2,1,5,1:2:3:4:5,yes,0,0x40000,0,magic,0,0x0,	HW_NAPALMVULCAN,Napalm Vulcan
- 
+
  //****
  // Champion
 @@ -707,15 +707,15 @@
@@ -488,6 +469,9 @@ index 72742754ec..808b9d5fcd 100644
  483,18,6,2,0,0x1,1:2:3:4:5,1,1,no,0,0,0,none,0,0x0,	HW_GANBANTEIN,Ganbantein
 -484,18,6,2,2,0xD1,0,5,1,yes,0,0x18000,0,misc,0,0x11010,		HW_GRAVITATION,Gravitation Field
 +484,18,8,2,0,0x1,0,5,10:12:14:16:18,yes,0,0,0,magic,0,0x11010,		HW_GRAVITATION,Gravitation Field
+
+484,18,8,2,0,0xD1,0,5,10:12:14:16:18,yes,0,0x18000,0,misc,0,0x11010,		HW_GRAVITATION,Gravitation Field
+
  485,-2,6,1,-1,0x0,0,10,1,no,0,0,0,weapon,0,0x4000,	WS_CARTTERMINATION,Cart Termination
  486,0,6,4,0,0x1,0,5,1,no,0,0,0,weapon,0,0x4000,		WS_OVERTHRUSTMAX,Maximum Power Thrust
 -487,0,6,4,0,0x1,0,5,1,no,0,0,0,none,0,0x8,		CG_LONGINGFREEDOM,Longing for Freedom
@@ -676,12 +660,6 @@ index 15c7a09627..9a8247a222 100644
  402,0,0,12:15:18:21:24,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0					//PF_MINDBREAKER
  403,0,0,1,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0								//PF_MEMORIZE
 @@ -466,10 +466,10 @@
- 480,0,0,28:31:34:37:40,0,0,0,99,0,0,shield,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0				//PA_SHIELDCHAIN
- 482,0,0,40:45:50:55:60,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0					//PF_DOUBLECASTING
- 483,0,0,40,0,0,0,99,0,0,none,0,0,715,1,717,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0							//HW_GANBANTEIN
--484,0,0,20:40:60:80:100,0,0,0,99,0,0,none,0,0,717,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0				//HW_GRAVITATION
-+484,0,0,60:70:80:90:100,0,0,0,99,0,0,none,0,0,717,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0				//HW_GRAVITATION
- 485,0,0,15,0,0,600:700:800:900:1000:1100:1200:1300:1400:1500,0:1:2:3:4:5:6:7:8:9:10:12:13:14:15:16:17:18:19:20:21:22,0,0,none,SC_CARTBOOST,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//WS_CARTTERMINATION
  486,0,0,15,0,0,3000:3500:4000:4500:5000,0:1:2:3:4:5:6:7:8:9:10:12:13:14:15:16:17:18:19:20:21:22,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//WS_OVERTHRUSTMAX
 -487,0,0,15,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0								//CG_LONGINGFREEDOM
 +//487,0,0,15,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0								//CG_LONGINGFREEDOM // Replaced with Skilled Special Singer
@@ -787,9 +765,7 @@ index c8e57880e7..1e65c56155 100644
  428,0x86,    ,  0, 1, 100,enemy, 0x000	//SG_SUN_WARM
  429,0x86,    ,  0, 1, 100,enemy, 0x000	//SG_MOON_WARM
  430,0x86,    ,  0, 1, 100,enemy, 0x000	//SG_STAR_WARM
--484,0xb8,    ,  2, 0, 500,enemy, 0x8818	//HW_GRAVITATION
 -488,0xb9,    ,  3, 0,  -1,all,   0x200	//CG_HERMODE
-+484,0xb8,    ,  2, 0, 500,enemy, 0x8010	//HW_GRAVITATION
  516,0x86,    ,  3, 0, 100,enemy, 0x000	//GS_DESPERADO
  521,0xbe,    ,  0, 1,1000,enemy, 0x000	//GS_GROUNDDRIFT
  525,0x86,    ,  0, 2,1000,enemy, 0x018	//NJ_HUUMA
@@ -840,12 +816,6 @@ index de8167f4a0..58c201f9a2 100644
 +			&& !status_bl_has_mode(src,MD_STATUS_IMMUNE) ) {
  			d->dmg_lv = ATK_BLOCK;
  			return 0;
- 		}
--		if( sc->data[SC_WHITEIMPRISON] ) { // Gravitation and Pressure do damage without removing the effect
-+		if( sc->data[SC_WHITEIMPRISON] ) { // Pre-Renewal: Gravitation and Pressure do damage without removing the effect
- 			if( skill_id == MG_NAPALMBEAT ||
- 				skill_id == MG_SOULSTRIKE ||
- 				skill_id == WL_SOULEXPANSION ||
 @@ -1257,12 +1271,9 @@ int64 battle_calc_damage(struct block_list *src,struct block_list *bl,struct Dam
  #ifdef RENEWAL
  		if( sc->data[SC_RAID] ) {
@@ -1191,18 +1161,6 @@ index de8167f4a0..58c201f9a2 100644
  			case MS_BOWLINGBASH:
  			case MO_BALKYOUNG:
  			case TK_TURNKICK:
-@@ -5882,10 +5982,25 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list
-
- 					case HW_NAPALMVULCAN:
-+#ifdef RENEWAL
-+						skillratio += -100 + 70 * skill_lv;
-+						RE_LVL_DMOD(100);
-+#else
- 						skillratio += 25;
-+#endif
- 						break;
- 					case SL_STIN: //Target size must be small (0) for full damage
- 						skillratio += (tstatus->size != SZ_SMALL ? -99 : 10 * skill_lv);
 @@ -5950,22 +6065,38 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list
 ...
  							skillratio += 20 * skill_lv - 20; //Monsters use old formula
@@ -1212,10 +1170,6 @@ index de8167f4a0..58c201f9a2 100644
 +						skillratio += skill_lv * 10;
 +						if (sd)
 +							skillratio += 3 * pc_checkskill(sd, BA_MUSICALLESSON);
-+						break;
-+					case HW_GRAVITATION:
-+						skillratio += -100 + 50 * skill_lv;
-+						RE_LVL_DMOD(100);
 +						break;
 +					case PA_PRESSURE:
 +						skillratio += -100 + 500 + 150 * skill_lv;
@@ -1296,14 +1250,6 @@ index de8167f4a0..58c201f9a2 100644
  #endif
  			break;
 +#ifndef RENEWAL
- 		case HW_GRAVITATION:
--#ifdef RENEWAL
--			md.damage = 500 + 100 * skill_lv;
--#else
- 			md.damage = 200 + 200 * skill_lv;
--#endif
- 			md.dmotion = 0; //No flinch animation
- 			break;
  		case PA_PRESSURE:
  			md.damage = 500 + 300 * skill_lv;
  			break;
@@ -1701,44 +1647,6 @@ index 1c417d9466..5bdd0b0727 100755
   * @return Number of knocked back cells done
   */
  short skill_blown(struct block_list* src, struct block_list* target, char count, int8 dir, enum e_skill_blown flag)
-@@ -3304,9 +3327,11 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
- 	if (tsc && tsc->data[SC_TRICKDEAD])
- 		return 0;
- 
-+#ifndef RENEWAL
- 	//When Gravitational Field is active, damage can only be dealt by Gravitational Field and Autospells
- 	if(sd && sc && sc->data[SC_GRAVITATION] && sc->data[SC_GRAVITATION]->val3 == BCT_SELF && skill_id != HW_GRAVITATION && !sd->state.autocast)
- 		return 0;
-+#endif
- 
- 	dmg = battle_calc_attack(attack_type,src,bl,skill_id,skill_lv,flag&0xFFF);
- 
-@@ -3644,7 +3669,11 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
- 
- 	// Instant damage
- 	if( !dmg.amotion ) {
--		if( (!tsc || (!tsc->data[SC_DEVOTION] && skill_id != CR_REFLECTSHIELD && !tsc->data[SC_WATER_SCREEN_OPTION]) || skill_id == HW_GRAVITATION || skill_id == NPC_EVILLAND) && !shadow_flag )
-+		if( (!tsc || (!tsc->data[SC_DEVOTION] && skill_id != CR_REFLECTSHIELD && !tsc->data[SC_WATER_SCREEN_OPTION])
-+#ifndef RENEWAL
-+			|| skill_id == HW_GRAVITATION
-+#endif
-+			|| skill_id == NPC_EVILLAND) && !shadow_flag )
- 			status_fix_damage(src,bl,damage,dmg.dmotion); //Deal damage before knockback to allow stuff like firewall+storm gust combo.
- 		if( !status_isdead(bl) && additional_effects )
- 			skill_additional_effect(src,bl,skill_id,skill_lv,dmg.flag,dmg.dmg_lv,tick);
-@@ -3667,7 +3696,11 @@ int64 skill_attack (int attack_type, struct block_list* src, struct block_list *
- 			battle_delay_damage(tick, dmg.amotion,src,bl,dmg.flag,skill_id,skill_lv,damage,dmg.dmg_lv,dmg.dmotion, additional_effects, false);
- 	}
- 
--	if (tsc && skill_id != PA_PRESSURE && skill_id != HW_GRAVITATION && skill_id != NPC_EVILLAND) {
-+	if (tsc  && skill_id != NPC_EVILLAND
-+#ifndef RENEWAL
-+		&& skill_id != PA_PRESSURE && skill_id != HW_GRAVITATION
-+#endif
-+		) {
- 		if (tsc->data[SC_DEVOTION]) {
- 			struct status_change_entry *sce = tsc->data[SC_DEVOTION];
- 			struct block_list *d_bl = map_id2bl(sce->val1);
 @@ -3862,7 +3895,9 @@ static int skill_check_unit_range_sub(struct block_list *bl, va_list ap)
  		case HT_BLASTMINE:
  		case HT_CLAYMORETRAP:
@@ -2197,14 +2105,6 @@ index 1c417d9466..5bdd0b0727 100755
  	case CG_MOONLIT:
  	case GS_DESPERADO:
  	case NJ_KAENSIN:
-@@ -11880,6 +12124,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, uint16 skill_id, ui
- 	case NJ_RAIGEKISAI:
- 	case NJ_KAMAITACHI:
- #ifdef RENEWAL
-+	case HW_GRAVITATION:
- 	case NJ_HUUMA:
- #endif
- 	case NPC_EVILLAND:
 @@ -11937,6 +12182,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, uint16 skill_id, ui
  		skill_unitsetting(src,skill_id,skill_lv,x,y,0);
  		flag|=1;
@@ -2231,20 +2131,6 @@ index 1c417d9466..5bdd0b0727 100755
  		break;
  	case RG_CLEANER: // [Valaris]
  		i = skill_get_splash(skill_id, skill_lv);
-@@ -12121,11 +12372,13 @@ int skill_castend_pos2(struct block_list* src, int x, int y, uint16 skill_id, ui
- 		}
- 		break;
- 
-+#ifndef RENEWAL
- 	case HW_GRAVITATION:
- 		if ((sg = skill_unitsetting(src,skill_id,skill_lv,x,y,0)))
- 			sc_start4(src,src,type,100,skill_lv,0,BCT_SELF,sg->group_id,skill_get_time(skill_id,skill_lv));
- 		flag|=1;
- 		break;
-+#endif
- 
- 	// Plant Cultivation [Celest]
- 	case CR_CULTIVATION:
 @@ -12866,9 +13119,11 @@ struct skill_unit_group *skill_unitsetting(struct block_list *src, uint16 skill_
  			val3 = group->val3; //as well as the mapindex to warp to.
  		}
@@ -2308,19 +2194,6 @@ index 1c417d9466..5bdd0b0727 100755
  		break;
  	case BD_RINGNIBELUNGEN:
  		val1 = (skill_lv+2)*25;	//Atk increase
-@@ -13164,10 +13402,12 @@ struct skill_unit_group *skill_unitsetting(struct block_list *src, uint16 skill_
- 			pc_delspiritcharm(sd,sd->spiritcharm,sd->spiritcharm_type);
- 		}
- 		break;
-+#ifndef RENEWAL
- 	case HW_GRAVITATION:
- 		if(sc && sc->data[SC_GRAVITATION] && sc->data[SC_GRAVITATION]->val3 == BCT_SELF)
- 			link_group_id = sc->data[SC_GRAVITATION]->val4;
- 		break;
-+#endif
- 	case SO_VACUUM_EXTREME:
- 		// Coordinates
- 		val1 = x;
 @@ -13589,6 +13829,7 @@ static int skill_unit_onplace(struct skill_unit *unit, struct block_list *bl, t_
  			}
  			break;
@@ -2382,7 +2255,6 @@ index 1c417d9466..5bdd0b0727 100755
  		case SA_VIOLENTGALE:
  		case CG_HERMODE:
 +#ifndef RENEWAL
- 		case HW_GRAVITATION:
  		case HP_BASILICA:
 +#endif
  		case NJ_SUITON:
@@ -2560,7 +2432,6 @@ index 1c417d9466..5bdd0b0727 100755
  		case WZ_ICEWALL:
 +#ifndef RENEWAL
  		case HP_BASILICA:
- 		case HW_GRAVITATION:
 +#endif
  			//These can't be placed on top of themselves (duration can't be refreshed)
  			if (unit->group->skill_id == skill_id)
@@ -2773,9 +2644,6 @@ index c19a6deeac..fbcd8ef90a 100644
  	set_sc( SM_SELFPROVOKE		, SC_PROVOKE		, EFST_PROVOKE		, SCB_DEF|SCB_DEF2|SCB_BATK|SCB_WATK );
  	set_sc( ST_PRESERVE		, SC_PRESERVE		, EFST_PRESERVE		, SCB_NONE );
  	set_sc( PF_DOUBLECASTING	, SC_DOUBLECAST		, EFST_DOUBLECASTING, SCB_NONE );
-+#ifndef RENEWAL
- 	set_sc( HW_GRAVITATION		, SC_GRAVITATION	, EFST_GRAVITATION	, SCB_ASPD );
-+#endif
  	add_sc( WS_CARTTERMINATION	, SC_STUN		);
  	set_sc( WS_OVERTHRUSTMAX	, SC_MAXOVERTHRUST	, EFST_OVERTHRUSTMAX, SCB_NONE );
 +#ifdef RENEWAL
@@ -2799,9 +2667,6 @@ index c19a6deeac..fbcd8ef90a 100644
  	StatusChangeStateTable[SC_TINDER_BREAKER]		|= SCS_NOMOVE;
  	StatusChangeStateTable[SC_TINDER_BREAKER2]		|= SCS_NOMOVE;
  	StatusChangeStateTable[SC_MADNESSCANCEL]		|= SCS_NOMOVE;
-+#ifndef RENEWAL
- 	StatusChangeStateTable[SC_GRAVITATION]			|= SCS_NOMOVE|SCS_NOMOVECOND;
-+#endif
  	StatusChangeStateTable[SC_WHITEIMPRISON]		|= SCS_NOMOVE;
  	StatusChangeStateTable[SC_DEEPSLEEP]			|= SCS_NOMOVE;
  	StatusChangeStateTable[SC_ELECTRICSHOCKER]		|= SCS_NOMOVE;
@@ -2825,22 +2690,6 @@ index c19a6deeac..fbcd8ef90a 100644
  	StatusChangeStateTable[SC__BLOODYLUST]			|= SCS_NOCAST;
  	StatusChangeStateTable[SC_DEATHBOUND]			|= SCS_NOCAST;
  	StatusChangeStateTable[SC_OBLIVIONCURSE]		|= SCS_NOCAST;
-@@ -1729,6 +1897,7 @@ int status_damage(struct block_list *src,struct block_list *target,int64 dhp, in
- 				if (src && src->type != BL_PC && !map_flag_gvg2(target->m) && !map_getmapflag(target->m, MF_BATTLEGROUND) && --(sce->val2) <= 0)
- 					status_change_end(target, SC_ENDURE, INVALID_TIMER);
- 			}
-+#ifndef RENEWAL
- 			if ((sce=sc->data[SC_GRAVITATION]) && sce->val3 == BCT_SELF) {
- 				struct skill_unit_group* sg = skill_id2group(sce->val4);
- 				if (sg) {
-@@ -1737,6 +1906,7 @@ int status_damage(struct block_list *src,struct block_list *target,int64 dhp, in
- 					status_change_end(target, SC_GRAVITATION, INVALID_TIMER);
- 				}
- 			}
-+#endif
- 			if(sc->data[SC_DANCING] && (unsigned int)hp > status->max_hp>>2)
- 				status_change_end(target, SC_DANCING, INVALID_TIMER);
- 			if(sc->data[SC_CLOAKINGEXCEED] && --(sc->data[SC_CLOAKINGEXCEED]->val2) <= 0)
 @@ -2107,6 +2277,7 @@ bool status_check_skilluse(struct block_list *src, struct block_list *target, ui
  	}
  
@@ -2997,8 +2846,7 @@ index c19a6deeac..fbcd8ef90a 100644
  				     (sc->data[SC_GOSPEL] && sc->data[SC_GOSPEL]->val4 == BCT_SELF)	// cannot move while gospel is in effect
 +#ifndef RENEWAL
  				  || (sc->data[SC_BASILICA] && sc->data[SC_BASILICA]->val4 == bl->id) // Basilica caster cannot move
- 				  || (sc->data[SC_GRAVITATION] && sc->data[SC_GRAVITATION]->val3 == BCT_SELF)
-+#endif
+ #endif
  				  || (sc->data[SC_CAMOUFLAGE] && sc->data[SC_CAMOUFLAGE]->val1 < 3)
  				)
  			sc->cant.move += ( start ? 1 : ((sc->cant.move)? -1:0) );
@@ -3214,10 +3062,6 @@ index c19a6deeac..fbcd8ef90a 100644
  			bonus -= sc->data[SC_DEFENDER]->val4 / 10;
  		if (sc->data[SC_GOSPEL] && sc->data[SC_GOSPEL]->val4 == BCT_ENEMY)
  			bonus -= 75;
-+#ifndef RENEWAL
- 		if (sc->data[SC_GRAVITATION])
- 			bonus -= sc->data[SC_GRAVITATION]->val2 / 10; // Needs more info
-+#endif
  		if (sc->data[SC_JOINTBEAT]) { // Needs more info
  			if (sc->data[SC_JOINTBEAT]->val2&BREAK_WRIST)
  				bonus -= 25;
@@ -3247,17 +3091,6 @@ index c19a6deeac..fbcd8ef90a 100644
  	if(sc->data[SC_STEELBODY])
  		aspd_rate += 250;
  	if(sc->data[SC_SKA])
-@@ -7197,8 +7513,10 @@ static short status_calc_aspd_rate(struct block_list *bl, struct status_change *
- 		aspd_rate += sc->data[SC_DEFENDER]->val4;
- 	if(sc->data[SC_GOSPEL] && sc->data[SC_GOSPEL]->val4 == BCT_ENEMY)
- 		aspd_rate += 250;
-+#ifndef RENEWAL
- 	if(sc->data[SC_GRAVITATION])
- 		aspd_rate += sc->data[SC_GRAVITATION]->val2;
-+#endif
- 	if(sc->data[SC_JOINTBEAT]) {
- 		if( sc->data[SC_JOINTBEAT]->val2&BREAK_WRIST )
- 			aspd_rate += 250;
 @@ -8304,8 +8622,13 @@ t_tick status_get_sc_def(struct block_list *src, struct block_list *bl, enum sc_
  	if (sc) {
  		if (sc->data[SC_SCRESIST])
@@ -3283,16 +3116,6 @@ index c19a6deeac..fbcd8ef90a 100644
  			short i;
  			opt_flag = 0; // Reuse to check success condition.
  			if(sd->bonus.unstripable_equip&EQP_WEAPON)
-@@ -9003,7 +9328,9 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
- 			case SC_DECREASEAGI:
- 			case SC_PROVOKE:
- 			case SC_COMA:
-+#ifndef RENEWAL
- 			case SC_GRAVITATION:
-+#endif
- 			case SC_SUITON:
- 			case SC_STRIPWEAPON:
- 			case SC_STRIPARMOR:
 @@ -9095,6 +9422,43 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
  		status_change_end(bl, SC_CARTBOOST, INVALID_TIMER);
  		status_change_end(bl, SC_GN_CARTBOOST, INVALID_TIMER);
@@ -3455,18 +3278,6 @@ index c19a6deeac..fbcd8ef90a 100644
  		case SC_EXPLOSIONSPIRITS:
  			val2 = 75 + 25*val1; // Cri bonus
  			break;
-@@ -10062,9 +10490,11 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
- 			tick = INFINITE_TICK;
- 			break;
- 
-+#ifndef RENEWAL
- 		case SC_GRAVITATION:
- 			val2 = 50*val1; // aspd reduction
- 			break;
-+#endif
- 
- 		case SC_REGENERATION:
- 			if (val1 == 1)
 @@ -10201,7 +10631,11 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
  				struct map_session_data * s_sd = BL_CAST(BL_PC, src);
  				if (type == SC_OVERTHRUST) {
