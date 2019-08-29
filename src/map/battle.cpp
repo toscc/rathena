@@ -5887,6 +5887,11 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 					case WZ_STORMGUST:
 						skillratio += 40 * skill_lv;
 						break;
+		#ifdef RENEWAL
+					case WZ_EARTHSPIKE:
+						skillratio += 100;
+						break;
+		#endif
 					case HW_NAPALMVULCAN:
 						skillratio += 25;
 						break;
