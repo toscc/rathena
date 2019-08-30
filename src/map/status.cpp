@@ -523,7 +523,8 @@ void initChangeTables(void)
 #else
 			EFST_ASSUMPTIO2		, SCB_DEF || SCB_MDEF );
 #endif
-	add_sc( HP_BASILICA		, SC_BASILICA		);
+/*	add_sc( HP_BASILICA		, SC_BASILICA		);*/
+	set_sc(HP_BASILICA, SC_BASILICA, EFST_BASILICA, SCB_STR | SCB_AGI | SCB_VIT | SCB_INT | SCB_DEX | SCB_LUK);
 	set_sc( HW_MAGICPOWER		, SC_MAGICPOWER		, EFST_MAGICPOWER		, SCB_MATK );
 	add_sc( PA_SACRIFICE		, SC_SACRIFICE		);
 	set_sc( PA_GOSPEL		, SC_GOSPEL		, EFST_GOSPEL		, SCB_SPEED|SCB_ASPD );
@@ -1502,7 +1503,7 @@ void initChangeTables(void)
 	StatusChangeStateTable[SC_BLADESTOP]			|= SCS_NOMOVE;
 	StatusChangeStateTable[SC_BLADESTOP_WAIT]		|= SCS_NOMOVE;
 	StatusChangeStateTable[SC_GOSPEL]				|= SCS_NOMOVE|SCS_NOMOVECOND;
-	StatusChangeStateTable[SC_BASILICA]				|= SCS_NOMOVE|SCS_NOMOVECOND;
+/*	StatusChangeStateTable[SC_BASILICA]				|= SCS_NOMOVE|SCS_NOMOVECOND;*/
 	StatusChangeStateTable[SC_STOP]					|= SCS_NOMOVE;
 	StatusChangeStateTable[SC_CLOSECONFINE]			|= SCS_NOMOVE;
 	StatusChangeStateTable[SC_CLOSECONFINE2]		|= SCS_NOMOVE;
@@ -2302,7 +2303,6 @@ bool status_check_skilluse(struct block_list *src, struct block_list *target, ui
 		) {	// Skills blocked through status changes...
 			if (!flag && ( // Blocked only from using the skill (stuff like autospell may still go through
 				sc->cant.cast ||
-				(sc->data[SC_BASILICA] && (sc->data[SC_BASILICA]->val4 != src->id || skill_id != HP_BASILICA)) || // Only Basilica caster that can cast, and only Basilica to cancel it
 				(sc->data[SC_MARIONETTE] && skill_id != CG_MARIONETTE) || // Only skill you can use is marionette again to cancel it
 				(sc->data[SC_MARIONETTE2] && skill_id == CG_MARIONETTE) || // Cannot use marionette if you are being buffed by another
 				(sc->data[SC_ANKLE] && skill_block_check(src, SC_ANKLE, skill_id)) ||
@@ -5705,6 +5705,8 @@ static unsigned short status_calc_str(struct block_list *bl, struct status_chang
 		str += 3;
 	if(sc->data[SC_GLASTHEIM_STATE])
 		str += sc->data[SC_GLASTHEIM_STATE]->val1;
+	if (sc->data[SC_BASILICA])
+		str += 25;
 
 	return (unsigned short)cap_value(str,0,USHRT_MAX);
 }
@@ -5781,6 +5783,8 @@ static unsigned short status_calc_agi(struct block_list *bl, struct status_chang
 		agi += 3;
 	if(sc->data[SC_GLASTHEIM_STATE])
 		agi += sc->data[SC_GLASTHEIM_STATE]->val1;
+	if (sc->data[SC_BASILICA])
+		agi += 25;
 
 	return (unsigned short)cap_value(agi,0,USHRT_MAX);
 }
@@ -5847,6 +5851,8 @@ static unsigned short status_calc_vit(struct block_list *bl, struct status_chang
 		vit += 3;
 	if(sc->data[SC_GLASTHEIM_STATE])
 		vit += sc->data[SC_GLASTHEIM_STATE]->val1;
+	if (sc->data[SC_BASILICA])
+		vit += 25;
 
 	return (unsigned short)cap_value(vit,0,USHRT_MAX);
 }
@@ -5928,6 +5934,8 @@ static unsigned short status_calc_int(struct block_list *bl, struct status_chang
 		if(sc->data[SC__STRIPACCESSORY])
 			int_ -= int_ * sc->data[SC__STRIPACCESSORY]->val2 / 100;
 	}
+	if (sc->data[SC_BASILICA])
+		int_ += 25;
 
 	return (unsigned short)cap_value(int_,0,USHRT_MAX);
 }
@@ -6006,6 +6014,8 @@ static unsigned short status_calc_dex(struct block_list *bl, struct status_chang
 		dex += 3;
 	if(sc->data[SC_GLASTHEIM_STATE])
 		dex += sc->data[SC_GLASTHEIM_STATE]->val1;
+	if (sc->data[SC_BASILICA])
+		dex += 25;
 
 	return (unsigned short)cap_value(dex,0,USHRT_MAX);
 }
@@ -6070,6 +6080,8 @@ static unsigned short status_calc_luk(struct block_list *bl, struct status_chang
 		luk += 3;
 	if(sc->data[SC_GLASTHEIM_STATE])
 		luk += sc->data[SC_GLASTHEIM_STATE]->val1;
+	if (sc->data[SC_BASILICA])
+		luk += 25;
 
 	return (unsigned short)cap_value(luk,0,USHRT_MAX);
 }

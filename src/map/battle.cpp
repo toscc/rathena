@@ -1093,11 +1093,12 @@ int64 battle_calc_damage(struct block_list *src,struct block_list *bl,struct Dam
 	if (skill_id == PA_PRESSURE || skill_id == HW_GRAVITATION)
 		return damage; //These skills bypass everything else.
 
-	if( sc && sc->count ) { // SC_* that reduce damage to 0.
+/*	if( sc && sc->count ) { // SC_* that reduce damage to 0.
 		if( sc->data[SC_BASILICA] && !status_bl_has_mode(src,MD_STATUS_IMMUNE) ) {
 			d->dmg_lv = ATK_BLOCK;
 			return 0;
-		}
+		} */
+
 		if( sc->data[SC_WHITEIMPRISON] ) { // Gravitation and Pressure do damage without removing the effect
 			if( skill_id == MG_NAPALMBEAT ||
 				skill_id == MG_SOULSTRIKE ||
@@ -1510,8 +1511,6 @@ int64 battle_calc_damage(struct block_list *src,struct block_list *bl,struct Dam
 
 		if( sc->data[SC__DEADLYINFECT] && (flag&(BF_SHORT|BF_MAGIC)) == BF_SHORT && damage > 0 && rnd()%100 < 30 + 10 * sc->data[SC__DEADLYINFECT]->val1 )
 			status_change_spread(bl, src, 1); // Deadly infect attacked side
-
-	} //End of target SC_ check
 
 	//SC effects from caster side.
 	sc = status_get_sc(src);

@@ -3824,7 +3824,7 @@ static int skill_check_unit_range_sub(struct block_list *bl, va_list ap)
 		case HT_BLASTMINE:
 		case HT_CLAYMORETRAP:
 		case HT_TALKIEBOX:
-		case HP_BASILICA:
+//		case HP_BASILICA:
 		case RA_ELECTRICSHOCKER:
 		case RA_CLUSTERBOMB:
 		case RA_MAGENTATRAP:
@@ -3878,9 +3878,6 @@ static int skill_check_unit_range2_sub (struct block_list *bl, va_list ap)
 	skill_id = va_arg(ap,int);
 
 	if( status_isdead(bl) && skill_id != AL_WARP )
-		return 0;
-
-	if( skill_id == HP_BASILICA && bl->type == BL_PC )
 		return 0;
 
 	if( skill_id == AM_DEMONSTRATION && bl->type == BL_MOB && ((TBL_MOB*)bl)->mob_id == MOBID_EMPERIUM )
@@ -8755,7 +8752,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 				map_freeblock_unlock();
 				return 0;
 			}
-			if( rnd() % 100 > skill_lv * 8 || (tsc && tsc->data[SC_BASILICA]) ||
+			if( rnd() % 100 > skill_lv * 8 ||
 			(dstmd && ((dstmd->guardian_data && dstmd->mob_id == MOBID_EMPERIUM) || status_get_class_(bl) == CLASS_BATTLEFIELD)) ) {
 				if( sd )
 					clif_skill_fail(sd,skill_id,USESKILL_FAIL_LEVEL,0);
@@ -11938,10 +11935,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, uint16 skill_id, ui
 		flag|=1;
 		break;
 	case HP_BASILICA:
-		if( sc->data[SC_BASILICA] ) {
-			status_change_end(src, SC_BASILICA, INVALID_TIMER); // Cancel Basilica and return so requirement isn't consumed again
-			return 0;
-		} else { // Create Basilica. Start SC on caster. Unit timer start SC on others.
+		// Create Basilica. Start SC on caster. Unit timer start SC on others.
 			if( map_getcell(src->m, x, y, CELL_CHKLANDPROTECTOR) ) {
 				clif_skill_fail(sd,skill_id,USESKILL_FAIL,0);
 				return 0;
@@ -11949,7 +11943,6 @@ int skill_castend_pos2(struct block_list* src, int x, int y, uint16 skill_id, ui
 			skill_clear_unitgroup(src);
 			skill_unitsetting(src,skill_id,skill_lv,x,y,0);
 			flag|=1;
-		}
 		break;
 	case CG_HERMODE:
 		skill_clear_unitgroup(src);
@@ -13398,9 +13391,6 @@ static int skill_unit_onplace(struct skill_unit *unit, struct block_list *bl, t_
 	if( (skill_get_type(sg->skill_id) == BF_MAGIC && map_getcell(unit->bl.m, unit->bl.x, unit->bl.y, CELL_CHKLANDPROTECTOR) && sg->skill_id != SA_LANDPROTECTOR) ||
 		map_getcell(bl->m, bl->x, bl->y, CELL_CHKMAELSTROM) )
 		return 0; //AoE skills are ineffective. [Skotlex]
-
-	if( skill_get_inf2(sg->skill_id)&(INF2_SONG_DANCE|INF2_ENSEMBLE_SKILL) && map_getcell(bl->m, bl->x, bl->y, CELL_CHKBASILICA) )
-		return 0; //Songs don't work in Basilica
 
 	sc = status_get_sc(bl);
 
@@ -15327,7 +15317,7 @@ bool skill_check_condition_castbegin(struct map_session_data* sd, uint16 skill_i
 				}
 				break;
 			}
-		case HP_BASILICA:
+/*		case HP_BASILICA:
 			if( !sc || (sc && !sc->data[SC_BASILICA])) {
 				if( sd ) {
 					// When castbegin, needs 7x7 clear area
@@ -15347,7 +15337,7 @@ bool skill_check_condition_castbegin(struct map_session_data* sd, uint16 skill_i
 					}
 				}
 			}
-			break;
+			break;*/
 		case AM_TWILIGHT2:
 		case AM_TWILIGHT3:
 			if (!party_skill_check(sd, sd->status.party_id, skill_id, skill_lv)) {
@@ -16796,10 +16786,10 @@ int skill_delayfix(struct block_list *bl, uint16 skill_id, uint16 skill_lv)
 				time = 1000;
 			time -= (4 * status_get_agi(bl) + 2 * status_get_dex(bl));
 			break;
-		case HP_BASILICA:
+/*		case HP_BASILICA:
 			if (sc && !sc->data[SC_BASILICA])
 				time = 0; // There is no Delay on Basilica creation, only on cancel
-			break;
+			break;*/
 		default:
 			if (battle_config.delay_dependon_dex && !(delaynodex&1)) { // if skill delay is allowed to be reduced by dex
 				int scale = battle_config.castrate_dex_scale - status_get_dex(bl);
@@ -17638,8 +17628,8 @@ static int skill_cell_overlap(struct block_list *bl, va_list ap)
 			}
 			break;
 		case WZ_ICEWALL:
-		case HP_BASILICA:
 #ifndef RENEWAL
+		case HP_BASILICA:
 		case HW_GRAVITATION:
 #endif
 			//These can't be placed on top of themselves (duration can't be refreshed)
