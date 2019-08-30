@@ -4128,6 +4128,24 @@ int AOEPriority(block_list * bl, va_list ap)
 	return 2; // Default
 }
 
+int AOEPriorityGrav(block_list * bl, va_list ap)
+{
+	struct mob_data *md;
+
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+
+	uint16 elem = va_arg(ap, int); // the element
+
+	int32 m = 100; // Scale up priority by enemy mdef (each 200 = +100% priority)
+	if (md->status.mdef+ md->status.mdef2 > m) {m = (md->status.mdef+ md->status.mdef2)/2; }
+
+	if ((status_get_class_(bl) == CLASS_BOSS)) { if (elemstrong(md, elem)) return (50*m)/100; else return (30*m)/100; }; // Bosses, prioritize AOE and pick element based on boss alone, ignore slaves
+	if (!elemallowed(md, elem)) return 0; // This target won't be hurt by this element enough to care
+	if (elemstrong(md, elem)) return (3*m)/100; // This target is weak to it so it's worth 50% more
+	return 2; // Default
+}
+
 int Quagmirepriority(block_list * bl, va_list ap)
 {
 	struct mob_data *md;
@@ -7115,17 +7133,17 @@ TIMER_FUNC(unit_autopilot_timer)
 						if (((membersd->state.autopilotmode<=1) || ((membersd->bl.id==sd->bl.id) && (pc_checkskill(sd, SA_FREECAST)==0))) && (targetdistance2 <= 9)) {
 							// obsolete now that leader has own variable
 
-							// Unlike single target, here we calculate priority and select the best one
-							/* better to avoid, hard to decide for the AI?
+							// This assumes skill is updated to allow free moving and do good damage otherwise it's a suicide for AI
+							// **Note** It also assumes it was modded to still ignore MDEF despite that update removing that property
 							// Gravitational Field
-							// Always prioritize if MATK is low due to it being fixed damage. Otherwise don't bother, hitting elemental weaknesses should be better.
-							if (canskill(sd)) if ((pc_checkskill(sd, HW_GRAVITATION) > 0) && (Dangerdistance > 900) && (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE)>0) && (sd->battle_status.matk_min<=300)) {
-							int area = 2;
-							priority = 20 * map_foreachinrange(AOEPriority, targetbl2, area, BL_MOB, ELE_NONE);
-							if ((priority >= 120) && (priority>bestpriority)) {
+							// Same priority as the big wizard spells minus one. So use only if those are resisted or subptimal
+							if (canskill(sd)) if ((pc_checkskill(sd, HW_GRAVITATION) > 0) && (Dangerdistance > 900) && (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE)>0)) {
+							int area = 2; // priority scale up by MDEf in AOEPriorityGrav
+							priority = 3 * map_foreachinrange(AOEPriorityGrav, targetbl2, area, BL_MOB, ELE_NONE) -1;
+							if ((priority>=6) && (priority>bestpriority)) {
 							spelltocast = HW_GRAVITATION; bestpriority = priority;IDtarget = foundtargetID2;
 							}
-							}*/
+							}
 							// Storm Gust
 							if (canskill(sd)) if ((pc_checkskill(sd, WZ_STORMGUST) > 0) && (Dangerdistance > 900)) {
 								int area = 5;
@@ -7315,6 +7333,7 @@ TIMER_FUNC(unit_autopilot_timer)
 							}
 
 							// Magnus Exorcismus
+							// **Note** Assumes it only works on Demons and Undead. If you want to include all enemies, replace Magnuspriority with AOEpriority
 							if (canskill(sd)) if ((pc_checkskill(sd, PR_MAGNUS) > 0) && ((Dangerdistance > 900) || (sd->special_state.no_castcancel)) && (pc_search_inventory(sd, ITEMID_BLUE_GEMSTONE) >= 0)) {
 								priority = 3 * map_foreachinrange(Magnuspriority, targetbl2, 3, BL_MOB, skill_get_ele(PR_MAGNUS, pc_checkskill(sd, PR_MAGNUS)));
 								if ((priority >= 18) && (priority > bestpriority)) {
