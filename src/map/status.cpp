@@ -5300,8 +5300,9 @@ void status_calc_bl_main(struct block_list *bl, /*enum scb_flag*/int flag)
 					}
 				}
 
-				status->matk_min = status_calc_ematk(bl, sc, status->matk_min);
-				status->matk_max = status->matk_min;
+				status->matk_buff = status_calc_ematk(bl, sc, status->matk_min) - status->matk_min;
+				status->matk_min += status->matk_buff;
+				status->matk_max = status_calc_ematk(bl, sc, status->matk_max);
 
 				// This is the only portion in MATK that varies depending on the weapon level and refinement rate.
 				if (b_status->lhw.matk) {

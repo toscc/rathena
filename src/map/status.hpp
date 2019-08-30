@@ -2258,7 +2258,7 @@ struct status_data {
 		watk,
 		watk2,
 #endif
-		matk_min, matk_max,
+		matk_min, matk_max, matk_buff,
 		speed,
 		amotion, adelay, dmotion;
 	enum e_mode mode;
