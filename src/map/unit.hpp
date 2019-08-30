@@ -179,4 +179,6 @@ int unit_changetarget(struct block_list *bl,va_list ap);
 void do_init_unit(void);
 void do_final_unit(void);
 
+int endowneed(block_list * bl, va_list ap);
+
 #endif /* UNIT_HPP */
