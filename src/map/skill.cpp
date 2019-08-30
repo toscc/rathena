@@ -15265,12 +15265,12 @@ bool skill_check_condition_castbegin(struct map_session_data* sd, uint16 skill_i
 				}
 			}
 			break;
-		case PR_BENEDICTIO:
+/*		case PR_BENEDICTIO:
 			if (skill_check_pc_partner(sd, skill_id, &skill_lv, 1, 0) < 2) {
 				clif_skill_fail(sd,skill_id,USESKILL_FAIL_LEVEL,0);
 				return false;
 			}
-			break;
+			break;*/
 		case SL_SMA:
 			if(!(sc && sc->data[SC_SMA]))
 				return false;
@@ -15961,9 +15961,9 @@ bool skill_check_condition_castend(struct map_session_data* sd, uint16 skill_id,
 
 	// perform skill-specific checks (and actions)
 	switch( skill_id ) {
-		case PR_BENEDICTIO:
+/*		case PR_BENEDICTIO:
 			skill_check_pc_partner(sd, skill_id, &skill_lv, 1, 1);
-			break;
+			break;*/
 		case AM_CANNIBALIZE:
 		case AM_SPHEREMINE: {
 			int c=0;

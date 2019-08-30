@@ -743,16 +743,6 @@ index de8167f4a0..58c201f9a2 100644
  		return damage; //These skills bypass everything else.
 +#endif
  
- 	if( sc && sc->count ) { // SC_* that reduce damage to 0.
--		if( sc->data[SC_BASILICA] && !status_bl_has_mode(src,MD_STATUS_IMMUNE) ) {
-+#ifdef RENEWAL
-+		if (sc->data[SC_BASILICA_CELL]
-+#else
-+		if (sc->data[SC_BASILICA]
-+#endif
-+			&& !status_bl_has_mode(src,MD_STATUS_IMMUNE) ) {
- 			d->dmg_lv = ATK_BLOCK;
- 			return 0;
 @@ -1257,12 +1271,9 @@ int64 battle_calc_damage(struct block_list *src,struct block_list *bl,struct Dam
  #ifdef RENEWAL
  		if( sc->data[SC_RAID] ) {
@@ -1229,54 +1219,6 @@ index c3cb4a2b0e..f7907a3897 100644
  	sd->menuskill_id = SA_AUTOSPELL;
  	sd->menuskill_val = skill_lv;
  }
-@@ -12170,7 +12195,11 @@ static void clif_parse_UseSkillToPos_homun(struct homun_data *hd, struct map_ses
- 		return;
- 	}
- 
--	if( hd->sc.data[SC_BASILICA] )
-+#ifdef RENEWAL
-+	if (hd->sc.data[SC_BASILICA_CELL])
-+#else
-+	if (hd->sc.data[SC_BASILICA])
-+#endif
- 		return;
- 	lv = hom_checkskill(hd, skill_id);
- 	if( skill_lv > lv )
-@@ -12219,7 +12248,11 @@ static void clif_parse_UseSkillToPos_mercenary(struct mercenary_data *md, struct
- 		return;
- 	}
- 
--	if( md->sc.data[SC_BASILICA] )
-+#ifdef RENEWAL
-+	if (md->sc.data[SC_BASILICA_CELL])
-+#else
-+	if (md->sc.data[SC_BASILICA])
-+#endif
- 		return;
- 	lv = mercenary_checkskill(md, skill_id);
- 	if( skill_lv > lv )
-@@ -12297,8 +12330,10 @@ void clif_parse_skill_toid( struct map_session_data* sd, uint16 skill_id, uint16
- 	if( sd->sc.option&OPTION_COSTUME )
- 		return;
- 
-+#ifndef RENEWAL
- 	if( sd->sc.data[SC_BASILICA] && (skill_id != HP_BASILICA || sd->sc.data[SC_BASILICA]->val4 != sd->bl.id) )
- 		return; // On basilica only caster can use Basilica again to stop it.
-+#endif
- 
- 	if( sd->menuskill_id ) {
- 		if( sd->menuskill_id == SA_TAMINGMONSTER ) {
-@@ -12405,8 +12440,10 @@ static void clif_parse_UseSkillToPosSub(int fd, struct map_session_data *sd, uin
- 	if( sd->sc.option&OPTION_COSTUME )
- 		return;
- 
-+#ifndef RENEWAL
- 	if( sd->sc.data[SC_BASILICA] && (skill_id != HP_BASILICA || sd->sc.data[SC_BASILICA]->val4 != sd->bl.id) )
- 		return; // On basilica only caster can use Basilica again to stop it.
-+#endif
- 
- 	if( sd->menuskill_id ) {
- 		if( sd->menuskill_id == SA_TAMINGMONSTER ) {
 @@ -18511,23 +18548,27 @@ int clif_skill_itemlistwindow( struct map_session_data *sd, uint16 skill_id, uin
  }
  
@@ -1343,20 +1285,6 @@ index 9df9658861..f9c601960a 100755
  		if (penalty > 0) {
  			hp -= hp * penalty / 100;
  			sp -= sp * penalty / 100;
-@@ -9442,7 +9447,12 @@ bool pc_can_attack( struct map_session_data *sd, int target_id ) {
- 	if (sd->state.block_action & PCBLOCK_ATTACK)
- 		return false;
- 
--	if( sd->sc.data[SC_BASILICA] ||
-+	if(
-+#ifdef RENEWAL
-+		sd->sc.data[SC_BASILICA_CELL] ||
-+#else
-+		sd->sc.data[SC_BASILICA] ||
-+#endif
- 		sd->sc.data[SC__SHADOWFORM] ||
- 		sd->sc.data[SC_CURSEDCIRCLE_ATKER] ||
- 		sd->sc.data[SC_CURSEDCIRCLE_TARGET] ||
 @@ -10553,6 +10563,12 @@ bool pc_unequipitem(struct map_session_data *sd, int n, int flag) {
  		status_change_end(&sd->bl, SC_ARMOR_RESIST, INVALID_TIMER);
  	}
@@ -1370,31 +1298,6 @@ index 9df9658861..f9c601960a 100755
  	// On ammo change
  	if (sd->inventory_data[n]->type == IT_AMMO && (sd->inventory_data[n]->nameid != ITEMID_SILVER_BULLET || sd->inventory_data[n]->nameid != ITEMID_PURIFICATION_BULLET || sd->inventory_data[n]->nameid != ITEMID_SILVER_BULLET_))
  		status_change_end(&sd->bl, SC_P_ALTER, INVALID_TIMER);
-@@ -12691,13 +12707,19 @@ void pc_bonus_script_clear(struct map_session_data *sd, uint16 flag) {
-  */
- void pc_cell_basilica(struct map_session_data *sd) {
- 	nullpo_retv(sd);
--	
-+
-+#ifdef RENEWAL
-+	enum sc_type type = SC_BASILICA_CELL;
-+#else
-+	enum sc_type type = SC_BASILICA;
-+#endif
-+
- 	if (!map_getcell(sd->bl.m,sd->bl.x,sd->bl.y,CELL_CHKBASILICA)) {
--		if (sd->sc.data[SC_BASILICA])
--			status_change_end(&sd->bl,SC_BASILICA,INVALID_TIMER);
-+		if (sd->sc.data[type])
-+			status_change_end(&sd->bl, type,INVALID_TIMER);
- 	}
--	else if (!sd->sc.data[SC_BASILICA])
--		sc_start(&sd->bl,&sd->bl,SC_BASILICA,100,0,INFINITE_TICK);
-+	else if (!sd->sc.data[type])
-+		sc_start(&sd->bl,&sd->bl, type,100,0,INFINITE_TICK);
- }
- 
- /** [Cydh]
 
 diff --git a/src/map/script_constants.hpp b/src/map/script_constants.hpp
 index 94644b2e1a..1bae33dcd8 100644
@@ -1405,7 +1308,6 @@ index 94644b2e1a..1bae33dcd8 100644
  	export_constant(SC_LHZ_DUN_N4);
  	export_constant(SC_ANCILLA);
 +	export_constant(SC_ADAPTATION);
-+	export_constant(SC_BASILICA_CELL);
  #ifdef RENEWAL
  	export_constant(SC_EXTREMITYFIST2);
  #endif
@@ -1513,36 +1415,6 @@ index 1c417d9466..5bdd0b0727 100755
  			if( rate )
  				skill_break_equip(src,src, EQP_WEAPON, rate, BCT_SELF);
  		}
-@@ -2804,7 +2827,7 @@ bool skill_strip_equip(struct block_list *src, struct block_list *target, uint16
- 		BLOWN_NO_KNOCKBACK_MAP - at WOE/BG map
- 		BLOWN_MD_KNOCKBACK_IMMUNE - if target is MD_KNOCKBACK_IMMUNE
- 		BLOWN_TARGET_NO_KNOCKBACK - if target has 'special_state.no_knockback'
--		BLOWN_TARGET_BASILICA - if target is in Basilica area
-+		BLOWN_TARGET_BASILICA - if target is in Basilica area (Pre-Renewal)
-  * @return Number of knocked back cells done
-  */
- short skill_blown(struct block_list* src, struct block_list* target, char count, int8 dir, enum e_skill_blown flag)
-@@ -3862,7 +3895,9 @@ static int skill_check_unit_range_sub(struct block_list *bl, va_list ap)
- 		case HT_BLASTMINE:
- 		case HT_CLAYMORETRAP:
- 		case HT_TALKIEBOX:
-+#ifndef RENEWAL
- 		case HP_BASILICA:
-+#endif
- 		case RA_ELECTRICSHOCKER:
- 		case RA_CLUSTERBOMB:
- 		case RA_MAGENTATRAP:
-@@ -3918,8 +3953,10 @@ static int skill_check_unit_range2_sub (struct block_list *bl, va_list ap)
- 	if( status_isdead(bl) && skill_id != AL_WARP )
- 		return 0;
- 
-+#ifndef RENEWAL
- 	if( skill_id == HP_BASILICA && bl->type == BL_PC )
- 		return 0;
-+#endif
- 
- 	if( skill_id == AM_DEMONSTRATION && bl->type == BL_MOB && ((TBL_MOB*)bl)->mob_id == MOBID_EMPERIUM )
- 		return 0; //Allow casting Bomb/Demonstration Right under emperium [Skotlex]
 @@ -4933,15 +4970,42 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, uint
  
  	case RG_BACKSTAP:
@@ -1760,16 +1632,6 @@ index 1c417d9466..5bdd0b0727 100755
  		break;
  
  	case PR_ASPERSIO:
-@@ -6732,6 +6905,9 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
- 	case LK_PARRYING:
- 	case MS_PARRYING:
- 	case LK_CONCENTRATION:
-+#ifdef RENEWAL
-+	case HP_BASILICA:
-+#endif
- 	case WS_CARTBOOST:
- 	case SN_SIGHT:
- 	case WS_MELTDOWN:
 @@ -7385,11 +7565,23 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
  			clif_skill_fail(sd,skill_id,USESKILL_FAIL_LEVEL,0);
  		break;
@@ -1856,18 +1718,6 @@ index 1c417d9466..5bdd0b0727 100755
  
  	case CG_TAROTCARD:
  		{
-@@ -8759,7 +8978,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
- 				map_freeblock_unlock();
- 				return 0;
- 			}
--			if( rnd() % 100 > skill_lv * 8 || (tsc && tsc->data[SC_BASILICA]) ||
-+			if( rnd() % 100 > skill_lv * 8 ||
-+#ifndef RENEWAL
-+			(tsc && tsc->data[SC_BASILICA]) ||
-+#endif
- 			(dstmd && ((dstmd->guardian_data && dstmd->mob_id == MOBID_EMPERIUM) || status_get_class_(bl) == CLASS_BATTLEFIELD)) ) {
- 				if( sd )
- 					clif_skill_fail(sd,skill_id,USESKILL_FAIL_LEVEL,0);
 @@ -11162,8 +11387,14 @@ static int8 skill_castend_id_check(struct block_list *src, struct block_list *ta
  			break;
  		case RG_BACKSTAP:
@@ -1947,19 +1797,10 @@ index 1c417d9466..5bdd0b0727 100755
  	case CG_MOONLIT:
  	case GS_DESPERADO:
  	case NJ_KAENSIN:
-@@ -11937,6 +12182,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, uint16 skill_id, ui
- 		skill_unitsetting(src,skill_id,skill_lv,x,y,0);
- 		flag|=1;
- 		break;
-+#ifndef RENEWAL
- 	case HP_BASILICA:
- 		if( sc->data[SC_BASILICA] ) {
- 			status_change_end(src, SC_BASILICA, INVALID_TIMER); // Cancel Basilica and return so requirement isn't consumed again
 @@ -11951,12 +12197,17 @@ int skill_castend_pos2(struct block_list* src, int x, int y, uint16 skill_id, ui
  			flag|=1;
  		}
  		break;
-+#endif
  	case CG_HERMODE:
 +#ifdef RENEWAL
 +		skill_castend_song(src, skill_id, skill_lv, tick);
@@ -1973,18 +1814,6 @@ index 1c417d9466..5bdd0b0727 100755
  		break;
  	case RG_CLEANER: // [Valaris]
  		i = skill_get_splash(skill_id, skill_lv);
-@@ -12866,9 +13119,11 @@ struct skill_unit_group *skill_unitsetting(struct block_list *src, uint16 skill_
- 			val3 = group->val3; //as well as the mapindex to warp to.
- 		}
- 		break;
-+#ifndef RENEWAL
- 	case HP_BASILICA:
- 		val1 = src->id; // Store caster id.
- 		break;
-+#endif
- 
- 	case PR_SANCTUARY:
- 	case NPC_EVILLAND:
 @@ -12958,11 +13213,7 @@ struct skill_unit_group *skill_unitsetting(struct block_list *src, uint16 skill_
  	}
  
@@ -2052,14 +1881,6 @@ index 1c417d9466..5bdd0b0727 100755
  
  		case UNT_MOONLIT:
  			//Knockback out of area if affected char isn't in Moonlit effect
-@@ -14149,6 +14393,7 @@ int skill_unit_onplace_timer(struct skill_unit *unit, struct block_list *bl, t_t
- 			}
- 			break;
- 
-+#ifndef RENEWAL
- 		case UNT_BASILICA:
- 			{
- 				int i = battle_check_target(&unit->bl, bl, BCT_ENEMY);
 @@ -14161,6 +14406,7 @@ int skill_unit_onplace_timer(struct skill_unit *unit, struct block_list *bl, t_t
  					sc_start4(ss, bl, type, 100, 0, 0, sg->group_id, ss->id, sg->limit);
  			}
@@ -2068,29 +1889,6 @@ index 1c417d9466..5bdd0b0727 100755
  
  		case UNT_GROUNDDRIFT_WIND:
  		case UNT_GROUNDDRIFT_DARK:
-@@ -14440,10 +14686,12 @@ int skill_unit_onout(struct skill_unit *src, struct block_list *bl, t_tick tick)
- 				status_change_end(bl, type, INVALID_TIMER);
- 			break;
- 
-+#ifndef RENEWAL
- 		case UNT_BASILICA:
- 			if (sce && sce->val4 != bl->id)
- 				status_change_end(bl, type, INVALID_TIMER);
- 			break;
-+#endif
- 
- 		case UNT_HERMODE:	//Clear Hermode if the owner moved.
- 			if (sce && sce->val3 == BCT_SELF && sce->val4 == sg->group_id)
-@@ -14529,8 +14777,10 @@ int skill_unit_onleft(uint16 skill_id, struct block_list *bl, t_tick tick)
- 		case SA_DELUGE:
- 		case SA_VIOLENTGALE:
- 		case CG_HERMODE:
-+#ifndef RENEWAL
- 		case HP_BASILICA:
-+#endif
- 		case NJ_SUITON:
- 		case SC_MAELSTROM:
- 		case EL_WATER_BARRIER:
 @@ -14835,15 +15085,17 @@ int skill_check_pc_partner(struct map_session_data *sd, uint16 skill_id, uint16
  					status_charge(&tsd->bl, 0, i);
  				}
@@ -2158,14 +1956,6 @@ index 1c417d9466..5bdd0b0727 100755
  		case CG_MOONLIT: //Check there's no wall in the range+1 area around the caster. [Skotlex]
  			{
  				int s,range = skill_get_splash(skill_id, skill_lv)+1;
-@@ -15316,6 +15575,7 @@ bool skill_check_condition_castbegin(struct map_session_data* sd, uint16 skill_i
- 				}
- 				break;
- 			}
-+#ifndef RENEWAL
- 		case HP_BASILICA:
- 			if( !sc || (sc && !sc->data[SC_BASILICA])) {
- 				if( sd ) {
 @@ -15337,6 +15597,7 @@ bool skill_check_condition_castbegin(struct map_session_data* sd, uint16 skill_i
  				}
  			}
@@ -2210,19 +2000,6 @@ index 1c417d9466..5bdd0b0727 100755
  				} else if( sc->data[SC_RAISINGDRAGON] && sd->spiritball > 5)
  					req.spiritball = sd->spiritball; // must consume all regardless of the amount required
  			}
-@@ -16787,10 +17060,12 @@ int skill_delayfix(struct block_list *bl, uint16 skill_id, uint16 skill_lv)
- 				time = 1000;
- 			time -= (4 * status_get_agi(bl) + 2 * status_get_dex(bl));
- 			break;
-+#ifndef RENEWAL
- 		case HP_BASILICA:
- 			if (sc && !sc->data[SC_BASILICA])
- 				time = 0; // There is no Delay on Basilica creation, only on cancel
- 			break;
-+#endif
- 		default:
- 			if (battle_config.delay_dependon_dex && !(delaynodex&1)) { // if skill delay is allowed to be reduced by dex
- 				int scale = battle_config.castrate_dex_scale - status_get_dex(bl);
 @@ -17027,6 +17302,15 @@ int skill_autospell(struct map_session_data *sd, uint16 skill_id)
  
  	if(!skill_lv || !lv) return 0; // Player must learn the skill before doing auto-spell [Lance]
@@ -2247,50 +2024,7 @@ index 1c417d9466..5bdd0b0727 100755
  
  	if(maxlv > lv)
  		maxlv = lv;
-@@ -17592,8 +17877,10 @@ static int skill_cell_overlap(struct block_list *bl, va_list ap)
- 			}
- 			break;
- 		case WZ_ICEWALL:
-+#ifndef RENEWAL
- 		case HP_BASILICA:
-+#endif
- 			//These can't be placed on top of themselves (duration can't be refreshed)
- 			if (unit->group->skill_id == skill_id)
- 			{
-@@ -18044,9 +18331,11 @@ struct skill_unit *skill_initunit(struct skill_unit_group *group, int idx, int x
- 		case SA_LANDPROTECTOR:
- 			skill_unitsetmapcell(unit,SA_LANDPROTECTOR,group->skill_lv,CELL_LANDPROTECTOR,true);
- 			break;
-+#ifndef RENEWAL
- 		case HP_BASILICA:
- 			skill_unitsetmapcell(unit,HP_BASILICA,group->skill_lv,CELL_BASILICA,true);
- 			break;
-+#endif
- 		case SC_MAELSTROM:
- 			skill_unitsetmapcell(unit,SC_MAELSTROM,group->skill_lv,CELL_MAELSTROM,true);
- 			break;
-@@ -18104,9 +18393,11 @@ int skill_delunit(struct skill_unit* unit)
- 		case SA_LANDPROTECTOR:
- 			skill_unitsetmapcell(unit,SA_LANDPROTECTOR,group->skill_lv,CELL_LANDPROTECTOR,false);
- 			break;
-+#ifndef RENEWAL
- 		case HP_BASILICA:
- 			skill_unitsetmapcell(unit,HP_BASILICA,group->skill_lv,CELL_BASILICA,false);
- 			break;
-+#endif
- 		case RA_ELECTRICSHOCKER: {
- 				struct block_list* target = map_id2bl(group->val2);
- 
-@@ -18298,7 +18589,9 @@ int skill_delunitgroup_(struct skill_unit_group *group, const char* file, int li
- 	i = SC_NONE;
- 	switch (group->unit_id) {
- 		case UNT_GOSPEL:	i = SC_GOSPEL;		break;
-+#ifndef RENEWAL
- 		case UNT_BASILICA:	i = SC_BASILICA;	break;
-+#endif
- 	}
- 	if (i != SC_NONE) {
- 		struct status_change *sc = status_get_sc(src);
+
 diff --git a/src/map/skill.hpp b/src/map/skill.hpp
 index 4a5ac6f8d6..1be8953531 100644
 --- a/src/map/skill.hpp
@@ -2434,15 +2168,6 @@ index c19a6deeac..fbcd8ef90a 100644
  	set_sc( DC_SERVICEFORYOU	, SC_SERVICE4U		, EFST_SERVICEFORYOU	, SCB_ALL );
  	add_sc( NPC_DARKCROSS		, SC_BLIND		);
  	add_sc( NPC_GRANDDARKNESS	, SC_BLIND		);
-@@ -428,9 +576,13 @@ void initChangeTables(void)
-+#ifdef RENEWAL
-+	set_sc( HP_BASILICA			, SC_BASILICA	, EFST_BASILICA_BUFF	, SCB_ALL );
-+#else
- 	add_sc( HP_BASILICA		, SC_BASILICA		);
-+#endif
- 	set_sc( HW_MAGICPOWER		, SC_MAGICPOWER		, EFST_MAGICPOWER		, SCB_MATK );
- 	add_sc( PA_SACRIFICE		, SC_SACRIFICE		);
- 	set_sc( PA_GOSPEL		, SC_GOSPEL		, EFST_GOSPEL		, SCB_SPEED|SCB_ASPD );
 @@ -489,10 +641,16 @@ void initChangeTables(void)
  	set_sc( SM_SELFPROVOKE		, SC_PROVOKE		, EFST_PROVOKE		, SCB_DEF|SCB_DEF2|SCB_BATK|SCB_WATK );
  	set_sc( ST_PRESERVE		, SC_PRESERVE		, EFST_PRESERVE		, SCB_NONE );
@@ -2457,22 +2182,6 @@ index c19a6deeac..fbcd8ef90a 100644
  	set_sc( CG_HERMODE		, SC_HERMODE	, EFST_HERMODE	, SCB_NONE		);
  	set_sc( CG_TAROTCARD		, SC_TAROTCARD	, EFST_TAROTCARD, SCB_NONE	);
  	set_sc( ITEM_ENCHANTARMS	, SC_ENCHANTARMS	, EFST_WEAPONPROPERTY, SCB_ATK_ELE );
-@@ -1409,14 +1567,18 @@ void initChangeTables(void)
- 	StatusChangeStateTable[SC_BLADESTOP]			|= SCS_NOMOVE;
- 	StatusChangeStateTable[SC_BLADESTOP_WAIT]		|= SCS_NOMOVE;
- 	StatusChangeStateTable[SC_GOSPEL]				|= SCS_NOMOVE|SCS_NOMOVECOND;
-+#ifndef RENEWAL
- 	StatusChangeStateTable[SC_BASILICA]				|= SCS_NOMOVE|SCS_NOMOVECOND;
-+#endif
- 	StatusChangeStateTable[SC_STOP]					|= SCS_NOMOVE;
- 	StatusChangeStateTable[SC_CLOSECONFINE]			|= SCS_NOMOVE;
- 	StatusChangeStateTable[SC_CLOSECONFINE2]		|= SCS_NOMOVE;
- 	StatusChangeStateTable[SC_TINDER_BREAKER]		|= SCS_NOMOVE;
- 	StatusChangeStateTable[SC_TINDER_BREAKER2]		|= SCS_NOMOVE;
- 	StatusChangeStateTable[SC_MADNESSCANCEL]		|= SCS_NOMOVE;
- 	StatusChangeStateTable[SC_WHITEIMPRISON]		|= SCS_NOMOVE;
- 	StatusChangeStateTable[SC_DEEPSLEEP]			|= SCS_NOMOVE;
- 	StatusChangeStateTable[SC_ELECTRICSHOCKER]		|= SCS_NOMOVE;
 @@ -1436,6 +1598,9 @@ void initChangeTables(void)
  	StatusChangeStateTable[SC_VACUUM_EXTREME]		|= SCS_NOMOVE;
  	StatusChangeStateTable[SC_SUHIDE]				|= SCS_NOMOVE;
@@ -2483,16 +2192,6 @@ index c19a6deeac..fbcd8ef90a 100644
  
  	/* StatusChangeState (SCS_) NOPICKUPITEMS */
  	StatusChangeStateTable[SC_HIDING]				|= SCS_NOPICKITEM;
-@@ -1456,6 +1621,9 @@ void initChangeTables(void)
- 	StatusChangeStateTable[SC_SILENCE]				|= SCS_NOCAST;
- 	StatusChangeStateTable[SC_STEELBODY]			|= SCS_NOCAST;
- 	StatusChangeStateTable[SC_BERSERK]				|= SCS_NOCAST;
-+#ifdef RENEWAL
-+	StatusChangeStateTable[SC_BASILICA_CELL]		|= SCS_NOCAST;
-+#endif
- 	StatusChangeStateTable[SC__BLOODYLUST]			|= SCS_NOCAST;
- 	StatusChangeStateTable[SC_DEATHBOUND]			|= SCS_NOCAST;
- 	StatusChangeStateTable[SC_OBLIVIONCURSE]		|= SCS_NOCAST;
 @@ -2107,6 +2277,7 @@ bool status_check_skilluse(struct block_list *src, struct block_list *target, ui
  	}
  
@@ -2529,16 +2228,6 @@ index c19a6deeac..fbcd8ef90a 100644
  		}
  
  		if (skill_id && // Do not block item-casted skills.
-@@ -2205,7 +2381,9 @@ bool status_check_skilluse(struct block_list *src, struct block_list *target, ui
- 		) {	// Skills blocked through status changes...
- 			if (!flag && ( // Blocked only from using the skill (stuff like autospell may still go through
- 				sc->cant.cast ||
-+#ifndef RENEWAL
- 				(sc->data[SC_BASILICA] && (sc->data[SC_BASILICA]->val4 != src->id || skill_id != HP_BASILICA)) || // Only Basilica caster that can cast, and only Basilica to cancel it
-+#endif
- 				(sc->data[SC_MARIONETTE] && skill_id != CG_MARIONETTE) || // Only skill you can use is marionette again to cancel it
- 				(sc->data[SC_MARIONETTE2] && skill_id == CG_MARIONETTE) || // Cannot use marionette if you are being buffed by another
- 				(sc->data[SC_ANKLE] && skill_block_check(src, SC_ANKLE, skill_id)) ||
 @@ -2218,7 +2396,9 @@ bool status_check_skilluse(struct block_list *src, struct block_list *target, ui
  			// Skill blocking.
  			if (
@@ -2597,14 +2286,6 @@ index c19a6deeac..fbcd8ef90a 100644
 +#endif
  		}
 +#ifdef RENEWAL
-+		if (sc->data[SC_BASILICA]) {
-+			i = sc->data[SC_BASILICA]->val1 * 5;
-+			sd->right_weapon.addele[ELE_DARK] += i;
-+			sd->right_weapon.addele[ELE_UNDEAD] += i;
-+			sd->left_weapon.addele[ELE_DARK] += i;
-+			sd->left_weapon.addele[ELE_UNDEAD] += i;
-+			sd->magic_atk_ele[ELE_HOLY] += sc->data[SC_BASILICA]->val1 * 3;
-+		}
 +		if (sc->data[SC_FIREWEAPON])
 +			sd->magic_atk_ele[ELE_FIRE] += sc->data[SC_FIREWEAPON]->val1;
 +		if (sc->data[SC_WINDWEAPON])
@@ -2643,16 +2324,6 @@ index c19a6deeac..fbcd8ef90a 100644
  }
  
  /**
-@@ -4811,8 +5044,10 @@ void status_calc_state( struct block_list *bl, struct status_change *sc, enum sc
- 			sc->cant.move += ( start ? 1 : ((sc->cant.move)? -1:0) );
- 		else if(
- 				     (sc->data[SC_GOSPEL] && sc->data[SC_GOSPEL]->val4 == BCT_SELF)	// cannot move while gospel is in effect
-+#ifndef RENEWAL
- 				  || (sc->data[SC_BASILICA] && sc->data[SC_BASILICA]->val4 == bl->id) // Basilica caster cannot move
- #endif
- 				  || (sc->data[SC_CAMOUFLAGE] && sc->data[SC_CAMOUFLAGE]->val1 < 3)
- 				)
- 			sc->cant.move += ( start ? 1 : ((sc->cant.move)? -1:0) );
 @@ -5083,8 +5318,16 @@ void status_calc_bl_main(struct block_list *bl, /*enum scb_flag*/int flag)
  			status->cri = status_calc_critical(bl, sc, b_status->cri + 3*(status->luk - b_status->luk));
  
@@ -3147,7 +2818,6 @@ index bd5ee0990a..c6b6db335f 100644
  
  	SC_ANCILLA,
 +	SC_ADAPTATION,
-+	SC_BASILICA_CELL, // Used in renewal mode for cell_basilica only
  
  #ifdef RENEWAL
  	SC_EXTREMITYFIST2, //! NOTE: This SC should be right before SC_MAX, so it doesn't disturb if RENEWAL is disabled
@@ -3155,28 +2825,6 @@ diff --git a/src/map/unit.cpp b/src/map/unit.cpp
 index b4c744dd58..5592cd961f 100644
 --- a/src/map/unit.cpp
 +++ b/src/map/unit.cpp
-@@ -1129,7 +1129,7 @@ int unit_blown(struct block_list* bl, int dx, int dy, int count, enum e_skill_bl
-  *		UB_KNOCKABLE - can be knocked back / stopped
-  *		UB_NO_KNOCKBACK_MAP - at WOE/BG map
-  *		UB_MD_KNOCKBACK_IMMUNE - target is MD_KNOCKBACK_IMMUNE
-- *		UB_TARGET_BASILICA - target is in Basilica area
-+ *		UB_TARGET_BASILICA - target is in Basilica area (Pre-Renewal)
-  *		UB_TARGET_NO_KNOCKBACK - target has 'special_state.no_knockback'
-  *		UB_TARGET_TRAP - target is trap that cannot be knocked back
-  */
-@@ -1149,9 +1149,12 @@ enum e_unit_blown unit_blown_immune(struct block_list* bl, uint8 flag)
- 			break;
- 		case BL_PC: {
- 				struct map_session_data *sd = BL_CAST(BL_PC, bl);
-+
-+#ifndef RENEWAL
- 				// Basilica caster can't be knocked-back by normal monsters.
- 				if( !(flag&0x4) && sd->sc.data[SC_BASILICA] && sd->sc.data[SC_BASILICA]->val4 == sd->bl.id)
- 					return UB_TARGET_BASILICA;
-+#endif
- 				// Target has special_state.no_knockback (equip)
- 				if( (flag&(0x1|0x2)) && sd->special_state.no_knockback )
- 					return UB_TARGET_NO_KNOCKBACK;
 @@ -1390,7 +1393,9 @@ int unit_can_move(struct block_list *bl) {
  		if( sc->cant.move // status placed here are ones that cannot be cached by sc->cant.move for they depend on other conditions other than their availability
  			|| sc->data[SC_SPIDERWEB]
@@ -3187,28 +2835,3 @@ index b4c744dd58..5592cd961f 100644
  				(sc->data[SC_DANCING]->val1&0xFFFF) == CG_MOONLIT ||
  				(sc->data[SC_DANCING]->val1&0xFFFF) == CG_HERMODE
  				) )
-@@ -1802,10 +1807,12 @@ int unit_skilluse_id2(struct block_list *src, int target_id, uint16 skill_id, ui
- 			if (sc && sc->data[SC_RUN])
- 				casttime = -1;
- 		break;
-+#ifndef RENEWAL
- 		case HP_BASILICA:
- 			if( sc && sc->data[SC_BASILICA] )
- 				casttime = -1; // No Casting time on basilica cancel
- 		break;
-+#endif
- #ifndef RENEWAL_CAST
- 		case KN_CHARGEATK:
- 		{
-@@ -2882,7 +2889,11 @@ int unit_remove_map_(struct block_list *bl, clr_type clrtype, const char* file,
- 
- 	if(sc && sc->count ) { // map-change/warp dispells.
- 		status_change_end(bl, SC_BLADESTOP, INVALID_TIMER);
-+#ifdef RENEWAL
-+		status_change_end(bl, SC_BASILICA_CELL, INVALID_TIMER);
-+#else
- 		status_change_end(bl, SC_BASILICA, INVALID_TIMER);
-+#endif
- 		status_change_end(bl, SC_ANKLE, INVALID_TIMER);
- 		status_change_end(bl, SC_TRICKDEAD, INVALID_TIMER);
- 		status_change_end(bl, SC_BLADESTOP_WAIT, INVALID_TIMER);
