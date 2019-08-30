@@ -3922,13 +3922,37 @@ int targetdispel(block_list * bl, va_list ap)
 	if (!(isreachabletarget(bl->id))) return 0;
 	
 	if (
-//		(md->sc.data[SC_ASSUMPTIO])
+		(md->sc.data[SC_ASSUMPTIO]) || //**Note** I customized Assumptio to be removed by Dispell. If you did not, remove this line!
 		(md->sc.data[SC_INCFLEERATE]) ||
 		(md->sc.data[CR_REFLECTSHIELD])
 		)
-	{ foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; };
+	{
+		foundtargetID = bl->id; targetbl = &md->bl; targetmd = md; return 1;
+	};
 
-	return 1;
+	return 0;
+}
+
+int targetdispel2(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd2;
+
+	struct map_session_data *sd = (struct map_session_data*)bl;
+
+	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
+
+	sd2 = va_arg(ap, struct map_session_data *); // the player autopiloting
+
+	// Dispel Berserk from LKs when they are low on remaning HP
+	if (
+		((sd->sc.data[SC_BERSERK]) && (sd->status.hp<sd->status.max_hp*0.2))
+		)
+	{
+		foundtargetID = bl->id; targetbl = &sd->bl; return 1;
+	};
+
+	return 0;
 }
 
 
@@ -6134,6 +6158,14 @@ TIMER_FUNC(unit_autopilot_timer)
 			}
 		}
 
+		/// Dispell friendly
+		if (canskill(sd)) if ((pc_checkskill(sd, SA_DISPELL) > 0) && (pc_search_inventory(sd, 715) >= 0)) {
+			resettargets();
+			map_foreachinrange(targetdispel2, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, foundtargetID, SA_DISPELL, pc_checkskill(sd, SA_DISPELL));
+			}
+		}
 
 		// Indulge
 		// Use if below 80% SP and above 60% HP. We want as close to max SP as possible for soul exchanges
