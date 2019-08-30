@@ -8146,8 +8146,59 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 	case SA_AUTOSPELL:
 		clif_skill_nodamage(src,bl,skill_id,skill_lv,1);
 		if (sd) {
-			sd->state.workinprogress = WIP_DISABLE_ALL;
-			clif_autospell(sd,skill_lv);
+			if (sd->state.autopilotmode == 0) {
+				sd->state.workinprogress = WIP_DISABLE_ALL;
+				clif_autospell(sd, skill_lv);
+			}
+			else
+				// The AI was casting the skill
+			{
+				sd->menuskill_val = skill_lv;
+				if ((pc_checkskill(sd, WZ_HEAVENDRIVE) >= pc_checkskill(sd, SA_AUTOSPELL) / 2)
+					&& (map_foreachinmap(endowneed, sd->bl.m, BL_MOB, ELE_EARTH) > 0)
+					&& (pc_checkskill(sd, SA_AUTOSPELL) >= 10))
+					skill_autospell(sd, WZ_HEAVENDRIVE);
+				else
+				if ((pc_checkskill(sd, MG_THUNDERSTORM) >= pc_checkskill(sd, SA_AUTOSPELL)/2)
+					&& (map_foreachinmap(endowneed, sd->bl.m, BL_MOB, ELE_WIND) > 0)
+					&& (pc_checkskill(sd, SA_AUTOSPELL) >= 10))
+					skill_autospell(sd, MG_THUNDERSTORM);
+				else
+					if ((pc_checkskill(sd, MG_FIREBALL) >= pc_checkskill(sd, SA_AUTOSPELL)/2)
+					&& (map_foreachinmap(endowneed, sd->bl.m, BL_MOB, ELE_FIRE) > 0)
+					&& (pc_checkskill(sd, SA_AUTOSPELL) >= 4))
+					skill_autospell(sd, MG_FIREBALL);
+				else
+				if ((pc_checkskill(sd, MG_SOULSTRIKE) >= pc_checkskill(sd, SA_AUTOSPELL)/2)
+					&& (map_foreachinmap(endowneed, sd->bl.m, BL_MOB, ELE_GHOST) > 0)
+					&& (pc_checkskill(sd, SA_AUTOSPELL) >= 4))
+					skill_autospell(sd, MG_SOULSTRIKE);
+				else
+				if ((pc_checkskill(sd, MG_COLDBOLT) >= pc_checkskill(sd, SA_AUTOSPELL) / 2)
+					&& (map_foreachinmap(endowneed, sd->bl.m, BL_MOB, ELE_WATER) > 0))
+					skill_autospell(sd, MG_COLDBOLT);
+				// None of the elements are particularly good for the map
+				// Prefer Heaven's Drive (AOE, good damage)
+				else
+				if ((pc_checkskill(sd, WZ_HEAVENDRIVE) >= pc_checkskill(sd, SA_AUTOSPELL) / 2)
+					&& (pc_checkskill(sd, SA_AUTOSPELL) >= 10))
+					skill_autospell(sd, WZ_HEAVENDRIVE);
+				else
+				if ((pc_checkskill(sd, MG_THUNDERSTORM) >= pc_checkskill(sd, SA_AUTOSPELL) / 2)
+					&& (pc_checkskill(sd, SA_AUTOSPELL) >= 10))
+					skill_autospell(sd, MG_THUNDERSTORM);
+				// Soul Strike if HD unavailable
+				else
+				if ((pc_checkskill(sd, MG_SOULSTRIKE) >= pc_checkskill(sd, SA_AUTOSPELL) / 2)
+					&& (pc_checkskill(sd, SA_AUTOSPELL) >= 4))
+					skill_autospell(sd, MG_SOULSTRIKE);
+				// Firebolt in worst case
+				else
+				if ((pc_checkskill(sd, MG_FIREBOLT) >= pc_checkskill(sd, SA_AUTOSPELL) / 2))
+					skill_autospell(sd, MG_FIREBOLT);
+
+				sd->menuskill_id = 0; sd->menuskill_val = 0;
+			}
 		} else {
 			int maxlv=1,spellid=0;
 			static const int spellarray[3] = { MG_COLDBOLT,MG_FIREBOLT,MG_LIGHTNINGBOLT };
