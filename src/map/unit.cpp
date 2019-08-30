@@ -5419,6 +5419,14 @@ void skillwhenidle(struct map_session_data *sd) {
 		}
 	}
 
+	// AUTOSPELL
+	if (pc_checkskill(sd, SA_AUTOSPELL) > 0)
+	if (sd->state.autopilotmode==1) { // Tanking mode only, this triggers on normal physical atacks
+		if (!(sd->sc.data[SC_AUTOSPELL])) {
+			unit_skilluse_ifable(&sd->bl, SELF, SA_AUTOSPELL, pc_checkskill(sd, SA_AUTOSPELL));
+		}
+	}
+
 	// Memorize
 	if (pc_checkskill(sd, PF_MEMORIZE) > 0) {
 		if (!(sd->sc.data[SC_MEMORIZE])) {
