@@ -465,7 +465,12 @@ void initChangeTables(void)
 	set_sc( SA_FROSTWEAPON		, SC_WATERWEAPON	, EFST_PROPERTYWATER, SCB_ATK_ELE );
 	set_sc( SA_LIGHTNINGLOADER	, SC_WINDWEAPON		, EFST_PROPERTYWIND, SCB_ATK_ELE );
 	set_sc( SA_SEISMICWEAPON	, SC_EARTHWEAPON	, EFST_PROPERTYGROUND, SCB_ATK_ELE );
-	set_sc( SA_VOLCANO		, SC_VOLCANO		, EFST_GROUNDMAGIC, SCB_WATK );
+	set_sc(SA_VOLCANO, SC_VOLCANO, EFST_GROUNDMAGIC, SCB_WATK
+#ifdef RENEWAL
+	 | SCB_MATK);
+#else
+	 );
+#endif
 	set_sc( SA_DELUGE		, SC_DELUGE		, EFST_GROUNDMAGIC, SCB_MAXHP );
 	set_sc( SA_VIOLENTGALE		, SC_VIOLENTGALE	, EFST_GROUNDMAGIC, SCB_FLEE );
 	add_sc( SA_REVERSEORCISH	, SC_ORCISH		);
@@ -6320,6 +6325,8 @@ static unsigned short status_calc_ematk(struct block_list *bl, struct status_cha
 		matk += sc->data[SC_DORAM_MATK]->val1;
 	if (sc->data[SC_SUFFRAGIUM])
 		matk += sc->data[SC_SUFFRAGIUM]->val2;
+	if (sc->data[SC_VOLCANO])
+		matk += sc->data[SC_VOLCANO]->val2;
 
 	return (unsigned short)cap_value(matk,0,USHRT_MAX);
 }
@@ -9835,15 +9842,21 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 			// Val1 Skill LV of Autospell
 			// Val2 Skill ID to cast
 			// Val3 Max Lv to cast
+#ifdef RENEWAL
+				 val4 = val1 * 2; // Chance of casting
+#else
 			val4 = 5 + val1*2; // Chance of casting
+#endif
 			break;
 		case SC_VOLCANO:
 			{
 				int8 enchant_eff[] = { 10, 14, 17, 19, 20 }; // Enchant addition
 				uint8 i = max((val1-1)%5, 0);
 
-				val2 = val1*10; // Watk increase
-#ifndef RENEWAL
+				#ifdef RENEWAL
+					 val2 = 5 + val1 * 5; // ATK/MATK increase
+				#else
+					val2 = val1 * 10; // Watk increase
 				if (status->def_ele != ELE_FIRE)
 					val2 = 0;
 #endif
@@ -9855,7 +9868,7 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 				int8 enchant_eff[] = { 10, 14, 17, 19, 20 }; // Enchant addition
 				uint8 i = max((val1-1)%5, 0);
 
-				val2 = val1*3; // Flee increase
+				val2 = val1*4; // Flee increase
 #ifndef RENEWAL
 				if (status->def_ele != ELE_WIND)
 					val2 = 0;

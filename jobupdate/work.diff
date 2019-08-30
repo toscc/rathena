@@ -99,26 +99,7 @@ index b872350dae..1f5d1fbce2 100644
 +271,2000:1750:1500:1250:1000,3000:2500:2000:1500:1000,0,3000,300000,0,2000:1750:1500:1250:1000
  //==========================================
  
- 
-@@ -414,13 +414,13 @@
- //-- SA_AUTOSPELL
- 279,0,0,0,120000:150000:180000:210000:240000:270000:300000:330000:360000:390000,0,0,3000
- //-- SA_FLAMELAUNCHER
--280,0,0,0,1200000:1200000:1200000:1200000:1800000,0,0,3000
-+280,1000,0,0,600000:900000:1200000:1500000:1800000,0,0,1000
- //-- SA_FROSTWEAPON
--281,0,0,0,1200000:1200000:1200000:1200000:1800000,0,0,3000
-+281,1000,0,0,600000:900000:1200000:1500000:1800000,0,0,1000
- //-- SA_LIGHTNINGLOADER
--282,0,0,0,1200000:1200000:1200000:1200000:1800000,0,0,3000
-+282,1000,0,0,600000:900000:1200000:1500000:1800000,0,0,1000
- //-- SA_SEISMICWEAPON
--283,0,0,0,1200000:1200000:1200000:1200000:1800000,0,0,3000
-+283,1000,0,0,600000:900000:1200000:1500000:1800000,0,0,1000
- //-- SA_VOLCANO
- 285,4000,0,0,60000:120000:180000:240000:300000,0,0,1000
- //-- SA_DELUGE
-@@ -438,41 +438,43 @@
+ @ -438,41 +438,43 @@
  
  //===== Bard & Dancer (Ensemble Skills) ====
  //-- BD_ADAPTATION
@@ -500,29 +481,6 @@ index 15c7a09627..9a8247a222 100644
 +272,0,0,5:6:7:8:9,0,0,0,0:1:2:3:4:5:6:7:8:9:10:12:13:14:15:16:17:18:19:20:21:22,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//MO_CHAINCOMBO
 +273,0,0,3:4:5:6:7,0,0,0,0:1:2:3:4:5:6:7:8:9:10:12:13:14:15:16:17:18:19:20:21:22,0,0,none,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//MO_COMBOFINISH
  
- //****
- // SA Sage
-@@ -250,13 +250,13 @@
- 276,0,0,2,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0								//SA_MAGICROD
- 277,0,0,10,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0								//SA_SPELLBREAKER
- 279,0,0,35,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0								//SA_AUTOSPELL
--280,0,0,40,0,0,0,99,0,0,none,0,0,990,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0							//SA_FLAMELAUNCHER
--281,0,0,40,0,0,0,99,0,0,none,0,0,991,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0							//SA_FROSTWEAPON
--282,0,0,40,0,0,0,99,0,0,none,0,0,992,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0							//SA_LIGHTNINGLOADER
--283,0,0,40,0,0,0,99,0,0,none,0,0,993,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0							//SA_SEISMICWEAPON
--285,0,0,48:46:44:42:40,0,0,0,99,0,0,none,0,0,715,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0				//SA_VOLCANO
--286,0,0,48:46:44:42:40,0,0,0,99,0,0,none,0,0,715,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0				//SA_DELUGE
--287,0,0,48:46:44:42:40,0,0,0,99,0,0,none,0,0,715,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0				//SA_VIOLENTGALE
-+280,0,0,40,0,0,0,99,0,0,none,0,0,6360,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0							//SA_FLAMELAUNCHER
-+281,0,0,40,0,0,0,99,0,0,none,0,0,6361,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0							//SA_FROSTWEAPON
-+282,0,0,40,0,0,0,99,0,0,none,0,0,6362,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0							//SA_LIGHTNINGLOADER
-+283,0,0,40,0,0,0,99,0,0,none,0,0,6363,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0							//SA_SEISMICWEAPON
-+285,0,0,48:46:44:42:40,0,0,0,99,0,0,none,0,0,717,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0				//SA_VOLCANO
-+286,0,0,48:46:44:42:40,0,0,0,99,0,0,none,0,0,717,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0				//SA_DELUGE
-+287,0,0,48:46:44:42:40,0,0,0,99,0,0,none,0,0,717,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0				//SA_VIOLENTGALE
- 288,0,0,66:62:58:54:50,0,0,0,99,0,0,none,0,0,717,1,715,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0				//SA_LANDPROTECTOR
- 289,0,0,1,0,0,0,99,0,0,none,0,0,715,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0								//SA_DISPELL
- 290,0,0,50,0,0,0,99,0,0,none,0,0,715,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0							//SA_ABRACADABRA
 @@ -276,36 +276,36 @@
  
  //****
@@ -1002,15 +960,6 @@ index de8167f4a0..58c201f9a2 100644
  			break;
  		case WS_CARTTERMINATION:
  			i = 10 * (16 - skill_lv);
-@@ -4451,10 +4568,6 @@ static void battle_attack_sc_bonus(struct Damage* wd, struct block_list *src, st
- #ifdef RENEWAL
- 		if (sc->data[SC_WATK_ELEMENT] && skill_id != ASC_METEORASSAULT)
- 			ATK_ADDRATE(wd->weaponAtk, wd->weaponAtk2, sc->data[SC_WATK_ELEMENT]->val2);
--		if (sc->data[SC_VOLCANO])
--			ATK_ADD(wd->equipAtk, wd->equipAtk2, sc->data[SC_VOLCANO]->val2);
- 		if (sc->data[SC_DRUMBATTLE])
- 			ATK_ADD(wd->equipAtk, wd->equipAtk2, sc->data[SC_DRUMBATTLE]->val2);
- 		if (sc->data[SC_MADNESSCANCEL])
 @@ -4505,18 +4618,6 @@ static void battle_attack_sc_bonus(struct Damage* wd, struct block_list *src, st
  					break; // skills above have no effect with EDP
  
@@ -1172,90 +1121,6 @@ diff --git a/src/map/clif.cpp b/src/map/clif.cpp
 index c3cb4a2b0e..f7907a3897 100644
 --- a/src/map/clif.cpp
 +++ b/src/map/clif.cpp
-@@ -8012,11 +8012,34 @@ void clif_pet_food(struct map_session_data *sd,int foodid,int fail)
- /// 01cd { <skill id>.L }*7
- void clif_autospell(struct map_session_data *sd,uint16 skill_lv)
- {
--	int fd;
--
- 	nullpo_retv(sd);
- 
--	fd=sd->fd;
-+	int fd = sd->fd;
-+
-+#ifdef RENEWAL
-+	uint16 autospell_skill[][2] = { 
-+		{ MG_FIREBOLT, 0 }, { MG_COLDBOLT, 0 }, { MG_LIGHTNINGBOLT, 0 },
-+		{ MG_SOULSTRIKE, 3 }, { MG_FIREBALL, 3 },
-+		{ WZ_EARTHSPIKE, 6 }, { MG_FROSTDIVER, 6 },
-+		{ MG_THUNDERSTORM, 9 }, { WZ_HEAVENDRIVE, 9 }
-+	};
-+	int count = 0;
-+
-+	WFIFOHEAD(fd, 2 * 6 + 4);
-+	WFIFOW(fd, 0) = 0x442;
-+
-+	for (int i = 0; i < ARRAYLENGTH(autospell_skill); i++) {
-+		if (skill_lv > autospell_skill[i][1] && pc_checkskill(sd, autospell_skill[i][0])) {
-+			WFIFOW(fd, 8 + count * 2) = autospell_skill[i][0];
-+			count++;
-+		}
-+	}
-+
-+	WFIFOW(fd, 2) = 8 + count * 2;
-+	WFIFOL(fd, 4) = count;
-+
-+	WFIFOSET(fd, WFIFOW(fd, 2));
-+#else
- 	WFIFOHEAD(fd,packet_len(0x1cd));
- 	WFIFOW(fd, 0)=0x1cd;
- 
-@@ -8050,6 +8073,8 @@ void clif_autospell(struct map_session_data *sd,uint16 skill_lv)
- 		WFIFOL(fd,26)= 0x00000000;
- 
- 	WFIFOSET(fd,packet_len(0x1cd));
-+#endif
-+
- 	sd->menuskill_id = SA_AUTOSPELL;
- 	sd->menuskill_val = skill_lv;
- }
-@@ -18511,23 +18548,27 @@ int clif_skill_itemlistwindow( struct map_session_data *sd, uint16 skill_id, uin
- }
- 
- /*==========================================
-- * Select a skill into a given list (used by SC_AUTOSHADOWSPELL)
-+ * Select a skill into a given list (used by SA_AUTOSPELL/SC_AUTOSHADOWSPELL)
-  * 0443 <type>.L <skill_id>.W (CZ_SKILL_SELECT_RESPONSE)
-  * RFIFOL(fd,2) - type (currently not used)
-  *------------------------------------------*/
- void clif_parse_SkillSelectMenu(int fd, struct map_session_data *sd) {
- 	struct s_packet_db* info = &packet_db[RFIFOW(fd,0)];
- 	//int type = RFIFOL(fd,info->pos[0]); //WHY_LOWERVER_COMPATIBILITY =  0x0, WHY_SC_AUTOSHADOWSPELL =  0x1,
--	if( sd->menuskill_id != SC_AUTOSHADOWSPELL )
--		return;
- 
--	if( pc_istrading(sd) ) {
--		clif_skill_fail(sd,sd->ud.skill_id,USESKILL_FAIL_LEVEL,0);
--		clif_menuskill_clear(sd);
--		return;
--	}
-+	if (sd->menuskill_id == SA_AUTOSPELL) {
-+		sd->state.workinprogress = WIP_DISABLE_NONE;
-+		skill_autospell(sd, RFIFOW(fd, info->pos[1]));
-+	} else if (sd->menuskill_id == SC_AUTOSHADOWSPELL) {
-+		if (pc_istrading(sd)) {
-+			clif_skill_fail(sd, sd->ud.skill_id, USESKILL_FAIL_LEVEL, 0);
-+			clif_menuskill_clear(sd);
-+			return;
-+		}
- 
--	skill_select_menu(sd,RFIFOW(fd,info->pos[1]));
-+		skill_select_menu(sd, RFIFOW(fd, info->pos[1]));
-+	} else
-+		return;
- 
- 	clif_menuskill_clear(sd);
- }
 diff --git a/src/map/map-server.vcxproj b/src/map/map-server.vcxproj
 index dd1c315170..f448f9df44 100644
 --- a/src/map/map-server.vcxproj
@@ -1694,14 +1559,6 @@ index 1c417d9466..5bdd0b0727 100755
  			if(skill_lv >= 10) {
  				spellid = MG_FROSTDIVER;
  //				if (tsc && tsc->data[SC_SPIRIT] && tsc->data[SC_SPIRIT]->val2 == SA_SAGE)
-@@ -8182,6 +8398,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
- 				spellid = MG_NAPALMBEAT;
- 				maxlv = 3;
- 			}
-+
- 			if(spellid > 0)
- 				sc_start4(src,src,SC_AUTOSPELL,100,skill_lv,spellid,maxlv,0,
- 					skill_get_time(SA_AUTOSPELL,skill_lv));
 @@ -8740,6 +8957,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
  		clif_skill_nodamage(src,bl,skill_id,skill_lv,1);
  		break;
@@ -2000,31 +1857,6 @@ index 1c417d9466..5bdd0b0727 100755
  				} else if( sc->data[SC_RAISINGDRAGON] && sd->spiritball > 5)
  					req.spiritball = sd->spiritball; // must consume all regardless of the amount required
  			}
-@@ -17027,6 +17302,15 @@ int skill_autospell(struct map_session_data *sd, uint16 skill_id)
- 
- 	if(!skill_lv || !lv) return 0; // Player must learn the skill before doing auto-spell [Lance]
- 
-+#ifdef RENEWAL
-+	if (sd->sc.data[SC_SPIRIT] && sd->sc.data[SC_SPIRIT]->val2 == SL_SAGE && skill_lv < 4)
-+		maxlv = 10; //Soul Linker bonus. [Skotlex]
-+	else {
-+		maxlv = skill_id / 2; // Half of Autospell's level unless player learned a higher level
-+		if (sd && pc_checkskill(sd, skill_id) > maxlv)
-+			maxlv = pc_checkskill(sd, skill_id);
-+	}
-+#else
- 	if(skill_id==MG_NAPALMBEAT)	maxlv=3;
- 	else if(skill_id==MG_COLDBOLT || skill_id==MG_FIREBOLT || skill_id==MG_LIGHTNINGBOLT){
- 		if (sd->sc.data[SC_SPIRIT] && sd->sc.data[SC_SPIRIT]->val2 == SL_SAGE)
-@@ -17046,6 +17330,7 @@ int skill_autospell(struct map_session_data *sd, uint16 skill_id)
- 	}
- 	else if(skill_id==MG_FROSTDIVER) maxlv=1;
- 	else return 0;
-+#endif
- 
- 	if(maxlv > lv)
- 		maxlv = lv;
-
 diff --git a/src/map/skill.hpp b/src/map/skill.hpp
 index 4a5ac6f8d6..1be8953531 100644
 --- a/src/map/skill.hpp
@@ -2105,41 +1937,6 @@ index c19a6deeac..fbcd8ef90a 100644
  #endif
  	set_sc( SA_MAGICROD		, SC_MAGICROD	, EFST_MAGICROD	, SCB_NONE );
  	set_sc( SA_AUTOSPELL		, SC_AUTOSPELL		, EFST_AUTOSPELL		, SCB_NONE );
--	set_sc( SA_FLAMELAUNCHER	, SC_FIREWEAPON		, EFST_PROPERTYFIRE, SCB_ATK_ELE );
--	set_sc( SA_FROSTWEAPON		, SC_WATERWEAPON	, EFST_PROPERTYWATER, SCB_ATK_ELE );
--	set_sc( SA_LIGHTNINGLOADER	, SC_WINDWEAPON		, EFST_PROPERTYWIND, SCB_ATK_ELE );
--	set_sc( SA_SEISMICWEAPON	, SC_EARTHWEAPON	, EFST_PROPERTYGROUND, SCB_ATK_ELE );
--	set_sc( SA_VOLCANO		, SC_VOLCANO		, EFST_GROUNDMAGIC, SCB_WATK );
-+	set_sc( SA_FLAMELAUNCHER	, SC_FIREWEAPON		, EFST_PROPERTYFIRE,
-+#ifndef RENEWAL
-+		SCB_ATK_ELE );
-+#else
-+		SCB_ALL );
-+#endif
-+	set_sc( SA_FROSTWEAPON		, SC_WATERWEAPON	, EFST_PROPERTYWATER,
-+#ifndef RENEWAL
-+		SCB_ATK_ELE);
-+#else
-+		SCB_ALL);
-+#endif
-+	set_sc( SA_LIGHTNINGLOADER	, SC_WINDWEAPON		, EFST_PROPERTYWIND,
-+#ifndef RENEWAL
-+		SCB_ATK_ELE);
-+#else
-+		SCB_ALL);
-+#endif
-+	set_sc( SA_SEISMICWEAPON	, SC_EARTHWEAPON	, EFST_PROPERTYGROUND,
-+#ifndef RENEWAL
-+		SCB_ATK_ELE);
-+#else
-+		SCB_ALL );
-+#endif
-+	set_sc( SA_VOLCANO		, SC_VOLCANO		, EFST_GROUNDMAGIC, SCB_WATK
-+#ifdef RENEWAL
-+		|SCB_MATK );
-+#else
-+		);
-+#endif
  	set_sc( SA_DELUGE		, SC_DELUGE		, EFST_GROUNDMAGIC, SCB_MAXHP );
  	set_sc( SA_VIOLENTGALE		, SC_VIOLENTGALE	, EFST_GROUNDMAGIC, SCB_FLEE );
  	add_sc( SA_REVERSEORCISH	, SC_ORCISH		);
@@ -2285,16 +2082,6 @@ index c19a6deeac..fbcd8ef90a 100644
  			sd->subele[ELE_UNDEAD] += i;
 +#endif
  		}
-+#ifdef RENEWAL
-+		if (sc->data[SC_FIREWEAPON])
-+			sd->magic_atk_ele[ELE_FIRE] += sc->data[SC_FIREWEAPON]->val1;
-+		if (sc->data[SC_WINDWEAPON])
-+			sd->magic_atk_ele[ELE_WIND] += sc->data[SC_WINDWEAPON]->val1;
-+		if (sc->data[SC_WATERWEAPON])
-+			sd->magic_atk_ele[ELE_WATER] += sc->data[SC_WATERWEAPON]->val1;
-+		if (sc->data[SC_EARTHWEAPON])
-+			sd->magic_atk_ele[ELE_EARTH] += sc->data[SC_EARTHWEAPON]->val1;
-+#endif
  		if(sc->data[SC_PROVIDENCE]) {
  			sd->subele[ELE_HOLY] += sc->data[SC_PROVIDENCE]->val2;
  			sd->subrace[RC_DEMON] += sc->data[SC_PROVIDENCE]->val2;
@@ -2426,8 +2213,6 @@ index c19a6deeac..fbcd8ef90a 100644
  		matk += 30;
  	if (sc->data[SC_SHRIMP])
  		matk += matk * sc->data[SC_SHRIMP]->val2 / 100;
-+	if (sc->data[SC_VOLCANO])
-+		matk += sc->data[SC_VOLCANO]->val2;
 +#ifdef RENEWAL
 +	if (sc->data[SC_NIBELUNGEN] && sc->data[SC_NIBELUNGEN]->val2 == RINGNBL_MATKRATE)
 +		matk += matk * 20 / 100;
@@ -2637,18 +2422,7 @@ index c19a6deeac..fbcd8ef90a 100644
 +#endif
  			break;
  		case SC_VOLCANO:
- 			{
- 				int8 enchant_eff[] = { 10, 14, 17, 19, 20 }; // Enchant addition
- 				uint8 i = max((val1-1)%5, 0);
- 
-+#ifdef RENEWAL
-+				val2 = 5 + val1 * 5; // ATK/MATK increase
-+#else
- 				val2 = val1*10; // Watk increase
--#ifndef RENEWAL
- 				if (status->def_ele != ELE_FIRE)
- 					val2 = 0;
- #endif
+ 			
 @@ -9783,9 +10165,55 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
  			val3 = tick/1000; // Tick duration
  			t_tickime = 1000; // [GodLesZ] tick time

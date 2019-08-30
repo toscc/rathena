@@ -4459,8 +4459,6 @@ static void battle_attack_sc_bonus(struct Damage* wd, struct block_list *src, st
 #ifdef RENEWAL
 		if (sc->data[SC_WATK_ELEMENT] && skill_id != ASC_METEORASSAULT)
 			ATK_ADDRATE(wd->weaponAtk, wd->weaponAtk2, sc->data[SC_WATK_ELEMENT]->val2);
-		if (sc->data[SC_VOLCANO])
-			ATK_ADD(wd->equipAtk, wd->equipAtk2, sc->data[SC_VOLCANO]->val2);
 		if (sc->data[SC_DRUMBATTLE])
 			ATK_ADD(wd->equipAtk, wd->equipAtk2, sc->data[SC_DRUMBATTLE]->val2);
 		if (sc->data[SC_MADNESSCANCEL])
