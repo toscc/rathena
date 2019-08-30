@@ -359,13 +359,8 @@ void initChangeTables(void)
 	add_sc( TF_POISON		, SC_POISON		);
 	set_sc( KN_TWOHANDQUICKEN	, SC_TWOHANDQUICKEN	, EFST_TWOHANDQUICKEN	, SCB_ASPD );
 	set_sc( KN_AUTOCOUNTER		, SC_AUTOCOUNTER	, EFST_AUTOCOUNTER	, SCB_NONE );
-	set_sc( PR_IMPOSITIO		, SC_IMPOSITIO		, EFST_IMPOSITIO		,
-#ifndef RENEWAL
-		SCB_WATK );
-#else
-		SCB_NONE );
-#endif
-	set_sc( PR_SUFFRAGIUM		, SC_SUFFRAGIUM		, EFST_SUFFRAGIUM		, SCB_NONE );
+	set_sc( PR_IMPOSITIO		, SC_IMPOSITIO		, EFST_IMPOSITIO		, SCB_WATK );
+	set_sc( PR_SUFFRAGIUM		, SC_SUFFRAGIUM		, EFST_SUFFRAGIUM		, SCB_MATK );
 	set_sc( PR_ASPERSIO		, SC_ASPERSIO		, EFST_ASPERSIO		, SCB_ATK_ELE );
 	set_sc( PR_BENEDICTIO		, SC_BENEDICTIO		, EFST_BENEDICTIO		, SCB_DEF_ELE );
 	set_sc( PR_SLOWPOISON		, SC_SLOWPOISON		, EFST_SLOWPOISON		, SCB_REGEN );
@@ -6170,11 +6165,11 @@ static unsigned short status_calc_watk(struct block_list *bl, struct status_chan
 		return cap_value(watk,0,USHRT_MAX);
 
 #ifndef RENEWAL
-	if(sc->data[SC_IMPOSITIO])
-		watk += sc->data[SC_IMPOSITIO]->val2;
 	if(sc->data[SC_DRUMBATTLE])
 		watk += sc->data[SC_DRUMBATTLE]->val2;
 #endif
+if (sc->data[SC_IMPOSITIO])
+	watk += sc->data[SC_IMPOSITIO]->val2;
 	if(sc->data[SC_WATKFOOD])
 		watk += sc->data[SC_WATKFOOD]->val1;
 	if(sc->data[SC_VOLCANO])
@@ -6310,6 +6305,8 @@ static unsigned short status_calc_ematk(struct block_list *bl, struct status_cha
 		matk += sc->data[SC_CHATTERING]->val2;
 	if (sc->data[SC_DORAM_MATK])
 		matk += sc->data[SC_DORAM_MATK]->val1;
+	if (sc->data[SC_SUFFRAGIUM])
+		matk += sc->data[SC_SUFFRAGIUM]->val2;
 
 	return (unsigned short)cap_value(matk,0,USHRT_MAX);
 }
@@ -6373,6 +6370,8 @@ static unsigned short status_calc_matk(struct block_list *bl, struct status_chan
 		matk += 30;
 	if (sc->data[SC_SHRIMP])
 		matk += matk * sc->data[SC_SHRIMP]->val2 / 100;
+
+
 
 	return (unsigned short)cap_value(matk,0,USHRT_MAX);
 }
@@ -9493,7 +9492,7 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 	case SC_FIGHTINGSPIRIT:
 	case SC_OVERED_BOOST:
 	case SC_MAGICPOWER:
-	case SC_IMPOSITIO:
+	//case SC_IMPOSITIO:
 	case SC_KAAHI:
 		//These status changes always overwrite themselves even when a lower level is cast
 		status_change_end(bl, type, INVALID_TIMER);
@@ -10485,7 +10484,7 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 			val2 = val1*10; // Actual boost (since 100% = 1000)
 			break;
 		case SC_SUFFRAGIUM:
-			val2 = 15 * val1; // Speed cast decrease
+			val2 = 5 * val1; // MATK increase
 			break;
 		case SC_INCHEALRATE:
 			if (val1 < 1)

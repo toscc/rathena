@@ -2431,6 +2431,12 @@ static bool is_attack_critical(struct Damage* wd, struct block_list *src, struct
 			case NJ_KIRIKAGE:
 				cri += 250 + 50*skill_lv;
 				break;
+#ifdef RENEWAL
+			 case PR_MACEMASTERY:
+				if (sd && (sd->status.weapon == W_MACE || sd->status.weapon == W_2HMACE) && skill_lv > 5)
+					cri += skill_lv-5;
+				break;
+#endif
 		}
 		if(tsd && tsd->bonus.critical_def)
 			cri = cri * ( 100 - tsd->bonus.critical_def ) / 100;
@@ -4454,8 +4460,6 @@ static void battle_attack_sc_bonus(struct Damage* wd, struct block_list *src, st
 #ifdef RENEWAL
 		if (sc->data[SC_WATK_ELEMENT] && skill_id != ASC_METEORASSAULT)
 			ATK_ADDRATE(wd->weaponAtk, wd->weaponAtk2, sc->data[SC_WATK_ELEMENT]->val2);
-		if (sc->data[SC_IMPOSITIO])
-			ATK_ADD(wd->equipAtk, wd->equipAtk2, sc->data[SC_IMPOSITIO]->val2);
 		if (sc->data[SC_VOLCANO])
 			ATK_ADD(wd->equipAtk, wd->equipAtk2, sc->data[SC_VOLCANO]->val2);
 		if (sc->data[SC_DRUMBATTLE])

@@ -6684,9 +6684,11 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 			break;
 		}
 	case PR_SLOWPOISON:
-	case PR_IMPOSITIO:
 	case PR_LEXAETERNA:
+#ifndef RENEWAL
+	case PR_IMPOSITIO:
 	case PR_SUFFRAGIUM:
+#endif
 	case LK_BERSERK:
 	case MS_BERSERK:
 	case KN_TWOHANDQUICKEN:
@@ -7224,9 +7226,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 		break;
 
 	case AL_ANGELUS:
-	#ifdef RENEWAL
+#ifdef RENEWAL
 	case MC_LOUD:
-	#endif
+	case PR_SUFFRAGIUM:
+#endif
 	case PR_MAGNIFICAT:
 	case PR_GLORIA:
 	case SN_WINDWALK:
@@ -9295,7 +9298,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 
 	case AB_PRAEFATIO:
 	case AB_RENOVATIO:
-		if( !sd || sd->status.party_id == 0 || flag&1 ) {
+#ifdef RENEWAL
+	case PR_IMPOSITIO:
+#endif
+	if( !sd || sd->status.party_id == 0 || flag&1 ) {
 			if (skill_id == AB_PRAEFATIO)
 				clif_skill_nodamage(bl, bl, skill_id, skill_lv, sc_start4(src, bl, type, 100, skill_lv, 0, 0, (sd && sd->status.party_id ? party_foreachsamemap(party_sub_count, sd, 0) : 1 ), skill_get_time(skill_id, skill_lv)));
 			else
@@ -16703,10 +16709,6 @@ int skill_vfcastfix(struct block_list *bl, double time, uint16 skill_id, uint16 
 			VARCAST_REDUCTION(-sc->data[SC_SLOWCAST]->val2);
 		if (sc->data[SC__LAZINESS])
 			VARCAST_REDUCTION(-sc->data[SC__LAZINESS]->val2);
-		if (sc->data[SC_SUFFRAGIUM]) {
-			VARCAST_REDUCTION(sc->data[SC_SUFFRAGIUM]->val2);
-			status_change_end(bl, SC_SUFFRAGIUM, INVALID_TIMER);
-		}
 		if (sc->data[SC_MEMORIZE]) {
 			reduce_cast_rate += 50;
 			if ((--sc->data[SC_MEMORIZE]->val2) <= 0)

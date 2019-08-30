@@ -145,7 +145,7 @@
 8,54,4,72,1,9,4,0,0,0,0,0,0 //ALL_RESURRECTION#Resurrection#
 8,65,10,0,0,0,0,0,0,0,0,0,0 //PR_MACEMASTERY#Mace Mastery#
 8,66,5,0,0,0,0,0,0,0,0,0,0 //PR_IMPOSITIO#Impositio Manus#
-8,67,3,66,2,0,0,0,0,0,0,0,0 //PR_SUFFRAGIUM#Suffragium#
+8,67,5,0,0,0,0,0,0,0,0,0,0 //PR_SUFFRAGIUM#Suffragium#
 8,68,5,31,1,66,3,0,0,0,0,0,0 //PR_ASPERSIO#Aspersio#
 8,69,5,75,3,68,5,0,0,0,0,0,0 //PR_BENEDICTIO#B.S Sacramenti#
 8,70,10,28,1,0,0,0,0,0,0,0,0 //PR_SANCTUARY#Sanctuary#
@@ -878,7 +878,7 @@
 4009,361,5,33,1,9,3,66,3,0,0,0,0 //HP_ASSUMPTIO#Assumptio#
 4009,362,5,75,2,9,1,73,3,0,0,0,0 //HP_BASILICA#Basilica#
 4009,363,10,68,3,9,5,76,5,0,0,0,0 //HP_MEDITATIO#Meditatio#
-4009,481,5,65,10,23,10,0,0,0,0,0,0 //HP_MANARECHARGE#Mana Recharge#
+4009,481,5,65,5,23,10,0,0,0,0,0,0 //HP_MANARECHARGE#Mana Recharge#
 4009,410,1,0,0,0,0,0,0,0,0,0,0 //WE_CALLBABY#Call Baby#
 //HighWizard
 4010,1,9,0,0,0,0,0,0,0,0,0,0 //NV_BASIC#Basic Skill#
