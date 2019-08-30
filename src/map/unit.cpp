@@ -4672,6 +4672,16 @@ int targetmanus(block_list * bl, va_list ap)
 	return 0;
 }
 
+int targetsuffragium(block_list * bl, va_list ap)
+{
+	struct map_session_data *sd = (struct map_session_data*)bl;
+	if (pc_isdead(sd)) return 0;
+	if (!ispartymember(sd)) return 0;
+	if ((!sd->sc.data[SC_SUFFRAGIUM]) && ((sd->battle_status.int_ * 2 > sd->status.base_level) || (sd->battle_status.rhw.matk > 120))) { targetbl = bl; foundtargetID = sd->bl.id; };
+
+	return 0;
+}
+
 int targetrepair(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
@@ -6720,7 +6730,15 @@ TIMER_FUNC(unit_autopilot_timer)
 			resettargets();
 			map_foreachinrange(targetmanus, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
-				unit_skilluse_ifable(&sd->bl, foundtargetID, PR_IMPOSITIO, pc_checkskill(sd, PR_IMPOSITIO));
+				unit_skilluse_ifable(&sd->bl, SELF, PR_IMPOSITIO, pc_checkskill(sd, PR_IMPOSITIO));
+			}
+		}
+		/// Suffragium
+		if (canskill(sd)) if (pc_checkskill(sd, PR_SUFFRAGIUM) > 0) {
+			resettargets();
+			map_foreachinrange(targetsuffragium, &sd->bl, 9, BL_PC, sd);
+			if (foundtargetID > -1) {
+				unit_skilluse_ifable(&sd->bl, SELF, PR_SUFFRAGIUM, pc_checkskill(sd, PR_SUFFRAGIUM));
 			}
 		}
 		/// Sacrament
