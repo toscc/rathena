@@ -8024,10 +8024,10 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 						if (!battle_config.dispel_song || tsc->data[i]->val4 == 0)
 							continue; //If in song area don't end it, even if config enabled
 						break;
-					case SC_ASSUMPTIO:
+/*					case SC_ASSUMPTIO:
 						if( bl->type == BL_MOB )
 							continue;
-						break;
+						break;*/
 				}
 				if(i == SC_BERSERK) tsc->data[i]->val2=0; //Mark a dispelled berserk to avoid setting hp to 100 by setting hp penalty to 0.
 				status_change_end(bl, (sc_type)i, INVALID_TIMER);
