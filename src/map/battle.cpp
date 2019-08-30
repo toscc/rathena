@@ -4663,8 +4663,8 @@ static void battle_calc_defense_reduction(struct Damage* wd, struct block_list *
 	short def2 = tstatus->def2;
 
 #ifdef RENEWAL
-	if( tsc && tsc->data[SC_ASSUMPTIO] )
-		def1 <<= 1; // only eDEF is doubled
+/*	if( tsc && tsc->data[SC_ASSUMPTIO] )
+		def1 <<= 1; // only eDEF is doubled*/
 #endif
 
 	if (sd) {
@@ -6272,8 +6272,8 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 			defType mdef = tstatus->mdef;
 			int mdef2= tstatus->mdef2;
 #ifdef RENEWAL
-			if(tsc && tsc->data[SC_ASSUMPTIO])
-				mdef <<= 1; // only eMDEF is doubled
+			/*if(tsc && tsc->data[SC_ASSUMPTIO])
+				mdef <<= 1; // only eMDEF is doubled*/
 #endif
 			if (sc && sc->data[SC_EXPIATIO]) {
 				i = 5 * sc->data[SC_EXPIATIO]->val1; // 5% per level

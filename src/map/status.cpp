@@ -521,7 +521,7 @@ void initChangeTables(void)
 #ifndef RENEWAL
 			EFST_ASSUMPTIO		, SCB_NONE );
 #else
-			EFST_ASSUMPTIO2		, SCB_NONE );
+			EFST_ASSUMPTIO2		, SCB_DEF || SCB_MDEF );
 #endif
 	add_sc( HP_BASILICA		, SC_BASILICA		);
 	set_sc( HW_MAGICPOWER		, SC_MAGICPOWER		, EFST_MAGICPOWER		, SCB_MATK );
@@ -6698,6 +6698,9 @@ static defType status_calc_def(struct block_list *bl, struct status_change *sc, 
 		def -= def * sc->data[SC_OVERED_BOOST]->val4 / 100;
 	if(sc->data[SC_GLASTHEIM_ITEMDEF])
 		def += sc->data[SC_GLASTHEIM_ITEMDEF]->val1;
+	if (sc->data[SC_ASSUMPTIO])
+		def *= 2;
+
 
 	return (defType)cap_value(def,DEFTYPE_MIN,DEFTYPE_MAX);
 }
@@ -6827,6 +6830,8 @@ static defType status_calc_mdef(struct block_list *bl, struct status_change *sc,
 		mdef -= 20 * sc->data[SC_ODINS_POWER]->val1;
 	if(sc->data[SC_GLASTHEIM_ITEMDEF])
 		mdef += sc->data[SC_GLASTHEIM_ITEMDEF]->val2;
+	if (sc->data[SC_ASSUMPTIO])
+		mdef *= 2;
 
 	return (defType)cap_value(mdef,DEFTYPE_MIN,DEFTYPE_MAX);
 }
@@ -9253,10 +9258,12 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 		status_change_end(bl, SC_TOXIN, INVALID_TIMER);
 		status_change_end(bl, SC_MAGICMUSHROOM, INVALID_TIMER);
 		break;
+#ifndef RENEWAL
 	case SC_KYRIE:
 		// Cancels Assumptio
 		status_change_end(bl, SC_ASSUMPTIO, INVALID_TIMER);
 		break;
+#endif
 	case SC_DELUGE:
 		if (sc->data[SC_FOGWALL] && sc->data[SC_BLIND])
 			status_change_end(bl, SC_BLIND, INVALID_TIMER);
@@ -9290,7 +9297,9 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 #endif
 		break;
 	case SC_ASSUMPTIO:
+#ifndef RENEWAL
 		status_change_end(bl, SC_KYRIE, INVALID_TIMER);
+#endif
 		status_change_end(bl, SC_KAITE, INVALID_TIMER);
 		break;
 	case SC_KAITE:

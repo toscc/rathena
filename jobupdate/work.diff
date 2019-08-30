@@ -214,9 +214,6 @@ index b872350dae..1f5d1fbce2 100644
 @@ -542,9 +544,9 @@
  
  //===== High Priest ========================
- //-- HP_ASSUMPTIO
--361,800:1200:1600:2000:2400,1100:1200:1300:1400:1500,0,20000:40000:60000:80000:100000,0,0,200:300:400:500:600
-+361,800:1200:1600:2000:2400,1100:1200:1300:1400:500,0,20000:40000:60000:80000:100000,0,0,200:300:400:500:600
  //-- HP_BASILICA
 -362,0,2000:3000:4000:5000:6000,0,20000:25000:30000:35000:40000,20000:25000:30000:35000:40000,0,5000:6000:7000:8000:9000
 +362,3000,200:400:600:800:1000,0,20000:25000:30000:35000:40000,20000:25000:30000:35000:40000,30000,200:400:600:800:1000
@@ -799,15 +796,6 @@ index de8167f4a0..58c201f9a2 100644
  		}
  #endif
  
-@@ -1302,7 +1313,7 @@ int64 battle_calc_damage(struct block_list *src,struct block_list *bl,struct Dam
- 		}
- 
- 		// Damage reductions
--		// Assumptio doubles the def & mdef on RE mode, otherwise gives a reduction on the final damage. [Igniz]
-+		// Assumptio increases DEF on RE mode, otherwise gives a reduction on the final damage. [Igniz]
- #ifndef RENEWAL
- 		if( sc->data[SC_ASSUMPTIO] ) {
- 			if( map_flag_vs(bl->m) )
 @@ -2247,6 +2258,10 @@ static int battle_skill_damage(struct block_list *src, struct block_list *target
   * @return Bonus value based on party count
   */
@@ -1080,18 +1068,6 @@ index de8167f4a0..58c201f9a2 100644
  				default: // fall through to apply EDP bonuses
  					// Renewal EDP formula [helvetica]
  					// weapon atk * (1 + (edp level * .8))
-@@ -4655,11 +4756,6 @@ static void battle_calc_defense_reduction(struct Damage* wd, struct block_list *
- 	defType def1 = status_get_def(target); //Don't use tstatus->def1 due to skill timer reductions.
- 	short def2 = tstatus->def2;
- 
--#ifdef RENEWAL
--	if( tsc && tsc->data[SC_ASSUMPTIO] )
--		def1 <<= 1; // only eDEF is doubled
--#endif
--
- 	if (sd) {
- 		int i = sd->ignore_def_by_race[tstatus->race] + sd->ignore_def_by_race[RC_ALL];
- 		i += sd->ignore_def_by_class[tstatus->class_] + sd->ignore_def_by_class[CLASS_ALL];
 @@ -4820,11 +4916,11 @@ static void battle_calc_attack_post_defense(struct Damage* wd, struct block_list
  				&& skill_id != LK_SPIRALPIERCE && skill_id != ML_SPIRALPIERCE
  #endif
@@ -1136,18 +1112,6 @@ index de8167f4a0..58c201f9a2 100644
  					case WZ_VERMILION:
  						skillratio += 20 * skill_lv - 20;
  						break;
-@@ -6253,10 +6384,7 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list
- 		if(!flag.imdef){
- 			defType mdef = tstatus->mdef;
- 			int mdef2= tstatus->mdef2;
--#ifdef RENEWAL
--			if(tsc && tsc->data[SC_ASSUMPTIO])
--				mdef <<= 1; // only eMDEF is doubled
--#endif
-+
- 			if (sc && sc->data[SC_EXPIATIO]) {
- 				i = 5 * sc->data[SC_EXPIATIO]->val1; // 5% per level
- 
 @@ -6339,12 +6467,17 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list
  					struct Damage wd = battle_calc_weapon_attack(src,target,skill_id,skill_lv,mflag);
  
@@ -1495,17 +1459,6 @@ index 1c417d9466..5bdd0b0727 100755
  		case PR_SANCTUARY:
  			hp = (skill_lv > 6) ? 777 : skill_lv * 100;
  			break;
-@@ -609,6 +607,10 @@ int skill_calc_heal(struct block_list *src, struct block_list *target, uint16 sk
- 			hp_bonus += sc->data[SC_GLASTHEIM_HEAL]->val1;
- #else
- 			hp += hp * sc->data[SC_GLASTHEIM_HEAL]->val1 / 100;
-+#endif
-+#ifdef RENEWAL
-+		if (sc->data[SC_ASSUMPTIO])
-+			hp_bonus += sc->data[SC_ASSUMPTIO]->val1 * 2;
- #endif
- 	}
- 
 @@ -1443,18 +1449,27 @@ int skill_additional_effect(struct block_list* src, struct block_list *bl, uint1
  
  	case AM_ACIDTERROR:
@@ -2510,12 +2463,6 @@ index c19a6deeac..fbcd8ef90a 100644
  	add_sc( NPC_DARKCROSS		, SC_BLIND		);
  	add_sc( NPC_GRANDDARKNESS	, SC_BLIND		);
 @@ -428,9 +576,13 @@ void initChangeTables(void)
- #ifndef RENEWAL
- 			EFST_ASSUMPTIO		, SCB_NONE );
- #else
--			EFST_ASSUMPTIO2		, SCB_NONE );
-+			EFST_ASSUMPTIO_BUFF	, SCB_DEF2 );
- #endif
 +#ifdef RENEWAL
 +	set_sc( HP_BASILICA			, SC_BASILICA	, EFST_BASILICA_BUFF	, SCB_ALL );
 +#else
@@ -2878,15 +2825,6 @@ index c19a6deeac..fbcd8ef90a 100644
  #endif
  
  	// Rate value
-@@ -6614,6 +6909,8 @@ static signed short status_calc_def2(struct block_list *bl, struct status_change
- #ifdef RENEWAL
- 	if (sc->data[SC_SKA])
- 		def2 += 80;
-+	if (sc->data[SC_ASSUMPTIO])
-+		def2 += sc->data[SC_ASSUMPTIO]->val1 * 50;
- #endif
- 	if(sc->data[SC_ANGELUS])
- #ifdef RENEWAL /// The VIT stat bonus is boosted by angelus [RENEWAL]
 @@ -6809,10 +7106,12 @@ static unsigned short status_calc_speed(struct block_list *bl, struct status_cha
  			val = sc->data[SC_CHASEWALK]->val3;
  		else {
@@ -3041,24 +2979,9 @@ index c19a6deeac..fbcd8ef90a 100644
  		status_change_end(bl, SC_TOXIN, INVALID_TIMER);
  		status_change_end(bl, SC_MAGICMUSHROOM, INVALID_TIMER);
  		break;
-+#ifndef RENEWAL
- 	case SC_KYRIE:
- 		// Cancels Assumptio
- 		status_change_end(bl, SC_ASSUMPTIO, INVALID_TIMER);
- 		break;
-+#endif
  	case SC_DELUGE:
  		if (sc->data[SC_FOGWALL] && sc->data[SC_BLIND])
  			status_change_end(bl, SC_BLIND, INVALID_TIMER);
-@@ -9178,7 +9552,9 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
- #endif
- 		break;
- 	case SC_ASSUMPTIO:
-+#ifndef RENEWAL
- 		status_change_end(bl, SC_KYRIE, INVALID_TIMER);
-+#endif
- 		status_change_end(bl, SC_KAITE, INVALID_TIMER);
- 		break;
  	case SC_KAITE:
 @@ -9702,15 +10078,21 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
  			// Val1 Skill LV of Autospell
