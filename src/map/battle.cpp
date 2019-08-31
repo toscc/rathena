@@ -3490,7 +3490,7 @@ static int battle_calc_attack_skill_ratio(struct Damage* wd, struct block_list *
 			break;
 		case KN_BRANDISHSPEAR:
 		case ML_BRANDISH: {
-				int ratio = 100 + 20 * skill_lv;
+				int ratio = 100 + 10 * skill_lv + 2*(sstatus->str);
 
 				skillratio += -100 + ratio;
 				if(skill_lv > 3 && wd->miscflag == 0)
