@@ -4682,7 +4682,6 @@ int targetsuffragium(block_list * bl, va_list ap)
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
 	if (!ispartymember(sd)) return 0;
-	if (sd->state.autopilotmode == 3) return 0;
 	if ((!sd->sc.data[SC_SUFFRAGIUM]) && ((sd->battle_status.int_*2 > sd->status.base_level) || (sd->battle_status.rhw.matk > 120))) { targetbl = bl; foundtargetID = sd->bl.id; };
 
 	return 0;

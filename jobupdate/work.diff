@@ -77,29 +77,7 @@ index b872350dae..1f5d1fbce2 100644
  //-- CR_DEVOTION
  255,1500,0,0,0,30000:45000:60000:75000:90000,0,1500
  //-- CR_PROVIDENCE
-@@ -390,7 +390,7 @@
- //-- MO_CALLSPIRITS
- 261,500,0,0,600000,0,0,500
- //-- MO_ABSORBSPIRITS
--262,1000,0,0,0,0,0,1000
-+262,0,0,0,0,0,0,500
- //-- MO_INVESTIGATE
- 266,500,500,0,0,0,0,500
- //-- MO_FINGEROFFENSIVE
-@@ -398,11 +398,11 @@
- //-- MO_STEELBODY
- 268,2500,0,0,30000:60000:90000:120000:150000,0,0,2500
- //-- MO_BLADESTOP
--269,0,500,0,500:700:900:1100:1300,20000:30000:40000:50000:60000,0,0
-+269,0,500,0,500:700:900:1100:1300,10000,0,0
- //-- MO_EXPLOSIONSPIRITS
- 270,0,0,0,180000,0,0,0
- //-- MO_EXTREMITYFIST
--271,2000:1750:1500:1250:1000,3000:2500:2000:1500:1000,0,10000,300000,0,2000:1750:1500:1250:1000
-+271,2000:1750:1500:1250:1000,3000:2500:2000:1500:1000,0,3000,300000,0,2000:1750:1500:1250:1000
- //==========================================
- 
- @ -438,41 +438,43 @@
+@ -438,41 +438,43 @@
  
  //===== Bard & Dancer (Ensemble Skills) ====
  //-- BD_ADAPTATION
@@ -239,10 +217,6 @@ index b872350dae..1f5d1fbce2 100644
  //-- LK_JOINTBEAT
  399,0,800:800:800:800:1000,0,0,30000,0,0
   
- //-- CH_SOULCOLLECT
--401,0,0,0,600000,0,0,2000
-+401,0,0,0,600000,0,0,1000
- 
  //-- ASC_METEORASSAULT (Upkeep2 times are duration of: blind(lv1), stun(lv2) or bleeding (lv3))
 -406,250,500,0,0,20000:5000:120000,0,250
 +406,250,0,0,0,20000:5000:120000,500,250
@@ -447,21 +421,6 @@ index 15c7a09627..9a8247a222 100644
  215,0,0,17:19:21:23:25,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0					//RG_STRIPWEAPON
  216,0,0,12:14:16:18:20,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0					//RG_STRIPSHIELD
  217,0,0,17:19:21:23:25,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0					//RG_STRIPARMOR
-@@ -236,13 +236,13 @@
- 262,0,0,5,0,0,0,99,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0								//MO_ABSORBSPIRITS
- 264,0,0,14,0,0,0,99,0,0,none,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0								//MO_BODYRELOCATION
- 266,0,0,10:14:17:19:20,0,0,0,99,0,0,none,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0					//MO_INVESTIGATE
--267,0,0,10,0,0,0,99,0,0,none,0,1:2:3:4:5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0						//MO_FINGEROFFENSIVE
-+267,0,0,12:16:20:24:28,0,0,0,99,0,0,none,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0					//MO_FINGEROFFENSIVE
- 268,0,0,200,0,0,0,99,0,0,none,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0								//MO_STEELBODY
- 269,0,0,10,0,0,0,0:1:2:3:4:5:6:7:8:9:10:12:13:14:15:16:17:18:19:20:21:22,0,0,none,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//MO_BLADESTOP
- 270,0,0,15,0,0,0,99,0,0,none,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0								//MO_EXPLOSIONSPIRITS
- 271,0,0,1,0,0,0,0:1:2:3:4:5:6:7:8:9:10:12:13:14:15:16:17:18:19:20:21:22,0,0,none,SC_EXPLOSIONSPIRITS,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//MO_EXTREMITYFIST
--272,0,0,11:12:13:14:15,0,0,0,0:1:2:3:4:5:6:7:8:9:10:12:13:14:15:16:17:18:19:20:21:22,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//MO_CHAINCOMBO
--273,0,0,11:12:13:14:15,0,0,0,0:1:2:3:4:5:6:7:8:9:10:12:13:14:15:16:17:18:19:20:21:22,0,0,none,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//MO_COMBOFINISH
-+272,0,0,5:6:7:8:9,0,0,0,0:1:2:3:4:5:6:7:8:9:10:12:13:14:15:16:17:18:19:20:21:22,0,0,none,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//MO_CHAINCOMBO
-+273,0,0,3:4:5:6:7,0,0,0,0:1:2:3:4:5:6:7:8:9:10:12:13:14:15:16:17:18:19:20:21:22,0,0,none,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0	//MO_COMBOFINISH
- 
 @@ -276,36 +276,36 @@
  
  //****
@@ -808,48 +767,7 @@ index de8167f4a0..58c201f9a2 100644
  			skillratio += 40 * skill_lv;
  #endif
  			break;
- 		case MO_FINGEROFFENSIVE:
-+#ifdef RENEWAL
-+			skillratio += 500 + skill_lv * 2;
-+			if (tsc && tsc->data[SC_BLADESTOP])
-+				skillratio += skillratio / 2;
-+#else
- 			skillratio += 50 * skill_lv;
-+#endif
- 			break;
- 		case MO_INVESTIGATE:
-+#ifdef RENEWAL
-+			skillratio += -100 + 100 * skill_lv;
-+			if (tsc && tsc->data[SC_BLADESTOP])
-+				skillratio += skillratio / 2;
-+#else
- 			skillratio += 75 * skill_lv;
-+#endif
- 			break;
- 		case MO_EXTREMITYFIST:
-+#ifdef RENEWAL
-+			if (wd->miscflag&1)
-+				skillratio += 100; // More than 5 spirit balls active
-+#endif
- 			skillratio += 100 * (7 + sstatus->sp / 10);
- 			skillratio = min(500000,skillratio); //We stop at roughly 50k SP for overflow protection
- 			break;
 @@ -3612,23 +3677,50 @@ static int battle_calc_attack_skill_ratio(struct Damage* wd, struct block_list *
- 			skillratio += 20 * skill_lv;
- 			break;
- 		case MO_CHAINCOMBO:
-+#ifdef RENEWAL
-+			skillratio += 150 + 50 * skill_lv;
-+#else
- 			skillratio += 50 + 50 * skill_lv;
-+#endif
- 			break;
- 		case MO_COMBOFINISH:
-+#ifdef RENEWAL
-+			skillratio += 450 + 50 * skill_lv + sstatus->str; // !TODO: How does STR play a role?
-+#else
- 			skillratio += 140 + 60 * skill_lv;
-+#endif
  			break;
  		case BA_MUSICALSTRIKE:
  		case DC_THROWARROW:
@@ -859,32 +777,6 @@ index de8167f4a0..58c201f9a2 100644
  			skillratio += 25 + 25 * skill_lv;
 +#endif
  			break;
- 		case CH_TIGERFIST:
-+#ifdef RENEWAL
-+			skillratio += 400 + 150 * skill_lv;
-+			RE_LVL_DMOD(100);
-+#else
- 			skillratio += -60 + 100 * skill_lv;
-+#endif
- 			break;
- 		case CH_CHAINCRUSH:
-+#ifdef RENEWAL
-+			skillratio += -100 + 200 * skill_lv;
-+			RE_LVL_DMOD(100);
-+#else
- 			skillratio += 300 + 100 * skill_lv;
-+#endif
- 			break;
- 		case CH_PALMSTRIKE:
-+#ifdef RENEWAL
-+			skillratio += 100 + 100 * skill_lv + sstatus->str; // !TODO: How does STR play a role?
-+			RE_LVL_DMOD(100);
-+#else
- 			skillratio += 100 + 100 * skill_lv;
-+#endif
- 			break;
- 		case LK_HEADCRUSH:
- 			skillratio += 40 * skill_lv;
 @@ -3642,21 +3734,41 @@ static int battle_calc_attack_skill_ratio(struct Damage* wd, struct block_list *
  		// Renewal: skill ratio applies to entire damage [helvetica]
  		case LK_SPIRALPIERCE:
@@ -1063,41 +955,7 @@ index de8167f4a0..58c201f9a2 100644
  		case PA_GOSPEL:
  			if (mflag > 0)
  				md.damage = (rnd() % 4000) + 1500;
-@@ -7204,10 +7342,19 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
- 		}
- 	}
- 
--	if( tsc && tsc->data[SC_BLADESTOP_WAIT] && status_get_class_(src) != CLASS_BOSS && (src->type == BL_PC || tsd == NULL || distance_bl(src, target) <= (tsd->status.weapon == W_FIST ? 1 : 2)) )
-+	if( tsc && tsc->data[SC_BLADESTOP_WAIT] &&
-+#ifndef RENEWAL
-+		status_get_class_(src) != CLASS_BOSS &&
-+#endif
-+		(src->type == BL_PC || tsd == NULL || distance_bl(src, target) <= (tsd->status.weapon == W_FIST ? 1 : 2)) )
- 	{
- 		uint16 skill_lv = tsc->data[SC_BLADESTOP_WAIT]->val1;
- 		int duration = skill_get_time2(MO_BLADESTOP,skill_lv);
-+
-+#ifdef RENEWAL
-+			if (status_get_class_(src) == CLASS_BOSS)
-+				duration = 2000; // Only lasts 2 seconds for Boss monsters
-+#endif
- 		status_change_end(target, SC_BLADESTOP_WAIT, INVALID_TIMER);
- 		if(sc_start4(src,src, SC_BLADESTOP, 100, sd?pc_checkskill(sd, MO_BLADESTOP):5, 0, 0, target->id, duration))
- 		{	//Target locked.
-@@ -7219,7 +7366,12 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
- 	}
- 
- 	if(sd && (skillv = pc_checkskill(sd,MO_TRIPLEATTACK)) > 0) {
--		int triple_rate= 30 - skillv; //Base Rate
-+#ifdef RENEWAL
-+		int triple_rate = 30; //Base Rate
-+#else
-+		int triple_rate = 30 - skillv; //Base Rate
-+#endif
-+
- 		if (sc && sc->data[SC_SKILLRATE_UP] && sc->data[SC_SKILLRATE_UP]->val1 == MO_TRIPLEATTACK) {
- 			triple_rate+= triple_rate*(sc->data[SC_SKILLRATE_UP]->val2)/100;
- 			status_change_end(src, SC_SKILLRATE_UP, INVALID_TIMER);
+
 diff --git a/src/map/clif.cpp b/src/map/clif.cpp
 index c3cb4a2b0e..f7907a3897 100644
 --- a/src/map/clif.cpp
@@ -1312,17 +1170,6 @@ index 1c417d9466..5bdd0b0727 100755
  		}
  		break;
  
-@@ -4969,6 +5033,10 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, uint
- 			short x, y, i = 2; // Move 2 cells (From target)
- 			short dir = map_calc_dir(src,bl->x,bl->y);
- 
-+#ifdef RENEWAL
-+			if (skill_id == MO_EXTREMITYFIST && sd && sd->spiritball_old > 5)
-+				flag |= 1; // Give +100% damage increase
-+#endif
- 			skill_attack(BF_WEAPON,src,src,bl,skill_id,skill_lv,tick,flag);
- 			if (skill_id == MO_EXTREMITYFIST) {
- 				status_set_sp(src, 0, 0);
 @@ -5258,15 +5326,18 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, uint
  				if(map_getcell(bl->m,tx,ty,CELL_CHKWALL))
  					break;
@@ -1815,29 +1662,6 @@ index 1c417d9466..5bdd0b0727 100755
  	}
  
  	req.zeny = skill_db[idx]->require.zeny[skill_lv-1];
-@@ -16448,6 +16715,7 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, uint16
- 				if( sc->data[SC_BLADESTOP] )
- 					req.spiritball--;
- 				else if( sc->data[SC_COMBO] ) {
-+#ifndef RENEWAL
- 					switch( sc->data[SC_COMBO]->val1 ) {
- 						case MO_COMBOFINISH:
- 							req.spiritball = 4;
-@@ -16455,10 +16723,13 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, uint16
- 						case CH_TIGERFIST:
- 							req.spiritball = 3;
- 							break;
--						case CH_CHAINCRUSH:	//It should consume whatever is left as long as it's at least 1.
-+						case CH_CHAINCRUSH: //It should consume whatever is left as long as it's at least 1.
- 							req.spiritball = sd->spiritball?sd->spiritball:1;
- 							break;
- 					}
-+#else
-+					req.spiritball = sd->spiritball ? sd->spiritball : 1;
-+#endif
- 				} else if( sc->data[SC_RAISINGDRAGON] && sd->spiritball > 5)
- 					req.spiritball = sd->spiritball; // must consume all regardless of the amount required
- 			}
 diff --git a/src/map/skill.hpp b/src/map/skill.hpp
 index 4a5ac6f8d6..1be8953531 100644
 --- a/src/map/skill.hpp

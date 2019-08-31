@@ -3610,6 +3610,10 @@ static int battle_calc_attack_skill_ratio(struct Damage* wd, struct block_list *
 			skillratio += 75 * skill_lv;
 			break;
 		case MO_EXTREMITYFIST:
+#ifdef RENEWAL
+			if (wd->miscflag & 1)
+				skillratio += 100; // More than 5 spirit balls active
+#endif
 			skillratio += 100 * (7 + sstatus->sp / 10);
 			skillratio = min(500000,skillratio); //We stop at roughly 50k SP for overflow protection
 			break;
@@ -3617,17 +3621,17 @@ static int battle_calc_attack_skill_ratio(struct Damage* wd, struct block_list *
 			skillratio += 20 * skill_lv;
 			break;
 		case MO_CHAINCOMBO:
-			skillratio += 50 + 50 * skill_lv;
+			skillratio += 100 + 50 * skill_lv;
 			break;
 		case MO_COMBOFINISH:
-			skillratio += 140 + 60 * skill_lv;
+			skillratio += 150 + 60 * skill_lv;
 			break;
 		case BA_MUSICALSTRIKE:
 		case DC_THROWARROW:
 			skillratio += 25 + 25 * skill_lv;
 			break;
 		case CH_TIGERFIST:
-			skillratio += -60 + 100 * skill_lv;
+			skillratio += -60 + 120 * skill_lv;
 			break;
 		case CH_CHAINCRUSH:
 			skillratio += 300 + 100 * skill_lv;
@@ -7232,7 +7236,11 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 	}
 
 	if(sd && (skillv = pc_checkskill(sd,MO_TRIPLEATTACK)) > 0) {
-		int triple_rate= 30 - skillv; //Base Rate
+#ifdef RENEWAL
+		int triple_rate = 30; //Base Rate
+#else
+		int triple_rate = 30 - skillv; //Base Rate
+#endif
 		if (sc && sc->data[SC_SKILLRATE_UP] && sc->data[SC_SKILLRATE_UP]->val1 == MO_TRIPLEATTACK) {
 			triple_rate+= triple_rate*(sc->data[SC_SKILLRATE_UP]->val2)/100;
 			status_change_end(src, SC_SKILLRATE_UP, INVALID_TIMER);

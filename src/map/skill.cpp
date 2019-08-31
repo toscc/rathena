@@ -4935,6 +4935,10 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, uint
 			short x, y, i = 2; // Move 2 cells (From target)
 			short dir = map_calc_dir(src,bl->x,bl->y);
 
+#ifdef RENEWAL
+			if (skill_id == MO_EXTREMITYFIST && sd && sd->spiritball_old > 5)
+				flag |= 1; // Give +100% damage increase
+#endif
 			skill_attack(BF_WEAPON,src,src,bl,skill_id,skill_lv,tick,flag);
 			if (skill_id == MO_EXTREMITYFIST) {
 				status_set_sp(src, 0, 0);
@@ -16500,6 +16504,7 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, uint16
 				if( sc->data[SC_BLADESTOP] )
 					req.spiritball--;
 				else if( sc->data[SC_COMBO] ) {
+#ifndef RENEWAL
 					switch( sc->data[SC_COMBO]->val1 ) {
 						case MO_COMBOFINISH:
 							req.spiritball = 4;
@@ -16511,6 +16516,9 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, uint16
 							req.spiritball = sd->spiritball?sd->spiritball:1;
 							break;
 					}
+#else
+					req.spiritball = sd->spiritball ? sd->spiritball : 1;
+#endif
 				} else if( sc->data[SC_RAISINGDRAGON] && sd->spiritball > 5)
 					req.spiritball = sd->spiritball; // must consume all regardless of the amount required
 			}
