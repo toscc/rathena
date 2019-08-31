@@ -4711,10 +4711,12 @@ int targetprovidence(block_list * bl, va_list ap)
 {
 	struct map_session_data *sd = (struct map_session_data*)bl;
 	if (pc_isdead(sd)) return 0;
-	// Must have at least 3 appropriate enemies neabry to cast
+	// Crusaders are invalid targets
+	if ((sd->class_&MAPID_UPPERMASK) == MAPID_CRUSADER) return 0;
+		// Must have at least 3 appropriate enemies neabry to cast
 	if (map_foreachinrange(countprovidence, &sd->bl, 25, BL_MOB, sd) < 3) return 0;
 
-	if ((!sd->sc.data[SC_PROVIDENCE])) { targetbl = bl; foundtargetID = sd->bl.id; };
+	if ((!sd->sc.data[SC_PROVIDENCE])) { targetbl = bl; foundtargetID = sd->bl.id; return 1; };
 
 	return 0;
 }
@@ -5391,6 +5393,14 @@ void skillwhenidle(struct map_session_data *sd) {
 		if (4 + radra>sd->spiritball) {
 			unit_skilluse_ifable(&sd->bl, SELF, CH_SOULCOLLECT, pc_checkskill(sd, CH_SOULCOLLECT));
 		}
+	}
+
+	// Defending Aura
+	// Turn it off when not actively fighting. This ensures it won't be accidentaly left on when leaving the area with ranged monsters.
+	if ((pc_checkskill(sd, CR_DEFENDER) > 0) &&
+		(sd->sc.data[SC_DEFENDER]))
+	{
+		unit_skilluse_ifable(&sd->bl, SELF, CR_DEFENDER, pc_checkskill(sd, CR_DEFENDER));
 	}
 
 	// Flip Coin
@@ -6858,7 +6868,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			}
 		}
 		// Providence
-		if (canskill(sd)) if (pc_checkskill(sd, CR_PROVIDENCE)>0) {
+		if (canskill(sd)) if (Dangerdistance >= 900) if (pc_checkskill(sd, CR_PROVIDENCE)>0) {
 			resettargets();
 			map_foreachinrange(targetprovidence, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
@@ -6923,7 +6933,7 @@ TIMER_FUNC(unit_autopilot_timer)
 		if (Dangerdistance<900)	if (canskill(sd)) if ((pc_checkskill(sd, CR_DEFENDER)>0) && (dangermd->status.rhw.range > 3) &&
 				!(sd->sc.data[SC_DEFENDER]))
 			{			
-					unit_skilluse_ifablexy(&sd->bl, sd->bl.id, CR_DEFENDER, pc_checkskill(sd, CR_DEFENDER));
+					unit_skilluse_ifable(&sd->bl, SELF, CR_DEFENDER, pc_checkskill(sd, CR_DEFENDER));
 			}
 
 		// Gunslinger Adjustment
@@ -7751,8 +7761,9 @@ TIMER_FUNC(unit_autopilot_timer)
 			// Pressure
 			// Only use if very low STR or having no equipped shield -> can't use Shield Chain effectively.
 			// Uninterruptable so ok during tanking mode but in that case, don't use up all the SP, keep most of it for tanking skills like healing.
-			// Characters with at least some STR are probably better off using their normal attack or bash in most cases, and of Shield Chain if available.
-			if (foundtargetID2 > -1) if (canskill(sd)) if ((pc_checkskill(sd, PA_PRESSURE) > 1)) if ((sd->status.shield <= 0) || (sd->battle_status.str<30))
+			// Characters with at least some STR are probably better off using their normal attack or bash in most cases, and Shield Chain if available.
+			// also use against super high DEF targets
+			if (foundtargetID2 > -1) if (canskill(sd)) if ((pc_checkskill(sd, PA_PRESSURE) > 1)) if ((sd->status.shield <= 0) || (sd->battle_status.str<30) || (targetmd->status.def+targetmd->status.def2>=500))
 				if ((sd->state.autopilotmode == 2) || ((sd->state.autopilotmode == 1) && (sd->battle_status.sp >= 0.6*sd->battle_status.max_sp))){
 				unit_skilluse_ifable(&sd->bl, foundtargetID2, PA_PRESSURE, pc_checkskill(sd, PA_PRESSURE));
 			}
