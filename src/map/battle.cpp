@@ -6557,7 +6557,7 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 			md.dmotion = 0; //No flinch animation
 			break;
 		case PA_PRESSURE:
-			md.damage = 500 + 300 * skill_lv;
+			md.damage = 1000 + 600 * skill_lv;
 			break;
 		case PA_GOSPEL:
 			if (mflag > 0)
