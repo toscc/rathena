@@ -8243,7 +8243,7 @@ if (!((targetmd->status.def_ele == ELE_HOLY) || (targetmd->status.def_ele < 4)))
 			}
 
 			// Charge Attack skill
-			// Note, I modded this to not knock back the target, but should likely have same AI use without mod
+			// **Note** I modded this to not knock back the target, but should likely have same AI use without that change.
 			if (canskill(sd)) if (pc_checkskill(sd, KN_CHARGEATK)>0) {
 				if (targetdistance>=8){
 					unit_skilluse_ifable(&sd->bl, foundtargetID, KN_CHARGEATK, pc_checkskill(sd, KN_CHARGEATK));
@@ -8288,7 +8288,7 @@ if (!((targetmd->status.def_ele == ELE_HOLY) || (targetmd->status.def_ele < 4)))
 			}
 
 			// Pierce skill
-			if (canskill(sd)) if (pc_checkskill(sd, KN_PIERCE)>0) if ((dangercount<3) || pc_checkskill(sd, KN_BOWLINGBASH) == 0)
+			if (canskill(sd)) if (pc_checkskill(sd, KN_PIERCE)>0) if ((dangercount<3) || ((pc_checkskill(sd, KN_BOWLINGBASH) == 0) && (pc_checkskill(sd, KN_BRANDISHSPEAR))))
 				if ((sd->status.weapon == W_1HSPEAR) || (sd->status.weapon == W_2HSPEAR))
 				// Use on LARGE enemies only, otherwise bash/bowling bash is more cost effective.
 					if (targetmd->status.size==SZ_BIG) {
@@ -8298,20 +8298,33 @@ if (!((targetmd->status.def_ele == ELE_HOLY) || (targetmd->status.def_ele < 4)))
 					unit_skilluse_ifable(&sd->bl, foundtargetID, KN_PIERCE, pc_checkskill(sd, KN_PIERCE));
 				}
 			}
-
 			
-
-			// Bowling Bash skill
-			if (canskill(sd)) if (pc_checkskill(sd, KN_BOWLINGBASH)>0) if (pc_iscarton(sd)) {
+			// Brandish Spear skill
+			// prefer to bowling bash if spear and peco equipped
+			// **Note** This assumes the skill actually does better damage. I believe that should also be
+			// the case on default settings after the 2nd job skill update
+			// however, I haven't changed this to count as a ranged type.
+			// So if you use official settings and have that update (at the time of writing this, it's PR 4072, not yet merged)
+			// then you need to add a check here for ranged attacks to be valid (no pneuma on target)
+			if (canskill(sd)) if (pc_checkskill(sd, KN_BRANDISHSPEAR) > 0) if (pc_isriding(sd))
+				if ((sd->status.weapon == W_2HSPEAR) || (sd->status.weapon == W_1HSPEAR)) {
 				// Always use if critically wounded or mobbed otherwise use on mobs that will take longer to kill only if sp is lower
 				if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
-					|| (status_get_hp(bl) < status_get_max_hp(bl) / 3) || (dangercount>3)) {
+					|| (status_get_hp(bl) < status_get_max_hp(bl) / 3) || (dangercount >= 3)) {
+					unit_skilluse_ifable(&sd->bl, foundtargetID, KN_BRANDISHSPEAR, pc_checkskill(sd, KN_BRANDISHSPEAR));
+				}
+			}
+			// Bowling Bash skill
+			if (canskill(sd)) if (pc_checkskill(sd, KN_BOWLINGBASH)>0) {
+				// Always use if critically wounded or mobbed otherwise use on mobs that will take longer to kill only if sp is lower
+				if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
+					|| (status_get_hp(bl) < status_get_max_hp(bl) / 3) || (dangercount>=3)) {
 					unit_skilluse_ifable(&sd->bl, foundtargetID, KN_BOWLINGBASH, pc_checkskill(sd, KN_BOWLINGBASH));
 				}
 			}
 			// Bash skill
 			if (canskill(sd)) if (pc_checkskill(sd, SM_BASH)>0) if (pc_checkskill(sd, KN_BOWLINGBASH)<pc_checkskill(sd, SM_BASH)) {
-			// Do not use is Bowling Bash is known at equal or higher level, as it's strictly better
+			// Do not use if Bowling Bash is known at equal or higher level, as it's strictly better
 			// Always use if critically wounded otherwise use on mobs that will take longer to kill only if sp is lower
 					if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
 						|| (status_get_hp(bl) < status_get_max_hp(bl) / 3)){
