@@ -4152,6 +4152,22 @@ int AOEPriority(block_list * bl, va_list ap)
 	return 2; // Default
 }
 
+int AOEPrioritySandman(block_list * bl, va_list ap)
+{
+	struct mob_data *md;
+
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+
+	uint16 elem = va_arg(ap, int); // the element
+
+	if ((status_get_class_(bl) == CLASS_BOSS)) {
+		return 0; // Bosses can't sleep
+	}
+	if (md->status.agi>60) return 0; // Too resistant to sleeping
+	return 2; // Default
+}
+
 int AOEPriorityGrav(block_list * bl, va_list ap)
 {
 	struct mob_data *md;
@@ -7353,6 +7369,23 @@ TIMER_FUNC(unit_autopilot_timer)
 								}
 							}
 
+							// Sharp Shooting
+							// Prefer this over Blitz Beat if available, does more damage
+							if (canskill(sd)) if ((pc_checkskill(sd, SN_SHARPSHOOTING) > 0))
+								if (sd->status.weapon == W_BOW) {
+									foundtargetID = -1; targetdistance = 999;
+									map_foreachinrange(targetnearest, targetbl2, 9, BL_MOB, sd);
+									if (foundtargetID > -1) {
+										int area = 1; // This skill hits more area than this but see First Wind comments.
+										arrowchange(sd, targetmd);
+										priority = 2*map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(SN_SHARPSHOOTING, pc_checkskill(sd, SN_SHARPSHOOTING)));
+										if (((priority >= 7) && (priority > bestpriority)) && (distance_bl(targetbl, &sd->bl) <= 9)) {
+											spelltocast = SN_SHARPSHOOTING; bestpriority = priority; IDtarget = foundtargetID;
+										}
+									}
+								}
+
+
 							// Blitz Beat
 							// **Note** I reduced the cast time on this.
 							// Without that modification, consider if using Arrow Shower might be better.
@@ -7487,6 +7520,8 @@ TIMER_FUNC(unit_autopilot_timer)
 							|| (spelltocast == AB_JUDEX)
 							|| (spelltocast == AB_ADORAMUS)
 							|| (spelltocast == GS_SPREADATTACK)
+							|| (spelltocast == HT_BLITZBEAT)
+							|| (spelltocast == SN_SHARPSHOOTING)
 							) unit_skilluse_ifable(&sd->bl, IDtarget, spelltocast, pc_checkskill(sd, spelltocast));
 						else
 							unit_skilluse_ifablexy(&sd->bl, IDtarget, spelltocast, pc_checkskill(sd, spelltocast));
@@ -7536,6 +7571,77 @@ TIMER_FUNC(unit_autopilot_timer)
 		map_foreachinrange(targetnearest, &sd->bl, 9, BL_MOB, sd);
 		int foundtargetID2 = foundtargetID;
 		int targetdistance2 = targetdistance;
+
+		// Hunter TRAPS
+		// These don't go into the AOEs because they are melee range and not interruptable
+		// **Note** I modded these to be valid to place under enemies. If you did not, remove this entire block!
+		// Use ranged skill instead if enemy isn't near enough
+		if (foundtargetID2 > -1) if (sd->state.autopilotmode < 3)
+		if (canskill(sd))
+
+		if (pc_search_inventory(sd, ITEMID_TRAP) >= 0) {
+
+			// Use Sandman for crowd control if mobbed
+			// ...or not, I think placing a trap that kills the mob is better in most cases.
+/*			if ((pc_checkskill(sd, HT_SANDMAN) >= 3) && (dangercount>=4)
+				&& (distance_bl(dangerbl, &sd->bl) <= 3))
+			{
+				int area = 1;
+				// At least one weak or multiple other targets to use
+				if (map_foreachinrange(AOEPrioritySandman, dangerbl, area, BL_MOB, ELE_NONE)>=6)
+				unit_skilluse_ifablexy(&sd->bl, founddangerID, HT_SANDMAN, pc_checkskill(sd, HT_SANDMAN));
+			}*/
+
+		// Need INT or no bow equipped! Otherwise just shoot at things, is better?
+		if (distance_bl(targetbl, &sd->bl) <= 3) if ((sd->battle_status.int_>=50) || (sd->status.weapon != W_BOW)) {
+			int spelltocast = -1;
+			int bestpriority = -1;
+			int priority;
+			int IDtarget = -1;
+
+			if ((pc_checkskill(sd, HT_CLAYMORETRAP) > 4))
+				{	int area = 2;
+				// At least one weak or multiple other targets to use
+				priority = map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(HT_CLAYMORETRAP, pc_checkskill(sd, HT_CLAYMORETRAP)));
+				if ((priority >= 3) && (priority > bestpriority)) {
+						spelltocast = HT_CLAYMORETRAP; bestpriority = priority; IDtarget = sd->bl.id;
+					}
+			}
+
+			if ((pc_checkskill(sd, HT_LANDMINE) > 4))
+			{
+				int area = 1;
+				priority = map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(HT_LANDMINE, pc_checkskill(sd, HT_LANDMINE)));
+				if ((priority >= 3) && (priority > bestpriority)) {
+					spelltocast = HT_LANDMINE; bestpriority = priority; IDtarget = sd->bl.id;
+				}
+			}
+
+			if ((pc_checkskill(sd, HT_BLASTMINE) > 4))
+			{
+				int area = 1;
+				priority = map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(HT_BLASTMINE, pc_checkskill(sd, HT_BLASTMINE)));
+				if ((priority >= 3) && (priority > bestpriority)) {
+					spelltocast = HT_BLASTMINE; bestpriority = priority; IDtarget = sd->bl.id;
+				}
+			}
+
+			// **Note** I changed this skill to deal 70% of the damage the other 3 element traps do
+			// If yours still does the default, super low damage, remove this block.
+			if ((pc_checkskill(sd, HT_FREEZINGTRAP) > 4))
+			{
+				int area = 1;
+				priority = map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(HT_FREEZINGTRAP, pc_checkskill(sd, HT_FREEZINGTRAP)));
+				if ((priority >= 3) && (priority > bestpriority)) {
+					spelltocast = HT_FREEZINGTRAP; bestpriority = priority; IDtarget = sd->bl.id;
+				}
+			}
+
+			if (spelltocast>-1) unit_skilluse_ifablexy(&sd->bl, foundtargetID2, spelltocast, pc_checkskill(sd, spelltocast));
+		}
+
+
+		}
 
 		/// Charge Arrow
 		/// Repel extremely close enemy
@@ -7676,6 +7782,20 @@ TIMER_FUNC(unit_autopilot_timer)
 						if ((targetRAmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
 							|| (status_get_hp(bl) < status_get_max_hp(bl) / 3)) {
 							unit_skilluse_ifable(&sd->bl, foundtargetRA, SN_FALCONASSAULT, pc_checkskill(sd, SN_FALCONASSAULT));
+						}
+				}
+
+			// Beast Strafing
+			// **Note** I changed this skill to work on any monster. If you did not, you have to add a check for the target's race here!
+			if (foundtargetRA > -1) if (canskill(sd)) if ((pc_checkskill(sd, HT_POWER) > 0)) if (sd->state.autopilotmode != 3)
+				if (rangeddist <= 9 + pc_checkskill(sd, AC_VULTURE))
+					if ((sd->sc.data[SC_COMBO]) && (sd->sc.data[SC_COMBO]->val1 == AC_DOUBLE))
+					{
+					if (sd->battle_status.str>=35) // need STR to use this!
+					if (sd->status.weapon == W_BOW)
+						{
+							arrowchange(sd, targetRAmd);
+							unit_skilluse_ifable(&sd->bl, foundtargetRA, HT_POWER, pc_checkskill(sd, HT_POWER));
 						}
 				}
 
