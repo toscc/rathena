@@ -6471,7 +6471,7 @@ static signed short status_calc_hit(struct block_list *bl, struct status_change 
 	if(sc->data[SC_INCHITRATE])
 		hit += hit * sc->data[SC_INCHITRATE]->val1/100;
 	if(sc->data[SC_BLIND])
-		hit -= hit * 25/100;
+		hit -= hit * 33/100;
 	if(sc->data[SC_HEAT_BARREL])
 		hit -= sc->data[SC_HEAT_BARREL]->val4;
 	if(sc->data[SC__GROOMY])
@@ -6563,7 +6563,7 @@ static signed short status_calc_flee(struct block_list *bl, struct status_change
 	if(sc->data[SC_BERSERK])
 		flee -= flee * 50/100;
 	if(sc->data[SC_BLIND])
-		flee -= flee * 25/100;
+		flee -= flee * 33/100;
 	if(sc->data[SC_FEAR])
 		flee -= flee * 20 / 100;
 	if(sc->data[SC_PARALYSE])
