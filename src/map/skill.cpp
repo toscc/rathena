@@ -2060,13 +2060,13 @@ int skill_additional_effect(struct block_list* src, struct block_list *bl, uint1
 		if( sd && battle_config.equip_self_break_rate )
 		{	// Self weapon breaking
 			rate = battle_config.equip_natural_break_rate;
-			if( sc )
+/*			if( sc )
 			{
 				if(sc->data[SC_OVERTHRUST])
-					rate += 10;
+					rate += sc->data[SC_OVERTHRUST].val2? 10: 0;
 				if(sc->data[SC_MAXOVERTHRUST])
 					rate += 10;
-			}
+			} */
 			if( rate )
 				skill_break_equip(src,src, EQP_WEAPON, rate, BCT_SELF);
 		}

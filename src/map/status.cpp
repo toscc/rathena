@@ -10349,7 +10349,7 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 				struct map_session_data * s_sd = BL_CAST(BL_PC, src);
 				if (type == SC_OVERTHRUST) {
 					// val2 holds if it was casted on self, or is bonus received from others
-					val3 = (val2) ? 5 * val1 : 5; // Power increase
+					val3 = (val2) ? 5 * val1 : val1+2; // Power increase
 				}
 				else if (type == SC_ADRENALINE2 || type == SC_ADRENALINE) {
 					val3 = (val2) ? 300 : 200; // Aspd increase
