@@ -7353,8 +7353,26 @@ TIMER_FUNC(unit_autopilot_timer)
 								}
 							}
 
+							// Blitz Beat
+							// **Note** I reduced the cast time on this.
+							// Without that modification, consider if using Arrow Shower might be better.
+							// I kept this skill to use INT, if you did apply the update that changed to AGI, replace that here too.
+							if (canskill(sd)) if ((pc_checkskill(sd, HT_BLITZBEAT) > 0)) if (sd->status.int_>=30)
+								if (pc_isfalcon(sd)) {
+								foundtargetID = -1; targetdistance = 999;
+								map_foreachinrange(targetnearest, targetbl2, 3 + pc_checkskill(sd, AC_VULTURE), BL_MOB, sd);
+								if (foundtargetID > -1) {
+									int area = 1;
+									priority = 1+map_foreachinrange(AOEPriority, targetbl, area, BL_MOB, skill_get_ele(HT_BLITZBEAT, pc_checkskill(sd, HT_BLITZBEAT)));
+									if (((priority >= 7) && (priority > bestpriority)) && (distance_bl(targetbl, &sd->bl) <= 3 + pc_checkskill(sd, AC_VULTURE))) {
+										spelltocast = HT_BLITZBEAT; bestpriority = priority; IDtarget = foundtargetID;
+									}
+								}
+							}
+
 							// Arrow Shower
-							if (canskill(sd)) if ((pc_checkskill(sd, AC_SHOWER) > 0)) {
+							if (canskill(sd)) if ((pc_checkskill(sd, AC_SHOWER) > 0)) if (sd->status.weapon == W_BOW)
+							{
 								foundtargetID = -1; targetdistance = 999;
 								map_foreachinrange(targetnearest, targetbl2,9 + pc_checkskill(sd, AC_VULTURE), BL_MOB, sd);
 								// knockback might hit monster outside range if further than this
@@ -7367,7 +7385,6 @@ TIMER_FUNC(unit_autopilot_timer)
 									}
 								}
 							}
-
 
 							// NIN- Exploding Dragon
 							// This is special - it targets a monster despite having AOE, not a ground skill
@@ -7645,6 +7662,22 @@ TIMER_FUNC(unit_autopilot_timer)
 			///////////////////////////////////////////////////////////////////////////////////////////////
 			/// Skills for general use
 			///////////////////////////////////////////////////////////////////////////////////////////////
+
+			// Falcon Assault
+			// Double Strafe does more damage in less time for less SP no thanks to the high delay
+			// making this skill useless, even with higher INT, unless you are not wearing a bow.
+			if (foundtargetRA > -1) if (canskill(sd)) if ((pc_checkskill(sd, SN_FALCONASSAULT) > 0)) if (sd->state.autopilotmode != 3)
+				if (pc_isfalcon(sd))
+				// Don't bother if equipped by a good bow or having low INT
+				// **Note** I modded my skill delay to be slightly lower.
+				// If you did not, you should disable the skill when a bow with any half decent (read 100 will do) atk is equipped.
+				if ((sd->battle_status.rhw.atk>=sd->battle_status.int_*1.5) || (sd->status.weapon != W_BOW))
+					if (rangeddist <= 3 + pc_checkskill(sd, AC_VULTURE)) {
+						if ((targetRAmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
+							|| (status_get_hp(bl) < status_get_max_hp(bl) / 3)) {
+							unit_skilluse_ifable(&sd->bl, foundtargetRA, SN_FALCONASSAULT, pc_checkskill(sd, SN_FALCONASSAULT));
+						}
+				}
 
 			// Double Strafe
 			if (foundtargetRA > -1) if (canskill(sd)) if ((pc_checkskill(sd, AC_DOUBLE) > 0)) if (sd->state.autopilotmode != 3)
