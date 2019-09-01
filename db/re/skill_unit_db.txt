@@ -48,14 +48,14 @@
  91,0x86,    ,  2, 0,1000,enemy, 0x010	//WZ_HEAVENDRIVE
  92,0x8e,    ,  2, 0,  -1,enemy, 0x8010	//WZ_QUAGMIRE
 115,0x90,    ,  0, 1,1000,enemy, 0x28002	//HT_SKIDTRAP
-116,0x93,    ,  0, 1,1000,enemy, 0x28006	//HT_LANDMINE
-117,0x91,    ,  0, 1,1000,enemy, 0x29006	//HT_ANKLESNARE
-118,0x94,    ,  0, 1,1000,enemy, 0x28006	//HT_SHOCKWAVE
-119,0x95,    ,  0, 1,1000,enemy, 0x28006	//HT_SANDMAN
+116,0x93,    ,  0, 1,1000,enemy, 0x28002	//HT_LANDMINE
+117,0x91,    ,  0, 1,1000,enemy, 0x29002	//HT_ANKLESNARE
+118,0x94,    ,  0, 1,1000,enemy, 0x28002	//HT_SHOCKWAVE
+119,0x95,    ,  0, 1,1000,enemy, 0x28002	//HT_SANDMAN
 120,0x96,    ,  0, 1,1000,enemy, 0x28002	//HT_FLASHER
-121,0x97,    ,  0, 1,1000,enemy, 0x28006	//HT_FREEZINGTRAP
-122,0x8f,    ,  0, 1,1000,enemy, 0x8006	//HT_BLASTMINE
-123,0x98,    ,  0, 1,1000,enemy, 0x8006	//HT_CLAYMORETRAP
+121,0x97,    ,  0, 1,1000,enemy, 0x28002	//HT_FREEZINGTRAP
+122,0x8f,    ,  0, 1,1000,enemy, 0x8002	//HT_BLASTMINE
+123,0x98,    ,  0, 1,1000,enemy, 0x8002	//HT_CLAYMORETRAP
 125,0x99,    ,  0, 1,1000,all,   0x28040	//HT_TALKIEBOX
 140,0x92,    , -1, 1,1000,enemy, 0x8000	//AS_VENOMDUST
 220,0xb0,    ,  0, 0,  -1,all,   0x8002	//RG_GRAFFITI

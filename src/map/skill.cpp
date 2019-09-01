@@ -1357,6 +1357,7 @@ int skill_additional_effect(struct block_list* src, struct block_list *bl, uint1
 
 	case HT_SHOCKWAVE:
 		status_percent_damage(src, bl, 0, -(15*skill_lv+5), false);
+		sc_start(src, bl, SC_SILENCE, (10 * skill_lv + 40), skill_lv, skill_get_time2(skill_id, skill_lv));
 		break;
 
 	case HT_SANDMAN:
@@ -4979,7 +4980,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, uint
 		break;
 
 	case HT_POWER:
-		if( tstatus->race == RC_BRUTE || tstatus->race == RC_INSECT )
+//		if( tstatus->race == RC_BRUTE || tstatus->race == RC_INSECT )
 			skill_attack(BF_WEAPON,src,src,bl,skill_id,skill_lv,tick,flag);
 		break;
 

@@ -383,6 +383,7 @@ void initChangeTables(void)
 	add_sc( HT_LANDMINE		, SC_STUN		);
 	set_sc( HT_ANKLESNARE	, SC_ANKLE	, EFST_ANKLESNARE	, SCB_NONE );
 	add_sc( HT_SANDMAN		, SC_SLEEP		);
+	add_sc(HT_SHOCKWAVE, SC_SILENCE);
 	add_sc( HT_FLASHER		, SC_BLIND		);
 	add_sc( HT_FREEZINGTRAP		, SC_FREEZE		);
 	set_sc( AS_CLOAKING		, SC_CLOAKING		, EFST_CLOAKING		, SCB_CRI|SCB_SPEED );
