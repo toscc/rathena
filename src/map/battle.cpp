@@ -3519,6 +3519,10 @@ static int battle_calc_attack_skill_ratio(struct Damage* wd, struct block_list *
 			break;
 		case AS_SONICBLOW:
 			skillratio += 300 + 40 * skill_lv;
+#ifdef RENEWAL
+			if (tstatus->hp < tstatus->max_hp >> 1)
+			skillratio += skillratio / 2;
+#endif
 			break;
 		case TF_SPRINKLESAND:
 			skillratio += 30;
@@ -3651,7 +3655,7 @@ static int battle_calc_attack_skill_ratio(struct Damage* wd, struct block_list *
 		break;
 #endif
 		case ASC_METEORASSAULT:
-			skillratio += -60 + 40 * skill_lv;
+			skillratio += -100 + 90 * skill_lv;
 			break;
 		case SN_SHARPSHOOTING:
 		case MA_SHARPSHOOTING:
