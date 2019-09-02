@@ -1,3 +1,18 @@
+****Ensemble skills work the same way as normal skills. 
+****Any two ensembles stack
+****Allow all skills while singing if longing
+****Throw Arrow/Musical Strike? (okay as is, class's only non-reborn attack skill, really.)
+
+****Longing for Freedom -> Allow skills and attacks during song
+
+Frost Joke/Scream delay->Cooldown
+
+****Bug : Song got interrupted after Longing!
+
+
+
+
+
 diff --git a/db/re/skill_cast_db.txt b/db/re/skill_cast_db.txt
 index b872350dae..1f5d1fbce2 100644
 --- a/db/re/skill_cast_db.txt

@@ -2288,17 +2288,18 @@ bool status_check_skilluse(struct block_list *src, struct block_list *target, ui
 		}
 
 		if (sc->data[SC_DANCING] && flag!=2) {
-			if (src->type == BL_PC && ((skill_id >= WA_SWING_DANCE && skill_id <= WM_UNLIMITED_HUMMING_VOICE ) ||
+			// During Longing, anything goes
+			if (sc->data[SC_LONGING]) { // Allow everything except dancing/re-dancing. [Skotlex]
+				if (skill_id == BD_ENCORE ||
+					skill_get_inf2(skill_id)&(INF2_SONG_DANCE | INF2_ENSEMBLE_SKILL)
+					)
+					return false;
+			} else	if (src->type == BL_PC && ((skill_id >= WA_SWING_DANCE && skill_id <= WM_UNLIMITED_HUMMING_VOICE ) ||
 				skill_id == WM_FRIGG_SONG))
 			{ // Lvl 5 Lesson or higher allow you use 3rd job skills while dancing.
 				if( pc_checkskill((TBL_PC*)src,WM_LESSON) < 5 )
 					return false;
-			} else if(sc->data[SC_LONGING]) { // Allow everything except dancing/re-dancing. [Skotlex]
-				if (skill_id == BD_ENCORE ||
-					skill_get_inf2(skill_id)&(INF2_SONG_DANCE|INF2_ENSEMBLE_SKILL)
-					)
-					return false;
-			} else if(!(skill_get_inf3(skill_id)&INF3_USABLE_DANCE)) // Skills that can be used in dancing state
+			} else  if(!(skill_get_inf3(skill_id)&INF3_USABLE_DANCE)) // Skills that can be used in dancing state
 				return false;
 			if ((sc->data[SC_DANCING]->val1&0xFFFF) == CG_HERMODE && skill_id == BD_ADAPTATION)
 				return false; // Can't amp out of Wand of Hermode :/ [Skotlex]
@@ -13343,9 +13344,7 @@ TIMER_FUNC(status_change_timer){
 					break;
 			}
 			if( s != 0 && sce->val3 % s == 0 ) {
-				if (sc->data[SC_LONGING])
-					sp*= 3;
-				if (!status_charge(bl, 0, sp))
+				if (!sc->data[SC_LONGING]) if (!status_charge(bl, 0, sp))
 					break;
 			}
 			sc_timer_next(1000+tick);

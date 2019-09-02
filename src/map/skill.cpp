@@ -8822,15 +8822,16 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 
 	case CG_LONGINGFREEDOM:
 		{
-			if (tsc && !tsce && (tsce=tsc->data[SC_DANCING]) && tsce->val4
+			if (tsc && !tsce && (tsce=tsc->data[SC_DANCING]) //&& tsce->val4
 				&& (tsce->val1&0xFFFF) != CG_MOONLIT) //Can't use Longing for Freedom while under Moonlight Petals. [Skotlex]
 			{
 				clif_skill_nodamage(src,bl,skill_id,skill_lv,
 					sc_start(src,bl,type,100,skill_lv,skill_get_time(skill_id,skill_lv)));
 			}
 		}
+		return 1;
 		break;
-
+	
 	case CG_TAROTCARD:
 		{
 			int card = -1;
@@ -14606,7 +14607,7 @@ int skill_unit_onleft(uint16 skill_id, struct block_list *bl, t_tick tick)
 			if (sce)
 				status_change_end(bl, type, INVALID_TIMER);
 			break;
-
+/*
 		case BD_LULLABY:
 		case BD_RICHMANKIM:
 		case BD_ETERNALCHAOS:
@@ -14623,7 +14624,7 @@ int skill_unit_onleft(uint16 skill_id, struct block_list *bl, t_tick tick)
 				//which overlaps, by stepping outside of the other parther's ensemble will cause you to cancel
 				//your own. Let's pray that scenario is pretty unlikely and noone will complain too much about it.
 				status_change_end(bl, SC_DANCING, INVALID_TIMER);
-			}
+			}*/
 		case MH_STEINWAND:
 		case MG_SAFETYWALL:
 		case AL_PNEUMA:
@@ -19097,8 +19098,8 @@ void skill_unit_move_unit(struct block_list *bl, int dx, int dy) {
 	if (!su->alive)
 		return;
 
-	if (su->group && skill_get_unit_flag(su->group->skill_id)&UF_ENSEMBLE)
-		return; //Ensembles may not be moved around.
+//	if (su->group && skill_get_unit_flag(su->group->skill_id)&UF_ENSEMBLE)
+	//	return; //Ensembles may not be moved around.
 
 	if (!bl->prev) {
 		bl->x = dx;
@@ -19136,8 +19137,8 @@ void skill_unit_move_unit_group(struct skill_unit_group *group, int16 m, int16 d
 	if (group->unit == NULL)
 		return;
 
-	if (skill_get_unit_flag(group->skill_id)&UF_ENSEMBLE)
-		return; //Ensembles may not be moved around.
+//	if (skill_get_unit_flag(group->skill_id)&UF_ENSEMBLE)
+		//return; //Ensembles may not be moved around.
 
 	m_flag = (int *) aCalloc(group->unit_count, sizeof(int));
 	//    m_flag
