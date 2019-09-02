@@ -7484,7 +7484,10 @@ TIMER_FUNC(unit_autopilot_timer)
 					}
 
 					// Meteor Assault - always centered on user
-					if (canskill(sd)) if ((pc_checkskill(sd, ASC_METEORASSAULT) > 0) && ((Dangerdistance > 900) || (sd->special_state.no_castcancel))) {
+					// **Note** uncomment below if you didn't make this skill uninterruptable like I did.
+					if (canskill(sd)) if ((pc_checkskill(sd, ASC_METEORASSAULT) > 0)
+						//		&& ((Dangerdistance > 900) || (sd->special_state.no_castcancel))
+						) {
 						int area = 2;
 						priority = map_foreachinrange(AOEPriority, &sd->bl, area, BL_MOB, skill_get_ele(ASC_METEORASSAULT, pc_checkskill(sd, ASC_METEORASSAULT)));
 						if ((priority >= 6) && (priority > bestpriority)) {
@@ -7493,8 +7496,9 @@ TIMER_FUNC(unit_autopilot_timer)
 					}
 
 					// NIN Ice Meteor - always centered on user
+					// **Note** : I modded this skill to be uninterruptable - a self targeted crowd control AOE is useless if it is interrupted. If yours is not modded, uncomment this line!
 					if (canskill(sd)) if ((pc_checkskill(sd, NJ_HYOUSYOURAKU) >= 4)
-						//					 &&	((Dangerdistance > 900) || (sd->special_state.no_castcancel)) // **Note** : I modded this skill to be uninterruptable - a self targeted crowd control AOE is useless if it is interrupted. If yours is not modded, uncomment this line!
+						//					 &&	((Dangerdistance > 900) || (sd->special_state.no_castcancel)) 
 						) {
 						if (pc_search_inventory(sd, 7522) >= 0) {
 							int area = 2;
@@ -8394,6 +8398,8 @@ if (!((targetmd->status.def_ele == ELE_HOLY) || (targetmd->status.def_ele < 4)))
 			}
 
 			// Sonic Blow skill
+			// Note the AI ignores the +50% damage dealt on low health targets. It can't judge when it's worth waiting for other players to deal damage first and save SP.
+			// If you really want to take advantage of that on bosses, the best bet is to simply refill the SinX's SP after the boss drops below 50%.
 			if (canskill(sd)) if (pc_checkskill(sd, AS_SONICBLOW)>0) if (sd->status.weapon == W_KATAR) {
 				// Use like other skills, but also always use if EDP enabled, that's not the time to conserve SP
 				if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
