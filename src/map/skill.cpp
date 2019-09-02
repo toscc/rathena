@@ -6766,7 +6766,6 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 	case NJ_NEN:
 	case NPC_DEFENDER:
 	case NPC_MAGICMIRROR:
-	case ST_PRESERVE:
 	case NPC_INVINCIBLE:
 	case NPC_INVINCIBLEOFF:
 	case MER_INVINCIBLEOFF2:
@@ -7381,6 +7380,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 	case GC_CLOAKINGEXCEED:
 	case LG_FORCEOFVANGUARD:
 	case SC_REPRODUCE:
+	case ST_PRESERVE:
 	case SC_INVISIBILITY:
 	case RA_CAMOUFLAGE:
 		if (tsce) {

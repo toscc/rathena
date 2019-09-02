@@ -1231,17 +1231,6 @@ index c19a6deeac..fbcd8ef90a 100644
  				(sc->data[SC_HERMODE] && skill_get_inf(skill_id) & INF_SUPPORT_SKILL) ||
  				(sc->data[SC_NOCHAT] && sc->data[SC_NOCHAT]->val1&MANNER_NOSKILL)
  			)
-@@ -2404,6 +2584,10 @@ int status_base_amotion_pc(struct map_session_data* sd, struct status_data* stat
- 		val += (skill_lv - 1) / 2 + 1;
- 	if ((skill_lv = pc_checkskill(sd,GS_SINGLEACTION)) > 0 && (sd->status.weapon >= W_REVOLVER && sd->status.weapon <= W_GRENADE))
- 		val += ((skill_lv + 1) / 2);
-+#ifdef RENEWAL
-+	if (skill_lv = pc_checkskill(sd, RG_PLAGIARISM) > 0)
-+		val += skill_lv;
-+#endif
- 	amotion = ((int)(temp_aspd + ((float)(status_calc_aspd(&sd->bl, &sd->sc, true) + val) * status->agi / 200)) - min(amotion, 200));
- #else
- 	// Angra Manyu disregards aspd_base and similar
 @@ -3144,6 +3332,10 @@ static int status_get_hpbonus(struct block_list *bl, enum e_status_bonus type) {
  				bonus += sc->data[SC_UPHEAVAL_OPTION]->val2;
  			if(sc->data[SC_LAUDAAGNUS])
