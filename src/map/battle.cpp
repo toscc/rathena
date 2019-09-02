@@ -1262,8 +1262,8 @@ int64 battle_calc_damage(struct block_list *src,struct block_list *bl,struct Dam
 			else
 				damage += damage * 20 / 100;
 
-			if (--sc->data[SC_RAID]->val1 == 0)
-				status_change_end(bl, SC_RAID, INVALID_TIMER);
+			/*if (--sc->data[SC_RAID]->val1 == 0)
+				status_change_end(bl, SC_RAID, INVALID_TIMER);*/
 		}
 #endif
 
@@ -3560,20 +3560,14 @@ static int battle_calc_attack_skill_ratio(struct Damage* wd, struct block_list *
 			skillratio += 400 + 200 * skill_lv;
 			break;
 		case RG_BACKSTAP:
-			if(sd && sd->status.weapon == W_BOW && battle_config.backstab_bow_penalty)
-				skillratio += (200 + 40 * skill_lv) / 2;
-			else
-				skillratio += 200 + 40 * skill_lv;
+			skillratio += 200 + 40 * skill_lv;
+			if (sd && sd->status.weapon == W_BOW && battle_config.backstab_bow_penalty)
+				skillratio /= 2;
+			if (sd && sd->status.weapon == W_DAGGER)
+				skillratio += 100;
 			break;
 		case RG_RAID:
-#ifdef RENEWAL
-			if (status_get_class_(target) == CLASS_BOSS)
-				skillratio += 10 * skill_lv;
-			else
-				skillratio += 20 * skill_lv;
-#else
-			skillratio += 40 * skill_lv;
-#endif
+			skillratio += 70 * skill_lv;
 			break;
 		case RG_INTIMIDATE:
 			skillratio += 30 * skill_lv;

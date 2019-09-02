@@ -1419,7 +1419,7 @@ int skill_additional_effect(struct block_list* src, struct block_list *bl, uint1
 		sc_start(src,bl,SC_BLIND,(10+3*skill_lv),skill_lv,skill_get_time2(skill_id,skill_lv));
 
 #ifdef RENEWAL
-		sc_start(src,bl,SC_RAID,100,7,5000);
+		sc_start(src,bl,SC_RAID,100,skill_lv,10000);
 		break;
 
 	case RG_BACKSTAP:
@@ -4901,16 +4901,43 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, uint
 
 	case RG_BACKSTAP:
 		{
+		if (!check_distance_bl(src, bl, 0)) {
+#ifdef RENEWAL
+			uint8 dir = map_calc_dir(src, bl->x, bl->y);
+			short x, y;
+
+			if (dir > 0 && dir < 4)
+				x = -1;
+			else if (dir > 4)
+				x = 1;
+			else
+				x = 0;
+
+			if (dir > 2 && dir < 6)
+				y = -1;
+			else if (dir == 7 || dir < 2)
+				y = 1;
+			else
+				y = 0;
+
+			if (battle_check_target(src, bl, BCT_ENEMY) > 0 && unit_movepos(src, bl->x + x, bl->y + y, 2, true)) { // Display movement + animation.
+#else
 			uint8 dir = map_calc_dir(src, bl->x, bl->y), t_dir = unit_getdir(bl);
-			if ((!check_distance_bl(src, bl, 0) && !map_check_dir(dir, t_dir)) || bl->type == BL_SKILL) {
+
+			if (!map_check_dir(dir, t_dir) || bl->type == BL_SKILL) {
+#endif
 				status_change_end(src, SC_HIDING, INVALID_TIMER);
+				dir = dir < 4 ? dir + 4 : dir - 4; // change direction [Celest]
+				unit_setdir(bl, dir);
+#ifdef RENEWAL
+				clif_blown(src);
+#endif
 				skill_attack(BF_WEAPON, src, src, bl, skill_id, skill_lv, tick, flag);
-				dir = dir < 4 ? dir+4 : dir-4; // change direction [Celest]
-				unit_setdir(bl,dir);
 			}
 			else if (sd)
-				clif_skill_fail(sd,skill_id,USESKILL_FAIL_LEVEL,0);
+				clif_skill_fail(sd, skill_id, USESKILL_FAIL_LEVEL, 0);
 		}
+			}
 		break;
 
 	case MO_FINGEROFFENSIVE:
@@ -11218,9 +11245,15 @@ static int8 skill_castend_id_check(struct block_list *src, struct block_list *ta
 			break;
 		case RG_BACKSTAP:
 			{
-				uint8 dir = map_calc_dir(src,target->x,target->y),t_dir = unit_getdir(target);
-				if (check_distance_bl(src, target, 0) || map_check_dir(dir,t_dir))
-					return USESKILL_FAIL_MAX;
+#ifndef RENEWAL
+			uint8 dir = map_calc_dir(src, target->x, target->y), t_dir = unit_getdir(target);
+
+			if (map_check_dir(dir, t_dir))
+				return USESKILL_FAIL_MAX;
+#endif
+
+			if (check_distance_bl(src, target, 0))
+				return USESKILL_FAIL_MAX;
 			}
 			break;
 		case PR_TURNUNDEAD:
