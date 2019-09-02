@@ -6875,6 +6875,16 @@ TIMER_FUNC(unit_autopilot_timer)
 			}
 		}
 
+		// Preserve
+		// **Note** I changed this a toggle skill with (near) infinite duration. If you did not, uncomment that timer part to allow recasting it.
+		// The AI assumes it's supposed to maintain this on at all times and keep whatever skill the player learned manually.
+		if (pc_checkskill(sd, ST_PRESERVE) > 0) {
+			if (!(sd->sc.data[SC_PRESERVE]) /*|| (sd->sc.data[SC_PRESERVE]->timer<=10000)*/) {
+				unit_skilluse_ifable(&sd->bl, SELF, ST_PRESERVE, pc_checkskill(sd, ST_PRESERVE));
+			}
+		}
+
+
 		// Crazy Uproar
 		if (pc_checkskill(sd, MC_LOUD) > 0) {
 			resettargets();
@@ -7642,6 +7652,29 @@ TIMER_FUNC(unit_autopilot_timer)
 
 		}
 
+		// Full Strip
+		// Use on bosses or much higher level enemies.
+		if ((status_get_class_(bl) == CLASS_BOSS) || (targetmd->level > sd->status.base_level + 30))
+			if (canskill(sd)) if (pc_checkskill(sd, ST_FULLSTRIP) > 4) if (foundtargetID2 > -1)
+				// Don't bother if we already stipped something.
+				if (!(targetmd->sc.data[SC_STRIPHELM] || targetmd->sc.data[SC_STRIPSHIELD] || targetmd->sc.data[SC_STRIPWEAPON] || targetmd->sc.data[SC_STRIPARMOR]))
+					// Don't bother with targets that have some protection
+					if (!(targetmd->sc.data[SC_CP_WEAPON] || targetmd->sc.data[SC_CP_HELM] || targetmd->sc.data[SC_CP_ARMOR] || targetmd->sc.data[SC_CP_SHIELD]))
+						// Must have at least enough DEX for 10% chance - nevermind, DEX can only add a bonus, but not reduce the chance
+		//				if (sd->battle_status.dex>=targetmd->status.dex-25)
+					{
+						if (targetdistance2 > 1) {
+							struct walkpath_data wpd1;
+							if (path_search(&wpd1, sd->bl.m, bl->x, bl->y, targetbl->x, targetbl->y, 0, CELL_CHKNOPASS, MAX_WALKPATH))
+								newwalk(&sd->bl, bl->x + dirx[wpd1.path[0]], bl->y + diry[wpd1.path[0]], 8);
+							return 0;
+						}
+						else
+							// Assumes the update to allow using this from the front is already included
+							unit_skilluse_ifable(&sd->bl, foundtargetID2, ST_FULLSTRIP, pc_checkskill(sd, ST_FULLSTRIP));
+						return 0;
+					}
+
 		// Rogue - use while hiding type skills
 		// Don't even think about it without maxed Tunnel Drive or if in tanking mode
 		if (pc_checkskill(sd, RG_TUNNELDRIVE) >= 5) if (foundtargetID2 > -1)
@@ -7684,6 +7717,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			// Assumes the update to allow using this from the front is already included
 			unit_skilluse_ifable(&sd->bl, foundtargetID2, RG_BACKSTAP, pc_checkskill(sd, RG_BACKSTAP));
 		}
+
 		/// Charge Arrow
 		/// Repel extremely close enemy
 		/// Avoid if not in danger of getting hit due to high delay
@@ -8217,6 +8251,14 @@ if (!((targetmd->status.def_ele == ELE_HOLY) || (targetmd->status.def_ele < 4)))
 						unit_skilluse_ifable(&sd->bl, foundtargetID, TF_THROWSTONE, pc_checkskill(sd, TF_THROWSTONE));
 					}
 				}
+
+				// Reject Sword
+				if (pc_checkskill(sd, ST_REJECTSWORD) > 0) {
+					if (!(sd->sc.data[SC_REJECTSWORD])) {
+						unit_skilluse_ifable(&sd->bl, SELF, ST_REJECTSWORD, pc_checkskill(sd, ST_REJECTSWORD));
+					}
+				}
+
 
 				// Find nearest enemy
 				resettargets();
