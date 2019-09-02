@@ -7581,7 +7581,6 @@ TIMER_FUNC(unit_autopilot_timer)
 		// Use ranged skill instead if enemy isn't near enough
 		if (foundtargetID2 > -1) if (sd->state.autopilotmode < 3)
 		if (canskill(sd))
-
 		if (pc_search_inventory(sd, ITEMID_TRAP) >= 0) {
 
 			// Use Sandman for crowd control if mobbed
@@ -7646,6 +7645,48 @@ TIMER_FUNC(unit_autopilot_timer)
 
 		}
 
+		// Rogue - use while hiding type skills
+		// Don't even think about it without maxed Tunnel Drive or if in tanking mode
+		if (pc_checkskill(sd, RG_TUNNELDRIVE) >= 5) if (foundtargetID2 > -1)
+		if (sd->state.autopilotmode == 2) {
+		// Hide when targeted near leader
+			if (pc_checkskill(sd, TF_HIDING) > 0) if (sd->battle_status.sp > 50) if (canskill(sd))
+				if (leaderdistance<8) if (Dangerdistance<=3) if (!sd->sc.data[SC_HIDING])
+					unit_skilluse_ifable(&sd->bl, SELF, TF_HIDING, pc_checkskill(sd, TF_HIDING));
+		// Unhide if far from leader to walk faster and catch up, or if bow rogue
+			if (sd->sc.data[SC_HIDING]) {
+				if (pc_checkskill(sd, TF_HIDING) > 0) if ((leaderdistance>12) || (sd->status.weapon == W_BOW)) if (canskill(sd))
+				unit_skilluse_ifable(&sd->bl, SELF, TF_HIDING, pc_checkskill(sd, TF_HIDING));
+				// Move to enemy while hidden
+				if (targetdistance2 > 1) {
+					struct walkpath_data wpd1;
+					if (path_search(&wpd1, sd->bl.m, bl->x, bl->y, targetbl->x, targetbl->y, 0, CELL_CHKNOPASS, MAX_WALKPATH))
+						newwalk(&sd->bl, bl->x + dirx[wpd1.path[0]], bl->y + diry[wpd1.path[0]], 8);
+					return 0;
+				}
+
+				// Raid, use if able to hit at least three targets
+				// ** Note ** I modded this to hit an aoe of 4, even though the update should have reduced it to 2. Change that number if you did not.
+				if (canskill(sd)) if (pc_checkskill(sd, RG_RAID) > 0)
+					if (6<=map_foreachinrange(AOEPriority, &sd->bl, 4, BL_MOB, skill_get_ele(RG_RAID, pc_checkskill(sd, RG_RAID))))
+						unit_skilluse_ifable(&sd->bl, SELF, RG_RAID, pc_checkskill(sd, RG_RAID));
+			}
+		}
+		// Backstab
+		// Use this if we're not bow rogues, and/or already hiding.
+		// Yes, this is a melee skill that can be used outside tanking mode. The Rogue can hide in reaction and avoid harm.
+		if ((sd->sc.data[SC_HIDING]) || (sd->status.weapon != W_BOW))
+		if (foundtargetID2 > -1)
+		if (canskill(sd)) if (pc_checkskill(sd, RG_BACKSTAP) > 0) if (sd->state.autopilotmode == 2) {
+			if (targetdistance2 > 1) {
+				struct walkpath_data wpd1;
+				if (path_search(&wpd1, sd->bl.m, bl->x, bl->y, targetbl->x, targetbl->y, 0, CELL_CHKNOPASS, MAX_WALKPATH))
+					newwalk(&sd->bl, bl->x + dirx[wpd1.path[0]], bl->y + diry[wpd1.path[0]], 8);
+				return 0;
+			} else
+			// Assumes the update to allow using this from the front is already included
+			unit_skilluse_ifable(&sd->bl, foundtargetID2, RG_BACKSTAP, pc_checkskill(sd, RG_BACKSTAP));
+		}
 		/// Charge Arrow
 		/// Repel extremely close enemy
 		/// Avoid if not in danger of getting hit due to high delay
@@ -8478,6 +8519,17 @@ if (!((targetmd->status.def_ele == ELE_HOLY) || (targetmd->status.def_ele < 4)))
 					unit_skilluse_ifable(&sd->bl, foundtargetID, KN_BOWLINGBASH, pc_checkskill(sd, KN_BOWLINGBASH));
 				}
 			}
+
+			// Backstab skill
+			if (canskill(sd)) if (pc_checkskill(sd, RG_BACKSTAP) > 0) {
+				// Assumes the update to allow using this from the front is already included
+				if ((targetmd->status.hp > (12 - (sd->battle_status.sp * 10 / sd->battle_status.max_sp)) * pc_rightside_atk(sd))
+					|| (status_get_hp(bl) < status_get_max_hp(bl) / 3)) {
+					unit_skilluse_ifable(&sd->bl, foundtargetID, RG_BACKSTAP, pc_checkskill(sd, RG_BACKSTAP));
+				}
+			}
+
+
 			// Bash skill
 			if (canskill(sd)) if (pc_checkskill(sd, SM_BASH)>0) if (pc_checkskill(sd, KN_BOWLINGBASH)<pc_checkskill(sd, SM_BASH)) {
 			// Do not use if Bowling Bash is known at equal or higher level, as it's strictly better
