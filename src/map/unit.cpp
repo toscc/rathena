@@ -1426,8 +1426,7 @@ int unit_can_move(struct block_list *bl) {
 	if (sc) {
 		if( sc->cant.move // status placed here are ones that cannot be cached by sc->cant.move for they depend on other conditions other than their availability
 			|| sc->data[SC_SPIDERWEB]
-			|| (sc->data[SC_DANCING] && sc->data[SC_DANCING]->val4 && (
-				!sc->data[SC_LONGING] ||
+			|| (sc->data[SC_DANCING] && (
 				(sc->data[SC_DANCING]->val1&0xFFFF) == CG_MOONLIT ||
 				(sc->data[SC_DANCING]->val1&0xFFFF) == CG_HERMODE
 				) )
@@ -6928,19 +6927,23 @@ TIMER_FUNC(unit_autopilot_timer)
 		//
 		// Songs
 		//
-		// Note : I'm using "player_skill_partner_check: no" so ensembles do not check for a partner. If that option is yes, an additional trigger to walk next to a potential partner is necessary.
+		// **Note** : I'm using "player_skill_partner_check: no" so ensembles do not check for a partner. If that option is yes, an additional trigger to walk next to a potential partner is necessary.
 		// Must be in party with a leader to sing
+		// **Note** : I'm not using the skill update that turns songs into basically normal AOE buff spells.
+		// If you do, you'll need to rework this entirely section to adapt to that system.
 		if (leaderID > -1) {
 			// Use longing if doing ensemble to enable other skills
-			if (sd->sc.data[SC_DANCING]) if (sd->sc.data[SC_DANCING]->val4) if (canskill(sd)) if (!(sd->sc.data[SC_LONGING]))
-				if ((pc_checkskill(sd, CG_LONGINGFREEDOM) > 0)) unit_skilluse_ifable(&sd->bl, SELF, CG_LONGINGFREEDOM, pc_checkskill(sd, CG_LONGINGFREEDOM));
+			if (sd->sc.data[SC_DANCING])
+				// **Note** I changed Longing to also work on non-ensemble skills to enable skills/attacking. Uncomment below if you did not.
+				// if (sd->sc.data[SC_DANCING]->val4)
+				if (canskill(sd)) if (!(sd->sc.data[SC_LONGING]))
+					if ((pc_checkskill(sd, CG_LONGINGFREEDOM) > 0)) unit_skilluse_ifable(&sd->bl, SELF, CG_LONGINGFREEDOM, pc_checkskill(sd, CG_LONGINGFREEDOM));
 			// Close to leader, and not already performing (distance 6 is how far away we try to be if leader is tanking monsters
 			// Distance will no longer be relevant once increased song range is implemented from official
 			if ((leaderdistance <= 6) && (sd->state.autosong > 0) && !(sd->sc.data[SC_DANCING])) {
 				if (canskill(sd) && ((sd->status.weapon == W_WHIP) || (sd->status.weapon == W_MUSICAL))) {
 					if ((sd->skill_id_dance == sd->state.autosong) && (pc_checkskill(sd, BD_ENCORE) > 0)) unit_skilluse_ifable(&sd->bl, SELF, BD_ENCORE, pc_checkskill(sd, BD_ENCORE));
 					else if ((pc_checkskill(sd, sd->state.autosong) > 0)) unit_skilluse_ifable(&sd->bl, SELF, sd->state.autosong, pc_checkskill(sd, sd->state.autosong));
-
 				}
 			}
 			else { // Far from leader or song mode turned off, stop.
