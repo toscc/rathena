@@ -1199,8 +1199,8 @@ int64 battle_calc_damage(struct block_list *src,struct block_list *bl,struct Dam
 			return 0;
 		}
 
-		if(sc->data[SC_HERMODE] && flag&BF_MAGIC)
-			return 0;
+//		if(sc->data[SC_HERMODE] && flag&BF_MAGIC)
+//		return 0;
 
 		if(sc->data[SC_TATAMIGAESHI] && (flag&(BF_MAGIC|BF_LONG)) == BF_LONG)
 			return 0;
@@ -4461,8 +4461,6 @@ static void battle_attack_sc_bonus(struct Damage* wd, struct block_list *src, st
 #ifdef RENEWAL
 		if (sc->data[SC_WATK_ELEMENT] && skill_id != ASC_METEORASSAULT)
 			ATK_ADDRATE(wd->weaponAtk, wd->weaponAtk2, sc->data[SC_WATK_ELEMENT]->val2);
-		if (sc->data[SC_DRUMBATTLE])
-			ATK_ADD(wd->equipAtk, wd->equipAtk2, sc->data[SC_DRUMBATTLE]->val2);
 		if (sc->data[SC_MADNESSCANCEL])
 			ATK_ADD(wd->equipAtk, wd->equipAtk2, 100);
 		if (sc->data[SC_MAGICALBULLET]) {
@@ -6508,6 +6506,7 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 		case AM_DEMONSTRATION:
 			md.damage = sstatus->int_* sd->status.base_level * skill_lv / 100;
 			break;
+		case DC_UGLYDANCE:
 		case BA_DISSONANCE:
 			md.damage = 30 + skill_lv * 10;
 			if (sd)

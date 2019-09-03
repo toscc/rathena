@@ -1439,12 +1439,11 @@ int skill_additional_effect(struct block_list* src, struct block_list *bl, uint1
 		sc_start(src,bl,SC_SLEEP,15+sstatus->int_/3,skill_lv,skill_get_time2(skill_id,skill_lv)); //(custom chance) "Chance is increased with INT", iRO Wiki
 		break;
 
-	case DC_UGLYDANCE:
-		rate = 5+5*skill_lv;
+		/*rate = 5+5*skill_lv;
 		if(sd && (skill=pc_checkskill(sd,DC_DANCINGLESSON)))
 			rate += 5+skill;
 		status_zap(bl, 0, rate);
-		break;
+		break;*/
 	case SL_STUN:
 		if (tstatus->size==SZ_MEDIUM) //Only stuns mid-sized mobs.
 			sc_start(src,bl,SC_STUN,(30+10*skill_lv),skill_lv,skill_get_time(skill_id,skill_lv));
@@ -4686,6 +4685,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, uint
 	case BA_MUSICALSTRIKE:
 	case DC_THROWARROW:
 	case BA_DISSONANCE:
+	case DC_UGLYDANCE:
 	case CR_HOLYCROSS:
 	case NPC_DARKCROSS:
 	case CR_SHIELDCHARGE:
@@ -12051,8 +12051,7 @@ int skill_castend_pos2(struct block_list* src, int x, int y, uint16 skill_id, ui
 	case CG_HERMODE:
 		skill_clear_unitgroup(src);
 		if ((sg = skill_unitsetting(src,skill_id,skill_lv,x,y,0)))
-			sc_start4(src,src,SC_DANCING,100,
-				skill_id,0,skill_lv,sg->group_id,skill_get_time(skill_id,skill_lv));
+	//		sc_start4(src,src,SC_DANCING,100,skill_id,0,skill_lv,sg->group_id,skill_get_time(skill_id,skill_lv));
 		flag|=1;
 		break;
 	case RG_CLEANER: // [Valaris]
@@ -13135,22 +13134,29 @@ struct skill_unit_group *skill_unitsetting(struct block_list *src, uint16 skill_
 		break;
 	case BD_DRUMBATTLEFIELD:
 	#ifdef RENEWAL
-		val1 = (skill_lv+5)*7;	//Atk increase
-		val2 = skill_lv*10;		//Def increase
+		val1 = (skill_lv+5)*4;	//Atk increase
+		val2 = skill_lv*12;		//Def increase
 	#else
 		val1 = (skill_lv+1)*25;	//Atk increase
 		val2 = (skill_lv+1)*2;	//Def increase
 	#endif
 		break;
+	case CG_HERMODE:
+		val1 = (skill_lv + 5) * 7;	//Atk increase
+		val2 = skill_lv * 10;		//Def increase
+		break;
 	case BD_RINGNIBELUNGEN:
-		val1 = (skill_lv+2)*16;	//Atk increase
+		val1 = rand() % RINGNBL_MAX;	//Atk increase
 		break;
 	case BD_RICHMANKIM:
 		val1 = 25 + 11*skill_lv; //Exp increase bonus.
 		break;
 	case BD_SIEGFRIED:
-		val1 = 55 + skill_lv*5;	//Elemental Resistance
-		val2 = skill_lv*10;	//Status ailment resistance
+	case BD_ETERNALCHAOS:
+		val1 = 25 + skill_lv*5;	//Elemental Resistance
+		break;
+	case BD_ROKISWEIL:
+		val1 = skill_lv*10;	//Status ailment resistance
 		break;
 	case WE_CALLPARTNER:
 		if (sd) val1 = sd->status.partner_id;
@@ -13320,7 +13326,7 @@ struct skill_unit_group *skill_unitsetting(struct block_list *src, uint16 skill_
 		}
 		if (
 			sc_start4(src, src, SC_DANCING, 100, skill_id, group->group_id, skill_lv, (group->state.song_dance&2?BCT_SELF:0), limit+1000) &&
-			sd && group->state.song_dance&2 && skill_id != CG_HERMODE //Hermod is a encore with a warp!
+			sd && group->state.song_dance&2 //&& skill_id != CG_HERMODE //Hermod is a encore with a warp!
 		)
 			skill_check_pc_partner(sd, skill_id, &skill_lv, 1, 1);
 	}
@@ -13647,21 +13653,21 @@ static int skill_unit_onplace(struct skill_unit *unit, struct block_list *bl, t_
 			break;
 
 		case UNT_HERMODE:
-			if (sg->src_id!=bl->id && battle_check_target(&unit->bl,bl,BCT_PARTY|BCT_GUILD) > 0)
-				status_change_clear_buffs(bl, SCCB_BUFFS); //Should dispell only allies.
+/*			if (sg->src_id!=bl->id && battle_check_target(&unit->bl,bl,BCT_PARTY|BCT_GUILD) > 0)
+				status_change_clear_buffs(bl, SCCB_BUFFS); //Should dispell only allies. */
 		case UNT_RICHMANKIM:
 		case UNT_ETERNALCHAOS:
 		case UNT_DRUMBATTLEFIELD:
-		case UNT_RINGNIBELUNGEN:
+//		case UNT_RINGNIBELUNGEN:
 		case UNT_ROKISWEIL:
 		case UNT_INTOABYSS:
 		case UNT_SIEGFRIED:
-			 //Needed to check when a dancer/bard leaves their ensemble area.
+	/*		 //Needed to check when a dancer/bard leaves their ensemble area.
 			if (sg->src_id==bl->id && !(sc && sc->data[SC_SPIRIT] && sc->data[SC_SPIRIT]->val2 == SL_BARDDANCER))
 				return skill_id;
 			if (!sce)
 				sc_start4(ss, bl,type,100,sg->skill_lv,sg->val1,sg->val2,0,sg->limit);
-			break;
+			break;*/
 		case UNT_WHISTLE:
 		case UNT_ASSASSINCROSS:
 		case UNT_POEMBRAGI:
@@ -14120,10 +14126,10 @@ int skill_unit_onplace_timer(struct skill_unit *unit, struct block_list *bl, t_t
 			break;
 
 		case UNT_UGLYDANCE:	//Ugly Dance [Skotlex]
-			if (ss->id != bl->id)
+/*			if (ss->id != bl->id)
 				skill_additional_effect(ss, bl, sg->skill_id, sg->skill_lv, BF_LONG|BF_SKILL|BF_MISC, ATK_DEF, tick);
 			break;
-
+*/
 		case UNT_DISSONANCE:
 			skill_attack(BF_MISC, ss, &unit->bl, bl, sg->skill_id, sg->skill_lv, tick, 0);
 			break;
@@ -14151,6 +14157,10 @@ int skill_unit_onplace_timer(struct skill_unit *unit, struct block_list *bl, t_t
 			skill_attack(BF_WEAPON,ss,&unit->bl,bl,sg->skill_id,sg->skill_lv,tick,0);
 			break;
 
+		case UNT_RINGNIBELUNGEN:
+			if (battle_check_target(ss, bl, BCT_PARTY) > 0)
+				sc_start2(ss, bl, SC_NIBELUNGEN, 100, sg->skill_lv,rand() % RINGNBL_MAX, 10000);
+			break;
 		case UNT_GOSPEL:
 			if (rnd() % 100 >= 50 + sg->skill_lv * 5 || ss == bl)
 				break;
@@ -14548,10 +14558,10 @@ int skill_unit_onout(struct skill_unit *src, struct block_list *bl, t_tick tick)
 				status_change_end(bl, type, INVALID_TIMER);
 			break;
 
-		case UNT_HERMODE:	//Clear Hermode if the owner moved.
+/*		case UNT_HERMODE:	//Clear Hermode if the owner moved.
 			if (sce && sce->val3 == BCT_SELF && sce->val4 == sg->group_id)
 				status_change_end(bl, type, INVALID_TIMER);
-			break;
+			break;/*/
 
 		case UNT_DISSONANCE:
 		case UNT_UGLYDANCE: //Used for updating timers in song overlap instances
@@ -14615,6 +14625,7 @@ int skill_unit_onleft(uint16 skill_id, struct block_list *bl, t_tick tick)
 		case BD_RINGNIBELUNGEN:
 		case BD_ROKISWEIL:
 		case BD_INTOABYSS:
+		case CG_HERMODE:
 		case BD_SIEGFRIED:
 			if(sc && sc->data[SC_DANCING] && (sc->data[SC_DANCING]->val1&0xFFFF) == skill_id)
 			{	//Check if you just stepped out of your ensemble skill to cancel dancing. [Skotlex]
@@ -14631,7 +14642,6 @@ int skill_unit_onleft(uint16 skill_id, struct block_list *bl, t_tick tick)
 		case SA_VOLCANO:
 		case SA_DELUGE:
 		case SA_VIOLENTGALE:
-		case CG_HERMODE:
 #ifndef RENEWAL
 		case HW_GRAVITATION:
 #endif
@@ -14681,7 +14691,16 @@ int skill_unit_onleft(uint16 skill_id, struct block_list *bl, t_tick tick)
 		case DC_DONTFORGETME:
 		case DC_FORTUNEKISS:
 		case DC_SERVICEFORYOU:
-			if (sce)
+		case BD_LULLABY:
+		case BD_RICHMANKIM:
+		case BD_ETERNALCHAOS:
+		case BD_DRUMBATTLEFIELD:
+		case BD_RINGNIBELUNGEN:
+		case BD_ROKISWEIL:
+		case BD_INTOABYSS:
+		case CG_HERMODE:
+		case BD_SIEGFRIED:
+		if (sce)
 			{
 				delete_timer(sce->timer, status_change_timer);
 				//NOTE: It'd be nice if we could get the skill_lv for a more accurate extra time, but alas...
@@ -14940,15 +14959,17 @@ int skill_check_pc_partner(struct map_session_data *sd, uint16 skill_id, uint16 
 					status_charge(&tsd->bl, 0, i);
 				}
 				break;
-			default: //Warning: Assuming Ensemble skills here (for speed)
+			default:
 				if( is_chorus )
 					break;//Chorus skills are not to be parsed as ensambles
-				if (c > 0 && sd->sc.data[SC_DANCING] && (tsd = map_id2sd(p_sd[0])) != NULL) {
-					sd->sc.data[SC_DANCING]->val4 = tsd->bl.id;
-					sc_start4(&sd->bl,&tsd->bl,SC_DANCING,100,skill_id,sd->sc.data[SC_DANCING]->val2,*skill_lv,sd->bl.id,skill_get_time(skill_id,*skill_lv)+1000);
-					clif_skill_nodamage(&tsd->bl, &sd->bl, skill_id, *skill_lv, 1);
-					tsd->skill_id_dance = skill_id;
-					tsd->skill_lv_dance = *skill_lv;
+				if (skill_get_inf2(skill_id)&INF2_ENSEMBLE_SKILL) {
+					if (c > 0 && sd->sc.data[SC_DANCING] && (tsd = map_id2sd(p_sd[0])) != NULL) {
+						sd->sc.data[SC_DANCING]->val4 = tsd->bl.id;
+						sc_start4(&sd->bl, &tsd->bl, SC_DANCING, 100, skill_id, sd->sc.data[SC_DANCING]->val2, *skill_lv, sd->bl.id, skill_get_time(skill_id, *skill_lv) + 1000);
+						clif_skill_nodamage(&tsd->bl, &sd->bl, skill_id, *skill_lv, 1);
+						tsd->skill_id_dance = skill_id;
+						tsd->skill_lv_dance = *skill_lv;
+					}
 				}
 				return c;
 		}
@@ -15303,6 +15324,9 @@ bool skill_check_condition_castbegin(struct map_session_data* sd, uint16 skill_i
 				clif_skill_fail(sd,skill_id,USESKILL_FAIL_LEVEL,0);
 				return false;
 			}
+#ifdef RENEWAL
+			sd->spiritball_old = sd->spiritball;
+#endif
 			break;
 		case TK_MISSION:
 			if( (sd->class_&MAPID_UPPERMASK) != MAPID_TAEKWON ) { // Cannot be used by Non-Taekwon classes
@@ -15383,12 +15407,12 @@ bool skill_check_condition_castbegin(struct map_session_data* sd, uint16 skill_i
 			if(!(sc && sc->data[SC_COMBO] && sc->data[SC_COMBO]->val1 == AC_DOUBLE))
 				return false;
 			break;
-		case CG_HERMODE:
+/*		case CG_HERMODE:
 			if(!npc_check_areanpc(1,sd->bl.m,sd->bl.x,sd->bl.y,skill_get_splash(skill_id, skill_lv))) {
 				clif_skill_fail(sd,skill_id,USESKILL_FAIL_LEVEL,0);
 				return false;
 			}
-			break;
+			break;*/
 		case CG_MOONLIT: //Check there's no wall in the range+1 area around the caster. [Skotlex]
 			{
 				int s,range = skill_get_splash(skill_id, skill_lv)+1;
@@ -16391,6 +16415,10 @@ struct skill_condition skill_get_requirement(struct map_session_data* sd, uint16
 			req.sp += req.sp * sc->data[SC_OFFERTORIUM]->val3 / 100;
 		if( sc->data[SC_TELEKINESIS_INTENSE] && skill_get_ele(skill_id, skill_lv) == ELE_GHOST)
 			req.sp -= req.sp * sc->data[SC_TELEKINESIS_INTENSE]->val2 / 100;
+#ifdef RENEWAL
+		if (sc->data[SC_NIBELUNGEN] && sc->data[SC_NIBELUNGEN]->val2 == RINGNBL_SPCONSUM)
+			req.sp -= req.sp * 30 / 100;
+#endif
 	}
 
 	req.zeny = skill_db[idx]->require.zeny[skill_lv-1];
