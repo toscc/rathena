@@ -1423,7 +1423,7 @@ int unit_can_move(struct block_list *bl) {
 			|| sc->data[SC_SPIDERWEB]
 			|| (sc->data[SC_DANCING] && (
 				(sc->data[SC_DANCING]->val1&0xFFFF) == CG_MOONLIT 
-//			||	(sc->data[SC_DANCING]->val1&0xFFFF) == CG_HERMODE
+			||	(sc->data[SC_DANCING]->val1&0xFFFF) == CG_HERMODE
 				) )
 			)
 			return 0;
