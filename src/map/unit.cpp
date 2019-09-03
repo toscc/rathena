@@ -1427,8 +1427,8 @@ int unit_can_move(struct block_list *bl) {
 		if( sc->cant.move // status placed here are ones that cannot be cached by sc->cant.move for they depend on other conditions other than their availability
 			|| sc->data[SC_SPIDERWEB]
 			|| (sc->data[SC_DANCING] && (
-				(sc->data[SC_DANCING]->val1&0xFFFF) == CG_MOONLIT ||
-				(sc->data[SC_DANCING]->val1&0xFFFF) == CG_HERMODE
+				(sc->data[SC_DANCING]->val1&0xFFFF) == CG_MOONLIT 
+//			||	(sc->data[SC_DANCING]->val1&0xFFFF) == CG_HERMODE
 				) )
 			)
 			return 0;
@@ -4172,6 +4172,32 @@ int AOEPrioritySandman(block_list * bl, va_list ap)
 	return 2; // Default
 }
 
+bool isdisabled(mob_data* md)
+{
+	if ((md->sc.data[SC_FREEZE])) return true;
+	if ((md->sc.data[SC_STONE])) return true;
+	if ((md->sc.data[SC_SPIDERWEB])) return true;
+	return false;
+}
+
+int AOEPriorityfreeze(block_list * bl, va_list ap)
+{
+	struct mob_data *md;
+
+	nullpo_ret(bl);
+	nullpo_ret(md = (struct mob_data *)bl);
+
+	uint16 elem = va_arg(ap, int); // the element
+
+	if ((status_get_class_(bl) == CLASS_BOSS)) {
+		return 0; // Bosses can't be frozen
+	}
+	if (md->status.def_ele == ELE_UNDEAD) return 0; // Undead can't be frozen
+	if (isdisabled(md)) return 0; // already frozen/stunned/etc
+
+	return 2; // Default
+}
+
 int AOEPriorityGrav(block_list * bl, va_list ap)
 {
 	struct mob_data *md;
@@ -5084,14 +5110,6 @@ void unit_skilluse_ifablebetween(struct block_list *src, int target_id, uint16 s
 		}
 	}
 
-}
-
-bool isdisabled(mob_data* md)
-{
-	if ((md->sc.data[SC_FREEZE])) return true;
-	if ((md->sc.data[SC_STONE])) return true;
-	if ((md->sc.data[SC_SPIDERWEB])) return true;
-	return false;
 }
 
 void saythis(struct map_session_data * src, char* message, int i)
@@ -7052,6 +7070,20 @@ TIMER_FUNC(unit_autopilot_timer)
 				}
 			}
 		}
+
+		/// Frost Joker
+		if (canskill(sd)) if (pc_checkskill(sd, BA_FROSTJOKER) > 0) {
+			// At least 5 enemies must be present
+			if (map_foreachinrange(AOEPriorityfreeze, &sd->bl, 7, BL_MOB, ELE_NONE) >= 10)
+				unit_skilluse_ifable(&sd->bl, SELF, BA_FROSTJOKER, pc_checkskill(sd, BA_FROSTJOKER));
+		}
+		/// Scream
+		if (canskill(sd)) if (pc_checkskill(sd, DC_SCREAM) > 0) {
+			// At least 5 enemies must be present
+			if (map_foreachinrange(AOEPriorityfreeze, &sd->bl, 7, BL_MOB, ELE_NONE) >= 10)
+				unit_skilluse_ifable(&sd->bl, SELF, DC_SCREAM, pc_checkskill(sd, DC_SCREAM));
+		}
+
 		// Fiber Lock
 		// Only against dangerous enemies that are not in range to attack us, costs cobweb
 		if (canskill(sd)) if (pc_checkskill(sd, PF_SPIDERWEB) > 0) {
