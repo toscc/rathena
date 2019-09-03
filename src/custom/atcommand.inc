@@ -76,7 +76,7 @@ return 0;
 ACMD_FUNC(autosong)
 {
 if (!message || !*message) { clif_displaymessage(fd, "please specify type a song to play :");
-clif_displaymessage(fd, "Whistle Sinx Bragi Apple Lullaby Loki Siegfried Drum Abyss Chaos Kim Ring Moonlit Humming Forget Kiss Service Diss Ugly");
+clif_displaymessage(fd, "Whistle Sinx Bragi Apple Lullaby Loki Siegfried Drum Abyss Chaos Kim Ring Moonlit Humming Forget Kiss Service Diss Ugly Hermode");
  }
 else {
 sd->state.autosong = 0; clif_displaymessage(fd, message);
@@ -100,6 +100,7 @@ if (!strcmp(message,"Kiss")) {sd->state.autosong =  DC_FORTUNEKISS; };
 if (!strcmp(message,"Service")) {sd->state.autosong = DC_SERVICEFORYOU; };
 if (!strcmp(message,"Diss")) {sd->state.autosong = BA_DISSONANCE; };
 if (!strcmp(message,"Ugly")) {sd->state.autosong = DC_UGLYDANCE; };
+if (!strcmp(message,"Hermode")) {sd->state.autosong = CG_HERMODE; };
 }
 return 0; 
 }
