@@ -148,10 +148,12 @@
 2268:19082,{ bonus bDelayrate,-5; }
 //Mechanical Plant Hat:19082,{ bonus2 bSkillAtk,GN_SPORE_EXPLOSION,getequiprefinerycnt(EQI_HEAD_???)*5; }
 //2268:Mechanical Plant Hat:19082,{ bonus2 bSkillUseSP,GN_SPORE_EXPLOSION,20; }
+2269:5768,{ bonus bInt,1; }
 2269:5781,{ bonus bInt,1; bonus bMaxSP,30; }
 2269:5786,{ bonus2 bAddClass,Class_All,1; }
 //2269:5768,{ bonus bInt,1; if(getequiprefinerycnt(EQI_HEAD_TOP) > 6) bonus bMaxSPrate,getequiprefinerycnt(EQI_HEAD_TOP)-6; }
 //2270:5768,{ bonus bStr,1; if(getequiprefinerycnt(EQI_HEAD_TOP) > 2) bonus bUseSPrate,2-getequiprefinerycnt(EQI_HEAD_TOP); }
+2270:5768,{ bonus bStr,1; }
 2270:5781,{ bonus bLuk,1; bonus bFlee,2; }
 2270:5786,{ bonus bMatkRate,1; }
 2278:18527,{ bonus2 bAddMonsterDropItem,12192,20; }

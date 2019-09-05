@@ -1,0 +1,29 @@
+
+prontera,146,173,6	script	Coin Trader::cointrader	803,{
+mes "[Coin Trader]";
+mes	"I can excahnge your zeny for high value coins that are easier to carry.";
+next;
+mes "[Coin Trader]";
+mes "Which do you want me to do?";
+	
+set .@s, select("Convert Zeny to Coins:Convert Coins to Zeny:Nothing"); 
+if(.@s == 1){
+		set .@amount, Zeny/100000;
+		Zeny = Zeny - (.@amount * 100000);
+		getitem 31908, .@amount;
+		close;
+	}
+if(.@s == 2){
+	if (countitem(31908) < 1) { 
+		mes .NPCName$;
+		mes "You have no coins in your inventory to exchange!";
+		close;
+	}
+	set .@amount, countitem(31908);
+	delitem 31908, .@amount;
+	Zeny = Zeny + .@amount*100000;
+	close;
+	}
+close;
+}
+

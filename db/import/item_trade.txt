@@ -20,3 +20,4 @@
 //	Balmung cannot be dropped, traded, or placed in Guild Storage (1+2+64).
 //	Only groups of group-level 50 and up can override this setting.
 
+31908,8,100	// Mithril_Coin

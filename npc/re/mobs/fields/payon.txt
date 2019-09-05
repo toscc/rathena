@@ -45,6 +45,7 @@ pay_fild02,0,0	monster	Wormtail	1024,30,5000
 pay_fild02,0,0	monster	Spore	1014,30,5000
 pay_fild02,105,256,10,10	monster	Green Plant	1080,4,360000,180000
 pay_fild02,105,256,10,10	monster	Red Mushroom	1085,4,360000,180000
+pay_fild02,55,295,3,3	monster	Argos	1100,1,180000
 
 //==================================================
 // pay_fild03 - Payon Forest

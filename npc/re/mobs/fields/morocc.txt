@@ -50,7 +50,7 @@ moc_fild02,337,35	monster	Green Plant	1080,1,180000,90000
 //==================================================
 // moc_fild03 - Sograt Desert 
 //==================================================
-moc_fild03,0,0	monster	Wolf	1013,140,5000
+moc_fild03,0,0	monster	Wolf	1013,210,5000
 moc_fild03,0,0	monster	Argos	1100,20,5000
 moc_fild03,0,0	monster	Steel Chonchon	1042,20,5000
 moc_fild03,77,311,5,5	monster	Green Plant	1080,2,180000,90000
