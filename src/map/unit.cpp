@@ -7694,8 +7694,8 @@ TIMER_FUNC(unit_autopilot_timer)
 
 		// Full Strip
 		// Use on bosses or much higher level enemies.
-		if ((status_get_class_(bl) == CLASS_BOSS) || (targetmd->level > sd->status.base_level + 30))
-			if (canskill(sd)) if (pc_checkskill(sd, ST_FULLSTRIP) > 4) if (foundtargetID2 > -1)
+		if (foundtargetID2 > -1) if ((status_get_class_(bl) == CLASS_BOSS) || (targetmd->level > sd->status.base_level + 30))
+			if (canskill(sd)) if (pc_checkskill(sd, ST_FULLSTRIP) > 4)
 				// Don't bother if we already stipped something.
 				if (!(targetmd->sc.data[SC_STRIPHELM] || targetmd->sc.data[SC_STRIPSHIELD] || targetmd->sc.data[SC_STRIPWEAPON] || targetmd->sc.data[SC_STRIPARMOR]))
 					// Don't bother with targets that have some protection
