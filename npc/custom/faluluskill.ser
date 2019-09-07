@@ -1,0 +1,56 @@
+
+prontera,146,150,6	script	Charuru::chfalulu1	18001,{
+.@name$ = "[Charuru]";
+mes .@name$;
+
+if (QSkillPoint001 == 1) {
+mes "Thank you for your help!";
+close;
+}
+
+mes	"I want to be a Lovely Idol!";
+mes	"In order to do that, I need to look cute!";
+mes	"Do you have Ribbon[1] x5?";
+
+if(countitem(2209)>=5){
+		next;
+		mes .@name$;
+		mes "Oh, you do have them!";
+		mes "Thank you very much!";
+		next;
+		mes "Let me teach you something!";
+		mes "[Gained 1 Skill Point!]";
+		set QSkillPoint001,1;
+		delitem 2209,5;
+		set SkillPoint,SkillPoint+1;
+	}
+close;
+}
+
+prontera,146,143,6	script	Falala::chfalulu2	18001,{
+.@name$ = "[Falala]";
+mes .@name$;
+
+if (QSkillPoint002 == 1) {
+mes "Thank you for your help!";
+close;
+}
+
+mes	"I feel the urge to build a clock tower for some reason.";
+mes	"I will need 300 Needles of Alarm to calm myself down.";
+
+if(countitem(1095)>=300){
+		next;
+		mes .@name$;
+		mes "Oh, you do have them!";
+		mes "Thank you very much!";
+		next;
+		mes "Let me teach you something!";
+		mes "[Gained 1 Skill Point!]";
+		set QSkillPoint002,1;
+		delitem 1095,300;
+		set SkillPoint,SkillPoint+1;
+	}
+close;
+}
+

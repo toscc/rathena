@@ -130,23 +130,23 @@ L_Play:
 	mes "[Dealer]";
 	mes "Please place your bets...";
 	next;
-	menu "2z",M_1a, "10z",M_1b, "20z",M_1c, "100z",M_1d, "Too rich for my blood....",M_End;
+	menu "100z",M_1a, "1000z",M_1b, "5000z",M_1c, "12000z",M_1d, "Can't afford this much....",M_End;
 
 M_1a:
-	if(Zeny < 2) goto sL_NotEnuf;
-	set @bet, 2;
-	goto L_Cont0;
-M_1b:
-	if(Zeny < 10) goto sL_NotEnuf;
-	set @bet, 10;
-	goto L_Cont0;
-M_1c:
-	if(Zeny < 20) goto sL_NotEnuf;
-	set @bet, 20;
-	goto L_Cont0;
-M_1d:
 	if(Zeny < 100) goto sL_NotEnuf;
 	set @bet, 100;
+	goto L_Cont0;
+M_1b:
+	if(Zeny < 1000) goto sL_NotEnuf;
+	set @bet, 1000;
+	goto L_Cont0;
+M_1c:
+	if(Zeny < 5000) goto sL_NotEnuf;
+	set @bet, 5000;
+	goto L_Cont0;
+M_1d:
+	if(Zeny < 12000) goto sL_NotEnuf;
+	set @bet, 12000;
 	goto L_Cont0;
 
 sL_NotEnuf:
