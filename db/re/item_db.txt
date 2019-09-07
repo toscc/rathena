@@ -2226,7 +2226,7 @@
 4033,Poporing_Card,Poporing Card,6,20,,10,,,,,,,,136,,,,,{ bonus bMaxHPrate,9; },{},{}
 4034,Worm_Tail_Card,Wormtail Card,6,20,,10,,,,,,,,136,,,,,{ bonus bDex,2; bonus bAgi,2; },{},{}
 4035,Hydra_Card,Hydra Card,6,20,,10,,,,,,,,2,,,,,{ bonus2 bAddRace,RC_DemiHuman,20; bonus2 bAddRace,RC_Player,20; },{},{}
-4036,Muka_Card,Muka Card,6,20,,10,,,,,,,,136,,,,,{ bonus bBaseAtk,12; bonus bBaseLuk,4; },{},{}
+4036,Muka_Card,Muka Card,6,20,,10,,,,,,,,136,,,,,{ bonus bBaseAtk,12; bonus bLuk,4; },{},{}
 4037,Snake_Card,Snake Card,6,20,,10,,,,,,,,2,,,,,{ bonus2 bAddEff,Eff_Poison,2000; bonus bBaseAtk,10; },{},{}
 4038,Zombie_Card,Zombie Card,6,20,,10,,,,,,,,64,,,,,{ bonus bHPrecovRate,40; bonus bDef,7; },{},{}
 4039,Stainer_Card,Stainer Card,6,20,,10,,,,,,,,769,,,,,{ bonus2 bResEff,Eff_Silence,5000; bonus bDef,15; },{},{}
@@ -2261,7 +2261,7 @@
 4068,Scorpion_Card,Scorpion Card,6,20,,10,,,,,,,,2,,,,,{ bonus2 bAddRace,RC_Plant,20; },{},{}
 4069,Drainliar_Card,Drainliar Card,6,20,,10,,,,,,,,2,,,,,{ bonus2 bAddEle,Ele_Water,20; },{},{}
 4070,Eggyra_Card,Eggyra Card,6,20000,,10,,,,,,,,64,,,,,{ bonus bSPrecovRate,25; },{},{}
-4071,Orc_Zombie_Card,Orc Zombie Card,6,20,,10,,,,,,,,4,,,,,{ bonus2 bSubRace,RC_Undead,15; bonus bHPrecovRate,40; },{},{}
+4071,Orc_Zombie_Card,Orc Zombie Card,6,20,,10,,,,,,,,4,,,,,{ bonus2 bSubRace,RC_Undead,10; bonus bHPrecovRate,40; },{},{}
 4072,Golem_Card,Golem Card,6,20,,10,,,,,,,,2,,,,,{ bonus bUnbreakableWeapon; bonus bBaseAtk,15; },{},{}
 4073,Pirate_Skel_Card,Pirate Skeleton Card,6,20,,10,,,,,,,,136,,,,,{ skill "MC_DISCOUNT",5; bonus bInt,1; bonus bDex,2; bonus bLuk,1; },{},{}
 4074,BigFoot_Card,Bigfoot Card,6,20,,10,,,,,,,,32,,,,,{ bonus2 bSubRace,RC_Insect,30; },{},{}
@@ -10104,7 +10104,7 @@
 19503,T_Munak_Hat,T Munak Hat,4,0,,0,,0,,0,0xFFFFFFFF,63,2,7168,,0,0,51,{},{},{}
 19504,T_Sunglasses,T Sunglasses,4,0,,0,,0,,0,0xFFFFFFFF,63,2,2048,,0,0,12,{},{},{}
 19505,T_Cigarette,T Cigarette,4,0,,0,,0,,0,0xFFFFFFFF,63,2,4096,,0,0,54,{},{},{}
-19506,C_Valkyrie_Feather_Band,C Valkyrie Feather Band,4,0,,0,,0,,0,0xFFFFFFFF,63,2,1024,,0,0,300,{},{},{}
+19506,C_Valkyrie_Feather_Band2,C Valkyrie Feather Band,4,0,,0,,0,,0,0xFFFFFFFF,63,2,1024,,0,0,300,{},{},{}
 19507,Fine_Sun,Clear Sun,4,0,,0,,0,,0,0xFFFFFFFF,63,2,1024,,1,0,654,{ bonus bUnbreakableHelm; },{},{}
 19508,T_Gemmed_Sallet,T Gemmed Sallet,4,0,,0,,0,,0,0xFFFFFFFF,63,2,1024,,0,0,0,{ bonus bUnbreakableHelm; },{},{}
 19509,Butterfly_Wing_Ear,Butterfly Wing Ears,4,0,,0,,0,,0,0xFFFFFFFF,63,2,2048,,1,0,695,{ bonus bUnbreakableHelm; },{},{}

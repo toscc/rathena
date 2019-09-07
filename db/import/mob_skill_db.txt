@@ -144,5 +144,6 @@
 29999,Seravy's Loli Ruri@NPC_SUMMONSLAVE,idle,196,1,500,2000,60000,no,self,slavele,2,2651,,,,,,
 29999,Seravy's Loli Ruri@PR_LEXDIVINA,attack,76,10,500,1000,5000,yes,target,always,0,,,,,,2,
 29999,Seravy's Loli Ruri@PR_LEXDIVINA,chase,76,10,500,1000,5000,yes,target,always,0,,,,,,2,
+2676,Pirate Skeleton@SM_BASH,attack,5,5,1200,0,5000,yes,target,always,0,,,,,,27,
 29999,Seravy's Loli Ruri@AB_HIGHNESSHEAL,any,2051,0,5000,0,0,no,self,myhpltmaxrate,75,,,,,,,
 29999,Seravy's Loli Ruri@HP_ASSUMPTIO,any,361,0,1200,0,0,no,self,mystatusoff,SC_ASSUMPTIO,,,,,,,

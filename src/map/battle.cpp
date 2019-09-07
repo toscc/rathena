@@ -1099,7 +1099,7 @@ int64 battle_calc_damage(struct block_list *src,struct block_list *bl,struct Dam
 			return 0;
 		} */
 
-		if( sc->data[SC_WHITEIMPRISON] ) { // Gravitation and Pressure do damage without removing the effect
+		if(sc && sc->data[SC_WHITEIMPRISON] ) { // Gravitation and Pressure do damage without removing the effect
 			if( skill_id == MG_NAPALMBEAT ||
 				skill_id == MG_SOULSTRIKE ||
 				skill_id == WL_SOULEXPANSION ||

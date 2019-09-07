@@ -1,7 +1,7 @@
 
 prontera,146,173,6	script	Coin Trader::cointrader	803,{
 mes "[Coin Trader]";
-mes	"I can excahnge your zeny for high value coins that are easier to carry.";
+mes	"I can exchange your zeny for high value coins that are easier to carry.";
 next;
 mes "[Coin Trader]";
 mes "Which do you want me to do?";
