@@ -108,7 +108,6 @@ M_3:
 M_4:
 	mes "[Yakima]";
 	mes "It's a fresh style! Accessory and a bag all in one! You'd get +2 STR... It's different from that sabby nest!";
-	mes "It fits to Merchant class only.";
 	emotion ET_SMILE;
 	next;
 	mes "[Yakima]";

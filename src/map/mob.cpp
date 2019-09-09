@@ -2667,7 +2667,7 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 				base_exp = (unsigned int)cap_value(exp, 1, UINT_MAX);
 			}
 
-			if (map_getmapflag(m, MF_NOJOBEXP) || !md->db->job_exp || md->dmglog[i].flag == MDLF_HOMUN) //Homun earned job-exp is always lost.
+			if ((md->sc.data[SC_RICHMANKIM]) || map_getmapflag(m, MF_NOJOBEXP) || !md->db->job_exp || md->dmglog[i].flag == MDLF_HOMUN) //Homun earned job-exp is always lost.
 				job_exp = 0;
 			else {
 				double exp = apply_rate2(md->db->job_exp, per, 1);

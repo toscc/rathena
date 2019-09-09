@@ -44,7 +44,7 @@ alberta,88,193,5	script	Sunglasses Trader	73,{
 		close; }
 	mes "[Sunglasses Trader]";
 	mes "In order for me to tell you information on ^0000FFSlotted Sunglasses^000000 you need to get me:";
-	mes " - ^0000881 Carat Diamond^000000";
+	mes " - ^0000881 Foolishness of the Blind^000000";
 	mes " - ^00008850 Feathers^000000";
 	mes " - ^000088100000z^000000";
 	next;
@@ -53,10 +53,10 @@ alberta,88,193,5	script	Sunglasses Trader	73,{
 		mes "Suit yourself.";
 		close; }
 	mes "[Sunglasses Trader]";
-	if (countitem(730) < 1 || countitem(949) < 50 || Zeny < 100000) {
+	if (countitem(7021) < 1 || countitem(949) < 50 || Zeny < 100000) {
 		mes "You're missing something. Come back when you've gathered all the materials.";
 		close; }
-	delitem 730,1;
+	delitem 7021,1;
 	delitem 949,50;
 	set Zeny, Zeny-100000;
 	set SG_QUEST1,1;

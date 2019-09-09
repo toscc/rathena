@@ -1723,7 +1723,7 @@
 2508,Ragamuffin_Cape,Ragamuffin Manteau,4,56000,,500,,4,,0,0xFFFFFFFE,63,2,4,,0,1,0,{ bonus bUnbreakableGarment; bonus bMdef,20; },{},{}
 2509,Clack_Of_Servival,Survivor's Manteau,4,20000,,550,,10,,0,0x00810204,63,2,4,,75,1,0,{ bonus bMdef,5; bonus bVit,10; },{},{}
 2510,Novice_Hood,Somber Novice Hood,4,1,,1,,4,,0,0x00000001,63,2,4,,0,0,0,{ bonus2 bSubEle,Ele_Neutral,20; },{},{}
-2511,Skeleton's_Cape,Skeleton Manteau,4,5000,,700,,1,,0,0xFFFFFFFE,63,2,4,,75,1,0,{ bonus bStr,2; bonus bInt,-3; bonus bDex,2; bonus bVit,-3; bonus bLuk,2; },{},{}
+2511,Skeleton's_Cape,Skeleton Manteau,4,5000,,700,,1,,1,0xFFFFFFFE,63,2,4,,75,1,0,{ bonus bStr,2; bonus bInt,-3; bonus bDex,2; bonus bVit,-3; bonus bLuk,2; },{},{}
 2512,Novice_Manteau,Novice Manteau,4,50000,,500,,7,,1,0x00000001,63,2,4,,40,1,0,{ bonus2 bSubEle,Ele_Neutral,10; },{},{}
 2513,Celestial_Robe,Heavenly Maiden Robe,4,20,,500,,18,,1,0xFFFFFFFE,63,2,4,,80,1,0,{},{},{}
 2514,Pauldron,Pauldron,4,20,,800,,25,,1,0x000654E2,63,2,4,,80,1,0,{},{},{}
@@ -1852,7 +1852,7 @@
 2638,Exorcize_Sachet,Sacred Incense,4,20000,,100,,0,,0,0xFFFFFFFF,63,2,136,,0,0,0,{ bonus bStr,2; bonus bLuk,2; },{},{}
 2639,Purification_Sachet,Occult Incense,4,20000,,100,,0,,0,0xFFFFFFFF,63,2,136,,0,0,0,{ bonus bInt,2; bonus bAgi,2; },{},{}
 2640,Kafra_Ring,Kafra Ring,4,40000,,200,,1,,0,0xFFFFFFFE,63,2,136,,0,0,0,{ bonus bStr,1; bonus bInt,1; bonus bAgi,1; bonus bLuk,1; bonus bMdef,1; },{},{}
-2641,Fashionable_Sack,Fashion Hip Sack,4,20,,700,,0,,0,0x00040420,63,2,136,,50,0,0,{ bonus bStr,2; },{},{}
+2641,Fashionable_Sack,Fashion Hip Sack,4,20,,700,,0,,0,0xFFFFFFFE,63,2,136,,50,0,0,{ bonus bStr,2; },{},{}
 2642,Serin's_Gold_Ring,Serin's Gold Ring,4,20,,0,,0,,0,0xFFFFFFFF,63,2,136,,0,0,0,{},{},{}
 2643,Serin's_Gold_Ring_,Serin's Gold Ring,4,45000,,100,,0,,0,0xFFFFFFFF,63,2,136,,0,0,0,{},{},{}
 2644,The_Sign_,The Sign,4,2,,0,,0,,0,0xFFFFFFFF,63,2,136,,0,0,0,{ bonus2 bAddClass,Class_All,5; bonus2 bMagicAddClass,Class_All,5; },{},{}
@@ -3306,8 +3306,8 @@
 5126,Morpheus's_Hood,Morpheus's Hood,4,30000,,200,,3,,1,0xFFFFFFFE,63,2,256,,33,1,256,{ bonus bInt,2; },{},{}
 5127,Morrigane's_Helm,Morrigane's Helm,4,30000,,500,,8,,0,0xFFFFFFFE,63,2,256,,61,1,257,{ bonus bLuk,2; bonus bBaseAtk,7; },{},{}
 5128,Goibne's_Helmet,Goibne's Helm,4,30000,,500,,10,,0,0xFFFFFFFE,63,2,256,,54,1,258,{ bonus bVit,3; bonus bMdef,3; },{},{}
-5129,Bird_Nest,Bird Nest,4,20,,400,,2,,0,0xFFFFFFFF,63,2,256,,55,0,201,{ bonus bAgi,2; bonus2 bSubRace,RC_Brute,10; },{},{}
-5130,Lion_Mask,Lion Mask,4,20,,700,,0,,1,0x00CFDF80,63,2,768,,75,1,202,{ bonus2 bAddEffWhenHit,Eff_Silence,500; bonus bMdef,1; },{},{}
+5129,Bird_Nest,Bird Nest,4,20,,400,,2,,1,0xFFFFFFFF,63,2,256,,55,0,201,{ bonus bAgi,2; bonus2 bSubRace,RC_Brute,10; },{},{}
+5130,Lion_Mask,Lion Mask,4,200000,,700,,0,,1,0x00CFDF80,63,2,768,,75,1,202,{ bonus bStr,3; bonus2 bAddEffWhenHit,Eff_Silence,500; bonus bMdef,10; },{},{}
 5131,Close_Helmet,Close Helmet,4,20,,1200,,8,,0,0x00004082,63,2,769,,75,1,203,{ bonus bVit,3; bonus bMaxHPrate,3; },{},{}
 5132,Angeling_Hat,Angeling Hat,4,20,,700,,5,,0,0xFFFFFFFF,63,2,256,,0,0,204,{ bonus2 bSubRace,RC_DemiHuman,10; bonus2 bSubRace,RC_Player,10; },{},{}
 5133,Sheep_Hat,Sheep Hat,4,20,,150,,3,,0,0x00008110,63,2,256,,0,0,205,{ bonus bShortWeaponDamageReturn,5; },{},{}

@@ -926,7 +926,7 @@ izlude,122,207,3	script	Criatura Academy Staff#0	4_M_KHKYEL,3,3,{
 						mes "Anyways here's some potions. They'll come in handy when you start fighting.";
 						completequest 7473;
 						getitem 569,30;// Novice_Potion
-						getexp 200,0;
+						getexp 200,200;
 						next;
 						mes "[Hun]";
 						mes "Criatura Academy is a good place to build up experience for the future.";
@@ -945,7 +945,7 @@ izlude,122,207,3	script	Criatura Academy Staff#0	4_M_KHKYEL,3,3,{
 						mes "Anyways here's some potions. They'll come in handy when you start fighting.";
 						completequest 7473;
 						getitem 569,30;// Novice_Potion
-						getexp 200,0;
+						getexp 200,200;
 						next;
 						mes "[Hun]";
 						mes "What do you plan to do from now on?";
@@ -1433,7 +1433,7 @@ izlude,120,207,4	script	Information Staff#0	8W_SOLDIER,{
 			erasequest 7475;
 			erasequest 7476;
 			erasequest 7477;
-			getexp 300,20;
+			getexp 300,200;
 			getitem 12323,20;// N_Fly_Wing
 			getitem 12324,10;// N_Butterfly_Wing
 			getitem 569,20;// Novice_Potion
@@ -2144,7 +2144,7 @@ iz_ac01,59,43,3	script	Therapist#ac	4_M_6THPRIN1,{
 			mes "Press ^4d4dffALT + S^000000 to open your Skill window to see your skills.";
 			skill "NV_FIRSTAID", 1, 0;
 			skill_nov = 3;
-			getexp 1000,40;
+			getexp 1000,400;
 			next;
 			mes "[Therapist]";
 			mes "If you press ^4d4dffF12^000000...";
@@ -2220,7 +2220,7 @@ iz_ac01,59,43,3	script	Therapist#ac	4_M_6THPRIN1,{
 				mes "This is the book for the simple combination of potion use.";
 				mes "You can make it easily by ^4d4dffusing the combination kit or cooking tool^000000.";
 				completequest 7478;
-				getexp 2000,50;
+				getexp 2000,500;
 				getitem 569,30;// Novice_Potion
 				getitem 11058,1;// Novice_Combi_Book
 				getitem 12849,10;// Combination_Kit
@@ -3489,7 +3489,7 @@ izlude,115,181,5	script	Shop Helper#iz	4_F_KHELLISIA,{
 				completequest 1238;
 				setquest 1239;
 				getitem 12323,50;// N_Fly_Wing
-				getexp 1300,100;
+				getexp 1300,250;
 				close;
 			}
 			mes "[Shop Helper Leonie]";
@@ -3547,7 +3547,7 @@ izlude,115,181,5	script	Shop Helper#iz	4_F_KHELLISIA,{
 					mes "The things I haven't told you, you will learn throughout your travels.";
 					completequest 1240;
 					getitem 12324,10;// N_Butterfly_Wing
-					getexp 1000,50;
+					getexp 1000,250;
 					close;
 				}
 				mes "[Shop Helper Leonie]";

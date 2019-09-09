@@ -136,8 +136,8 @@
 1053,1753,20,1754,300
 // Fang --> 2 Sharp Arrows, 40 Silver Arrows
 1063,1764,2,1751,40
-// Reins --> 100 Iron Arrows, 50 Steel Arrows
-1064,1770,100,1753,50
+// Reins --> 200 Hunting Arrows
+1064,1774,200
 // Fine-grained Trunk --> 20 Arrows
 1066,1750,20
 // Solid Trunk --> 20 Arrows

@@ -54,3 +54,85 @@ if(countitem(1095)>=300){
 close;
 }
 
+prt_in,284,165,3	script	Salulu::chfalulu3	18001,{
+.@name$ = "[Salulu]";
+mes .@name$;
+
+if (QSkillPoint003 == 1) {
+mes "Thank you for your help!";
+close;
+}
+
+mes	"I want to be a Celeb Idol.";
+mes	"In order to become familiar with luxurious envirnments, I need 3 bars of Gold.";
+
+if(countitem(969)>=3){
+		next;
+		mes .@name$;
+		mes "Oh, you do have them!";
+		mes "Thank you very much!";
+		next;
+		mes "Let me teach you something!";
+		mes "[Gained 1 Skill Point!]";
+		set QSkillPoint003,1;
+		delitem 969,3;
+		set SkillPoint,SkillPoint+1;
+	}
+close;
+}
+
+prt_in,285,168,3	script	Hilulu::chfalulu4	18001,{
+.@name$ = "[Hilulu]";
+mes .@name$;
+
+if (QSkillPoint004 == 1) {
+mes "Thank you for your help!";
+close;
+}
+
+mes	"I want to be a Celeb Idol.";
+mes	"I aim higher than Salulu, gold is too low class for me!";
+mes	"I demand you give me 1 Emperium right now!";
+
+if(countitem(714)>=1){
+		next;
+		mes .@name$;
+		mes "Oh, you do have one!";
+		mes "Thank you very much!";
+		next;
+		mes "Let me teach you something!";
+		mes "[Gained 1 Skill Point!]";
+		set QSkillPoint004,1;
+		delitem 714,1;
+		set SkillPoint,SkillPoint+1;
+	}
+close;
+}
+
+prt_in,284,171,3	script	Milulu::chfalulu5	18001,{
+.@name$ = "[Milulu]";
+mes .@name$;
+
+if (QSkillPoint005 == 1) {
+mes "Thank you for your help!";
+close;
+}
+
+mes	"I want to be a Celeb Idol.";
+mes	"I will decorate myself with pretty gemstones to get more fans!";
+mes	"Do you happen to have Gemstone x5 you don't need for me?";
+
+if(countitem(7300)>=5){
+		next;
+		mes .@name$;
+		mes "Oh, you do have them!";
+		mes "Thank you very much!";
+		next;
+		mes "Let me teach you something!";
+		mes "[Gained 1 Skill Point!]";
+		set QSkillPoint005,1;
+		delitem 7300,5;
+		set SkillPoint,SkillPoint+1;
+	}
+close;
+}

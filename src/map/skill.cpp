@@ -13149,7 +13149,7 @@ struct skill_unit_group *skill_unitsetting(struct block_list *src, uint16 skill_
 		val1 = rand() % RINGNBL_MAX;	//Atk increase
 		break;
 	case BD_RICHMANKIM:
-		val1 = 25 + 11*skill_lv; //Exp increase bonus.
+		val1 = 10 + 6*skill_lv; //Exp increase bonus.
 		break;
 	case BD_SIEGFRIED:
 	case BD_ETERNALCHAOS:
