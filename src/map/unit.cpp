@@ -7290,7 +7290,7 @@ TIMER_FUNC(unit_autopilot_timer)
 								if ((sd2->battle_status.flee - 1.75*sd2->status.base_level >= 100) && !(sd->sc.data[SC_MAGICPOWER])) {
 									int area = 2;
 									priority = map_foreachinrange(Quagmirepriority, targetbl2, area, BL_MOB, skill_get_ele(WZ_QUAGMIRE, pc_checkskill(sd, WZ_QUAGMIRE)));
-									if ((priority >= 6) && (priority > bestpriority)) {
+									if ((priority >= 4) && (priority > bestpriority)) {
 										spelltocast = WZ_QUAGMIRE; bestpriority = 500;  // do this first before the AOEs to help tank survive
 										IDtarget = foundtargetID2;
 									}
