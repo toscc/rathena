@@ -177,7 +177,7 @@ int_land,78,103,5	script	Captain Carocc#intro_npc03	4_M_REINDEER,{
 		sc_start SC_INCREASEAGI,240000,10;
 		if (isbegin_quest(21001) == 1) {
 			completequest 21001;
-			getexp 600,600;
+			getexp 200,600;
 		}
 		setquest 21008;
 		next;
@@ -831,7 +831,7 @@ izlude,122,207,3	script	Criatura Academy Staff#0	4_M_KHKYEL,3,3,{
 			mes "It's a good sight to see new adventurers start their journey.";
 			mes "You must be tired. Need a drink?";
 			completequest 7472;
-			getexp 200,0;
+			getexp 200,100;
 			setquest 7473;
 			getitem 531,1;// Apple_Juice
 			next;
@@ -2854,7 +2854,7 @@ iz_ac01,134,47,5	script	Trainer Mainz#ac	4_M_KY_KNT,4,4,{
 		next;
 		sc_end SC_POISON;
 		mes "[Mainz]";
-		mes "Did you see what is the poisoned status? After a certain period of time, you could be detoxicated, but if you're being attached, it is dangerous to expect being detoxicated naturally.";
+		mes "Did you see what is the poisoned status? After a certain period of time, you could be detoxicated, but if you're being attacked, it is dangerous to expect being detoxicated naturally.";
 		next;
 		mes "[Mainz]";
 		mes "Refer to the detoxicants such as <^0022FFGreen Herb^000000>, <^0022FFGreen Potion^000000>, <^0022FFPanacea^000000> and <^0022FFRoyal Jelly^000000>.";
@@ -2942,7 +2942,7 @@ iz_ac01,134,47,5	script	Trainer Mainz#ac	4_M_KY_KNT,4,4,{
 		mes "It's possible to recover with the items such as<^0022FF Green Herb^000000>, <^0022FFGreen Potion^000000>, <^0022FFPanacea^000000> and <^0022FFRoyal Jelly^000000>.";
 		next;
 		mes "[Mainz]";
-		mes "Let me show you what will happen in Sleep status.";
+		mes "Let me show you what will happen in Silence status.";
 		next;
 		sc_start SC_SILENCE, 30000, 0;
 		mes "<^FF0000Silence^000000>";
@@ -3580,7 +3580,7 @@ izlude,115,181,5	script	Shop Helper#iz	4_F_KHELLISIA,{
 	while(1) {
 		mes "What would you like to know?";
 		next;
-		set .@menu$,"Shop types:Currency types:Cash Shop:"+(Class == Job_Novice && !isbegin_quest(1238)?"Experience training.":"No, I know enough.");
+		set .@menu$,"Shop types:Currency types:"+(Class == Job_Novice && !isbegin_quest(1238)?"Experience training.":"No, I know enough.");
 		switch(select(.@menu$)) {
 			case 1:
 				mes "[Shop Helper Leonie]";
@@ -3604,7 +3604,7 @@ izlude,115,181,5	script	Shop Helper#iz	4_F_KHELLISIA,{
 				mes "Kafras and most NPC merchants use ^ff0000Zeny^000000 but Malangdo and some of the Ash Vacuum worlds use different types of currency.";
 				next;
 				mes "[Shop Helper Leonie]";
-				mes "They are ^ff0000Silvervine Fruit^000000, ^ff0000Splendide Coins^000000, they can be bought at Cash Shop or acquired through quests. The fruits and coins that are collected this way.";
+				mes "They are ^ff0000Silvervine Fruit^000000, ^ff0000Splendide Coins^000000, they can be acquired through quests. The fruits and coins that are collected this way.";
 				next;
 				mes "[Shop Helper Leonie]";
 				mes "They can be exchanged with unique equipments or gears.";
@@ -3615,17 +3615,6 @@ izlude,115,181,5	script	Shop Helper#iz	4_F_KHELLISIA,{
 				mes "[Shop Helper Leonie]";
 				break;
 			case 3:
-				mes "[Shop Helper Leonie]";
-				mes "The icon on the right side called Cash Shop, if you click on it, whether you're in a town, dungeon, or field, you can still buy items anywhere you want.";
-				next;
-				mes "[Shop Helper Leonie]";
-				mes "The cash you need to buy the items can be charged on the website.";
-				if (isbegin_quest(1237) == 1)
-					completequest 1237;
-				next;
-				mes "[Shop Helper Leonie]";
-				break;
-			case 4:
 				if (Class == Job_Novice && !isbegin_quest(1238)) {
 					mes "[Shop Helper Leonie]";
 					mes "Let's do a simple tutorial.";
@@ -3683,13 +3672,13 @@ iz_ac01,53,74,3	script	Attribute Expert#ac	1_M_WIZARD,{
 			mes "There are many types of attributes. There are 4 elemental attributes ^0D6EF2Water^000000, ^006600Wind^000000, ^FF0000Fire^000000, ^B97246Earth^000000.";
 			next;
 			mes "[Attribute Expert]";
-			mes "There are more uncommon ones like... Neutral, Poison, Holy, Dark, Angel, Undead.";
+			mes "There are more uncommon ones like... Neutral, Poison, Holy, Dark, Ghost, Undead.";
 			mes "There are more types than you think right?";
 			next;
 			mes "[Attribute Expert]";
 			mes "All right, here's the question which attribute do we belong to?";
 			next;
-			if (select("Water", "Wind", "Fire", "Earth", "Neutral", "Poison", "Holy", "Dark", "Angel", "Undead") == 5) {
+			if (select("Water", "Wind", "Fire", "Earth", "Neutral", "Poison", "Holy", "Dark", "Ghost", "Undead") == 5) {
 				mes "[Attribute Expert]";
 				mes "Correct! You are good. Yes we belong to the Neutral attribute.";
 				next;
@@ -3778,12 +3767,12 @@ iz_ac01,53,74,3	script	Attribute Expert#ac	1_M_WIZARD,{
 				close;
 			} else if (isbegin_quest(2299) == 1) {
 				mes "[Attribute Expert]";
-				mes "How is it? Have you ever attacked to Fire Eggs?";
+				mes "How is it? Have you ever attacked the Fire Eggs?";
 				next;
 				switch(select("Yes", "No", "I want to quit.")) {
 				case 1:
 					mes "[Attribute Expert]";
-					mes "How much damage did you give?";
+					mes "How much damage did you do?";
 					next;
 					input .@input, 1, 100000;
 					if (.@input < 10) {
@@ -3814,7 +3803,7 @@ iz_ac01,53,74,3	script	Attribute Expert#ac	1_M_WIZARD,{
 					mes "There is only one more chance!";
 					mes "Hurry up, the attribute magic will be gone if you take more time thanks for joining to my class.";
 					completequest 2299;
-					// ConsumeSpecialItem 12115
+					//ConsumeSpecialItem 12115;
 					if (Class == Job_Novice)
 						getexp 100,20;
 					close;
@@ -5387,7 +5376,7 @@ iz_ac01,95,46,5	script	Kafra Guide Trainer#ac	4_F_KAFRA1,{
 				} else {
 					if (!callfunc("F_CanOpenStorage")) {
 						mes "[Kafra Guide Trainer]";
-						mes "To use the storage, you need to be raised the beginner level 6 and higher.";
+						mes "To use the storage, you need Basic Skill level 6 and higher.";
 					} else if (countitem(7059) || Zeny >= 500) {
 						if (countitem(7059)) {
 							delitem 7059,1;// Cargo_Free_Ticket
@@ -5904,7 +5893,7 @@ izlude,148,122,5	script	Refining Maniac#iz	4_M_SITDOWN,{
 	mes "I'm trying to get to +10 right now... All my training is for this!";
 	next;
 	mes "[Refining Maniac]";
-	mes "Please ask to the owner of refining, I have a important mission +10!";
+	mes "Please ask the owner, I have a important mission to reach +10!";
 	close;
 }
 
@@ -6286,7 +6275,7 @@ iz_ac01,138,69,3	script	Lady#ac	1_F_ORIENT_02,{
 	mes "... Anonymous...";
 	next;
 	mes "[Lady]";
-	mes "You have a pretty name... Anonymous... I am attacted by your work.";
+	mes "You have a pretty name... Anonymous... I am attracted by your work.";
 	emotion ET_THROB;
 	close;
 }
@@ -6436,7 +6425,7 @@ iz_ac02,152,79,3	script	Noisy Trainee#ac	4_M_HUBOY,{
 		close;
 	} else {
 		mes "[Noisy Trainee]";
-		mes "What? Why did you take the other job rather than being a nice gunslinger?";
+		mes "What? Why did you take another job rather than being a nice gunslinger?";
 		close;
 	}
 }
@@ -6475,7 +6464,7 @@ iz_ac02,143,77,3	script	Quite Trainee#ac	4_F_KID2,{
 		close;
 	} else {
 		mes "[Quiet Trainee]";
-		mes "Desperado is the bullet... Blable... Ranged attack... Physics....";
+		mes "Desperado is the bullet... Blabla... Ranged attack... Physics....";
 		next;
 		mes "You can't hear her clearly because of her small voice.";
 		close;
@@ -6523,7 +6512,7 @@ iz_ac02,149,43,3	script	Ragie#ac	1_M_BARD,{
 	mes "How about it? It is excellent, isn't it?";
 	next;
 	mes "[Ragie]";
-	mes "I will ^FF0000transcend ^000000and ^FF00003rd job change^000000. Become a nice Minstrel, I can play with a famous Wanderer like Mr. Igoo.";
+	mes "I will ^FF0000transcend ^000000and ^FF00003rd job change^000000. Become a nice Minstrel, I can play with a famous Wanderer like Miss Igoo.";
 	next;
 	while (1) {
 		switch(select("What is transcending?", "What is the 3rd job change?", "Who is Igoo?", "End Conversation")) {
@@ -6537,7 +6526,7 @@ iz_ac02,149,43,3	script	Ragie#ac	1_M_BARD,{
 				mes "Transcending is great. Very great.";
 				next;
 				mes "[Ragie]";
-				mes "Basically the 2nd job adventurer gains the base level 99 and job level 50, on then can that person transcend.";
+				mes "Basically the 2nd job adventurer reaches the base level 99 and job level 50, only then can that person transcend.";
 				next;
 				mes "[Ragie]";
 				mes "Once you transcend, you can go back to the base level Novice.";
@@ -6546,7 +6535,7 @@ iz_ac02,149,43,3	script	Ragie#ac	1_M_BARD,{
 				mes "It is very hard to start your adventure again. However, there is a merit to the hardship.";
 				next;
 				mes "[Ragie]";
-				mes "The most important merit is to learn new skills at a new upgraded level. In my case, I could transfer to not an ordinary Bard but a Minstrel.";
+				mes "The most important merit is to learn new skills at a new upgraded level. In my case, I could transfer to not an ordinary Bard but a Clown.";
 				next;
 				mes "[Ragie]";
 				mes "Indeed, be careful as you can only follow the way of the job you chose before transcending.";
@@ -6625,7 +6614,7 @@ pay_fild08,153,83,1	script	Lady Harvesting Herbs#2	1_F_ORIENT_02,{
 	mes "There is a town called Payon to the east. Taking a long way to the south, you can even reach Alberta.";
 	next;
 	mes "[Lady]";
-	mes "Payon is the wonderful city. There you can be transferred to an Archer or to a Taekwon. And a nice Dungeon there. If you have time, please make a visit.";
+	mes "Payon is the wonderful city. There you can be transformed to an Archer or a Taekwon. And a nice Dungeon there. If you have time, please make a visit.";
 	emotion ET_SMILE;
 	close;
 }
@@ -6843,7 +6832,7 @@ iz_ac02,143,55,3	script	Cream Puff#ac	4_M_KID1,{
 	}
 	mes ""+.@question_01$+"";
 	next;
-	mes "After clear up the mess, you approach the person who was being attacked.";
+	mes "After clearing up the mess, you approach the person who was being attacked.";
 	mes "Do you think the person who was surrounded by punks is a man or a woman?";
 	next;
 	if (select("Man", "Woman") == 1) {
@@ -6976,7 +6965,7 @@ iz_ac02,143,55,3	script	Cream Puff#ac	4_M_KID1,{
 		.@taekwon_p = .@taekwon_p + 1;
 	}
 	mes "[Cream Puff]";
-	mes "2nd type of question is done. It was simple. Right ? Let's move to next.";
+	mes "2nd type of questions are done. It was simple. Right ? Let's move to next.";
 	next;
 	mes "[Cream Puff]";
 	mes "Now for the third test. Please choose (Yes) or (No) to each question.";

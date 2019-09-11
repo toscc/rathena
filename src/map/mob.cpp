@@ -1309,7 +1309,7 @@ static int mob_ai_sub_hard_activesearch(struct block_list *bl,va_list ap)
 			if (!path_search(&wpd, md->bl.m, md->bl.x, md->bl.y, bl->x, bl->y, 0, CELL_CHKWALL)) // Count walk path cells
 				return 0;
 			//Standing monsters use range2, walking monsters use range3
-			if ((md->ud.walktimer == INVALID_TIMER && wpd.path_len > md->db->range2)
+			if ((md->ud.walktimer == INVALID_TIMER && wpd.path_len > md->db->range3)
 				|| (md->ud.walktimer != INVALID_TIMER && wpd.path_len > md->db->range3))
 				return 0;
 #endif

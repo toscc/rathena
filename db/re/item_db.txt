@@ -1520,7 +1520,7 @@
 2308,Mantle_,Mantle,4,10000,,600,,37,,1,0xFFFFFFFE,63,2,16,,0,1,0,{},{},{}
 2309,Coat,Coat,4,22000,,1200,,42,,0,0xFFFFFFFE,63,2,16,,0,1,0,{},{},{}
 2310,Coat_,Coat,4,22000,,1200,,42,,1,0xFFFFFFFE,63,2,16,,0,1,0,{},{},{}
-2311,Mink_Coat,Mink Coat,4,20,,2300,,44,,1,0xFFFFFFFE,63,2,16,,30,1,0,{},{},{}
+2311,Mink_Coat,Mink Coat,4,20,,2300,,47,,1,0xFFFFFFFE,63,2,16,,30,1,0,{},{},{}
 2312,Padded_Armor,Padded Armor,4,48000,,2800,,35,,0,0x000654E2,63,2,16,,0,1,0,{},{},{}
 2313,Padded_Armor_,Padded Armor,4,48000,,2800,,35,,1,0x000654E2,63,2,16,,0,1,0,{},{},{}
 2314,Chain_Mail,Chain Mail,4,65000,,3300,,55,,0,0x000654E2,63,2,16,,0,1,0,{},{},{}
@@ -1533,7 +1533,7 @@
 2321,Silk_Robe,Silk Robe,4,8000,,400,,20,,0,0x0085C7B6,63,2,16,,0,1,0,{ bonus bMdef,22; },{},{}
 2322,Silk_Robe_,Silk Robe,4,8000,,400,,20,,1,0x0085C7B6,63,2,16,,0,1,0,{ bonus bMdef,22; },{},{}
 2323,Scapulare,Scapulare,4,6500,,400,,24,,0,0x00008110,63,2,16,,0,1,0,{},{},{}
-2324,Scapulare_,Scapulare,4,6500,,400,,24,,1,0x00008110,63,2,16,,0,1,0,{},{},{}
+2324,Scapulare_,High Quality Scapulare,4,6500,,400,,24,,1,0x00008110,63,2,16,,0,1,0,{ bonus bInt,2; bonus bLuk,3; },{},{}
 2325,Saint_Robe,Saint's Robe,4,54000,,600,,50,,0,0x00048530,63,2,16,,0,1,0,{ bonus bMdef,12; },{},{}
 2326,Saint_Robe_,Saint's Robe,4,54000,,600,,50,,1,0x00048530,63,2,16,,0,1,0,{ bonus bMdef,12; },{},{}
 2327,Holy_Robe,Holy Robe,4,70000,,1700,,57,,0,0x00008110,63,2,16,,60,1,0,{ bonus bMdef,12; bonus2 bSubRace,RC_Demon,15; bonus2 bSubEle,Ele_Dark,10; },{},{}

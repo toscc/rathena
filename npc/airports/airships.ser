@@ -48,122 +48,122 @@ airplane,1,1,0	script	Domestic_Airship	-1,{
 OnInit:
 	initnpctimer;
 	end;
-OnTimer20000:
+OnTimer2000:
 	mapannounce "airplane","We are heading to Einbroch.",bc_map,"0x00ff00";
 	end;
-OnTimer50000:
+OnTimer5000:
 	mapannounce "airplane","We will arrive in Einbroch shortly.",bc_map,"0x00ff00";
 	end;
-OnTimer60000:
+OnTimer6000:
 	set $@airplanelocation,1;
 	donpcevent "#AirshipWarp-1::OnUnhide";
 	donpcevent "#AirshipWarp-2::OnUnhide";
 	mapannounce "airplane","Welcome to Einbroch. Have a safe trip.",bc_map,"0x00ff00";
 	end;
-OnTimer70000:
+OnTimer7000:
 	mapannounce "airplane","Currently we are in Einbroch. The Airship will take off shortly.",bc_map,"0x00ff00";
 	end;
-OnTimer80000:
+OnTimer8000:
 	donpcevent "#AirshipWarp-1::OnHide";
 	donpcevent "#AirshipWarp-2::OnHide";
 	mapannounce "airplane","The Airship is now taking off. Our next destination is Lighthalzen.",bc_map,"0x70dbdb";
 	end;
-OnTimer100000:
+OnTimer10000:
 	mapannounce "airplane","We are heading to Lighthalzen.",bc_map,"0x70dbdb";
 	end;
-OnTimer130000:
+OnTimer13000:
 	mapannounce "airplane","We will arrive in Lighthalzen shortly.",bc_map,"0x70dbdb";
 	end;
-OnTimer140000:
+OnTimer14000:
 	set $@airplanelocation,2;
 	donpcevent "#AirshipWarp-1::OnUnhide";
 	donpcevent "#AirshipWarp-2::OnUnhide";
 	mapannounce "airplane","Welcome to Lighthalzen. Have a safe trip.",bc_map,"0x70dbdb";
 	end;
-OnTimer150000:
+OnTimer15000:
 	mapannounce "airplane","Currently we are in Lighthalzen. The Airship will leave shortly.",bc_map,"0x70dbdb";
 	end;
-OnTimer160000:
+OnTimer16000:
 	donpcevent "#AirshipWarp-1::OnHide";
 	donpcevent "#AirshipWarp-2::OnHide";
 	mapannounce "airplane","The Airship is leaving the ground. Our next destination is Einbroch.",bc_map,"0x00ff00";
 	end;
-OnTimer180000:
+OnTimer18000:
 	mapannounce "airplane","We are heading to Einbroch.",bc_map,"0x00ff00";
 	end;
-OnTimer210000:
+OnTimer21000:
 	mapannounce "airplane","We will arrive in Einbroch shortly.",bc_map,"0x00FF00";
 	end;
-OnTimer220000:
+OnTimer22000:
 	set $@airplanelocation,1;
 	donpcevent "#AirshipWarp-1::OnUnhide";
 	donpcevent "#AirshipWarp-2::OnUnhide";
 	mapannounce "airplane","Welcome to Einbroch. Have a safe trip.",bc_map,"0x00ff00";
 	end;
-OnTimer230000:
+OnTimer23000:
 	mapannounce "airplane","Currently we are in Einbroch. The Airship will take off shortly.",bc_map,"0x00ff00";
 	end;
-OnTimer240000:
+OnTimer24000:
 	donpcevent "#AirshipWarp-1::OnHide";
 	donpcevent "#AirshipWarp-2::OnHide";
 	mapannounce "airplane","The Airship is now taking off. Our next destination is Juno.",bc_map,"0xff8200";
 	end;
-OnTimer260000:
+OnTimer26000:
 	mapannounce "airplane","We are heading to Juno.",bc_map,"0xff8200";
 	end;
-OnTimer290000:
+OnTimer29000:
 	mapannounce "airplane","We will arrive in Juno shortly.",bc_map,"0xff8200";
 	end;
-OnTimer300000:
+OnTimer30000:
 	set $@airplanelocation,0;
 	donpcevent "#AirshipWarp-1::OnUnhide";
 	donpcevent "#AirshipWarp-2::OnUnhide";
 	mapannounce "airplane","Welcome to Juno. Have a safe trip.",bc_map,"0xff8200";
 	end;
-OnTimer310000:
+OnTimer31000:
 	mapannounce "airplane","Currently we are in Juno. The Airship will leave shortly.",bc_map,"0xff8200";
 	end;
-OnTimer320000:
+OnTimer32000:
 	donpcevent "#AirshipWarp-1::OnHide";
 	donpcevent "#AirshipWarp-2::OnHide";
 	mapannounce "airplane","The Airship is leaving the ground. Our next destination is Hugel.",bc_map,"0xca4bf3";
 	end;
-OnTimer340000:
+OnTimer34000:
 	mapannounce "airplane","We are heading to Hugel.",bc_map,"0xca4bf3";
 	end;
-OnTimer370000:
+OnTimer37000:
 	mapannounce "airplane","We will arrive in Hugel shortly.",bc_map,"0xca4bf3";
 	end;
-OnTimer380000:
+OnTimer38000:
 	set $@airplanelocation,3;
 	donpcevent "#AirshipWarp-1::OnUnhide";
 	donpcevent "#AirshipWarp-2::OnUnhide";
 	mapannounce "airplane","Welcome to Hugel. Have a safe trip.",bc_map,"0xca4bf3";
 	end;
-OnTimer390000:
+OnTimer39000:
 	mapannounce "airplane","Currently we are in Hugel. The Airship will leave shortly.",bc_map,"0xca4bf3";
 	end;
-OnTimer400000:
+OnTimer40000:
 	donpcevent "#AirshipWarp-1::OnHide";
 	donpcevent "#AirshipWarp-2::OnHide";
 	mapannounce "airplane","The Airship is leaving the ground. Our next destination is Juno.",bc_map,"0xff8200";
 	end;
-OnTimer420000:
+OnTimer42000:
 	mapannounce "airplane","We are heading to Juno.",bc_map,"0xff8200";
 	end;
-OnTimer450000:
+OnTimer45000:
 	mapannounce "airplane","We will arrive in Juno shortly.",bc_map,"0xff8200";
 	end;
-OnTimer460000:
+OnTimer46000:
 	set $@airplanelocation,0;
 	donpcevent "#AirshipWarp-1::OnUnhide";
 	donpcevent "#AirshipWarp-2::OnUnhide";
 	mapannounce "airplane","Welcome to Juno. Have a safe trip.",bc_map,"0xff8200";
 	end;
-OnTimer470000:
+OnTimer47000:
 	mapannounce "airplane","Currently we are in Juno. The Airship will leave shortly.",bc_map,"0xff8200";
 	end;
-OnTimer480000:
+OnTimer48000:
 	donpcevent "#AirshipWarp-1::OnHide";
 	donpcevent "#AirshipWarp-2::OnHide";
 	mapannounce "airplane","The Airship is leaving the ground. Our next destination is Einbroch.",bc_map,"0x00ff00";
@@ -687,62 +687,62 @@ OnInit:
 OnEnable:
 	initnpctimer;
 	end;
-OnTimer25000:
+OnTimer2500:
 	mapannounce "airplane_01","We are heading to Izlude.",bc_map,"0x00ff00";
 	end;
-OnTimer50000:
+OnTimer5000:
 	mapannounce "airplane_01","We will arrive in Izlude shortly.",bc_map,"0x00ff00";
 	end;
-OnTimer60000:
+OnTimer6000:
 	set $@airplanelocation2,1;
 	donpcevent "#AirshipWarp-3::OnUnhide";
 	donpcevent "#AirshipWarp-4::OnUnhide";
 	mapannounce "airplane_01","Welcome to Izlude. Have a safe trip.",bc_map,"0x00ff00";
 	end;
-OnTimer70000:
+OnTimer7000:
 	mapannounce "airplane_01","We are currently in Izlude. The Airship will take off shortly.",bc_map,"0x00ff00";
 	end;
-OnTimer80000:
+OnTimer8000:
 	donpcevent "#AirshipWarp-3::OnHide";
 	donpcevent "#AirshipWarp-4::OnHide";
 	mapannounce "airplane_01","The Airship is now taking off. Our next destination is Juno.",bc_map,"0x70dbdb";
 	end;
-OnTimer105000:
+OnTimer10500:
 	mapannounce "airplane_01","We are heading to Juno.",bc_map,"0x70dbdb";
 	end;
-OnTimer130000:
+OnTimer13000:
 	mapannounce "airplane_01","We will arrive in Juno shortly.",bc_map,"0x70dbdb";
 	end;
-OnTimer140000:
+OnTimer14000:
 	set $@airplanelocation2,2;
 	donpcevent "#AirshipWarp-3::OnUnhide";
 	donpcevent "#AirshipWarp-4::OnUnhide";
 	mapannounce "airplane_01","Welcome to Juno. Have a safe trip.",bc_map,"0x70dbdb";
 	end;
-OnTimer150000:
+OnTimer15000:
 	mapannounce "airplane_01","We are currently in Juno. The Airship will leave shortly.",bc_map,"0x70dbdb";
 	end;
-OnTimer160000:
+OnTimer16000:
 	donpcevent "#AirshipWarp-3::OnHide";
 	donpcevent "#AirshipWarp-4::OnHide";
 	mapannounce "airplane_01","The Airship is leaving the ground. Our next destination is Rachel.",bc_map,"0xFF8200";
 	end;
-OnTimer185000:
+OnTimer18500:
 	mapannounce "airplane_01","We are heading to Rachel.",bc_map,"0xFF8200";
 	end;
-OnTimer210000:
+OnTimer21000:
 	mapannounce "airplane_01","We will arrive in Rachel shortly.",bc_map,"0xFF8200";
 	end;
-OnTimer220000:
+OnTimer22000:
 	set $@airplanelocation2,0;
 	donpcevent "#AirshipWarp-3::OnUnhide";
 	donpcevent "#AirshipWarp-4::OnUnhide";
 	mapannounce "airplane_01","Welcome to Rachel. Have a safe trip.",bc_map,"0xFF8200";
 	end;
-OnTimer230000:
+OnTimer23000:
 	mapannounce "airplane_01","We are currently in Rachel. The Airship will take off shortly.",bc_map,"0xFF8200";
 	end;
-OnTimer240000:
+OnTimer24000:
 	donpcevent "#AirshipWarp-3::OnHide";
 	donpcevent "#AirshipWarp-4::OnHide";
 	mapannounce "airplane_01","The Airship is now taking off. Our next destination is Izlude.",bc_map,"0x00ff00";
@@ -1056,181 +1056,6 @@ airplane_01,71,31,2	script	Swordsman Shimizu#air_01	106,{
 	mes "stop. But soon, very soon,";
 	mes "vengeance will be mine!";
 	close;
-}
-
-//============================================================ 
-//= Typing Challenge
-//============================================================ 
-airplane_01,32,61,4	script	Nils#ein	49,1,1,{
-	mes "[Nils]";
-	mes "Welcome to the";
-	mes "^ff0000RO Typing Challenge^000000.";
-	mes "Would you like to play";
-	mes "a quick typing game?";
-	next;
-	switch (select("Play ^ff0000RO Typing Challenge^000000:Information:View Top Records:Cancel")) {
-	case 1:
-		mes "[Nils]";
-		mes "Okay, we have";
-		mes "a new challenger!";
-		mes "Enter the following";
-		mes "text as quickly as you";
-		mes "can without making any";
-		mes "mistakes! Let's start~!";
-		setarray .@line1_1$[0],	"^3cbcbccallipygian salacius lascivious^000000",
-					"^3cbcbcBy the power of^000000",
-					"^0000ffthkelfkskeldmsiejdlslehfndkelsheidl^000000",
-					"^3cbcbcburrdingdingdingdilidingdingdingphoohudaamb^000000",
-					"^3cbcbcCoboman no chikara-yumei na^000000",
-					"^3cbcbcI'm the king of All Weirdos! Now^000000",
-					"^3cbcbcYou give me no choice. I guess it's^000000";
-		setarray .@line1_2$[0],	"^3cbcbclicentious prurient concupiscent^000000",
-					"^3cbcbcp-po-poi-po-poi-poin-poing^000000",
-					"^3cbcbcskemd^000000",
-					"^3cbcbcandoorabambarambambambambamburanbamding^000000",
-					"^3cbcbcchikara-daiookii na chikara da ze!^000000",
-					"^3cbcbcyou know of my true power. Obey~!^000000",
-					"^3cbcbctime for me to reveal my secret...^000000";
-		setarray .@line1_3$[0],	"",
-					"^3cbcbcGOD-POING. I NEVER LOSE!^000000",
-					"",
-					"",
-					"^3cbcbcCOBO ON^000000",
-					"",
-					"";
-		setarray .@word1$[0],	"callipygian salacius lascivious licentious prurient concupiscent",
-					"By the power of p-po-poi-po-poi-poin-poing GOD-POING. I NEVER LOSE!",
-					"thkelfkskeldmsiejdlslehfndkelsheidlskemd",
-					"burrdingdingdingdilidingdingdingphoohudaambandoorabambarambambambambamburanbamding",
-					"Coboman no chikara-yumei na chikara-daiookii na chikara da ze! COBO ON",
-					"I'm the king of All Weirdos! Now you know of my true power. Obey~!",
-					"You give me no choice. I guess it's time for me to reveal my secret...";
-		setarray .@line2_1$[0],	"^3cbcbcuNflAPPaBLe LoVaBLe SeCreTs AnD^000000",
-					"^ff1493LiGhTsPeEd RiGhT SPEed LeFT TURn^000000",
-					"^ff1493hfjdkeldjsieldjshfjdjeiskdlefvbd^000000",
-					"^ff1493burapaphuralanderamduanbatuhiwooi^000000",
-					"^ff1493belief love luck grimace sweat rush^000000",
-					"^800080opeN, Open!op3n.openOpen0p3nOpEn0pen^000000",
-					"^3cbcbcfReeDoM ecstAcy JoUrnaliSm ArMplt^000000";
-		setarray .@line2_2$[0],	"^3cbcbcboWLIiNg aGaINST tHe KarMA of YoUtH^000000",
-					"^ff1493RiGhT BuRn OrIGInAL GaNgSteR SmACk^000000",
-					"",
-					"^ff1493kabamturubamdingding^000000",
-					"^ff1493folktale rodimus optimus bumblebee^000000",
-					"^800080`open'0Pen open? open!111OPENSESAME^000000",
-					"^3cbcbcDisCoverY hEaDaChE MoonbeAmS jUsTiCE^000000";
-		setarray .@word2$[0],	"uNflAPPaBLe LoVaBLe SeCreTs AnD boWLIiNg aGaINST tHe KarMA of YoUtH",
-					"LiGhTsPeEd RiGhT SPEed LeFT TURn RiGhT BuRn OrIGInAL GaNgSteR SmACk",
-					"hfjdkeldjsieldjshfjdjeiskdlefvbd",
-					"burapaphuralanderamduanbatuhiwooikabamturubamdingding",
-					"belief love luck grimace sweat rush folktale rodimus optimus bumblebee",
-					"opeN, Open!op3n.openOpen0p3nOpEn0pen`open'0Pen open? open!111OPENSESAME",
-					"fReeDoM ecstAcy JoUrnaliSm ArMplt DisCoverY hEaDaChE MoonbeAmS jUsTiCE";
-		setarray .@letters[0],	1300,
-					1250,
-					1180,
-					1380,
-					1740,
-					1440,
-					1450;
-		set .@wordtest, rand(7);
-		next;
-		mes "[Nils]";
-		mes .@line1_1$[.@wordtest];
-		mes .@line1_2$[.@wordtest];
-		mes .@line1_3$[.@wordtest];
-		set .@start_time, gettimetick(1);
-		next;
-		input .@save1$;
-		set .@end_time, gettimetick(1);
-		set .@total_time, .@end_time - .@start_time;
-		mes "[Nils]";
-		mes .@line2_1$[.@wordtest];
-		mes .@line2_2$[.@wordtest];
-		set .@start_time, gettimetick(1);
-		next;
-		input .@save2$;
-		set .@end_time, gettimetick(1);
-		set .@total_time, .@total_time + (.@start_time - .@end_time);
-		set .@tasoo, (.@letters[.@wordtest] / .@total_time) * 6;
-		if ((.@save1$ == .@word1$[.@wordtest]) && (.@save2$ == .@word2$[.@wordtest])) {
-			mes "[Nils]";
-			mes "Your record is ^ff0000" + .@total_time + " seconds^000000 and";
-			mes "the total letters are " + .@tasoo + ".";
-			next;
-			if (.@tasoo >= 1300) {
-				mes "[Nils]";
-				mes "Hmmm, this record isn't";
-				mes "humanly possible unless you";
-				mes "copy and paste the whole";
-				mes "sentence. Please play fairly";
-				mes "next time.";
-				close;
-			}
-			if (.@tasoo >= $050320_ein_typing) {
-				mes "[Nils]";
-				mes "The previous top record was";
-				mes "made by ^0000ff" + $050320_minus1_typing$ + "^000000";
-				mes "with the total ^0000ff" + $050320_ein_typing + "^000000 letters.";
-				mes "However, ^ff0000" + strcharinfo(0) + "^000000,";
-				mes "you made the new top record";
-				mes "this time. Congratulations!";
-				set $050320_minus1_typing$, strcharinfo(0);
-				set $050320_ein_typing, .@tasoo;
-				close;
-			}
-			else {
-				mes "[Nils]";
-				mes "^0000ff" + $050320_minus1_typing$ + "^000000";
-				mes "is the current";
-				mes "record holder with";
-				mes "a letter total of ^0000ff" + $050320_ein_typing + "^000000";
-				mes "characters. Try to beat";
-				mes "that record next time~";
-				close;
-			}
-		}
-		else {
-			mes "[Nils]";
-			mes "Oooh...";
-			mes "I'm sorry, but";
-			mes "you entered the";
-			mes "text incorrectly...";
-			close;
-		}
-	case 2:
-		mes "[Nils]";
-		mes "The ^ff0000RO Typing Challenge^000000";
-		mes "is a game where you enter";
-		mes "the given text as quickly as you";
-		mes "can. The name of the top player";
-		mes "is recorded for posterity. If you";
-		mes "want fame, here's your chance!";
-		next;
-		mes "[Nils]";
-		mes "I'd just like to let";
-		mes "you know that you type";
-		mes "all the text that you see";
-		mes "in the single input line that";
-		mes "you're given. So don't press";
-		mes "the enter key, just click 'OK.'";
-		close;
-	case 3:
-		mes "[Nils]";
-		mes "^0000ff" + $050320_minus1_typing$ + "^000000";
-		mes "is the current";
-		mes "record holder with";
-		mes "a letter total of ^0000ff" + $050320_ein_typing + "^000000";
-		mes "characters. Try to beat";
-		mes "that record next time~";
-		close;
-	case 4:
-		mes "[Nils]";
-		mes "Feel free to take on the";
-		mes "^ff0000RO Typing Challenge^000000";
-		mes "anytime. I'll be here~";
-		close;
-	}
 }
 
 //============================================================ 
