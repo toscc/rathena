@@ -1565,7 +1565,7 @@ int mob_unlocktarget(struct mob_data *md, t_tick tick)
  *------------------------------------------*/
 int mob_randomwalk(struct mob_data *md,t_tick tick)
 {
-	const int d=7;
+	int d=12; // move 4-12 tiles
 	int i,c,r,rdir,dx,dy,max;
 	int speed;
 
