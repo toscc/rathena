@@ -54,3 +54,8 @@ prontera,169,179,6	script	Stylist#custom_stylist	122,{
 		}
 	}
 }
+
+iz_ac01_a,69,36,3	duplicate(Stylist#custom_stylist)	Otter Samssoon#ac_a	4W_SAILOR
+iz_ac01_b,69,36,3	duplicate(Stylist#custom_stylist)	Otter Samssoon#ac_b	4W_SAILOR
+iz_ac01_c,69,36,3	duplicate(Stylist#custom_stylist)	Otter Samssoon#ac_c	4W_SAILOR
+iz_ac01_d,69,36,3	duplicate(Stylist#custom_stylist)	Otter Samssoon#ac_d	4W_SAILOR

@@ -310,7 +310,7 @@
 4189  // Wraith_Dead_Card
 4190  // Wraith_Card
 4191  // Loli_Ruri_Card
-4192	//Rotar_Zairo_Card
+4192  // Rotar_Zairo_Card
 4193	//Lude_Card
 4194  // Rybio_Card
 4195  // Leaf_Cat_Card
@@ -410,10 +410,10 @@
 4289	//Caterpillar_Card
 4290  // Cat_O_Nine_Tail_Card
 4291  // Kobold_Leader_Card
-4292	//Kobold_Archer_Card
+4292  // Kobold_Archer_Card
 4293  // Cookie_Card
 4294  // Quve_Card
-4295	//Kraben_Card
+4295  // Kraben_Card
 4296  // Cramp_Card
 4297  // Cruiser_Card
 4298  // Cremy_Fear_Card
@@ -447,7 +447,7 @@
 4326  // See_Otter_Card
 4327  // Blood_Butterfly_Card
 4328  // Hyegun_Card
-4329	//Phendark_Card
+4329  // Phendark_Card
 4330  // Dark_Snake_Lord_Card
 4331	//Heater_Card
 4332  // Waste_Stove_Card
@@ -501,7 +501,7 @@
 4380  // Ferus_Card
 4381  // Ferus__Card
 4382  // Novus__Card
-4383	//Novus_Card
+4383  // Novus_Card
 4384  // Hydro_Card
 4385  // Dragon_Egg_Card
 4386  // Detale_Card
@@ -533,7 +533,7 @@
 4412	//Isilla_Card
 4413	//Hodremlin_Card
 4414  // Seeker_Card
-4415	//Snowier_Card
+4415  // Snowier_Card
 4416	//Siroma_Card
 4417  // Ice_Titan_Card
 4418	//Gazeti_Card
@@ -639,7 +639,7 @@
 4518	//Banaspaty_Card
 4519	//Butoijo_Card
 4520	//Leak_Card
-4521	//Sedora_Card
+4521  // Sedora_Card
 4522	//Sropho_Card
 4523	//Pot_Dofle_Card
 4524  // King_Dramoh_Card
