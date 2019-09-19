@@ -632,7 +632,7 @@ airplane,33,47,5	script	Nudor#sp2	729,{
 			next;
 			if (Zeny < .@n) {
 				mes "[Nudor]";
-				mes "What? But where is "+callfunc("F_InsertComma",.@n)+" Zeny?";
+				mes "What? But where is the "+callfunc("F_InsertComma",.@n)+" Zeny?";
 				close;
 			}
 		}
@@ -658,8 +658,8 @@ airplane,33,47,5	script	Nudor#sp2	729,{
 		set Zeny, Zeny - .@n;
 		if (.@i < 5) set EXSUPNOV_Q_, .@i;
 		else {
-			if (.@n > 1000000) set EXSUPNOV_Q_,4;
-			else if (.@n > 300000) set EX_SUPNOV_Q_,3;
+			if (.@n >= 1000000) set EXSUPNOV_Q_,4;
+			else if (.@n >= 300000) set EX_SUPNOV_Q_,3;
 			else set EXSUPNOV_Q_,2;
 		}
 		next;

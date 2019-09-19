@@ -553,17 +553,17 @@ prt_church,95,127,3	script	Crusader	745,{
 			mes "4. Which Undead monster";
 			mes "has the highest HP?";
 			next;
-			if (select("Ghoul:Skeleton Prisoner:Wraith:Zombie Prisoner") == 4) 
+			if (select("Ghoul:Skeleton Prisoner:Wraith:Anubis") == 4) 
 				set .@cru_t,.@cru_t+10;
 
 			mes "[Gabriel Valentine]";
 			mes "5. Which of the following monsters is a different size than the others?";
 			next;
-			if (select("Wraith:Khalitzburg:Drake:Evil Druid") == 3)
+			if (select("Wraith:Khalitzburg:Mimic:Evil Druid") == 3)
 				set .@cru_t,.@cru_t+10;
 
 			mes "[Gabriel Valentine]";
-			mes "6. Which card grants you tolerance to Undead property attacks?";
+			mes "6. Which card grants you tolerance to Undead monster attacks?";
 			next;
 			if (select("Orc Skeleton Card:Orc Zombie Card:Ghoul Card:Skel Worker Card") == 2)
 				set .@cru_t,.@cru_t+10;
@@ -600,9 +600,9 @@ prt_church,95,127,3	script	Crusader	745,{
 				set .@cru_t,.@cru_t+10;
 
 			mes "[Gabriel Valentine]";
-			mes "2. Which sword is effective in attacking Demon monsters?";
+			mes "2. Which sword is effective at attacking Dark monsters?";
 			next;
-			if (select("Decussate Tsurugi:Hollowed Tsurugi:Damned Tsurugi:Drowsy Tsurugi") == 1)
+			if (select("Excalibur:Tsurugi:Katana:Fireblend") == 1)
 				set .@cru_t,.@cru_t+10;
 
 			mes "[Gabriel Valentine]";
@@ -620,13 +620,13 @@ prt_church,95,127,3	script	Crusader	745,{
 			mes "[Gabriel Valentine]";
 			mes "5. Which Demon monster is a different size than the others?";
 			next;
-			if (select("Ghostring:Whisper:Deviruchi:Baphomet Junior") == 1)
+			if (select("Succubbus:Whisper:Deviruchi:Baphomet Junior") == 1)
 				set .@cru_t,.@cru_t+10;
 
 			mes "[Gabriel Valentine]";
-			mes "6. Which shield reduces damage inflicted by Demon monsters?";
+			mes "6. Which shield card reduces damage inflicted by Demon monsters?";
 			next;
-			if (select("Satanic Shield:Shield from Hell:Amulet Shield:Excellent Shield") == 2)
+			if (select("Teddy Bear:Khalitzburg:Orc Skeleton:High Orc") == 2)
 				set .@cru_t,.@cru_t+10;
 
 			mes "[Gabriel Valentine]";
@@ -644,7 +644,7 @@ prt_church,95,127,3	script	Crusader	745,{
 			mes "[Gabriel Valentine]";
 			mes "9. What effect does the Marionette Card have?";
 			next;
-			if (select("Increase defense against Shadow attacks by 30 %:Increase defense against poison attacks by 30 %:Increase defense against Ghost attacks by 30 %:Increase defense against Neutral attacks by 30 %") == 3)
+			if (select("Increase defense against Shadow attacks:Increase defense against poison attacks:Increase defense against Ghost attacks:Increase defense against Holy attacks") == 3)
 				set .@cru_t,.@cru_t+10;
 
 			mes "[Gabriel Valentine]";
@@ -655,21 +655,21 @@ prt_church,95,127,3	script	Crusader	745,{
 		}
 		else {
 			mes "[Gabriel Valentine]";
-			mes "1. What level of 'Divine Protection' do you need to learn 'Demon Bane?'";
+			mes "1. Which of the following skills can be used by both Crusaders and Priests?";
 			next;
-			if (select("Level 1:Level 2:Level 3:Level 4") == 3)
+			if (select("Basilica:Magnificat:Heal:Blessing") == 3)
 				set .@cru_t,.@cru_t+10;
 
 			mes "[Gabriel Valentine]";
-			mes "2. If your INT is 30, including INT bonuses from quipment, at level 55, how much HP does Level 5 Heal recover?";
+			mes "2. Which of the following improves the spell Healing?";
 			next;
-			if (select("396:440:484:528") == 2)
+			if (select("AGI:INT:STR:DEX") == 2)
 				set .@cru_t,.@cru_t+10;
 
 			mes "[Gabriel Valentine]";
-			mes "3. With Level 7 Divine Protection, by how much is your defense against the Undead increased?";
+			mes "3. Which skill protects you from Undead?";
 			next;
-			if (select("21:22:23:24") == 1)
+			if (select("Divine Protection:Holy Light:Shield Boomerang:Endure") == 1)
 				set .@cru_t,.@cru_t+10;
 
 			mes "[Gabriel Valentine]";
@@ -679,27 +679,27 @@ prt_church,95,127,3	script	Crusader	745,{
 				set .@cru_t,.@cru_t+10;
 
 			mes "[Gabriel Valentine]";
-			mes "5. What level of 'Heal' do you need to learn 'Cure?'";
+			mes "5. What skill do you need to learn 'Cure?'";
 			next;
-			if (select("Level 1:Level 2:Level 3:Level 4") == 2)
+			if (select("Auto Guard:Heal:Endure:Reflect Shield") == 2)
 				set .@cru_t,.@cru_t+10;
 
 			mes "[Gabriel Valentine]";
-			mes "6. What is the attack speed when Level 3 Cavalier Mastery is learned?";
+			mes "6. What mount can Crusaders ride?";
 			next;
-			if (select("70 % of normal speed:80 % of normal speed:90 % of normal speed:100 % of normal speed") == 2)
+			if (select("Dragon:Peco Peco:Warg:Pegasus") == 2)
 				set .@cru_t,.@cru_t+10;
 
 			mes "[Gabriel Valentine]";
 			mes "7. Which of the following is not correct of the Demon Bane skill?";
 			next;
-			if (select("Increase attack on Undead:Only Acolytes can learn the skill:When mastered, + 30 increase:Passive Skill") == 2)
+			if (select("Increase attack on Undead:Only Acolytes can learn the skill:Max level is 10:Passive Skill") == 2)
 				set .@cru_t,.@cru_t+10;
 
 			mes "[Gabriel Valentine]";
-			mes "8. How much SP does Level 7 Heal use?";
+			mes "8. Which item can revive fallen allies?";
 			next;
-			if (select("30:31:33:35") == 2)
+			if (select("Yggdrasil Berry:Yggdrasil Leaf:Raise Dead Charm:Only Priests can do that") == 2)
 				set .@cru_t,.@cru_t+10;
 
 			mes "[Gabriel Valentine]";

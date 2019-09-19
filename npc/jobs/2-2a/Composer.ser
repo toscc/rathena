@@ -13,68 +13,68 @@
 //= 1.1 Made all into functions, additional checks, etc. [Lupus]
 //= 1.2 Made numbers into constants. [Vicious]
 //= 1.3 Now saves/restores all the quest skills [Lupus]
+//= 1.3a Corrected a Little Typo error. [Samuray22]
+//=     Thanks to Myllena.
 //============================================================ 
 
-valkyrie,53,56,3	script	Gypsy#Valkyrie	101,{
+valkyrie,53,54,3	script	Composer#Valkyrie	741,{
 	if (ADVJOB == 0 || Upper != 1) {
 		set .@karma_d,rand(1,10);
 		if (.@karma_d > 4) {
-			mes "[Gypsy]";
+			mes "[Composer]";
 			mes "Congratulations.";
 			mes "Honor to the warriors!";
 			close;
 		}
-		mes "[Gypsy]";
-		mes "Move left,";
-		mes "move right~!";
-		mes "And step...!";
-		mes "Dancing can be";
-		mes "more than a hobby.";
-		mes "For me, it's a way of life~";
+		mes "[Composer]";
+		mes "Do you want to";
+		mes "sing a song with me?";
+		mes "Sha la la la la~";
 		close;
 	}
-	else if (ADVJOB == Job_Gypsy && Class == Job_Archer_High && JobLevel > 39) {
-		mes "[Gypsy]";
-		mes "The land of Rune-Midgard";
-		mes "is in need of talented women";
-		mes "to subtly change the balances";
-		mes "in the battle between good";
-		mes "and evil.";
+	else if (ADVJOB == Job_Clown && Class == Job_Archer_High && JobLevel > 39) {
+		mes "[Composer]";
+		mes "The dreary world";
+		mes "of mortals is in need";
+		mes "of more cheerful song.";
+		mes "Will you bring it to them";
+		mes "and turn the tide in the";
+		mes "battle against evil?";
 		next;
-		mes "[Gypsy]";
-		mes "Are you ready";
-		mes "to take up this role,";
-		mes "and become a Gypsy?";
+		mes "[Composer]";
+		mes "Will you do this";
+		mes "for Rune-Midgard...";
+		mes "As a Composer?";
 		next;
 		if (select("No.:Yes.") == 1) {
-			mes "[Gypsy]";
+			mes "[Composer]";
 			mes "When you're ready,";
 			mes "feel free to come back.";
 			mes "Honor to the warriors!";
 			close;
 		}
 		if (SkillPoint) {
-			mes "[Gypsy]";
+			mes "[Composer]";
 			mes "It is still possible for you to learn more skills. Please use";
 			mes "all of your remaining Skill Points before returning to me.";
 			close;
 		}
-		jobchange Job_Gypsy;
+		jobchange Job_Clown;
 		set ADVJOB,0;
-		mes "[Gypsy]";
+		mes "[Composer]";
 		mes "Congratulations!";
-		mes "As a Gypsy, I know";
-		mes "that your performances";
-		mes "sway the hearts of all";
-		mes "those who will be watching...";
+		mes "As a Composer, your";
+		mes "your songs will bring";
+		mes "hope to your allies, and";
+		mes "desperation to your foes.";
 		close;
 	}
-	mes "[Gypsy]";
+	mes "[Composer]";
 	mes "Welcome";
 	mes "to Valhalla,";
 	mes "the Hall of Honor.";
 	next;
-	mes "[Gypsy]";
+	mes "[Composer]";
 	mes "Please make";
 	mes "yourself comfortable";
 	mes "while you are here.";

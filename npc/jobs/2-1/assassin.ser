@@ -132,7 +132,7 @@ in_moc_16,19,33,1	script	Guildsman#asn	55,{
 		mes "Alright!";
 		mes "You've been approved!";
 		next;
-		delitem 1008,1; //Frozen_Heart
+		delitem 1008,1; //Necklace of Oblivion
 		changequest 8007,8008;
 		completequest 8008;
 		callfunc "Job_Change",Job_Assassin;
@@ -497,7 +497,7 @@ OnTouch_:
 					mes "Insects detect hiding/cloaking skills. Their feelers never fail to find targets.";
 					next;
 					mes "[Assassin 'Khai']";
-					mes "I've heard that the Baphomet Jr. Card adds +3 points to Agility and +1 point on Critical Attack...";
+					mes "I've heard that the Baphomet Jr. Card adds +4 points to Agility and +4 point on Critical Attack...";
 					next;
 					mes "[Assassin 'Khai']";
 					mes "Yeah, we Assassins specialize in training Agility. We can gain a bonus of 10 Agility points even before mastering job level. The problem is it won't go up anymore after that, you know.";
@@ -765,7 +765,7 @@ OnTouch_:
 					mes "You can learn the Venom Dust skill after you learn Level 5 Enchant Poison.";
 					next;
 					mes "[The Anonymous One]";
-					mes "^3355FFVenom Splasher^000000 is a skill that, after it is used on a target, will cause it to explode when its HP is less than a certain amount after three seconds.";
+					mes "^3355FFVenom Splasher^000000 is a skill that, after it is used on a target, will cause it to explode after a few seconds.";
 					next;
 					mes "[The Anonymous One]";
 					mes "When the target explodes, the enemies in the vicinity are also damaged. This is an essential skill for Assassins. It requires Level 5 Poison React and Level 5 Venom Dust.";
@@ -856,12 +856,12 @@ OnTouch_:
 			mes "[The Anonymous One]";
 			mes "3. How does Level 4 Right Hand Mastery work?";
 			next;
-			if (select("Recover 80% of damage decrease:Recover 90% of damage decrease:Increase 90% of damage:Increase 108% of damage") == 2)
+			if (select("Recover 67% of damage decrease:Recover 90% of damage decrease:Increase 90% of damage:Increase 108% of damage") == 2)
 				set .@assassin_t,.@assassin_t+10;
 			mes "[The Anonymous One]";
 			mes "4. What is the item required for using Venom Dust?";
 			next;
-			if (select("Red Blood:Blue Gemstone:Yellow Gemstone:Red Gemstone") == 4)
+			if (select("Red Blood:Blue Gemstone:Yellow Gemstone:Neither") == 4)
 				set .@assassin_t,.@assassin_t+10;
 			mes "[The Anonymous One]";
 			mes "5. Which skill can you learn when you reach Level 5 Enchant Poison?";
@@ -874,9 +874,9 @@ OnTouch_:
 			if (select("Hiding:Back Slide:Cloaking:Sand Attack") == 3)
 				set .@assassin_t,.@assassin_t+10;
 			mes "[The Anonymous One]";
-			mes "7. Choose the condition that is unrelated to Venom Splasher.";
+			mes "7. Which of these can increase critical hit chance?";
 			next;
-			if (select("Poisoned target.:Red Gemstone.:Remaing HP of Target.") == 2)
+			if (select("AGI:LUK:DEX") == 2)
 				set .@assassin_t,.@assassin_t+10;
 			mes "[The Anonymous One]";
 			mes "8. Which monster is weak to a weapon with Vadon card (adds 20% damage on Fire property monster)?";
@@ -932,7 +932,7 @@ OnTouch_:
 			mes "[The Anonymous One]";
 			mes "7. Choose a monster that Fire property Daggers work the best on.";
 			next;
-			if (select("Dagger Goblin:Mace Goblin:Morning Star Goblin:Hammer Goblin") == 4)
+			if (select("Marin:Goat:Elder Willow:Geographer") == 4)
 				set .@assassin_t,.@assassin_t+10;
 			mes "[The Anonymous One]";
 			mes "8. Choose the non-elemental Katar from the following:";
@@ -993,9 +993,9 @@ OnTouch_:
 			if (select("Dagger:Helm:Boots:Brooch") == 2) 
 				set .@assassin_t,.@assassin_t+10;
 			mes "[The Anonymous One]";
-			mes "9. Choose the job change item for Thief.";
+			mes "9. Which of these monsters can attack?";
 			next;
-			switch(select("Orange Gooey Mushroom:Red Gooey Mushroom:Orange Net Mushroom:Orange Hair Mushroom")) {
+			switch(select("Spore:Red Mushroom:Posion Spore:Black Mushroom")) {
 			case 1:
 			case 3:
 				set .@assassin_t,.@assassin_t+10;

@@ -13,68 +13,68 @@
 //= 1.1 Made all into functions, additional checks, etc. [Lupus]
 //= 1.2 Made numbers into constants. [Vicious]
 //= 1.3 Now saves/restores all the quest skills [Lupus]
-//= 1.3a Corrected a Little Typo error. [Samuray22]
-//=     Thanks to Myllena.
 //============================================================ 
 
-valkyrie,53,54,3	script	Minstrel#Valkyrie	741,{
+valkyrie,53,56,3	script	Idol#Valkyrie	101,{
 	if (ADVJOB == 0 || Upper != 1) {
 		set .@karma_d,rand(1,10);
 		if (.@karma_d > 4) {
-			mes "[Minstrel]";
+			mes "[Idol]";
 			mes "Congratulations.";
 			mes "Honor to the warriors!";
 			close;
 		}
-		mes "[Minstrel]";
-		mes "Do you want to";
-		mes "sing a song with me?";
-		mes "Sha la la la la~";
+		mes "[Idol]";
+		mes "Move left,";
+		mes "move right~!";
+		mes "And step...!";
+		mes "Dancing can be";
+		mes "more than a hobby.";
+		mes "For me, it's a way of life~";
 		close;
 	}
-	else if (ADVJOB == Job_Clown && Class == Job_Archer_High && JobLevel > 39) {
-		mes "[Minstrel]";
-		mes "The dreary world";
-		mes "of mortals is in need";
-		mes "of more cheerful song.";
-		mes "Will you bring it to them";
-		mes "and turn the tide in the";
-		mes "battle against evil?";
+	else if (ADVJOB == Job_Idol && Class == Job_Archer_High && JobLevel > 39) {
+		mes "[Idol]";
+		mes "The land of Rune-Midgard";
+		mes "is in need of talented women";
+		mes "to subtly change the balances";
+		mes "in the battle between good";
+		mes "and evil.";
 		next;
-		mes "[Minstrel]";
-		mes "Will you do this";
-		mes "for Rune-Midgard...";
-		mes "As a Minstrel?";
+		mes "[Idol]";
+		mes "Are you ready";
+		mes "to take up this role,";
+		mes "and become a Idol?";
 		next;
 		if (select("No.:Yes.") == 1) {
-			mes "[Minstrel]";
+			mes "[Idol]";
 			mes "When you're ready,";
 			mes "feel free to come back.";
 			mes "Honor to the warriors!";
 			close;
 		}
 		if (SkillPoint) {
-			mes "[Minstrel]";
+			mes "[Idol]";
 			mes "It is still possible for you to learn more skills. Please use";
 			mes "all of your remaining Skill Points before returning to me.";
 			close;
 		}
-		jobchange Job_Clown;
+		jobchange Job_Idol;
 		set ADVJOB,0;
-		mes "[Minstrel]";
+		mes "[Idol]";
 		mes "Congratulations!";
-		mes "As a Minstrel, your";
-		mes "your songs will bring";
-		mes "hope to your allies, and";
-		mes "desperation to your foes.";
+		mes "As a Idol, I know";
+		mes "that your performances";
+		mes "sway the hearts of all";
+		mes "those who will be watching...";
 		close;
 	}
-	mes "[Minstrel]";
+	mes "[Idol]";
 	mes "Welcome";
 	mes "to Valhalla,";
 	mes "the Hall of Honor.";
 	next;
-	mes "[Minstrel]";
+	mes "[Idol]";
 	mes "Please make";
 	mes "yourself comfortable";
 	mes "while you are here.";
