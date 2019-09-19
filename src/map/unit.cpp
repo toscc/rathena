@@ -47,6 +47,8 @@ const short diry[DIR_MAX]={1,1,0,-1,-1,-1,0,1}; ///lookup to know where will mov
 
 #define AUTOPILOT_RANGE_CAP 14 // Max distance the @autopilot is allowed to attack at using single target skills.
 
+#define CLIENT_COMPLEX_PATH_LIMIT 12
+
 //early declaration
 static TIMER_FUNC(unit_attack_timer);
 static TIMER_FUNC(unit_walktoxy_timer);
@@ -92,7 +94,7 @@ int unit_walktoxy_sub(struct block_list *bl)
 		return 0;
 
 	if (!path_search_long(NULL, bl->m, bl->x, bl->y, ud->to_x, ud->to_y, CELL_CHKNOPASS) // Check if there is an obstacle between
-		&& wpd.path_len >= 14	// Official number of walkable cells is 14 if and only if there is an obstacle between. [malufett]
+		&& wpd.path_len > CLIENT_COMPLEX_PATH_LIMIT	// Official number of walkable cells is 14 if and only if there is an obstacle between. [malufett]
 		&& (bl->type != BL_NPC)) // If type is a NPC, please disregard.
 	{
 		if (bl->type == BL_MOB) return 0; // prevent monsters jumping through walls, client can't display
@@ -676,7 +678,7 @@ int unit_walktoxy( struct block_list *bl, short x, short y, unsigned char flag)
 		return 0;
 
 	if (!path_search_long(NULL, bl->m, bl->x, bl->y, x, y, CELL_CHKNOPASS) // Check if there is an obstacle between
-		&& wpd.path_len >= 14	// Official number of walkable cells is 14 if and only if there is an obstacle between. [malufett]
+		&& wpd.path_len > CLIENT_COMPLEX_PATH_LIMIT	// Official number of walkable cells is 14 if and only if there is an obstacle between. [malufett]
 		&& (bl->type != BL_NPC)) // If type is a NPC, please disregard.
 	{
 		if (bl->type == BL_MOB) return 0; // prevent monsters jumping through walls, client can't display
@@ -754,6 +756,7 @@ static inline void set_mobstate(struct block_list* bl, int flag)
 static TIMER_FUNC(unit_walktobl_sub){
 	struct block_list *bl = map_id2bl(id);
 	struct unit_data *ud = bl?unit_bl2ud(bl):NULL;
+	struct block_list *tbl = map_id2bl(ud->target_to);
 
 	if (ud && ud->walktimer == INVALID_TIMER && ud->target == data) {
 		if (DIFF_TICK(ud->canmove_tick, tick) > 0) // Keep waiting?
@@ -2478,7 +2481,7 @@ bool unit_can_reach_bl(struct block_list *bl,struct block_list *tbl, int range, 
 		return false;
 
 	if (!path_search_long(NULL, bl->m, bl->x, bl->y, tbl->x - dx, tbl->y - dy, CELL_CHKNOPASS) // Check if there is an obstacle between
-		&& wpd.path_len >= 14	// Official number of walkable cells is 14 if and only if there is an obstacle between. [malufett]
+		&& wpd.path_len > CLIENT_COMPLEX_PATH_LIMIT	// Official number of walkable cells is 14 if and only if there is an obstacle between. [malufett]
 		&& (bl->type != BL_NPC)) // If type is a NPC, please disregard.
 	{
 		if (bl->type == BL_MOB) return false;
