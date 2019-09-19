@@ -184,7 +184,7 @@ in_rogue,363,122,4	script	Rogue Guildsman#rg	747,{
 				mes "[Markie]";
 				mes "Enjoy your freedom as a Rogue. Just remember that you gotta be free and responsible at the same time. So treat other guys the way you wanna be treated, kay? Alright, seeya round.";
 				close2;
-				if (.@jlevel == 50) {
+				if (.@jlevel >= 50) {
 					getitem 1220,1; //Gladius_
 				} else {
 					getitem 1219,1; //Gladius
@@ -340,7 +340,7 @@ in_rogue,363,122,4	script	Rogue Guildsman#rg	747,{
 				break;
 			case 3:
 				mes "[Markie]";
-				mes "1. By what percentage is the flee rate increased when a Thief masters the ^880000Improve Dodge^000000?";
+				mes "1. By what amount is the flee rate increased when a Thief masters the ^880000Improve Dodge^000000?";
 				next;
 				if (select("30:40:160:20") == 1)
 					set .@assassin_t,.@assassin_t+10;
@@ -391,7 +391,7 @@ in_rogue,363,122,4	script	Rogue Guildsman#rg	747,{
 				mes "[Markie]";
 				mes "8. You want to dye your hair blue. What town do you go to, and in which direction, with 12 o' clock being North.";
 				next;
-				if (select("Morroc, 7 o'clock:Prontera, Center or 7 o'clock:Morroc, 5 o'clock:Prontera, 1 o'clock") == 2)
+				if (select("Morroc, 7 o'clock:Prontera, Central Square:Morroc, 5 o'clock:Prontera, 1 o'clock") == 2)
 					set .@assassin_t,.@assassin_t+10;
 
 				mes "[Markie]";
@@ -1729,7 +1729,7 @@ OnTouch_:
 	if (BaseJob == Job_Thief) {
 		monster "in_rogue",39,341,"Mummy",1041,1,"mob_rogue#4::OnMyMobDead";
 		monster "in_rogue",40,341,"Ghoul",1036,1,"mob_rogue#4::OnMyMobDead";
-		monster "in_rogue",41,341,"Abysmal Knight",1219,1,"mob_rogue#4::OnMyMobDead";
+		monster "in_rogue",41,341,"Pasana",1154,1,"mob_rogue#4::OnMyMobDead";
 		monster "in_rogue",42,341,"Mummy",1041,1,"mob_rogue#4::OnMyMobDead";
 	}
 	else
@@ -1747,7 +1747,7 @@ OnMyMobDead:
 in_rogue,102,334,0	script	mob_rogue#5	-1,1,4,{
 OnTouch_:
 	if (BaseJob == Job_Thief) {
-		monster "in_rogue",92,334,"Khalitzburg",1132,1,"mob_rogue#5::OnMyMobDead";
+		monster "in_rogue",92,334,"Pasana",1154,1,"mob_rogue#5::OnMyMobDead";
 		donpcevent "mob_rogue#1::OnDisable";
 		donpcevent "mob_rogue#2::OnDisable";
 		donpcevent "mob_rogue#3::OnDisable";
@@ -1767,7 +1767,7 @@ OnMyMobDead:
 in_rogue,58,309,0	script	mob_rogue#6	-1,4,1,{
 OnTouch_:
 	if (BaseJob == Job_Thief) {
-		monster "in_rogue",57,301,"Khalitzburg",1132,1,"mob_rogue#6::OnMyMobDead";
+		monster "in_rogue",57,301,"Pasana",1154,1,"mob_rogue#6::OnMyMobDead";
 		donpcevent "mob_rogue#1::OnDisable";
 		donpcevent "mob_rogue#2::OnDisable";
 		donpcevent "mob_rogue#3::OnDisable";
@@ -1787,8 +1787,8 @@ OnMyMobDead:
 in_rogue,101,264,0	script	mob_rogue#7	-1,5,5,{
 OnTouch_:
 	if (BaseJob == Job_Thief) {
-		monster "in_rogue",101,264,"Abysmal Knight",1219,1,"mob_rogue#7::OnMyMobDead";
-		monster "in_rogue",102,264,"Abysmal Knight",1219,1,"mob_rogue#7::OnMyMobDead";
+		monster "in_rogue",101,264,"Pasana",1154,1,"mob_rogue#7::OnMyMobDead";
+		monster "in_rogue",102,264,"Pasana",1154,1,"mob_rogue#7::OnMyMobDead";
 	}
 	else
 		warp "mag_dun02",181,176;
@@ -1805,7 +1805,7 @@ OnMyMobDead:
 in_rogue,140,312,0	script	mob_rogue#8	-1,5,5,{
 OnTouch_:
 	if (BaseJob == Job_Thief)
-		monster "in_rogue",140,312,"Abysmal Knight",1219,1,"mob_rogue#8::OnMyMobDead";
+		monster "in_rogue",140,312,"Pasana",1154,1,"mob_rogue#8::OnMyMobDead";
 	else
 		warp "mag_dun02",181,176;
 	end;
@@ -1846,7 +1846,7 @@ OnTouch_:
 		monster "in_rogue",176,211,"Ghoul",1036,1,"mob_rogue#10::OnMyMobDead";
 		monster "in_rogue",176,212,"Zombie",1015,1,"mob_rogue#10::OnMyMobDead";
 		monster "in_rogue",176,213,"Zombie",1015,1,"mob_rogue#10::OnMyMobDead";
-		monster "in_rogue",177,214,"Abysmal Knight",1219,1,"mob_rogue#10::OnMyMobDead";
+		monster "in_rogue",177,214,"Pasana",1154,1,"mob_rogue#10::OnMyMobDead";
 		monster "in_rogue",177,211,"Zombie",1015,1,"mob_rogue#10::OnMyMobDead";
 		monster "in_rogue",177,212,"Zombie",1015,1,"mob_rogue#10::OnMyMobDead";
 		monster "in_rogue",177,213,"Zombie",1015,1,"mob_rogue#10::OnMyMobDead";
@@ -1910,9 +1910,9 @@ OnMyMobDead:
 in_rogue,223,187,0	script	mob_rogue#13	-1,1,8,{
 OnTouch_:
 	if (BaseJob == Job_Thief) {
-		monster "in_rogue",236,186,"Abysmal Knight",1219,1,"mob_rogue#13::OnMyMobDead";
-		monster "in_rogue",238,186,"Abysmal Knight",1219,1,"mob_rogue#13::OnMyMobDead";
-		monster "in_rogue",234,186,"Abysmal Knight",1219,1,"mob_rogue#13::OnMyMobDead";
+		monster "in_rogue",236,186,"Pasana",1154,1,"mob_rogue#13::OnMyMobDead";
+		monster "in_rogue",238,186,"Pasana",1154,1,"mob_rogue#13::OnMyMobDead";
+		monster "in_rogue",234,186,"Pasana",1154,1,"mob_rogue#13::OnMyMobDead";
 		donpcevent "mob_rogue#12::OnDisable";
 	}
 	else

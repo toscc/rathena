@@ -1473,7 +1473,7 @@
 2263,Gangster_Patch,Zorro Masque,4,20,,100,,0,,0,0xFFFFFFFE,63,2,512,,0,0,50,{},{},{}
 2264,Munak_Turban,Munak Hat,4,20,,300,,5,,0,0xFFFFFFFF,63,2,769,,0,0,51,{ bonus2 bSubRace,RC_Undead,10; },{},{}
 2265,Ganster_Mask,Gangster Mask,4,20,,100,,0,,0,0xFFFFFFFF,63,2,1,,0,0,52,{ bonus2 bResEff,Eff_Silence,1500; },{},{}
-2266,Iron_Cane,Iron Cain,4,20,,300,,4,,0,0x00004082,63,2,1,,50,0,53,{},{},{}
+2266,Iron_Cane,Iron Cain,4,10000,,300,,4,,0,0x00004082,63,2,1,,50,1,53,{},{},{}
 2267,Cigar,Cigarette,4,4000,,100,,0,,0,0xFFFFFFFE,63,2,1,,0,0,54,{ bonus2 bSubRace,RC_Insect,3; },{},{}
 2268,Smoking_Pipe,Pipe,4,20,,100,,0,,0,0xFFFFFFFE,63,2,1,,0,0,55,{ bonus2 bSubRace,RC_Insect,3; },{},{}
 2269,Centimental_Flower,Romantic Flower,4,20,,100,,0,,0,0xFFFFFFFE,63,2,1,,0,0,56,{ bonus2 bSubRace,RC_Plant,3; },{},{}

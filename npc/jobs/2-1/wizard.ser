@@ -617,19 +617,19 @@ gef_tower,102,24,2	script	Gloomy Wizard	735,{
 			if (select("14:21:28:35") == 2)
 				set .@wizard_t,.@wizard_t+10;
 			mes "[Raulel]";
-			mes "7. Using Energy Coat, when you have 50% of your SP remaining, how much SP is used when hit, and what percentage is damage reduced by?";
+			mes "7. Using Energy Coat, you can do one of the following :";
 			next;
-			if (select("Damage 18% SP1.5%:Damage 18% SP2%:Damage 24% SP1.5%:Damage 24% SP2%") == 2)
+			if (select("Replenish SP faster:Take less damage when hit:Damage nearby enemies:Increase your magic defense") == 2)
 				set .@wizard_t,.@wizard_t+10;
 			mes "[Raulel]";
-			mes "8. How much SP is consumed and how many times can you avoid attacks when using Safety Wall Lv 6?";
+			mes "8. Using Safety Wall, you can do one of the following :";
 			next;
-			if (select("SP 40, 6 times:SP 35, 6 times:SP 40, 7 times:SP 35, 7 times") == 3)
+			if (select("Become invulnerable:Prevent an enemy from walking through the wall:Protect someone from physical attacks:Protect someone from magic attacks") == 3)
 				set .@wizard_t,.@wizard_t+10;
 			mes "[Raulel]";
-			mes "9. How much SP is needed when using Lv 10 Thunderstorm?";
+			mes "9. Which of these spells can hurt multiple enemies at the same time?";
 			next;
-			if (select("84:74:64:54") == 2)
+			if (select("Frost Diver:Thunder Storm:Soul Strike:Neither of these") == 2)
 				set .@wizard_t,.@wizard_t+10;
 			mes "[Raulel]";
 			mes "10. Which skill is most useful training in the Byalan Dungeon?";
@@ -654,7 +654,7 @@ gef_tower,102,24,2	script	Gloomy Wizard	735,{
 			if (select("Elder Willow:Evil Druid:Magnolia:Marc") == 2)
 				set .@wizard_t,.@wizard_t+10;
 			mes "[Raulel]";
-			mes "4. When attacking a Lv 3 water attribute monster with a wind attribute weapon, what is the damage percentage?";
+			mes "4. When attacking a Lv 4 water attribute monster with a wind attribute weapon, what is the damage percentage?";
 			next;
 			if (select("125%:150%:175%:200%") == 4)
 				set .@wizard_t,.@wizard_t+10;
@@ -728,7 +728,7 @@ gef_tower,102,24,2	script	Gloomy Wizard	735,{
 			mes "[Raulel]";
 			mes "8. Which item can a Mage not equip?";
 			next;
-			if (select("Knife:Boys Cap:Skull Ring:Eye of Dullahan") == 2)
+			if (select("Knife:Iron Cain:Skull Ring:Eye of Dullahan") == 2)
 				set .@wizard_t,.@wizard_t+10;
 			mes "[Raulel]";
 			mes "9. Which of the following is useless for a Mage?";
@@ -1962,22 +1962,3 @@ gef_tower,107,36,4	script	White Dog#wiz	81,{
 	}
 }
 
-//============================================================ 
-// Old changelog
-//============================================================ 
-//= 1.1 Now using the initnpctimer command, donpcevent,
-//= and new waitingroom event commands.  No more addtimer spamming.
-//= No longer have to talk to the npc to take the test.  Just enter the chat room.
-//= 1.2 Changed global variable names to unique ones.
-//= 1.2a Rollback from the wrong Kashy's fix
-//= 1.2b Fixed issue with duplicating monsters thx to Bison.[kobra_k88]
-//= 1.2c changed one Horong to Frilldora (now 3rd room contains 1 agressive mob.)
-//= 1.2d more simplified fire room - removed agressive Desert Wolf [Lupus]
-//= 1.3 Added Baby Class support. 1.5 Fixed possible EXP abuse [Lupus]
-//= 1.6 Added a func which prevent advanced classes passing
-//= 2nd Job Quests again. It also guides adv classes where to go. [Lupus]
-//= 1.7 Replaced 2 Hodes with 2 Horong's (according to the official guide) [Lupus]
-//= 1.8 Removed callfunc Is_####_Class in favor of baseClass [Silentdragon]
-//= 2.1 Changed numbers to constants. [Vicious]
-//= 2.2 Merged back JFunc [Lupus] 2.2a Removed extra MES, added missing NEXT
-//= 2.3 Bigfoot monster summon corrected [Zairik]

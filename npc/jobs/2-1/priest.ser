@@ -35,7 +35,7 @@
 prt_church,16,41,4	script	High Bishop#prst	60,{
 	// Uncomment the following 'if' statement to allow High Priests to assist Acolytes with the job change quest.
 	// Officially High Priests are blocked from helping by an indiscriminate check if you are a transcended character.
-	//if (Class == Job_High_Priest) set .@AllowHPAssist,1;
+	if (Class == Job_High_Priest) set .@AllowHPAssist,1;
 	if (Upper == 1 && .@AllowHPAssist != 1) {
 			mes "[Bishop Paul]";
 			mes "Hm...?";
@@ -773,8 +773,7 @@ prt_church,27,24,1	script	Sister Cecilia	79,{
 			set PRIEST_Q,8;
 			mes "[Sister Cecilia]";
 			mes "Remember...";
-			mes "You must be a moral person, and display maturity and respect to other players. This kind of attitude applies for all classes,";
-			mes "I believe.";
+			mes "If you act like that, it'll ruin the reputation of religion and help evil forces.";
 			close;
 		}
 		mes "[Sister Cecilia]";
@@ -786,7 +785,7 @@ prt_church,27,24,1	script	Sister Cecilia	79,{
 			next;
 			set PRIEST_Q,8;
 			mes "[Sister Cecilia]";
-			mes "Even if it looks like you are aiding your party members, such action results in bad karma. Please reflect on that for a while.";
+			mes "Even if it looks like a good idea, who'll save your party members if you're too busy healing yourself?";
 			close;
 		}
 		mes "[Sister Cecilia]";

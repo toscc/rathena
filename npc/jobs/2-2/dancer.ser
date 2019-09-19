@@ -573,10 +573,10 @@ job_duncer,95,93,4	script	Bijou#da	101,{
 			if (select("Berserk Potion:Clam Shell:Crab Shell:Shining Stone") == 4)
 				set .@da_score,.@da_score+10;
 			mes "[Bijou]";
-			mes "9. Who is the manager";
-			mes "of the Comodo Casino?";
+			mes "9. If you want to gain more skill points";
+			mes "to learn additional dances, you should ask someone who...";
 			next;
-			if (select("Yoo:Moo:Hoon:Roul") == 2)
+			if (select("Has short hair:Has green twintails:Is bald:Is male") == 2)
 				set .@da_score,.@da_score+10;
 			mes "[Bijou]";
 			mes "10. Who accepts the";
@@ -590,7 +590,7 @@ job_duncer,95,93,4	script	Bijou#da	101,{
 			mes "[Bijou]";
 			mes "1. What is the effect";
 			mes "of the combined skill,";
-			mes "^CD6889Mental Sensing^000000?";
+			mes "^CD6889Mr.Kim A Rich Man^000000?";
 			next;
 			if (select("Instant monster death.:Doubles damage.:Increases experience.:Increases attack speed.") == 3)
 				set .@da_score,.@da_score+10;
@@ -618,7 +618,7 @@ job_duncer,95,93,4	script	Bijou#da	101,{
 			if (select("Cocomo:Sandarman:Comudo:Comodo") == 4)
 				set .@da_score,.@da_score+10;
 			mes "[Bijou]";
-			mes "5. How many dungeons";
+			mes "5. How many caves";
 			mes "are directly connected";
 			mes "to Comodo?";
 			next;
@@ -653,11 +653,11 @@ job_duncer,95,93,4	script	Bijou#da	101,{
 				break;
 			}
 			mes "[Bijou]";
-			mes "8. What is the";
-			mes "exact name of the";
-			mes "Kafra in Comodo?";
+			mes "8. Which of these skills";
+			mes "requires a Soul Linker to perform";
+			mes "by a Dancer?";
 			next;
-			if (select("Kafra Headquarters:Kafra West Headquarters:Kafra Service:Kafra Headquarters: Western Branch") == 4)
+			if (select("Service for You:Ugly Dance:Invulnerable Siegfried:Poem of Bragi:Mr Kim A Rich Man") == 4)
 				set .@da_score,.@da_score+10;
 			mes "[......]";
 			mes "9. What is my name?";
@@ -735,10 +735,9 @@ job_duncer,95,93,4	script	Bijou#da	101,{
 			if (select("Health:Acting :Dancing :Magic ") == 3)
 				set .@da_score,.@da_score+10;
 			mes "[Bijou]";
-			mes "7. Who is the manager";
-			mes "of the Comodo Casino?";
+			mes "7. You need this weapon equiped to dance :";
 			next;
-			if (select("Ryu:Moo:Roul:Hoon") == 2)
+			if (select("No equipped weapon:Whip:Lute:Bow") == 2)
 				set .@da_score,.@da_score+10;
 			mes "[Bijou]";
 			mes "8. What item cannot";
@@ -755,9 +754,9 @@ job_duncer,95,93,4	script	Bijou#da	101,{
 			set .@da_score,.@da_score+10;
 			mes "[Bijou]";
 			mes "10. Which of the following";
-			mes "is not a Jazz musician?";
+			mes "is not a PriPara Idol?";
 			next;
-			if (select("Art Blakey:Billie Holiday :Louis Armstrong :Bud Powell :Elder Willow ") == 5)
+			if (select("Manaka Laala:Falulu:Sophie Hojo:Toudou Shion:Elder Willow") == 5)
 				set .@da_score,.@da_score+10;
 		}
 		mes "[Bijou]";

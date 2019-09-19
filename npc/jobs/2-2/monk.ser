@@ -726,32 +726,6 @@ monk_in,99,58,1	script	Sensei Moohae#mk	60,{
 				close;
 			}
 			mes "[Sensei Moohae]";
-			mes "Will you assist your comrades by gathering monsters to follow you?";
-			next;
-			if (select("Yes.:No.") == 1) {
-				mes "[Sensei Moohae]";
-				mes "That is not acceptable. Purposely taunting monsters to follow you can be very dangerous and harmful to others. This is not the way of a monk.";
-				mes "... that behavior is regarded as careless and is not tolerated.";
-				next;
-				mes "[Sensei Moohae]";
-				mes "Even though you may be nearly invincible when hardening your body that skill is meant to be used for emergency situation not to be used for such disrespectful use!";
-				next;
-				mes "[Sensei Moohae]";
-				mes "You might feel that's helping others, but it's not true.";
-				mes "Consider what it is you must do as a monk for others again.";
-				close;
-			}
-			mes "[Sensei Moohae]";
-			mes "Will you yell and shout the same things over and over again in towns or in fields?";
-			next;
-			if (select("Yes.:No.") == 1) {
-				mes "[Sensei Moohae]";
-				mes "You are not allowed to do so. This doesn't apply only to monks but to everyone.";
-				mes "Nobody wants their peace disturbed!";
-				mes "Even if you mean well by it, it is disrespectful and not allowed.";
-				close;
-			}
-			mes "[Sensei Moohae]";
 			mes "Are you willing to die for others on your monk's path of being a holy executioner?";
 			next;
 			if (select("Yes.:No.") == 2) {

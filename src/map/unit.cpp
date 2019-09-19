@@ -756,7 +756,6 @@ static inline void set_mobstate(struct block_list* bl, int flag)
 static TIMER_FUNC(unit_walktobl_sub){
 	struct block_list *bl = map_id2bl(id);
 	struct unit_data *ud = bl?unit_bl2ud(bl):NULL;
-	struct block_list *tbl = map_id2bl(ud->target_to);
 
 	if (ud && ud->walktimer == INVALID_TIMER && ud->target == data) {
 		if (DIFF_TICK(ud->canmove_tick, tick) > 0) // Keep waiting?
