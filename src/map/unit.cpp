@@ -6749,7 +6749,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			resettargets();
 			map_foreachinrange(targetlauda1, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
-				unit_skilluse_ifable(&sd->bl, SELF, AB_LAUDAAGNUS, pc_checkskill(sd, AB_LAUDAAGNUS));
+				if (!duplicateskill(p, AB_LAUDAAGNUS)) unit_skilluse_ifable(&sd->bl, SELF, AB_LAUDAAGNUS, pc_checkskill(sd, AB_LAUDAAGNUS));
 			}
 		}
 		/// Lauda Ramus
@@ -6757,7 +6757,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			resettargets();
 			map_foreachinrange(targetlauda2, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
-				unit_skilluse_ifable(&sd->bl, SELF, AB_LAUDARAMUS, pc_checkskill(sd, AB_LAUDARAMUS));
+				if (!duplicateskill(p, AB_LAUDARAMUS)) unit_skilluse_ifable(&sd->bl, SELF, AB_LAUDARAMUS, pc_checkskill(sd, AB_LAUDARAMUS));
 			}
 		}
 
@@ -6774,7 +6774,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			resettargets();
 			map_foreachinrange(targetmanus, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
-				unit_skilluse_ifable(&sd->bl, SELF, PR_IMPOSITIO, pc_checkskill(sd, PR_IMPOSITIO));
+				if (!duplicateskill(p, PR_IMPOSITIO)) unit_skilluse_ifable(&sd->bl, SELF, PR_IMPOSITIO, pc_checkskill(sd, PR_IMPOSITIO));
 			}
 		}
 		/// Suffragium
@@ -6782,7 +6782,7 @@ TIMER_FUNC(unit_autopilot_timer)
 			resettargets();
 			map_foreachinrange(targetsuffragium, &sd->bl, 9, BL_PC, sd);
 			if (foundtargetID > -1) {
-				unit_skilluse_ifable(&sd->bl, SELF, PR_SUFFRAGIUM, pc_checkskill(sd, PR_SUFFRAGIUM));
+				if (!duplicateskill(p, PR_SUFFRAGIUM)) unit_skilluse_ifable(&sd->bl, SELF, PR_SUFFRAGIUM, pc_checkskill(sd, PR_SUFFRAGIUM));
 			}
 		}
 		/// Sacrament
