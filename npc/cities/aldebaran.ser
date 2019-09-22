@@ -198,7 +198,7 @@ aldebaran,90,170,4	script	Slot Guy#alde	47,{
 		close;
 	case 2:
 		mes "[Epthiel]";
-		mes "Once a Card is inserted into a Slot, it is impossible to remove it. So please be careful when you insert Cards into weapons or armor.";
+		mes "Once a Card is inserted into a Slot, it is difficult to remove it. So please be careful when you insert Cards into weapons or armor.";
 		next;
 		mes "[Epthiel]";
 		mes "Also, when you mouse over equipment in the Item Window or Vending Window, the name of the item will be followed by the number of its Slots in brackets.";
@@ -283,7 +283,7 @@ aldebaran,121,231,4	script	Alchemy Guy#alde	49,{
 		next;
 		mes "[Chemirre]";
 		mes "When you right click on the card, you will see";
-		mes "its ability as LUK+2 and Perfect Dodge+1";
+		mes "its ability as LUK+5 and Perfect Dodge+2";
 		mes "and its location as 'Armor'. ";
 		next;
 		mes "[Chemirre]";
@@ -449,7 +449,7 @@ aldebaran,180,46,4	script	Joo Jahk#alde	88,{
 	next;
 	if (select("Continue.:End conversation.") == 1) {
 		mes "[Joo Jahk]";
-		mes "On one of my travels around Rune-Midgard, I've heard from a really high level Mage that physical attacks, or magic with Neutral Property, won't damage Spiritual Property monsters.";
+		mes "On one of my travels around Rune-Midgard, I've heard from a really high level Mage that physical attacks, or magic with Neutral Property, won't damage Ghost Property monsters.";
 		next;
 		mes "[Joo Jahk]";
 		mes "Maybe that advice will come in handy, now that you know that. Always remember the importance of the Properties of your skills and weapons when battling monsters.";
@@ -762,64 +762,6 @@ aldeba_in,156,179,4	script	Master#alde	61,{
 	close;
 }
 
-aldeba_in,84,166,4	script	Kafra Service#alde	117,{
-	cutin "kafra_01",2;
-	mes "[Kafra Pavianne]";
-	mes "Welcome! I'm Pavianne,";
-	mes "one of the senior Kafra Employees. The Kafra Corporation Service is always trying to satisfy 100 % of our customers' expectations.";
-	next;
-	mes "[Kafra Pavianne]";
-	mes "Due to a change in customer support policy, we no longer accept Kafra Passes. However, we are offering refunds for our customers who still possess these passes.";
-	next;
-	if (select("Sell Kafra Pass:Alright, bye~") == 1) {
-		if (countitem(1084) == 0) {
-			mes "[Kafra Pavianne]";
-			mes "I'm sorry,";
-			mes "but you don't";
-			mes "have any Kafra Passes.";
-			close2;
-			cutin "",255;
-			end;
-		}
-		else {
-			set .@kafrapassmoney,countitem(1084)*2000;
-			mes "[Kafra Pavianne]";
-			mes "Let's see...";
-			if (countitem(1084) == 1) {
-				mes "You have 1 Kafra Pass.";
-				mes "You can sell that pass to us for 2000 zeny. Would you like to sell this Kafra Pass back to the Kafra Corporation?";
-			}
-			else {
-				mes "You have "+ countitem(1084) +" Kafra Passes.";
-				mes "If you want to sell them to us, you will receive "+ .@kafrapassmoney +" zeny. Would you like to sell these back to the Kafra Corporation?";
-			}
-			next;
-			if (select("Yes:No") == 1) {
-				if (countitem(1084) == 0) {
-					mes "[Kafra Pavianne]";
-					mes "I'm sorry, but you don't have any Kafra Passes.";
-					close2;
-					cutin "",255;
-					end;
-				}
-				delitem 1084,countitem(1084); //Kapra's_Pass
-				set Zeny,Zeny+.@kafrapassmoney;
-				mes "[Kafra Pavianne]";
-				mes "Thank you.";
-			}
-			close2;
-			cutin "",255;
-			end;
-		}
-	}
-	mes "[Kafra Pavianne]";
-	mes "Thank you,";
-	mes "have a good day.";
-	close2;
-	cutin "",255;
-	end;
-}
-
 aldeba_in,83,245,4	script	Kafra Service#2alde	116,{
 	cutin "kafra_02",2;
 	mes "[Kafra Blossom]";
@@ -849,7 +791,7 @@ aldeba_in,83,245,4	script	Kafra Service#2alde	116,{
 		mes "However, in the Equip tab, each and every single item takes up its own Slot. I guess that's because each and every single equipment can be uniquely upgraded by forging or through Cards.";
 		next;
 		mes "[Kafra Blossom]";
-		mes "There's a total of 300 Slots for all three item categories in the Kafra Storage, so it might be helpful to remember that.";
+		mes "There's a total of 600 Slots for all three item categories in the Kafra Storage, so it might be helpful to remember that.";
 		next;
 		break;
 	case 2:
@@ -1104,7 +1046,7 @@ aldeba_in,79,161,7	script	Kafra Employee#reserve1	4_F_KAFRA3,{
 	if (.@s == 11) {
 		setarray .@select_price[0], 501, 1100,7, 1300,15, 1500,25, 1700,35, 1900,50, 2100,60, 2300,75, 2500,85, 2800,100, 3000;
 		.@s = select( "1100 = Red Potion 7 ea:1300 = Red Potion 15 ea:1500 = Red Potion 25 ea:1700 = Red Potion 35 ea:1900 = Red Potion 50 ea:2100 = Red Potion 60 ea:" +
-			"2300 = Red Potion 75 ea:2500 = Red Potion 85 ea:2800 = Red Potion 100 ea:3000 = 2nd Lotery Chance!::Cancel" );
+			"2300 = Red Potion 75 ea:2500 = Red Potion 85 ea:2800 = Red Potion 100 ea:3000 = 2nd Lottery Chance!::Cancel" );
 		.@choose_sub_select = 1;
 	}
 	if (.@s != 12) {// cancel
@@ -1205,7 +1147,7 @@ aldeba_in,79,161,7	script	Kafra Employee#reserve1	4_F_KAFRA3,{
 						mes "To your safe place.";
 					}
 					else if (.@choose_prize <= 19) {
-						getitem 2403,1;// Shoes
+						getitem 2404,1;// Shoes
 						mes "Second Prize!";
 						mes "A brand new shiny pair";
 						mes "of Shoes! Its elegant design";
@@ -1214,12 +1156,12 @@ aldeba_in,79,161,7	script	Kafra Employee#reserve1	4_F_KAFRA3,{
 						mes "hope you enjoy your new shoes~";
 					}
 					else if (.@choose_prize == 20) {
-						getitem 2328,1;// Wooden_Mail
+						getitem 2504,1;// Muffler[1]
 						mes "Whoa...!";
 						mes "First Prize!";
 						mes "Your very own";
 						next;
-						mes "set of Wooden Mail!";
+						mes "Slotted Muffler!";
 						mes "Today must be your";
 						mes "lucky day, adventurer!";
 					}
@@ -1241,7 +1183,7 @@ aldeba_in,79,161,7	script	Kafra Employee#reserve1	4_F_KAFRA3,{
 						mes "sharing them with your friends!";
 					}
 					else if (.@choose_prize <= 16) {
-						getitem 2201,1;// Sunglasses
+						getitem 2202,1;// Sunglasses
 						mes "Third Prize!";
 						mes "Your very own pair";
 						mes "of suave Sunglasses!";
@@ -1250,7 +1192,7 @@ aldeba_in,79,161,7	script	Kafra Employee#reserve1	4_F_KAFRA3,{
 						mes "or when playing poker~";
 					}
 					else if (.@choose_prize <= 19) {
-						getitem 2226,1;// Cap
+						getitem 2227,1;// Cap
 						mes "Second Prize!";
 						mes "A... Cap? Hmmm,";
 						mes "these have pretty good";
@@ -1259,10 +1201,10 @@ aldeba_in,79,161,7	script	Kafra Employee#reserve1	4_F_KAFRA3,{
 						mes "this hat is. Oh well...";
 					}
 					else if (.@choose_prize == 20) {
-						getitem 505,3;// Blue_Potion
+						getitem 607,5;// Blue_Potion
 						mes "Oh wow...!";
 						mes "First Prize!";
-						mes "3 Blue Potions~";
+						mes "5 Yggdrasil Berries~";
 						mes "With enough of these,";
 						mes "you can use your skills";
 						mes "with a bit more impunity~";
@@ -1366,19 +1308,19 @@ aldeba_in,88,161,3	script	Kafra Employee#reserve2	4_F_KAFRA3,{
 					mes "However, overdose is not good for your body~";
 				}
 				else if (.@choose_prize < 20) {
-					getitem 505,3;// Blue_Potion
+					getitem 505,30;// Blue_Potion
 					mes "The 2nd~~";
-					mes "The 3rd prize~~";
-					mes "The prize is ^00FF003 Blue Potions~^000000";
+					mes "The 2rd prize~~";
+					mes "The prize is ^00FF0030 Blue Potions~^000000";
 					next;
 					mes "[Kafra Employee]";
 					mes "Try these when your spiritual power is low~";
 				}
 				else if (.@choose_prize == 20) {
-					getitem 608,1;// Seed_Of_Yggdrasil
+					getitem 608,20;// Seed_Of_Yggdrasil
 					mes "Whoa~!! The first... The First!!!";
 					mes "Congratulations~~ You got the 1st prize~";
-					mes "The prize is ^00FF001 Yggdrasil Seed~^000000";
+					mes "The prize is ^00FF0020 Yggdrasil Seed~^000000";
 					next;
 					mes "[Kafra Employee]";
 					mes "I guess you spent entire luck for this lottery chance~";
@@ -1386,40 +1328,40 @@ aldeba_in,88,161,3	script	Kafra Employee#reserve2	4_F_KAFRA3,{
 			}
 			else if (.@s == 2) {
 				if (.@choose_prize < 15) {
-					getitem 504,10;// White_Potion
+					getitem 504,40;// White_Potion
 					mes "What a pity!";
 					mes "You got the 4th prize!!";
-					mes "The prize is ^00FF0010 White Potions~^000000";
+					mes "The prize is ^00FF0040 White Potions~^000000";
 					next;
 					mes "[Kafra Employee]";
 					mes "The greatest among potions! Use it before you fall into faint~";
 				}
 				else if (.@choose_prize < 18) {
-					getitem 656,15;// Awakening_Potion
+					getitem 657,15;// Awakening_Potion
 					mes "The 3rd~~";
 					mes "The 3rd prize!";
-					mes "The prize is ^00FF0015 Awakening Potions~^000000";
+					mes "The prize is ^00FF0015 Berserk Potions~^000000";
 					next;
 					mes "[Kafra Employee]";
-					mes "An awakening potion is better than a concentration potion!";
+					mes "A berserk potion is better than a concentration potion!";
 					mes "Overdose is not good for your body~";
 				}
 				else if (.@choose_prize < 20) {
-					getitem 657,10;// Berserk_Potion
+					getitem 12002,100;// Berserk_Potion
 					mes "The 2nd~~";
-					mes "The 3rd prize~~";
-					mes "The prize is ^00FF0010 Berserk Potions~^000000";
+					mes "The 2rd prize~~";
+					mes "The prize is ^00FF00100 Scrolls of Healing!~^000000";
 					next;
 					mes "[Kafra Employee]";
-					mes "Overdose may cause madness~";
+					mes "These are way more effective than potions!~";
 				}
 				else if (.@choose_prize == 20) {
-					getitem 608,1;// Seed_Of_Yggdrasil
-					getitem 607,1;// Yggdrasilberry
+					getitem 608,10;// Seed_Of_Yggdrasil
+					getitem 607,10;// Yggdrasilberry
 					mes "Whoa~!! The first... The First!!!";
 					mes "Congratulations~~ You got the 1st prize~";
-					mes "The prize is ^00FF001 Yggdrasilberry~^000000";
-					mes "The prize is ^00FF001 Yggdrasil Seed~^000000";
+					mes "The prize is ^00FF0010 Yggdrasilberry~^000000";
+					mes "The prize is ^00FF0010 Yggdrasil Seed~^000000";
 					next;
 					mes "[Kafra Employee]";
 					mes "I guess you spent entire luck for this lottery chance~";
@@ -1445,24 +1387,24 @@ aldeba_in,88,161,3	script	Kafra Employee#reserve2	4_F_KAFRA3,{
 					mes "Try these when your spiritual power is low~";
 				}
 				else if (.@choose_prize < 20) {
-					getitem 608,1;// Seed_Of_Yggdrasil
+					getitem 12002,150;// Seed_Of_Yggdrasil
 					getitem 526,10;// Royal_Jelly
 					mes "The 2nd~~";
 					mes "The 3rd prize~~";
-					mes "The prize is ^00FF001 Yggdrasil Seed~^000000";
+					mes "The prize is ^00FF00150 Healing Scrolls~^000000";
 					mes "The prize is ^00FF0010 Royal Jellies~^000000";
 					next;
 					mes "[Kafra Employee]";
 					mes "What a gift set~";
-					mes "These are very healthy food so ~";
+					mes "These are very good for your health ~";
 				}
 				else if (.@choose_prize == 20) {
-					getitem 607,3;// Yggdrasilberry
-					getitem 608,2;// Seed_Of_Yggdrasil
+					getitem 607,20;// Yggdrasilberry
+					getitem 12002,200;// Seed_Of_Yggdrasil
 					mes "Whoa~!! The first... The First!!!";
 					mes "Congratulations~~ You got the 1st prize~";
-					mes "The prize is ^00FF003 Yggdrasilberries~^000000";
-					mes "The prize is ^00FF002 Yggdrasil Seeds~^000000";
+					mes "The prize is ^00FF0020 Yggdrasilberries~^000000";
+					mes "The prize is ^00FF00200 Scrolls of Healing~^000000";
 					next;
 					mes "[Kafra Employee]";
 					mes "I guess you spent entire luck for this lottery chance~";
