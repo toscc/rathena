@@ -1203,7 +1203,6 @@
 1270,Tower Keeper@NPC_SLEEPATTACK,chase,182,5,500,0,5000,yes,target,always,0,,,,,,9,
 1270,Tower Keeper@NPC_EMOTION_ON,attack,474,1,10000,0,30000,yes,self,always,0,6,0x3885,,,,,
 1271,Alligator@NPC_WATERATTACK,attack,184,2,500,500,5000,no,target,always,0,,,,,,6,
-1271,Alligator@NPC_EMOTION,chase,197,1,200,0,5000,yes,self,always,0,19,0x91,,,,,
 1272,Dark Lord@AL_TELEPORT,idle,26,1,10000,0,0,yes,self,rudeattacked,,,,,,,,
 1272,Dark Lord@AL_TELEPORT,walk,26,1,5000,0,5000,yes,self,rudeattacked,,,,,,,,
 1272,Dark Lord@NPC_AGIUP,attack,350,5,10000,0,30000,yes,self,myhpltmaxrate,30,,,,,,6,
