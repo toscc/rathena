@@ -5570,7 +5570,7 @@ ACMD_FUNC(storeall)
 	}
 	storage_storageclose(sd);
 
-	clif_displaymessage(fd, msg_txt(sd,1162)); // All items stored.
+	clif_displaymessage(fd, "All your items have been sent to your storage and identified!");
 	return 0;
 }
 
@@ -5610,7 +5610,7 @@ ACMD_FUNC(gstoreall)
 
 		storage_guild_storageclose(sd);
 
-		clif_displaymessage(fd, "All your items have been sent to your guild storage");
+		clif_displaymessage(fd, "All your items have been sent to your guild storage and identified!");
 		return 0;
 }
 

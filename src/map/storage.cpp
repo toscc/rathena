@@ -301,6 +301,7 @@ static int storage_additem(struct map_session_data* sd, struct s_storage *stor, 
 	memcpy(&stor->u.items_storage[i],it,sizeof(stor->u.items_storage[0]));
 	stor->amount++;
 	stor->u.items_storage[i].amount = amount;
+	stor->u.items_storage[i].identify = 1;
 	stor->dirty = true;
 	clif_storageitemadded(sd,&stor->u.items_storage[i],i,amount);
 	clif_updatestorageamount(sd, stor->amount, stor->max_amount);
@@ -805,6 +806,7 @@ bool storage_guild_additem(struct map_session_data* sd, struct s_storage* stor, 
 
 	memcpy(&stor->u.items_guild[i],item_data,sizeof(stor->u.items_guild[0]));
 	stor->u.items_guild[i].amount = amount;
+	stor->u.items_guild[i].identify = 1;
 	stor->amount++;
 	clif_storageitemadded(sd,&stor->u.items_guild[i],i,amount);
 	clif_updatestorageamount(sd, stor->amount, stor->max_amount);

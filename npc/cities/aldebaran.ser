@@ -791,7 +791,7 @@ aldeba_in,83,245,4	script	Kafra Service#2alde	116,{
 		mes "However, in the Equip tab, each and every single item takes up its own Slot. I guess that's because each and every single equipment can be uniquely upgraded by forging or through Cards.";
 		next;
 		mes "[Kafra Blossom]";
-		mes "There's a total of 600 Slots for all three item categories in the Kafra Storage, so it might be helpful to remember that.";
+		mes "There's a total of 800 Slots for all three item categories in the Kafra Storage, so it might be helpful to remember that.";
 		next;
 		break;
 	case 2:

@@ -8,6 +8,13 @@ mes "Thank you for your help!";
 close;
 }
 
+if (JobLevel<50) {
+mes "Master your job before looking for more";
+mes "things to learn!";
+mes "Capise?"
+close;
+}
+
 mes	"I want to be a Lovely Idol!";
 mes	"In order to do that, I need to look cute!";
 mes	"Do you have Ribbon[1] x5?";
@@ -33,6 +40,12 @@ mes .@name$;
 
 if (QSkillPoint002 == 1) {
 mes "Thank you for your help!";
+close;
+}
+
+if (JobLevel<50) {
+mes "Master your job before looking for more";
+mes "things to learn!";
 close;
 }
 
@@ -63,6 +76,12 @@ mes "Thank you for your help!";
 close;
 }
 
+if (JobLevel<50) {
+mes "Master your job before looking for more";
+mes "things to learn!";
+close;
+}
+
 mes	"I want to be a Celeb Idol.";
 mes	"In order to become familiar with luxurious envirnments, I need 3 bars of Gold.";
 
@@ -87,6 +106,12 @@ mes .@name$;
 
 if (QSkillPoint004 == 1) {
 mes "Thank you for your help!";
+close;
+}
+
+if (JobLevel<50) {
+mes "Master your job before looking for more";
+mes "things to learn!";
 close;
 }
 
@@ -115,6 +140,12 @@ mes .@name$;
 
 if (QSkillPoint005 == 1) {
 mes "Thank you for your help!";
+close;
+}
+
+if (JobLevel<50) {
+mes "Master your job before looking for more";
+mes "things to learn!";
 close;
 }
 
