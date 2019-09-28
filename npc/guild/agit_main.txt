@@ -123,8 +123,8 @@ OnAgitBreak:
 	for(.@i=0;.@i<getarraysize(.@array);.@i++) {
 		getunitdata .@array[.@i],.@arr2[0];
 		if (.@arr2[UMOB_MODE] & MD_MVP) {
-		// mapannounce .@arr2[??? no UMOB_NAME???] +" revives the Emperium!";
-		mapannounce strnpcinfo(2),"The boss monsters revive the Emperium! You have to defeat them first!",bc_map,"0x00FF00",FW_NORMAL,20,0,40;;
+		mapannounce .@map$,getunitname(.@array[.@i])+" revives the Emperium!",bc_map,"0x00FF00",FW_NORMAL,20,0,40;
+		//mapannounce strnpcinfo(2),"The boss monsters revive the Emperium! You have to defeat them first!",bc_map,"0x00FF00",FW_NORMAL,20,0,40;;
 		callsub(Emprespawn);
 		end;
 		}

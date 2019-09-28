@@ -16,6 +16,7 @@
 
 -	script	Manager_TE	-1,{
 OnAgitInit3:
+OnRecvCastle:
 	.@map$ = strnpcinfo(4);
 	if (.@map$ == "") end;
 	.@npc_name$ = strnpcinfo(0);
@@ -35,13 +36,13 @@ OnAgitInit3:
 			callsub(Addmonster,"Wanderer",1208,3, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
 			callsub(Addmonster,"Alice",1275,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
 			callsub(Addmonster,"Bloody Knight",1268,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
-			callsub(Addmonster,"Dark Lord",1272,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Garm",1252,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
 			if (.@map$ == "te_aldecas1") { setarray .@emproom[0],216,23; }
 			else if (.@map$ == "te_aldecas2") { setarray .@emproom[0],213,23; }
 			else if (.@map$ == "te_aldecas3") { setarray .@emproom[0],205,31; }
 			else if (.@map$ == "te_aldecas4") { setarray .@emproom[0],36,217; }
 			else if (.@map$ == "te_aldecas5") { setarray .@emproom[0],27,101; }
-			callsub(Addmonster,"Dark Lord",1272,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),.@emproom[0],.@emproom[1],.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Garm",1252,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),.@emproom[0],.@emproom[1],.@map$,.@npc_name$ +"::OnMyMobDead"); 
 			callsub(Addmonster,"Tower Keeper",1270,4, getcastledata(.@map$, CD_CURRENT_ECONOMY ),.@emproom[0],.@emproom[1],.@map$,.@npc_name$ +"::OnMyMobDead"); 
 			callsub(Addmonster,"Bloody Knight",1268,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),.@emproom[0],.@emproom[1],.@map$,.@npc_name$ +"::OnMyMobDead"); 
 			callsub(Addmonster,"Abysmal Knight",1219,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),.@emproom[0],.@emproom[1],.@map$,.@npc_name$ +"::OnMyMobDead"); 
@@ -52,8 +53,8 @@ OnAgitInit3:
 			callsub(Addmonster,"Khalitzburg",1132,10, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
 			callsub(Addmonster,"Abysmal Knight",1219,5, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
 			callsub(Addmonster,"Bloody Knight",1268,5, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
-			callsub(Addmonster,"Stormy Knight",1251,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
-			callsub(Addmonster,"Garm",1252,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Phreeoni",1159,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Golden Thief Bug",1086,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
 			callsub(Addmonster,"Raydric Archer",1276,5, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
 			callsub(Addmonster,"Gryphon",1259,2, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
 			callsub(Addmonster,"Chimera",1283,2, getcastledata(.@map$, CD_CURRENT_ECONOMY ),0,0,.@map$,.@npc_name$ +"::OnMyMobDead"); 
@@ -67,8 +68,7 @@ OnAgitInit3:
 			else if (.@map$ == "te_prtcas04") { setarray .@emproom[0],291,14; }
 			else if (.@map$ == "te_prtcas05") { setarray .@emproom[0],266,266; }
 			callsub(Addmonster,"Guardian Knight of Emperium",1268,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),.@emproom[0],.@emproom[1],.@map$,.@npc_name$ +"::OnMyMobDead"); 
-			callsub(Addmonster,"Chief Guardian Knight of Emperium",1251,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),.@emproom[0],.@emproom[1],.@map$,.@npc_name$ +"::OnMyMobDead"); 
-			callsub(Addmonster,"Garm",1252,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),.@emproom[0],.@emproom[1],.@map$,.@npc_name$ +"::OnMyMobDead"); 
+			callsub(Addmonster,"Ruler of the Castle",1157,1, getcastledata(.@map$, CD_CURRENT_ECONOMY ),.@emproom[0],.@emproom[1],.@map$,.@npc_name$ +"::OnMyMobDead"); 
 			callsub(Addmonster,"Guardian Knight of Emperium",1219,2, getcastledata(.@map$, CD_CURRENT_ECONOMY ),.@emproom[0],.@emproom[1],.@map$,.@npc_name$ +"::OnMyMobDead"); 
 			callsub(Addmonster,"Raydric Archer",1276,5, getcastledata(.@map$, CD_CURRENT_ECONOMY ),.@emproom[0],.@emproom[1],.@map$,.@npc_name$ +"::OnMyMobDead"); 
 		}
@@ -177,8 +177,8 @@ OnAgitBreak:
 	for(.@i=0;.@i<getarraysize(.@array);.@i++) {
 		getunitdata .@array[.@i],.@arr2[0];
 		if (.@arr2[UMOB_MODE] & MD_MVP) {
-		// mapannounce .@arr2[??? no UMOB_NAME???] +" revives the Emperium!";
-		mapannounce .@map$,"The boss monsters revive the Emperium! You have to defeat them first!",bc_map,"0x00FF00",FW_NORMAL,20,0,40;;
+		 mapannounce .@map$,getunitname(.@array[.@i])+" revives the Emperium!",bc_map,"0x00FF00",FW_NORMAL,20,0,40;
+		//mapannounce .@map$,"The boss monsters revive the Emperium! You have to defeat them first!",bc_map,"0x00FF00",FW_NORMAL,20,0,40;;
 		callsub(Emprespawn,.@map$);
 		end;
 		}
@@ -538,6 +538,7 @@ S_Message:
 	}
 	return;
 
+OnTreasureDied:
 OnMyMobDead:
 	end;
 }
@@ -848,8 +849,8 @@ function GuardianData;
 			end;
 		case 2:
 			mes .@npc_name$;
-			mes "Goods are produced once a day... if you don't remove them in time, they will not be produced anymore.";
-			mes "Therefore, it will be better if you check up on them from time to time.";
+			mes "Monsters can appear and take over the castle any time.";
+			mes "I suggest not leaving anything valuable in the treasure room.";
 			close;
 		}
 	}

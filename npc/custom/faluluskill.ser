@@ -11,7 +11,7 @@ close;
 if (JobLevel<50) {
 mes "Master your job before looking for more";
 mes "things to learn!";
-mes "Capise?"
+mes "Capise?";
 close;
 }
 

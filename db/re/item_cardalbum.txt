@@ -436,7 +436,7 @@ IG_MagicCardAlbum,4266,10	// Eclipse Card
 IG_MagicCardAlbum,4284,10	// Chepet Card
 IG_MagicCardAlbum,4285,10	// Choco Card
 IG_MagicCardAlbum,4290,5	// Cat O' Nine Tails Card
-IG_MagicCardAlbum,4291,10	// Kobold Leader Card
+IG_MagicCardAlbum,4291,3	// Kobold Leader Card
 IG_MagicCardAlbum,4300,10	// Chimera Card
 IG_MagicCardAlbum,4306,10	// Toad Card
 IG_MagicCardAlbum,4320,1	// Bloody Knight Card

@@ -598,7 +598,7 @@
 5048:18538,{ bonus2 bSubRace,RC_Demon,9; }
 5068:5653,{ bonus bStr,3; }
 5070:18576,{ bonus2 bSkillAtk,"MO_TRIPLEATTACK",5; bonus2 bSkillAtk,"MO_COMBOFINISH",5; bonus2 bSkillAtk,"CH_TIGERFIST",3; bonus2 bSkillAtk,"CH_CHAINCRUSH",3; }
-5073:5574,{ bonus bDex,2; bonus bDef,2; }
+5073:5574,{ bonus bDex,2; bonus bDef,5; }
 5074:5653,{ bonus bInt,3; }
 5074:18827,{ autobonus "{ bonus2 bHPLossRate,30,1000; bonus bHit,-10; bonus bSplashRange,1; }",10+getequiprefinerycnt(EQI_HEAD_TOP),5000,BF_WEAPON,"{ transform 1765,5000; }"; }
 5086:18527,{ bonus2 bAddItemHealRate,12192,200; }
