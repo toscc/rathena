@@ -8329,7 +8329,7 @@ t_tick status_get_sc_def(struct block_list *src, struct block_list *bl, enum sc_
 			break;
 		case SC_STUN:
 			sc_def = status->vit*100;
-			sc_def2 = status->luk*10 + status_get_lv(bl)*10 - status_get_lv(src)*10;
+//			sc_def2 = status->luk*10 + status_get_lv(bl)*10 - status_get_lv(src)*10;
 			tick_def2 = status->luk*10;
 			break;
 		case SC_SILENCE:
@@ -8337,8 +8337,8 @@ t_tick status_get_sc_def(struct block_list *src, struct block_list *bl, enum sc_
 			sc_def = status->vit*100;
 			sc_def2 = status->luk*10 + status_get_lv(bl)*10 - status_get_lv(src)*10;
 #else
-			sc_def = status->int_*100;
-			sc_def2 = (status->vit + status->luk) * 5 + status_get_lv(bl)*10 - status_get_lv(src)*10;
+			sc_def = status->int_*90;
+//			sc_def2 = (status->vit + status->luk) * 5 + status_get_lv(bl)*10 - status_get_lv(src)*10;
 #endif
 			tick_def2 = status->luk*10;
 			break;
@@ -8348,7 +8348,7 @@ t_tick status_get_sc_def(struct block_list *src, struct block_list *bl, enum sc_
 			sc_def2 = status->luk*10 + status_get_lv(bl)*10 - status_get_lv(src)*10;
 #else
 			sc_def = status->agi*100;
-			sc_def2 = status->luk*10 + status_get_lv(bl)*10 - status_get_lv(src)*10;
+//			sc_def2 = status->luk*10 + status_get_lv(bl)*10 - status_get_lv(src)*10;
 #endif
 			tick_def2 = status->luk*10;
 			break;
@@ -8357,19 +8357,19 @@ t_tick status_get_sc_def(struct block_list *src, struct block_list *bl, enum sc_
 			sc_def = status->int_*100;
 			sc_def2 = status->luk*10 + status_get_lv(bl)*10 - status_get_lv(src)*10;
 #else
-			sc_def = status->agi*100;
-			sc_def2 = (status->int_ + status->luk) * 5 + status_get_lv(bl)*10 - status_get_lv(src)*10;
+			sc_def = status->agi*90;
+//			sc_def2 = (status->int_ + status->luk) * 5 + status_get_lv(bl)*10 - status_get_lv(src)*10;
 #endif
 			tick_def2 = status->luk*10;
 			break;
 		case SC_STONE:
-			sc_def = status->mdef*100;
-			sc_def2 = status->luk*10 + status_get_lv(bl)*10 - status_get_lv(src)*10;
+			sc_def = status->int_*80;
+//			sc_def2 = status->luk*10 + status_get_lv(bl)*10 - status_get_lv(src)*10;
 			tick_def = 0; // No duration reduction
 			break;
 		case SC_FREEZE:
-			sc_def = status->mdef*100;
-			sc_def2 = status->luk*10 + status_get_lv(bl)*10 - status_get_lv(src)*10;
+			sc_def = status->int_*80;
+//			sc_def2 = status->luk*10 + status_get_lv(bl)*10 - status_get_lv(src)*10;
 			tick_def2 = status_src->luk*-10; // Caster can increase final duration with luk
 			break;
 		case SC_CURSE:
@@ -8377,24 +8377,24 @@ t_tick status_get_sc_def(struct block_list *src, struct block_list *bl, enum sc_
 			if (status->luk == 0)
 				return 0;
 			sc_def = status->luk*100;
-			sc_def2 = status->luk*10 - status_get_lv(src)*10; // Curse only has a level penalty and no resistance
+//			sc_def2 = status->luk*10 - status_get_lv(src)*10; // Curse only has a level penalty and no resistance
 			tick_def = status->vit*100;
 			tick_def2 = status->luk*10;
 			break;
 		case SC_BLIND:
-			sc_def = (status->vit + status->int_)*50;
-			sc_def2 = status->luk*10 + status_get_lv(bl)*10 - status_get_lv(src)*10;
+			sc_def = (status->vit + status->dex)*40;
+//			sc_def2 = status->luk*10 + status_get_lv(bl)*10 - status_get_lv(src)*10;
 			tick_def2 = status->luk*10;
 			break;
 		case SC_CONFUSION:
 			sc_def = (status->str + status->int_)*50;
-			sc_def2 = status_get_lv(src)*10 - status_get_lv(bl)*10 - status->luk*10; // Reversed sc_def2
+//			sc_def2 = status_get_lv(src)*10 - status_get_lv(bl)*10 - status->luk*10; // Reversed sc_def2
 			tick_def2 = status->luk*10;
 			break;
 		case SC_DECREASEAGI:
 			if (sd)
 				tick >>= 1; // Half duration for players.
-			sc_def2 = status->mdef*100;
+			sc_def = status->dex*50;
 			break;
 		case SC_ANKLE:
 			if(status_has_mode(status,MD_STATUS_IMMUNE)) // Lasts 5 times less on bosses
@@ -8526,8 +8526,10 @@ t_tick status_get_sc_def(struct block_list *src, struct block_list *bl, enum sc_
 
 	// Natural resistance
 	if (!(flag&SCSTART_NORATEDEF)) {
+
 		rate -= rate*sc_def/10000;
 		rate -= sc_def2;
+
 
 		// Minimum chances
 		switch (type) {
@@ -8547,7 +8549,7 @@ t_tick status_get_sc_def(struct block_list *src, struct block_list *bl, enum sc_
 		}
 
 		// Aegis accuracy
-		if(rate > 0 && rate%10 != 0) rate += (10 - rate%10);
+		// if(rate > 0 && rate%10 != 0) rate += (10 - rate%10);
 	}
 
 	if (!(rnd()%10000 < rate))
