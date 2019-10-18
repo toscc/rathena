@@ -5210,18 +5210,19 @@ int arrowchange(map_session_data * sd, mob_data *targetmd)
 	int16 index = -1;
 	int i,j;
 	int best = -1; int bestprio = -1;
+	bool eqp = false;
 
 	for (i = 0; i < ARRAYLENGTH(arrows); i++) {
 		if ((index = pc_search_inventory(sd, arrows[i])) >= 0) {
 		j = arrowatk[i];
 		if (elemstrong(targetmd, arrowelem[i])) j += 500;
 		if (elemallowed(targetmd, arrowelem[i])) if (j>bestprio) {
-			bestprio = j; best = index;
+			bestprio = j; best = index; eqp = pc_checkequip2(sd, arrows[i], EQI_AMMO, EQI_AMMO+1);
 		}
 		}
 	}
 	if (best > -1) {
-		pc_equipitem(sd, best, EQP_AMMO);
+		if (!eqp) pc_equipitem(sd, best, EQP_AMMO);
 		return 1;
 	}
 	else {
@@ -5302,18 +5303,19 @@ int ammochange(map_session_data * sd, mob_data *targetmd)
 	int16 index = -1;
 	int i, j;
 	int best = -1; int bestprio = -1;
+	bool eqp = false;
 
 	for (i = 0; i < ARRAYLENGTH(arrows); i++) {
 		if ((index = pc_search_inventory(sd, arrows[i])) >= 0) {
 			j = arrowatk[i];
 			if (elemstrong(targetmd, arrowelem[i])) j += 500;
 			if (elemallowed(targetmd, arrowelem[i])) if (j > bestprio) if (sd->status.base_level >= arrowlvl[i])  {
-				bestprio = j; best = index;
+				bestprio = j; best = index;  eqp = pc_checkequip2(sd, arrows[i], EQI_AMMO, EQI_AMMO + 1);
 			}
 		}
 	}
 	if (best > -1) {
-		pc_equipitem(sd, best, EQP_AMMO);
+		if (!eqp) pc_equipitem(sd, best, EQP_AMMO);
 		return 1;
 	}
 	else {
@@ -5341,6 +5343,7 @@ int kunaichange(map_session_data * sd, mob_data *targetmd)
 	int16 index = -1;
 	int i, j;
 	int best = -1; int bestprio = -1;
+	bool eqp = false;
 
 	for (i = 0; i < ARRAYLENGTH(arrows); i++) {
 		if ((index = pc_search_inventory(sd, arrows[i])) >= 0) {
@@ -5349,12 +5352,12 @@ int kunaichange(map_session_data * sd, mob_data *targetmd)
 			if (elemallowed(targetmd, arrowelem[i])) if (j > bestprio)
 				// Explosive Kunai has a level requirement
 				if ((arrows[i]!=13294) || (sd->status.base_level>=100)){
-				bestprio = j; best = index;
+				bestprio = j; best = index; eqp = pc_checkequip2(sd, arrows[i], EQI_AMMO, EQI_AMMO + 1);
 			}
 		}
 	}
 	if (best > -1) {
-		pc_equipitem(sd, best, EQP_AMMO);
+		if (!eqp) pc_equipitem(sd, best, EQP_AMMO);
 		return 1;
 	}
 	else {
