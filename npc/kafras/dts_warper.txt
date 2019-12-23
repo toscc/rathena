@@ -1175,7 +1175,7 @@ OnTimer15000:
 	end;
 }
 
-/*
+
 // GM only NPC used for modifying values related to the DTS system.
 // Disabled in official script.
 sec_in02,17,160,4	script	Vote Globalvar Girl#yuno	864,{
@@ -1333,4 +1333,4 @@ sec_in02,17,160,4	script	Vote Globalvar Girl#yuno	864,{
 		close;
 	}
 }
-*/
+
