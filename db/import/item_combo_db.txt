@@ -3,5 +3,7 @@
 // Structure of Database:
 // ID:ID:ID:ID,{ Script }
 
-//Gambler combo
+//Gambler's Seal and Heart Card in Mouth
 5918:19306,{ .@aspd = 1; .@crit_dmg = 2 + 2 * (readparam(bDex) / 10); .@sub_demi = 2; .@luk = readparam(bLuk); if (.@luk > 107) { .@aspd += 1; .@crit_dmg += 2; .@sub_demi += 2; } if (.@luk > 119) { .@aspd += 2; .@crit_dmg += 4; .@sub_demi += 4; bonus bSplashRange,1; } bonus bAspd,.@aspd; bonus bCritAtkRate,.@crit_dmg; bonus2 bSubRace,RC_DemiHuman,.@sub_demi; bonus2 bSubSkill,"NPC_CRITICALSLASH",100; }
+//Rose of Eden and Angelic Ring
+2192:2743,{ bonus bHealPower,10; }

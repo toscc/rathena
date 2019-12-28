@@ -4824,6 +4824,11 @@
 	export_constant(IG_PRIZEOFHERO);
 	export_constant(IG_PRIVATE_AIRSHIP);
 	export_constant(IG_TOKEN_OF_SIEGFRIED);
+	export_constant(IG_CC_CUSTOM_LOW);
+	export_constant(IG_CC_CUSTOM_MID);
+	export_constant(IG_CC_CUSTOM_HIGH);
+	export_constant(IG_CC_ORE_BOX);
+	export_constant(IG_CC_REFINING_BOX);
 
 	/* unit stop walking */
 	export_constant(USW_NONE);

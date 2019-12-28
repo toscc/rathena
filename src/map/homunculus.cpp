@@ -480,6 +480,8 @@ int hom_levelup(struct homun_data *hd)
 	hom->level++ ;
 	if (!(hom->level % 3))
 		hom->skillpts++ ;	//1 skillpoint each 3 base level
+	if (!(hom->level % 10))
+		hom->skillpts++ ;	//1 skillpoint each 10 base level
 
 	hom->exp -= hd->exp_next ;
 	hd->exp_next = hexptbl[hom->level - 1] ;

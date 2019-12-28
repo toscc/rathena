@@ -1,0 +1,242 @@
+// Item Package Database
+//
+// Structure of Database:
+// GroupID,ItemID,Rate{,Amount,Random,isAnnounced,Duration,GUID,isBound,isNamed}
+
+//____________________________________________________________________________
+//Low-tier box
+//____________________________________________________________________________
+
+//Headgear Upper
+IG_CC_Custom_Low,5208,1 	//Rideword Hat [1]
+IG_CC_Custom_Low,5211,1		//Dress Hat [1] 
+IG_CC_Custom_Low,5464,1		//Zaha Doll Hat [1]
+IG_CC_Custom_Low,18539,1	//Skull Cap [1]
+IG_CC_Custom_Low,18563,1	//Heart Wing Hairband [1]
+IG_CC_Custom_Low,18652,1	//Vanargand Helm [1]
+IG_CC_Custom_Low,18656,1	//Witch's Pumpkin Hat
+IG_CC_Custom_Low,18673,1	//Chibi Pope [1]
+IG_CC_Custom_Low,18878,1	//Palace Guard Cap [1]
+IG_CC_Custom_Low,18887,1	//Aqua Bunny Band [1]
+
+//Headgear Middle
+IG_CC_Custom_Low,2204,1		//Glasses [1]
+IG_CC_Custom_Low,5325,1		//Robo Eye
+IG_CC_Custom_Low,18591,1	//Mini Glasses [1]
+IG_CC_Custom_Low,18611,1	//Black Frame Glasses [1]
+IG_CC_Custom_Low,18657,1	//Pegasus Ear Wing
+//IG_CC_Custom_Low,18787,1	//Goal Tender Mask
+IG_CC_Custom_Low,19082,1	//Bio Protector
+
+//Headgear Lower
+IG_CC_Custom_Low,5596,1		//Four Leaf Clover
+IG_CC_Custom_Low,5967,1		//Flying Galapago
+IG_CC_Custom_Low,19139,1	//Survivor's Orb
+IG_CC_Custom_Low,19306,1	//Heart Card in Mouth
+
+//Garment
+IG_CC_Custom_Low,20799,1	//Elemental Towel [1]
+//IG_CC_Custom_Low,20837,1	//Skin of Gwiber [1]		//sp leech and attack-per-intdex
+IG_CC_Custom_Low,20859,1	//Phreeoni Wings [1]
+IG_CC_Custom_Low,20860,1	//Battle Surcoat [1]
+//IG_CC_Custom_Low,20922,1	//Leviathan Muffler [1]		//waterproof + 20neut muffler
+//IG_CC_Custom_Low,20931,1	//Prism Rangers Scarf
+//IG_CC_Custom_Low,20932,1	//Old Morroc Shawl [1]		//shadowproof + big boy flee
+//IG_CC_Custom_Low,20941,1	//Phoenix Muffler [1]		//fireproof + aspd dmg
+//IG_CC_Custom_Low,20949,1	//Skin of Ladon [1]			//agi vit atk
+//IG_CC_Custom_Low,20952,1	//Mysterious Muffler [1]
+//IG_CC_Custom_Low,20969,1	//Rainbow Muffler [1]		//bard
+
+
+//Armor
+IG_CC_Custom_Low,15108,1	//Venomous Insect Armor [1]
+//IG_CC_Custom_Low,15283,1	//Mighty Black Threaded Armor [1]		//bypass def armor
+//IG_CC_Custom_Low,15352,1	//Nature Dress							//no knockback, many dmg boost armor
+//IG_CC_Custom_Low,15405,1	//Fafnir Scale
+//IG_CC_Custom_Low,15419,1	//Armor of White Thread [1]
+//IG_CC_Custom_Low,15420,1	//Icefall Dress
+//IG_CC_Custom_Low,18862,1	//Chiu Armor [1]
+
+//Feet
+//IG_CC_Custom_Low,22055,1	//Sharel Shoes [1]
+//IG_CC_Custom_Low,22104,1	//Pororoca Shoes			//waterball shoes, might be fun
+
+//Accessory
+IG_CC_Custom_Low,2881,1		//Orleans Necklace [1]			1
+IG_CC_Custom_Low,2936,1		//Recovery Ring [1]				1
+IG_CC_Custom_Low,2959,1		//Fidelity Necklace				1
+IG_CC_Custom_Low,28377,1	//Magical Ring [1]
+//IG_CC_Custom_Low,28394,1	//Spirit King's Ring [1]
+IG_CC_Custom_Low,28433,1	//Luminous Blue Stone [1]		1
+IG_CC_Custom_Low,28501,1	//Kirin Horn [1]				1
+IG_CC_Custom_Low,28533,1	//Chemical Glove [1]			1
+//IG_CC_Custom_Low,28560,1	//Yin Yang Talisman [1]
+//IG_CC_Custom_Low,28561,1	//Ring of Hero [1]
+//IG_CC_Custom_Low,28564,1	//Valkyrie Drop [1]			0		//Odin's Power
+//IG_CC_Custom_Low,28565,1	//Perverse Demon Mask [1]	0		//great statpair ring
+
+//Shield
+IG_CC_Custom_Low,2192,1	//Rose of Eden [1]
+IG_CC_Custom_Low,28929,1	//Happy Shield [1]
+//IG_CC_Custom_Low,28941,1	//Excelion Shield [1]				0
+//IG_CC_Custom_Low,28951,1	//Nero Shield [1]					0	stats and +/- 20% dmg on water
+//IG_CC_Custom_Low,28955,1	//Fotia Shield [1]					2
+
+//____________________________________________________________________________
+//Mid-tier box
+//____________________________________________________________________________
+IG_CC_Custom_Mid,5588,1 	//Leo Crown [0] 		"TK_SEVENWIND",4,50		(Fire)
+IG_CC_Custom_Mid,5663,1		//Libra Diadem   		"TK_SEVENWIND",2,5 		(Wind)
+IG_CC_Custom_Mid,5676,1		//Scorpio Crown			"TK_SEVENWIND",3,20		(Water)
+IG_CC_Custom_Mid,5744,1		//Capricorn Crown [1] 	"TK_SEVENWIND",1,500 	(Earth)
+//IG_CC_Custom_Mid,5878,1	//Miracle Blue Rose								(Holy)
+IG_CC_Custom_Mid,5902,1		//Harvester Hat [1]
+IG_CC_Custom_Mid,5937,1		//Flying Helmet [1]
+IG_CC_Custom_Mid,5968,1		//Clergy Nurse Cap [1]
+//IG_CC_Custom_Mid,5975,1	//Zealotus Doll [1]
+IG_CC_Custom_Mid,15165,1	//Pure White Marching Hat [1]					(Ghost)
+IG_CC_Custom_Mid,18522,1	//Evil Marching Hat [1]
+IG_CC_Custom_Mid,18756,1	//Black Shiba Inu Hat
+IG_CC_Custom_Mid,18785,1	//King Poring Hat [1]
+//IG_CC_Custom_Mid,18794,1	//Ordinary Black Magician Hat [1]						
+IG_CC_Custom_Mid,18856,1	//White Drooping Eddga Hat
+IG_CC_Custom_Mid,19116,1	//Red Baby Dragon Hat [1]
+IG_CC_Custom_Mid,19171,1	//Magician Knit Hat [1]
+
+IG_CC_Custom_Mid,5788,1		//3D Glasses
+IG_CC_Custom_Mid,5973,1		//Ancient Elven Ear
+IG_CC_Custom_Mid,18937,1	//Memory of Lovers
+IG_CC_Custom_Mid,19024,1	//Feathers of Protection
+IG_CC_Custom_Mid,19083,1	//Mask of Hero
+IG_CC_Custom_Mid,28521,1	//Giant's Protection [1]
+
+IG_CC_Custom_Mid,5978,1		//Toy Syringe
+IG_CC_Custom_Mid,18666,1	//CD In Mouth
+IG_CC_Custom_Mid,18917,1	//99 Love Balloon
+IG_CC_Custom_Mid,19246,1	//Royal Guard Necklace
+
+IG_CC_Custom_Mid,2576,1		//Heroic Backpack [1] has a visual bug?
+IG_CC_Custom_Mid,2589,1		//Fallen Angel Wing [1]
+IG_CC_Custom_Mid,20845,1	//Malach's Skin [1]
+
+IG_CC_Custom_Mid,15103,1	//Kirin Armor [1]
+
+IG_CC_Custom_Mid,22120,1	//Shoes of Punishment / Shoes of Tribunal
+IG_CC_Custom_Mid,22145,1	//Tengu Shoes / Tengu s Geta
+IG_CC_Custom_Mid,22210,1	//Fluffy Fish Shoes
+
+IG_CC_Custom_Mid,2910,1		//Bakonawa Agimat Tattoo		1
+
+IG_CC_Custom_Mid,28410,1	//Sapphire Wrist [1]			1
+
+IG_CC_Custom_Mid,28411,1	//Emerald Earrings [1]			1
+//IG_CC_Custom_Mid,28575,1	//Verus Core [1]			0		//phit 20, aspd 10%, 5% dmg
+//IG_CC_Custom_Mid,28596,1	//Toy Ring [1]
+//IG_CC_Custom_Mid,32222,1	//Brooch of Hero [1]		0		//all stats + 2x-upgrade with hero armor and  auto status
+//IG_CC_Custom_Mid,32262,1	//Rasen Fuma's Orb [1]			2
+
+IG_CC_Custom_Mid,2168,1		//Immune Shield [1]
+IG_CC_Custom_Mid,28902,1	//Mad Bunny Special [1]
+IG_CC_Custom_Mid,28916,1	//Gaia Shield [1]
+IG_CC_Custom_Mid,28918,1	//Shield of Chaos [1]
+IG_CC_Custom_Mid,28921,1	//Anemos Shield [1]
+
+//____________________________________________________________________________
+//High-tier box
+//____________________________________________________________________________
+IG_CC_Custom_High,5898,1	//Autumn Headband [1]
+IG_CC_Custom_High,18849,1	//Celine's Ribbon [1]
+IG_CC_Custom_High,18908,1	//Isabella Red Ear
+IG_CC_Custom_High,19081,1	//Faceworm Egg Shell [1]
+IG_CC_Custom_High,19102,1	//Pale Moon Hat [1]
+//IG_CC_Custom_High,19125,1	//Cylinder Hairband [1]
+IG_CC_Custom_High,19156,1	//Lunar Rainbow [1]
+//IG_CC_Custom_High,19163,1	//Catherina Von Blood [1]
+IG_CC_Custom_High,19269,1	//Happy Flapping Angel Wings [1]
+//IG_CC_Custom_High,19337,1	//Safety Glasses [1]
+IG_CC_Custom_High,19342,1	//Bull Hat [1]
+IG_CC_Custom_High,19343,1	//Circlet of Phoenix
+//IG_CC_Custom_High,19387,1	//Experimental Goat Cap [1]
+//IG_CC_Custom_High,19409,1	//Black Feather
+//IG_CC_Custom_High,19460,1	//Black Veil [1]
+//IG_CC_Custom_High,19469,1	//Sacred Crown
+//IG_CC_Custom_High,19495,1	//Diabolus Wing [1]
+
+IG_CC_Custom_High,5918,1	//Gambler's Seal
+IG_CC_Custom_High,18599,1	//Black Devil's Mask [1]
+IG_CC_Custom_High,18823,1	//Imperial Feather
+
+IG_CC_Custom_High,15166,1	//Rosary's Necklace
+IG_CC_Custom_High,18858,1	//Odacious Angeling Balloon
+IG_CC_Custom_High,28502,1	//Mob Scarf
+
+IG_CC_Custom_High,2573,1	//Archangel Wing [1]
+IG_CC_Custom_High,20814,1	//Wakwak Manteau [1]
+IG_CC_Custom_High,20863,1	//Menblatt Wing Manteau [1]
+
+//IG_CC_Custom_High,15096,1	//Hero Trade Mail [1]	//this is a drop from https://www.novaragnarok.com/wiki/Bios_Island 
+IG_CC_Custom_High,15145,1	//Evil Dragon Armor [1]
+IG_CC_Custom_High,15204,1	//Abyss Dress
+
+//IG_CC_Custom_High,22189,1	//Pilgrim Shoes
+//IG_CC_Custom_High,22172,1	//Gray Wing Boots
+
+IG_CC_Custom_High,28430,1	//Arch Bishop Ring [1]			1
+IG_CC_Custom_High,28484,1	//Rebellion's Scarf [1]			1
+IG_CC_Custom_High,28492,1	//Thieves' Guide Vol. 1 [1]		1
+IG_CC_Custom_High,28507,1	//Magician's Gloves [1]			1
+IG_CC_Custom_High,28513,1	//Celine's Brooch [1]			1
+IG_CC_Custom_High,28531,1	//Blacksmith's Gloves [1]		1
+//IG_CC_Custom_High,28573,1	//Emerald Ring [1]			0		//ranger stat ring
+//IG_CC_Custom_High,28594,1	//Temporal Ring [1]			0		//op ring? EX rare
+//IG_CC_Custom_High,32227,1	//Fenrir Chain [1]			0		//vanagard helm combo, hard def pierce
+//IG_CC_Custom_High,32258,1	//Ring of Jupiter [1]		2 		//125 base stat, end game building
+//IG_CC_Custom_High,32263,1	//Shield Ring [1]			2
+
+//IG_CC_Custom_High,1449,1	//Gelerdria [3]		//extremely strong boss spear (earth elem)
+
+//____________________________________________________________________________
+//Cash boxes
+//____________________________________________________________________________
+// GroupID,		ItemID,		Rate	{,Amount,Random,isAnnounced,Duration,GUID,isBound,isNamed}
+IG_CC_Ore_Box,	12997		1,		2,		0	//Elunium 5
+IG_CC_Ore_Box,	12998		1,		2,		0	//Oridecon 5
+IG_CC_Ore_Box,	13889		2,		1,		0	//Elunium 10
+IG_CC_Ore_Box,	13890		2,		1,		0	//Oridecon 10
+
+IG_CC_Ore_Box,	7619		3,		2,		1	//Enriched Elunium 1
+IG_CC_Ore_Box,	7620		3,		2,		1	//Enriched Oridecon 1
+IG_CC_Ore_Box,	13610		2,		1,		1	//Enriched Elunium 5
+IG_CC_Ore_Box,	13611		2,		1,		1	//Enriched Oridecon 5
+IG_CC_Ore_Box,	12920		1,		1,		1	//Enriched Elunium 10
+IG_CC_Ore_Box,	12921		1,		1,		1	//Enriched Oridecon 10
+
+IG_CC_Ore_Box,	6240		15,		2,		2	//HD Elunium 1
+IG_CC_Ore_Box,	6241		15,		2,		2	//HD Oridecon 1
+IG_CC_Ore_Box,	16393		10,		1,		2	//HD Elunium 5
+IG_CC_Ore_Box,	16395		10,		1,		2	//HD Oridecon 5
+IG_CC_Ore_Box,	16394		6,		1,		2	//HD Elunium 10
+IG_CC_Ore_Box,	16396		6,		1,		2	//HD Oridecon 10
+IG_CC_Ore_Box,	17104		4,		1,		2	//HD Elunium 50
+IG_CC_Ore_Box,	17105		4,		1,		2	//HD Oridecon 50
+
+IG_CC_Ore_Box,	6225		3,		1,		2	//HD Carnium 1
+IG_CC_Ore_Box,	6226		3,		1,		2	//HD Bradium 1
+IG_CC_Ore_Box,	6225		1,		2,		2	//HD Carnium 2
+IG_CC_Ore_Box,	6226		1,		2,		2	//HD Bradium 2
+
+IG_CC_Refining_Box,6231		2,		1,			//+6 Weapon
+IG_CC_Refining_Box,6230		2,		1,			//+7 Weapon
+IG_CC_Refining_Box,6229		2,		2,			//+8 Weapon
+IG_CC_Refining_Box,6228		1,		2,			//+9 Weapon
+IG_CC_Refining_Box,6238		1,		2,			//+11 Weapon
+IG_CC_Refining_Box,6235		2,		1,			//+6 Armor
+IG_CC_Refining_Box,6234		2,		1,			//+7 Armor
+IG_CC_Refining_Box,6233		2,		2,			//+8 Armor
+IG_CC_Refining_Box,6232		1,		2,			//+9 Armor
+IG_CC_Refining_Box,6239		1,		2,			//+11 Armor
+IG_CC_Refining_Box,6635		3,		1,			//Blacksmith Blessing
+IG_CC_Refining_Box,6635		2,		2,			//Blacksmith Blessing
+IG_CC_Refining_Box,6635		1,		3,			//Blacksmith Blessing
+
+

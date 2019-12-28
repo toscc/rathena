@@ -732,6 +732,11 @@ enum e_random_item_group {
 	IG_PRIZEOFHERO,
 	IG_PRIVATE_AIRSHIP,
 	IG_TOKEN_OF_SIEGFRIED,
+	IG_CC_CUSTOM_LOW = 500,
+	IG_CC_CUSTOM_MID = 501,
+	IG_CC_CUSTOM_HIGH = 502,
+	IG_CC_ORE_BOX = 503,
+	IG_CC_REFINING_BOX = 504,
 };
 
 /// Enum for bound/sell restricted selling
